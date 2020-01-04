@@ -1,8 +1,13 @@
-cmake_minimum_required (VERSION 2.8.3)
+# CMake's built-in Android support requires 3.7.0
+if(CMAKE_SYSTEM_NAME MATCHES "Android")
+    cmake_minimum_required(VERSION 3.7.2)
+else()
+    cmake_minimum_required(VERSION 3.0.2)
+endif()
 
-project (DSFMLC)
+project (DSFML)
 
-option(STATIC_SFML "Build DSFMLC expecting static SFML libs" ON)
+option(STATIC_SFML "Build CSFML expecting static SFML libs" ON)
 
 set(CMAKE_BUILD_TYPE Release)
 
@@ -23,23 +28,12 @@ endif(MSVC)
 
 #DSFML should work for all patch versions
 set(VERSION_MAJOR 2)
-set(VERSION_MINOR 4)
-
-
-#add DSFMLC and SFML header paths
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/SFML/include)
-
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set(VERSION_MINOR 5)
 
 if(STATIC_SFML)
     add_definitions(-DSFML_STATIC)
 endif(STATIC_SFML)
 
-
-add_subdirectory(src/DSFMLC/System)
-add_subdirectory(src/DSFMLC/Audio)
-add_subdirectory(src/DSFMLC/Network)
-add_subdirectory(src/DSFMLC/Window)
-add_subdirectory(src/DSFMLC/Graphics)
+# Build SFML and CSFML
+add_subdirectory(SFML)
+add_subdirectory(CSFML)
