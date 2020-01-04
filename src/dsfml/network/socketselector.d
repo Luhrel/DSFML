@@ -80,7 +80,7 @@
  *             if (listener.accept(client) == Socket.Status.Done)
  *             {
  *                 // Add the new client to the clients list
- *                 clients~=client;
+ *                 clients ~= client;
  *
  *                 // Add the new client to the selector so that we will
  *                 // be notified when he sends something
@@ -120,27 +120,31 @@ import dsfml.network.tcplistener;
 import dsfml.network.tcpsocket;
 import dsfml.network.udpsocket;
 
-public import dsfml.system.time;
+import dsfml.system.time;
 
 /**
  * Multiplexer that allows to read from multiple sockets.
  */
 class SocketSelector
 {
-    package sfSocketSelector* sfPtr;
+    private sfSocketSelector* m_socketSelector;
 
     /// Default constructor.
     this()
     {
-        sfPtr = sfSocketSelector_create();
+        m_socketSelector = sfSocketSelector_create();
+    }
+
+    // Copy constructor.
+    package this(sfSocketSelector* socketSelectorPointer)
+    {
+        m_socketSelector = sfSocketSelector_copy(socketSelectorPointer);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfSocketSelector_destroy(sfPtr);
+        sfSocketSelector_destroy(m_socketSelector);
     }
 
     /**
@@ -152,10 +156,11 @@ class SocketSelector
      *
      * Params:
      * 	listener = Reference to the listener to add
+     * See_Also: remove, clear
      */
     void add(TcpListener listener)
     {
-        sfSocketSelector_addTcpListener(sfPtr, listener.sfPtr);
+        sfSocketSelector_addTcpListener(m_socketSelector, listener.ptr);
     }
 
     /**
@@ -167,10 +172,11 @@ class SocketSelector
      *
      * Params:
      *  socket = Reference to the socket to add
+     * See_Also: remove, clear
      */
     void add(TcpSocket socket)
     {
-        sfSocketSelector_addTcpSocket(sfPtr, socket.sfPtr);
+        sfSocketSelector_addTcpSocket(m_socketSelector, socket.ptr);
     }
 
     /**
@@ -182,10 +188,11 @@ class SocketSelector
      *
      * Params:
      * 	socket = Reference to the socket to add
+     * See_Also: remove, clear
      */
     void add(UdpSocket socket)
     {
-        sfSocketSelector_addUdpSocket(sfPtr, socket.sfPtr);
+        sfSocketSelector_addUdpSocket(m_socketSelector, socket.ptr);
     }
 
     /**
@@ -193,10 +200,12 @@ class SocketSelector
      *
      * This function doesn't destroy any instance, it simply removes all the
      * references that the selector has to external sockets.
+     *
+     * See_Also: add, remove
      */
     void clear()
     {
-        sfSocketSelector_clear(sfPtr);
+        sfSocketSelector_clear(m_socketSelector);
     }
 
     /**
@@ -207,22 +216,26 @@ class SocketSelector
      * never block because we know that there is data available to read. Note
      * that if this function returns true for a TcpListener, this means that it
      * is ready to accept a new connection.
+     *
+     * Params:
+     *     socket = Socket to test
+     * Returns: True if the socket is ready to read, false otherwise.
      */
     bool isReady(TcpListener listener) const
     {
-        return (sfSocketSelector_isTcpListenerReady(sfPtr, listener.sfPtr));
+        return sfSocketSelector_isTcpListenerReady(m_socketSelector, listener.ptr);
     }
 
     /// ditto
     bool isReady(TcpSocket socket) const
     {
-        return (sfSocketSelector_isTcpSocketReady(sfPtr, socket.sfPtr));
+        return sfSocketSelector_isTcpSocketReady(m_socketSelector, socket.ptr);
     }
 
     /// ditto
     bool isReady(UdpSocket socket) const
     {
-        return (sfSocketSelector_isUdpSocketReady(sfPtr, socket.sfPtr));
+        return sfSocketSelector_isUdpSocketReady(m_socketSelector, socket.ptr);
     }
 
     /**
@@ -233,10 +246,11 @@ class SocketSelector
      *
      * Params:
      *  socket = Reference to the socket to remove
+     * See_Also: add, clear
      */
     void remove(TcpListener socket)
     {
-        sfSocketSelector_removeTcpListener(sfPtr, socket.sfPtr);
+        sfSocketSelector_removeTcpListener(m_socketSelector, socket.ptr);
     }
 
     /**
@@ -247,10 +261,11 @@ class SocketSelector
      *
      * Params:
      *  socket = Reference to the socket to remove
+     * See_Also: add, clear
      */
     void remove(TcpSocket socket)
     {
-        sfSocketSelector_removeTcpSocket(sfPtr, socket.sfPtr);
+        sfSocketSelector_removeTcpSocket(m_socketSelector, socket.ptr);
     }
 
     /**
@@ -261,10 +276,11 @@ class SocketSelector
      *
      * Params:
      *  socket = Reference to the socket to remove
+     * See_Also: add, clear
      */
     void remove(UdpSocket socket)
     {
-        sfSocketSelector_removeUdpSocket(sfPtr, socket.sfPtr);
+        sfSocketSelector_removeUdpSocket(m_socketSelector, socket.ptr);
     }
 
     /**
@@ -279,80 +295,42 @@ class SocketSelector
      * 		timeout = Maximum time to wait, (use Time.Zero for infinity)
      *
      * Returns: true if there are sockets ready, false otherwise.
+     * See_Also: isReady
      */
     bool wait(Time timeout = Time.Zero)
     {
-        return (sfSocketSelector_wait(sfPtr, timeout.asMicroseconds()));
+        return sfSocketSelector_wait(m_socketSelector, timeout);
     }
-}
 
-unittest
-{
-    version(DSFML_Unittest_Network)
+    // Duplicate a SocketSelector
+    @property
+    SocketSelector dup()
     {
-        import std.stdio;
-        import dsfml.network.ipaddress;
-
-        writeln("Unittest for SocketSelector");
-
-        auto selector = new SocketSelector();
-
-        //get a listener and start listening to a new port
-        auto listener = new TcpListener();
-        listener.listen(55004);
-
-        //add the listener to the selector
-        selector.add(listener);
-
-        //The client tries to connect to the server
-        auto clientSocket = new TcpSocket();
-        clientSocket.connect(IpAddress.LocalHost, 55004);
-
-        //wait for the selector to be informed of new things!
-        selector.wait();
-
-        auto serverSocket = new TcpSocket();
-        //the listener is ready! New connections are available
-        if(selector.isReady(listener))
-        {
-            writeln("Accepted the connection.");
-            listener.accept(serverSocket);
-        }
-
-        writeln();
+        return new SocketSelector(m_socketSelector);
     }
 }
 
-private extern(C):
+private extern(C)
+{
+    struct sfSocketSelector;
 
-struct sfSocketSelector;
+    sfSocketSelector* sfSocketSelector_create();
+    sfSocketSelector* sfSocketSelector_copy(const sfSocketSelector* selector);
+    void sfSocketSelector_destroy(sfSocketSelector* selector);
 
-//Create a new selector
-sfSocketSelector* sfSocketSelector_create();
+    void sfSocketSelector_addTcpListener(sfSocketSelector* selector, sfTcpListener* socket);
+    void sfSocketSelector_addTcpSocket(sfSocketSelector* selector, sfTcpSocket* socket);
+    void sfSocketSelector_addUdpSocket(sfSocketSelector* selector, sfUdpSocket* socket);
 
-//Create a new socket selector by copying an existing one
-sfSocketSelector* sfSocketSelector_copy(const sfSocketSelector* selector);
+    void sfSocketSelector_removeTcpListener(sfSocketSelector* selector, sfTcpListener* socket);
+    void sfSocketSelector_removeTcpSocket(sfSocketSelector* selector, sfTcpSocket* socket);
+    void sfSocketSelector_removeUdpSocket(sfSocketSelector* selector, sfUdpSocket* socket);
 
-//Destroy a socket selector
-void sfSocketSelector_destroy(sfSocketSelector* selector);
+    void sfSocketSelector_clear(sfSocketSelector* selector);
+    bool sfSocketSelector_wait(sfSocketSelector* selector, Time timeout);
 
-//Add a new socket to a socket selector
-void sfSocketSelector_addTcpListener(sfSocketSelector* selector, sfTcpListener* socket);
-void sfSocketSelector_addTcpSocket(sfSocketSelector* selector, sfTcpSocket* socket);
-void sfSocketSelector_addUdpSocket(sfSocketSelector* selector, sfUdpSocket* socket);
+    bool sfSocketSelector_isTcpListenerReady(const sfSocketSelector* selector, sfTcpListener* socket);
+    bool sfSocketSelector_isTcpSocketReady(const sfSocketSelector* selector, sfTcpSocket* socket);
+    bool sfSocketSelector_isUdpSocketReady(const sfSocketSelector* selector, sfUdpSocket* socket);
 
-//Remove a socket from a socket selector
-void sfSocketSelector_removeTcpListener(sfSocketSelector* selector, sfTcpListener* socket);
-void sfSocketSelector_removeTcpSocket(sfSocketSelector* selector, sfTcpSocket* socket);
-void sfSocketSelector_removeUdpSocket(sfSocketSelector* selector, sfUdpSocket* socket);
-
-//Remove all the sockets stored in a selector
-void sfSocketSelector_clear(sfSocketSelector* selector);
-
-//Wait until one or more sockets are ready to receive
-bool sfSocketSelector_wait(sfSocketSelector* selector, long timeout);
-
-//Test a socket to know if it is ready to receive data
-bool sfSocketSelector_isTcpListenerReady(const(sfSocketSelector)* selector, sfTcpListener* socket);
-bool sfSocketSelector_isTcpSocketReady(const(sfSocketSelector)* selector, sfTcpSocket* socket);
-bool sfSocketSelector_isUdpSocketReady(const(sfSocketSelector)* selector, sfUdpSocket* socket);
+}

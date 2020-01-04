@@ -54,7 +54,7 @@
  *    while (window.pollEvent(event))
  *    {
  *        // Request for closing the window
- *        if (event.type == Event.EventType.Closed)
+ *        if (event.type == Event..Closed)
  *            window.close();
  *    }
  *
@@ -119,35 +119,44 @@
  */
 module dsfml.graphics.renderwindow;
 
+import dsfml.graphics.circleshape;
 import dsfml.graphics.color;
+import dsfml.graphics.convexshape;
+import dsfml.graphics.drawable;
 import dsfml.graphics.image;
 import dsfml.graphics.rect;
-import dsfml.graphics.drawable;
 import dsfml.graphics.primitivetype;
+import dsfml.graphics.rectangleshape;
 import dsfml.graphics.renderstates;
 import dsfml.graphics.rendertarget;
 import dsfml.graphics.shader;
+import dsfml.graphics.shape;
+import dsfml.graphics.sprite;
 import dsfml.graphics.text;
 import dsfml.graphics.texture;
-import dsfml.graphics.view;
 import dsfml.graphics.vertex;
+import dsfml.graphics.vertexarray;
+import dsfml.graphics.vertexbuffer;
+import dsfml.graphics.view;
 
 import dsfml.window.contextsettings;
-import dsfml.window.windowhandle;
+import dsfml.window.cursor;
 import dsfml.window.event;
-import dsfml.window.window;
 import dsfml.window.videomode;
+import dsfml.window.window;
+import dsfml.window.windowhandle;
 
 import dsfml.system.err;
 import dsfml.system.vector2;
+
+import std.string;
 
 /**
  * Window that can serve as a target for 2D drawing.
  */
 class RenderWindow : Window, RenderTarget
 {
-    package sfRenderWindow* sfPtr;
-    private View m_currentView, m_defaultView;
+    private sfRenderWindow* m_renderWindow;
 
     /**
      * Default constructor.
@@ -157,8 +166,7 @@ class RenderWindow : Window, RenderTarget
      */
     this()
     {
-        sfPtr = sfRenderWindow_construct();
-        super(0);
+        // Nothing to do.
     }
 
     /**
@@ -175,41 +183,14 @@ class RenderWindow : Window, RenderTarget
      *
      * Params:
      * mode     = Video mode to use (defines the width, height and depth of the
-     * 			  rendering area of the window)
-     * title    = Title of the window
-     * style    = Window style, a bitwise OR combination of Style enumerators
-     * settings = Additional settings for the underlying OpenGL context
-     *
-     * Deprecated: Use the constructor that takes a 'const(dchar)[]' instead.
-     */
-    deprecated("Use the constructor that takes a 'const(dchar)[]' instead.")
-    this(T)(VideoMode mode, const(T)[] title, Style style = Style.DefaultStyle, ContextSettings settings = ContextSettings.init)
-        if (is(T == wchar)||is(T == char))
-    {
-        this();
-        create(mode, title, style, settings);
-    }
-
-    /**
-     * Construct a new window.
-     *
-     * This constructor creates the window with the size and pixel depth defined
-     * in mode. An optional style can be passed to customize the look and
-     * behavior of the window (borders, title bar, resizable, closable, ...).
-     *
-     * The fourth parameter is an optional structure specifying advanced OpenGL
-     * context settings such as antialiasing, depth-buffer bits, etc. You
-     * shouldn't care about these parameters for a regular usage of the graphics
-     * module.
-     *
-     * Params:
-     * mode     = Video mode to use (defines the width, height and depth of the
-     * 			  rendering area of the window)
+     *               rendering area of the window)
      * title    = Title of the window
      * style    = Window style, a bitwise OR combination of Style enumerators
      * settings = Additional settings for the underlying OpenGL context
      */
-    this(T)(VideoMode mode, const(dchar)[] title, Style style = Style.DefaultStyle, ContextSettings settings = ContextSettings.init)
+    // TODO: Should settings be a ref ?
+    this(VideoMode mode, const(dstring) title, Style style = Style.DefaultStyle,
+        ContextSettings settings = ContextSettings.init)
     {
         this();
         create(mode, title, style, settings);
@@ -230,17 +211,21 @@ class RenderWindow : Window, RenderTarget
      * handle   = Platform-specific handle of the control
      * settings = Additional settings for the underlying OpenGL context
      */
+    // TODO: Should settings be a ref ?
     this(WindowHandle handle, ContextSettings settings = ContextSettings.init)
     {
         this();
         create(handle, settings);
     }
 
+    /**
+     * Destructor.
+     *
+     * Closes the window and frees all the resources attached to it.
+     */
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfRenderWindow_destroy(sfPtr);
+        sfRenderWindow_destroy(m_renderWindow);
     }
 
     @property
@@ -251,39 +236,58 @@ class RenderWindow : Window, RenderTarget
          * This property only works for top-level windows (i.e. it will be
          * ignored for windows created from the handle of a child
          * window/control).
+         *
+         * Params:
+         *         position    =    New position, in pixels
          */
-        override Vector2i position(Vector2i newPosition)
+        override void position(Vector2i newPosition)
         {
-            sfRenderWindow_setPosition(sfPtr,newPosition.x, newPosition.y);
-            return newPosition;
+            if (m_renderWindow !is null)
+                sfRenderWindow_setPosition(m_renderWindow, newPosition);
         }
 
-        /// ditto
+        /**
+         * Get the position of the window.
+         *
+         * Returns: Position of the window, in pixels
+         */
         override Vector2i position() const
         {
-            Vector2i temp;
-            sfRenderWindow_getPosition(sfPtr,&temp.x, &temp.y);
-            return temp;
+            if (m_renderWindow is null)
+                return Vector2i(0, 0);
+            return sfRenderWindow_getPosition(m_renderWindow);
         }
     }
 
     @property
     {
         /**
-         * The size of the rendering region of the window.
+         * Change the size of the rendering region of the window.
+         *
+         * Params:
+         *         size    =    New size, in pixels
          */
-        override Vector2u size(Vector2u newSize)
+        override void size(Vector2u newSize)
         {
-            sfRenderWindow_setSize(sfPtr, newSize.x, newSize.y);
-            return newSize;
+            if (m_renderWindow !is null)
+            {
+                sfRenderWindow_setSize(m_renderWindow, newSize);
+                onResize();
+            }
         }
 
-        /// ditto
+        /**
+         * Get the size of the rendering region of the window.
+         *
+         * The size doesn't include the titlebar and borders of the window.
+         *
+         * Returns: Size in pixels
+         */
         override Vector2u size() const
         {
-            Vector2u temp;
-            sfRenderWindow_getSize(sfPtr,&temp.x, &temp.y);
-            return temp;
+            if (m_renderWindow is null)
+                return Vector2u(0, 0);
+            return sfRenderWindow_getSize(m_renderWindow);
         }
     }
 
@@ -300,32 +304,28 @@ class RenderWindow : Window, RenderTarget
          * necessary to keep the original one alive after calling this function.
          * To restore the original view of the target, you can pass the result
          * of `getDefaultView()` to this function.
+         *
+         * Params:
+         *         view = New view to use
+         * See_Also: defaultView
          */
-        override View view(View newView)
+        void view(View newView)
         {
-            sfRenderWindow_setView(sfPtr, newView.center.x, newView.center.y, newView.size.x, newView.size.y, newView.rotation,
-                                    newView.viewport.left, newView.viewport.top, newView.viewport.width, newView.viewport.height);
-            return newView;
+            if (m_renderWindow !is null)
+                sfRenderWindow_setView(m_renderWindow, newView.ptr);
         }
 
-        /// ditto
-        override View view() const
+        /**
+         * Get the view currently in use in the render target.
+         *
+         * Returns: The view object that is currently used
+         * See_Also: defaultView
+         */
+        View view() const
         {
-            View currentView;
-
-            Vector2f currentCenter, currentSize;
-            float currentRotation;
-            FloatRect currentViewport;
-
-            sfRenderWindow_getView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
-                                    &currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
-
-            currentView.center = currentCenter;
-            currentView.size = currentSize;
-            currentView.rotation = currentRotation;
-            currentView.viewport = currentViewport;
-
-            return currentView;
+            if (m_renderWindow is null)
+                return null;
+            return new View(cast(sfView*) sfRenderWindow_getView(m_renderWindow));
         }
     }
 
@@ -336,24 +336,14 @@ class RenderWindow : Window, RenderTarget
      * changes after the target has been created.
      *
      * Returns: The default view of the render target.
+     * See_Also: view
      */
-    View getDefaultView() const
+    @property
+    View defaultView() const
     {
-        View currentView;
-
-        Vector2f currentCenter, currentSize;
-        float currentRotation;
-        FloatRect currentViewport;
-
-        sfRenderWindow_getDefaultView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
-                                &currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
-
-        currentView.center = currentCenter;
-        currentView.size = currentSize;
-        currentView.rotation = currentRotation;
-        currentView.viewport = currentViewport;
-
-        return currentView;
+        if (m_renderWindow is null)
+            return null;
+        return new View(cast(sfView*) sfRenderWindow_getDefaultView(m_renderWindow));
     }
 
     /**
@@ -365,27 +355,12 @@ class RenderWindow : Window, RenderTarget
      *
      * Returns: Structure containing the OpenGL context settings
      */
-    override ContextSettings getSettings() const
+    @property
+    override ContextSettings settings() const
     {
-        ContextSettings temp;
-        sfRenderWindow_getSettings(sfPtr,&temp.depthBits, &temp.stencilBits, &temp.antialiasingLevel, &temp.majorVersion, &temp.minorVersion);
-        return temp;
-    }
-
-    //this is a duplicate with the size property. Need to look into that
-    //(Inherited from RenderTarget)
-    /**
-     * Return the size of the rendering region of the target.
-     *
-     * Returns: Size in pixels
-     */
-    Vector2u getSize() const
-    {
-        Vector2u temp;
-
-        sfRenderWindow_getSize(sfPtr, &temp.x, &temp.y);
-
-        return temp;
+        if (m_renderWindow is null)
+            return ContextSettings.init;
+        return sfRenderWindow_getSettings(m_renderWindow);
     }
 
     /**
@@ -399,13 +374,34 @@ class RenderWindow : Window, RenderTarget
      *
      * Returns: System handle of the window
      */
-    override WindowHandle getSystemHandle() const
+    @property
+    override WindowHandle systemHandle() const
     {
-        return sfRenderWindow_getSystemHandle(sfPtr);
+        if (m_renderWindow is null)
+            return WindowHandle.init;
+        return sfRenderWindow_getSystemHandle(m_renderWindow);
     }
 
     /**
      * Get the viewport of a view, applied to this render target.
+     *
+     * The viewport is defined in the view as a ratio, this function simply applies
+     * this ratio to the current dimensions of the render target to calculate the
+     * pixels rectangle that the viewport actually covers in the target.
+     *
+     * Params:
+     * view=The view for which we want to compute the viewport
+     */
+    @property
+    IntRect viewport(View theView) const
+    {
+        if (m_renderWindow is null)
+            return IntRect(0, 0, 0, 0);
+        return sfRenderWindow_getViewport(m_renderWindow, theView.ptr);
+    }
+
+    /**
+     * Activate or deactivate the window as the current target for OpenGL rendering.
      *
      * A window is active only on the current thread, if you want to make it
      * active on another thread you have to deactivate it on the previous thread
@@ -414,13 +410,16 @@ class RenderWindow : Window, RenderTarget
      * deactivated.
      *
      * Params:
-     * 		active	= true to activate, false to deactivate
+     *         active    = true to activate, false to deactivate
      *
      * Returns: true if operation was successful, false otherwise
      */
-    override bool setActive(bool active)
+    @property
+    override bool active(bool active = true)
     {
-        return sfRenderWindow_setActive(sfPtr, active);
+        if (m_renderWindow is null)
+            return false;
+        return sfRenderWindow_setActive(m_renderWindow, active);
     }
 
     /**
@@ -438,9 +437,11 @@ class RenderWindow : Window, RenderTarget
      * Params:
      * limit = Framerate limit, in frames per seconds (use 0 to disable limit)
      */
-    override void setFramerateLimit(uint limit)
+    @property
+    override void framerateLimit(uint limit)
     {
-        sfRenderWindow_setFramerateLimit(sfPtr, limit);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setFramerateLimit(m_renderWindow, limit);
     }
 
     /**
@@ -451,13 +452,15 @@ class RenderWindow : Window, RenderTarget
      * The OS default icon is used by default.
      *
      * Params:
-     * 		width	= Icon's width, in pixels
-     * 		height	= Icon's height, in pixels
-     * 		pixels	= Icon pixel array to load from
+     *         width    = Icon's width, in pixels
+     *         height    = Icon's height, in pixels
+     *         pixels    = Icon pixel array to load from
+     * See_Also: title
      */
     override void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
-        sfRenderWindow_setIcon(sfPtr,width, height, pixels.ptr);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setIcon(m_renderWindow, width, height, pixels.ptr);
     }
 
     /**
@@ -469,30 +472,13 @@ class RenderWindow : Window, RenderTarget
      * The threshold value is 0.1 by default.
      *
      * Params:
-     * 		threshold	= New threshold, in the range [0, 100]
+     *         threshold    = New threshold, in the range [0, 100]
      */
-    override void setJoystickThreshold(float threshold)
+    @property
+    override void joystickThreshold(float threshold)
     {
-        sfRenderWindow_setJoystickThreshold(sfPtr, threshold);
-    }
-
-     /**
-     * Change the joystick threshold.
-     *
-     * The joystick threshold is the value below which no JoystickMoved event
-     * will be generated.
-     *
-     * The threshold value is 0.1 by default.
-     *
-     * Params:
-     * 		threshhold	= New threshold, in the range [0, 100]
-	 *
-	 * Deprecated: Use set `setJoystickThreshold` instead.
-	 */
-	deprecated("Use setJoystickThreshold instead.")
-    override void setJoystickThreshhold(float threshhold)
-    {
-        sfRenderWindow_setJoystickThreshold(sfPtr, threshhold);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setJoystickThreshold(m_renderWindow, threshold);
     }
 
     /**
@@ -505,11 +491,13 @@ class RenderWindow : Window, RenderTarget
      * Key repeat is enabled by default.
      *
      * Params:
-     * 		enabled	= true to enable, false to disable
+     *         enabled    = true to enable, false to disable
      */
-    override void setKeyRepeatEnabled(bool enabled)
+    @property
+    override void keyRepeatEnabled(bool enabled)
     {
-        sfRenderWindow_setKeyRepeatEnabled(sfPtr,enabled);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setKeyRepeatEnabled(m_renderWindow, enabled);
     }
 
     /**
@@ -518,49 +506,27 @@ class RenderWindow : Window, RenderTarget
      * The mouse cursor is visible by default.
      *
      * Params:
-     * 		visible	= true show the mouse cursor, false to hide it
+     *         visible    = true show the mouse cursor, false to hide it
      */
-    override void setMouseCursorVisible(bool visible)
+    @property
+    override void mouseCursorVisible(bool visible)
     {
-        sfRenderWindow_setMouseCursorVisible(sfPtr, visible);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setMouseCursorVisible(m_renderWindow, visible);
     }
 
     //Cannot use templates here as template member functions cannot be virtual.
-
     /**
      * Change the title of the window
      *
      * Params:
-     * 		newTitle = New title
+     *         newTitle = New title
      */
-    override void setTitle(const(char)[] newTitle)
+    @property
+    override void title(const dstring newTitle)
     {
-        import std.utf: toUTF32;
-		auto convertedTitle = toUTF32(newTitle);
-        sfRenderWindow_setUnicodeTitle(sfPtr, convertedTitle.ptr, convertedTitle.length);
-    }
-    /**
-     * Change the title of the window
-     *
-     * Params:
-     * 		newTitle = New title
-     */
-    override void setTitle(const(wchar)[] newTitle)
-    {
-        import std.utf: toUTF32;
-		auto convertedTitle = toUTF32(newTitle);
-        sfRenderWindow_setUnicodeTitle(sfPtr, convertedTitle.ptr, convertedTitle.length);
-    }
-    /**
-     * Change the title of the window
-     *
-     * Params:
-     * 		newTitle = New title
-     */
-    override void setTitle(const(dchar)[] newTitle)
-    {
-    import dsfml.system.string;
-        sfRenderWindow_setUnicodeTitle(sfPtr, newTitle.ptr, newTitle.length);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setUnicodeTitle(m_renderWindow, representation(newTitle).ptr);
     }
 
     /**
@@ -574,11 +540,13 @@ class RenderWindow : Window, RenderTarget
      * Vertical synchronization is disabled by default.
      *
      * Params:
-     * 		enabled	= true to enable v-sync, false to deactivate it
+     *         enabled    = true to enable v-sync, false to deactivate it
      */
-    override void setVerticalSyncEnabled(bool enabled)
+    @property
+    override void verticalSyncEnabled(bool enabled)
     {
-        sfRenderWindow_setVerticalSyncEnabled(sfPtr, enabled);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setVerticalSyncEnabled(m_renderWindow, enabled);
     }
 
     /**
@@ -587,11 +555,13 @@ class RenderWindow : Window, RenderTarget
      * The window is shown by default.
      *
      * Params:
-     * 		visible	= true to show the window, false to hide it
+     *         visible    = true to show the window, false to hide it
      */
-    override void setVisible(bool visible)
+    @property
+    override void visible(bool visible_)
     {
-        sfRenderWindow_setVisible(sfPtr,visible);
+        if (m_renderWindow !is null)
+            sfRenderWindow_setVisible(m_renderWindow, visible_);
     }
 
     /**
@@ -601,11 +571,12 @@ class RenderWindow : Window, RenderTarget
      * contents of the target.
      *
      * Params:
-     * 		color	= Fill color to use to clear the render target
+     *         color    = Fill color to use to clear the render target
      */
     void clear(Color color = Color.Black)
     {
-        sfRenderWindow_clear(sfPtr, color.r,color.g, color.b, color.a);
+        if (m_renderWindow !is null)
+            sfRenderWindow_clear(m_renderWindow, color);
     }
 
     /**
@@ -618,45 +589,8 @@ class RenderWindow : Window, RenderTarget
      */
     override void close()
     {
-        sfRenderWindow_close(sfPtr);
-    }
-
-    //Cannot use templates here as template member functions cannot be virtual.
-
-    /**
-    * Create (or recreate) the window.
-    *
-    * If the window was already created, it closes it first. If style contains
-    * Window.Style.Fullscreen, then mode must be a valid video mode.
-    *
-    * The fourth parameter is an optional structure specifying advanced OpenGL
-    * context settings such as antialiasing, depth-buffer bits, etc.
-    *
-    * Params:
-    * mode     = Video mode to use (defines the width, height and depth of the
-    * rendering area of the window)
-    * title    = Title of the window
-    * style    = Window style, a bitwise OR combination of Style enumerators
-    * settings = Additional settings for the underlying OpenGL context
-    *
-	 * Deprecated: Use the version of create that takes a 'const(dchar)[]'.
-    */
-    deprecated("Use the version of create that takes a 'const(dchar)[]'.")
-    override void create(VideoMode mode, const(char)[] title, Style style = Style.DefaultStyle, ContextSettings settings = ContextSettings.init)
-    {
-        import std.utf: toUTF32;
-		auto convertedTitle = toUTF32(title);
-        sfRenderWindow_createFromSettings(sfPtr, mode.width, mode.height, mode.bitsPerPixel, convertedTitle.ptr, convertedTitle.length, style, settings.depthBits, settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
-
-    }
-
-    /// ditto
-    override void create(VideoMode mode, const(wchar)[] title, Style style = Style.DefaultStyle, ContextSettings settings = ContextSettings.init)
-    {
-        import std.utf: toUTF32;
-		auto convertedTitle = toUTF32(title);
-        sfRenderWindow_createFromSettings(sfPtr, mode.width, mode.height, mode.bitsPerPixel, convertedTitle.ptr, convertedTitle.length, style, settings.depthBits, settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
-
+        if (m_renderWindow !is null)
+            sfRenderWindow_close(m_renderWindow);
     }
 
     /**
@@ -675,28 +609,32 @@ class RenderWindow : Window, RenderTarget
      * style    = Window style, a bitwise OR combination of Style enumerators
      * settings = Additional settings for the underlying OpenGL context
      */
-    override void create(VideoMode mode, const(dchar)[] title, Style style = Style.DefaultStyle, ContextSettings settings = ContextSettings.init)
+    override void create(VideoMode mode, const dstring title, Style style = Style.DefaultStyle,
+        ContextSettings settings = ContextSettings.init)
     {
-        sfRenderWindow_createFromSettings(sfPtr, mode.width, mode.height, mode.bitsPerPixel, title.ptr, title.length, style, settings.depthBits, settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
+        m_renderWindow = sfRenderWindow_createUnicode(mode, representation(title).ptr, style, &settings);
+        onCreate();
     }
 
     /**
-    * Create (or recreate) the window from an existing control.
-    *
-    * Use this function if you want to create an OpenGL rendering area into an
-    * already existing control. If the window was already created, it closes it
-    * first.
-    *
-    * The second parameter is an optional structure specifying advanced OpenGL
-    * context settings such as antialiasing, depth-buffer bits, etc.
-    *
-    * Params:
-    * handle   = Platform-specific handle of the control
-    * settings = Additional settings for the underlying OpenGL context
-    */
+     * Create (or recreate) the window from an existing control.
+     *
+     * Use this function if you want to create an OpenGL rendering area into an
+     * already existing control. If the window was already created, it closes it
+     * first.
+     *
+     * The second parameter is an optional structure specifying advanced OpenGL
+     * context settings such as antialiasing, depth-buffer bits, etc.
+     *
+     * Params:
+     * handle   = Platform-specific handle of the control
+     * settings = Additional settings for the underlying OpenGL context
+     */
+    // TODO: Should settings be a ref ?
     override void create(WindowHandle handle, ContextSettings settings = ContextSettings.init)
     {
-        sfRenderWindow_createFromHandle(sfPtr, handle, settings.depthBits,settings.stencilBits, settings.antialiasingLevel, settings.majorVersion, settings.minorVersion);
+        m_renderWindow = sfRenderWindow_createFromHandle(handle, &settings);
+        onCreate();
     }
 
     /**
@@ -718,7 +656,9 @@ class RenderWindow : Window, RenderTarget
     deprecated("Use a Texture, its update function, and copy its contents into an Image instead.")
     Image capture()
     {
-        return new Image(sfRenderWindow_capture(sfPtr));
+        if (m_renderWindow is null)
+            return null;
+        return new Image(sfRenderWindow_capture(m_renderWindow));
     }
 
     /**
@@ -729,36 +669,98 @@ class RenderWindow : Window, RenderTarget
      */
     override void display()
     {
-        sfRenderWindow_display(sfPtr);
+        if (m_renderWindow !is null)
+            sfRenderWindow_display(m_renderWindow);
     }
 
     /**
      * Draw a drawable object to the render target.
      *
      * Params:
-     * 		drawable	= Object to draw
-     * 		states		= Render states to use for drawing
+     *         drawable    = Object to draw
+     *         states      = Render states to use for drawing
      */
-    void draw(Drawable drawable, RenderStates states = RenderStates.init)
+    void draw(Drawable drawable, ref RenderStates states)
     {
-        drawable.draw(this,states);
+        if (m_renderWindow is null)
+            return;
+        if (is(drawable == Sprite))
+        {
+            sfRenderWindow_drawSprite(m_renderWindow, (cast(Sprite) drawable).ptr, states.ptr);
+        }
+        else if (is(drawable == Text))
+        {
+            sfRenderWindow_drawText(m_renderWindow, (cast(Text) drawable).ptr, states.ptr);
+        }
+        else if (is(drawable == CircleShape))
+        {
+            sfRenderWindow_drawCircleShape(m_renderWindow, (cast(CircleShape) drawable).ptr, states.ptr);
+        }
+        else if (is(drawable == ConvexShape))
+        {
+            sfRenderWindow_drawConvexShape(m_renderWindow, (cast(ConvexShape) drawable).ptr, states.ptr);
+        }
+        else if (is(drawable == RectangleShape))
+        {
+            sfRenderWindow_drawRectangleShape(m_renderWindow, (cast(RectangleShape) drawable).ptr, states.ptr);
+        }
+        else if (is(drawable == Shape))
+        {
+            sfRenderWindow_drawShape(m_renderWindow, (cast(Shape) drawable).ptr, states.ptr);
+        }
+        else if (is(drawable == VertexArray))
+        {
+            sfRenderWindow_drawVertexArray(m_renderWindow, (cast(VertexArray) drawable).ptr, states.ptr);
+        }
+        else
+        {
+            err.writefln("Unable to draw %s because it is not implemented in DSFML.", drawable);
+        }
     }
 
     /**
      * Draw primitives defined by an array of vertices.
      *
      * Params:
-     * 		vertices	= Array of vertices to draw
-     * 		type		= Type of primitives to draw
-     * 		states		= Render states to use for drawing
+     *         vertices    = Array of vertices to draw
+     *         type        = Type of primitives to draw
+     *         states      = Render states to use for drawing
      */
-    void draw(const(Vertex)[] vertices, PrimitiveType type, RenderStates states = RenderStates.init)
+    void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
     {
-        import std.algorithm;
+        if (m_renderWindow !is null)
+            sfRenderWindow_drawPrimitives(m_renderWindow, vertices.ptr, vertices.length, type, states.ptr);
+    }
 
-        sfRenderWindow_drawPrimitives(sfPtr, vertices.ptr, cast(uint)min(uint.max, vertices.length), type,states.blendMode.colorSrcFactor, states.blendMode.alphaDstFactor,
-            states.blendMode.colorEquation, states.blendMode.alphaSrcFactor, states.blendMode.alphaDstFactor, states.blendMode.alphaEquation,
-            states.transform.m_matrix.ptr,states.texture?states.texture.sfPtr:null,states.shader?states.shader.sfPtr:null);
+    /**
+     * Draw primitives defined by a vertex buffer.
+     *
+     * Params:
+     *     vertexBuffer = Vertex buffer
+     *     states       = Render states to use for drawing
+     */
+    void draw(VertexBuffer vertexBuffer, ref RenderStates states)
+    {
+        if (m_renderWindow !is null)
+            sfRenderWindow_drawVertexBuffer(m_renderWindow, vertexBuffer.ptr, states.ptr);
+    }
+
+    /**
+     * Draw primitives defined by a vertex buffer.
+     *
+     * Params:
+     *     vertexBuffer = Vertex buffer
+     *     firstVertex  = Index of the first vertex to render
+     *     vertexCount  = Number of vertices to render
+     *     states       = Render states to use for drawing
+     */
+    // TODO: Not yet implemented in CSFML
+    @disable
+    void draw(VertexBuffer vertexBuffer, size_t firstVertex,
+              size_t vertexCount, ref RenderStates states)
+    {
+        if (m_renderWindow !is null)
+            sfRenderWindow_drawVertexBuffer(m_renderWindow, vertexBuffer.ptr, states.ptr);
     }
 
     /**
@@ -772,7 +774,9 @@ class RenderWindow : Window, RenderTarget
      */
     override bool isOpen() const
     {
-        return (sfRenderWindow_isOpen(sfPtr));
+        if (m_renderWindow is null)
+            return false;
+        return sfRenderWindow_isOpen(m_renderWindow);
     }
 
     /**
@@ -780,10 +784,13 @@ class RenderWindow : Window, RenderTarget
      *
      * See the description of pushGLStates to get a detailed description of
      * these functions.
+     *
+     * See_Also: pushGLStates
      */
     void popGLStates()
     {
-        sfRenderWindow_popGLStates(sfPtr);
+        if (m_renderWindow !is null)
+            sfRenderWindow_popGLStates(m_renderWindow);
     }
 
     /**
@@ -795,19 +802,29 @@ class RenderWindow : Window, RenderTarget
      * $(LI DSFML's internal states are not messed up by your OpenGL code)
      * $(LI your OpenGL states are not modified by a call to an SFML function))
      *
-     * $(PARA More specifically, it must be used around the code that calls
-     * `draw` functions.
-     *
+     * More specifically, it must be used around code that calls Draw functions.
+     * Example:
+     * ---
+     * // OpenGL code here...
+     * window.pushGLStates();
+     * window.draw(...);
+     * window.draw(...);
+     * window.popGLStates();
+     * // OpenGL code here...
+     * ---
      * Note that this function is quite expensive: it saves all the possible
-	 * OpenGL states and matrices, even the ones you don't care about.Therefore
-	 * it should be used wisely. It is provided for convenience, but the best
-	 * results will be achieved if you handle OpenGL states yourself (because
-	 * you know which states have really changed, and need to be saved and
-	 * restored). Take a look at the `resetGLStates` function if you do so.)
+     * OpenGL states and matrices, even the ones you don't care about.Therefore
+     * it should be used wisely. It is provided for convenience, but the best
+     * results will be achieved if you handle OpenGL states yourself (because
+     * you know which states have really changed, and need to be saved and
+     * restored). Take a look at the `resetGLStates` function if you do so.
+     *
+     * See_Also: popGLStates
      */
     void pushGLStates()
     {
-        sfRenderWindow_pushGLStates(sfPtr);
+        if (m_renderWindow !is null)
+            sfRenderWindow_pushGLStates(m_renderWindow);
     }
 
     /**
@@ -817,10 +834,22 @@ class RenderWindow : Window, RenderTarget
      * rendering, if you choose not to use `pushGLStates`/`popGLStates`. It
      * makes sure that all OpenGL states needed by DSFML are set, so that
      * subsequent `draw()` calls will work as expected.
+     *
+     * Example:
+     * ---
+     * // OpenGL code here...
+     * glPushAttrib(...);
+     * window.resetGLStates();
+     * window.draw(...);
+     * window.draw(...);
+     * glPopAttrib(...);
+     * // OpenGL code here...
+     * ---
      */
     void resetGLStates()
     {
-        sfRenderWindow_resetGLStates(sfPtr);
+        if (m_renderWindow !is null)
+            sfRenderWindow_resetGLStates(m_renderWindow);
     }
 
     /**
@@ -830,16 +859,25 @@ class RenderWindow : Window, RenderTarget
      * return false and leave event unmodified. Note that more than one event
      * may be present in the event queue, thus you should always call this
      * function in a loop to make sure that you process every pending event.
-     *
+     * ---
+     * Event event;
+     * while (window.pollEvent(event))
+     * {
+     *     // process event...
+     * }
+     * ---
      * Params:
-     * 		event	= Event to be returned
+     *         event    = Event to be returned
      *
      * Returns: true if an event was returned, or false if the event queue was
      * empty.
+     * See_Also: waitEvent
      */
     override bool pollEvent(ref Event event)
     {
-        return (sfRenderWindow_pollEvent(sfPtr, &event));
+        if (m_renderWindow is null)
+            return false;
+        return sfRenderWindow_pollEvent(m_renderWindow, &event);
     }
 
     /**
@@ -851,246 +889,334 @@ class RenderWindow : Window, RenderTarget
      * function is typically used when you have a thread that is dedicated to
      * events handling: you want to make this thread sleep as long as no new
      * event is received.
+     * ---
+     * Event event;
+     * if (window.waitEvent(event))
+     * {
+     *   // process event...
+     * }
+     * ---
      *
      * Params:
-     * 		event	= Event to be returned
+     *         event    = Event to be returned
      *
      * Returns: false if any error occurred.
+     * See_Also: pollEvent
      */
     override bool waitEvent(ref Event event)
     {
-        return (sfRenderWindow_waitEvent(sfPtr, &event));
+        if (m_renderWindow is null)
+            return false;
+        return sfRenderWindow_waitEvent(m_renderWindow, &event);
     }
 
-    //TODO: Consider adding these methods.
-    //void onCreate
-    //void onResize
-
-    override protected Vector2i getMousePosition()const
+    /**
+     * Check whether the window has the input focus.
+     *
+     * At any given time, only one window may have the input focus to receive input
+     * events such as keystrokes or most mouse events.
+     *
+     * Returns: True if window has focus, false otherwise
+     * See_Also: requestFocus
+     */
+    override bool hasFocus() const
     {
-        Vector2i temp;
-        sfMouse_getPositionRenderWindow(sfPtr, &temp.x, &temp.y);
-        return temp;
+        if (m_renderWindow is null)
+            return false;
+        return sfRenderWindow_hasFocus(m_renderWindow);
     }
 
-    //TODO: Fix these names or something.
-    override protected void setMousePosition(Vector2i pos) const
+    /**
+     * Request the current window to be made the active foreground window.
+     *
+     * At any given time, only one window may have the input focus to receive input
+     * events such as keystrokes or mouse events. If a window requests focus, it
+     * only hints to the operating system, that it would like to be focused. The
+     * operating system is free to deny the request. This is not to be confused with
+     * setActive().
+     *
+     * See_Also: hasFocus
+     */
+    override void requestFocus()
     {
-        sfMouse_setPositionRenderWindow(pos.x, pos.y, sfPtr);
+        if (m_renderWindow !is null)
+            sfRenderWindow_requestFocus(m_renderWindow);
     }
 
-    //let's Texture have a way to get the sfPtr of a regular window.
-    package static void* windowPointer(const(Window) window)
+    /**
+     * Convert a point from world coordinates to target coordinates, using the
+     * current view.
+     *
+     * This function is an overload of the mapCoordsToPixel function that implicitly
+     * uses the current view. It is equivalent to:
+     * ---
+     * target.mapCoordsToPixel(point, target.view);
+     * ---
+     *
+     * Params:
+     * point=Point to convert
+     *
+     * Returns: The converted point, in target coordinates (pixels)
+     * See_Also: mapPixelToCoords
+     */
+    Vector2i mapCoordsToPixel(Vector2f point) inout
     {
-        return getWindowPointer(window);
+        if (m_renderWindow is null)
+            return Vector2i(0, 0);
+        return sfRenderWindow_mapCoordsToPixel(m_renderWindow, point, null);
     }
+
+    /**
+     * Convert a point from world coordinates to target coordinates.
+     *
+     * This function finds the pixel of the render target that matches the given 2D
+     * point. In other words, it goes through the same process as the graphics card,
+     * to compute the final position of a rendered point.
+     *
+     * Initially, both coordinate systems (world units and target pixels) match
+     * perfectly. But if you define a custom view or resize your render target, this
+     * assertion is not true anymore, i.e. a point located at (150, 75) in your 2D
+     * world may map to the pixel (10, 50) of your render target – if the view is
+     * translated by (140, 25).
+     *
+     * This version uses a custom view for calculations, see the other overload of the
+     * function if you want to use the current view of the render target.
+     *
+     * Params:
+     * point=Point to convert
+     * view=The view to use for converting the point
+     *
+     * Returns: The converted point, in target coordinates (pixels)
+     * See_Also: mapPixelToCoords
+     */
+    Vector2i mapCoordsToPixel(Vector2f point, View view) inout
+    {
+        if (m_renderWindow is null)
+            return Vector2i(0, 0);
+        return sfRenderWindow_mapCoordsToPixel(m_renderWindow, point, view.ptr);
+    }
+
+    /**
+     * Convert a point from target coordinates to world coordinates, using the
+     * current view.
+     *
+     * This function is an overload of the mapPixelToCoords function that
+     * implicitly uses the current view. It is equivalent to:
+     * ---
+     * target.mapPixelToCoords(point, target.view);
+     * ---
+     *
+     * Params:
+     * point=Pixel to convert
+     *
+     * Returns: The converted point, in "world" coordinates
+     * See_Also: mapCoordsToPixel
+     */
+    Vector2f mapPixelToCoords(Vector2i point) inout
+    {
+        if (m_renderWindow is null)
+            return Vector2f(0, 0);
+        return sfRenderWindow_mapPixelToCoords(m_renderWindow, point, null);
+    }
+
+    /**
+     * Convert a point from target coordinates to world coordinates.
+     *
+     * This function finds the 2D position that matches the given pixel of the
+     * render target. In other words, it does the inverse of what the graphics card
+     * does, to find the initial position of a rendered pixel.
+     *
+     * Initially, both coordinate systems (world units and target pixels) match
+     * perfectly. But if you define a custom view or resize your render target, this
+     * assertion is not true anymore, i.e. a point located at (10, 50) in your
+     * render target may map to the point (150, 75) in your 2D world – if the view
+     * is translated by (140, 25).
+     *
+     * For render-windows, this function is typically used to find which point (or
+     * object) is located below the mouse cursor.
+     *
+     * This version uses a custom view for calculations, see the other overload of
+     * the function if you want to use the current view of the render target.
+     *
+     * Params:
+     * point=Pixel to convert
+     * view=The view to use for converting the point
+     *
+     * Returns: The converted point, in "world" units
+     * See_Also: mapCoordsToPixel
+     */
+    Vector2f mapPixelToCoords(Vector2i point, View theView) inout
+    {
+        if (m_renderWindow is null)
+            return Vector2f(0, 0);
+        return sfRenderWindow_mapPixelToCoords(m_renderWindow, point, theView.ptr);
+    }
+
+    /**
+     * Function called after the window has been created.
+     *
+     * This function is called so that derived classes can perform their own
+     * specific initialization as soon as the window is created.
+     */
+    alias onCreate = Window.onCreate;
+    //override protected void onCreate() {}
+
+    /**
+     * Function called after the window has been resized.
+     *
+     * This function is called so that derived classes can perform custom actions
+     * when the size of the window changes.
+     */
+    alias onResize = Window.onResize;
+    //override protected void onResize() {}
+
+    /**
+     * Set the displayed cursor to a native system cursor.
+     *
+     * Upon window creation, the arrow cursor is used by default.
+     *
+     * Warning:
+     * The cursor must not be destroyed while in use by the window.
+     * Features related to Cursor are not supported on iOS and Android.
+     *
+     * Params:
+     *         cursor    =    Native system cursor type to display
+     * See_Also: Cursor.loadFromSystem, Cursor.loadFromPixels
+     */
+    @property
+    override void mouseCursor(Cursor cursor)
+    {
+        if (m_renderWindow !is null)
+            sfRenderWindow_setMouseCursor(m_renderWindow, cursor.ptr);
+    }
+
+    /**
+     * Grab or release the mouse cursor.
+     *
+     * If set, grabs the mouse cursor inside this window's client area so it may no
+     * longer be moved outside its bounds. Note that grabbing is only active while
+     * the window has focus.
+     *
+     * Params:
+     *         grabbed    =    True to enable, false to disable
+     */
+    @property
+    override void mouseCursorGrabbeb(bool grabbed)
+    {
+        if (m_renderWindow !is null)
+            sfRenderWindow_setMouseCursorGrabbed(m_renderWindow, grabbed);
+    }
+
+    // Returns the C pointer
+    package(dsfml) sfRenderWindow* ptr()
+    {
+        return m_renderWindow;
+    }
+}
+
+package(dsfml) extern(C)
+{
+    struct sfRenderWindow;
+}
+
+private extern(C)
+{
+    sfRenderWindow* sfRenderWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);
+    sfRenderWindow* sfRenderWindow_createUnicode(VideoMode mode, const uint* title, uint style, const ContextSettings* settings);
+    sfRenderWindow* sfRenderWindow_createFromHandle(WindowHandle handle, const ContextSettings* settings);
+    void sfRenderWindow_destroy(sfRenderWindow* renderWindow);
+    void sfRenderWindow_close(sfRenderWindow* renderWindow);
+    bool sfRenderWindow_isOpen(const sfRenderWindow* renderWindow);
+    ContextSettings sfRenderWindow_getSettings(const sfRenderWindow* renderWindow);
+    bool sfRenderWindow_pollEvent(sfRenderWindow* renderWindow, Event* event);
+    bool sfRenderWindow_waitEvent(sfRenderWindow* renderWindow, Event* event);
+    Vector2i sfRenderWindow_getPosition(const sfRenderWindow* renderWindow);
+    void sfRenderWindow_setPosition(sfRenderWindow* renderWindow, Vector2i position);
+    Vector2u sfRenderWindow_getSize(const sfRenderWindow* renderWindow);
+    void sfRenderWindow_setSize(sfRenderWindow* renderWindow, Vector2u size);
+    void sfRenderWindow_setTitle(sfRenderWindow* renderWindow, const char* title);
+    void sfRenderWindow_setUnicodeTitle(sfRenderWindow* renderWindow, const uint* title);
+    void sfRenderWindow_setIcon(sfRenderWindow* renderWindow, uint width, uint height, const ubyte* pixels);
+    void sfRenderWindow_setVisible(sfRenderWindow* renderWindow, bool visible);
+    void sfRenderWindow_setVerticalSyncEnabled(sfRenderWindow* renderWindow, bool enabled);
+    void sfRenderWindow_setMouseCursorVisible(sfRenderWindow* renderWindow, bool show);
+    void sfRenderWindow_setMouseCursorGrabbed(sfRenderWindow* renderWindow, bool grabbed);
+    void sfRenderWindow_setMouseCursor(sfRenderWindow* window, const(sfCursor)* cursor);
+    void sfRenderWindow_setKeyRepeatEnabled(sfRenderWindow* renderWindow, bool enabled);
+    void sfRenderWindow_setFramerateLimit(sfRenderWindow* renderWindow, uint limit);
+    void sfRenderWindow_setJoystickThreshold(sfRenderWindow* renderWindow, float threshold);
+    bool sfRenderWindow_setActive(sfRenderWindow* renderWindow, bool active);
+    void sfRenderWindow_requestFocus(sfRenderWindow* renderWindow);
+    bool sfRenderWindow_hasFocus(const sfRenderWindow* renderWindow);
+    void sfRenderWindow_display(sfRenderWindow* renderWindow);
+    WindowHandle sfRenderWindow_getSystemHandle(const sfRenderWindow* renderWindow);
+    void sfRenderWindow_clear(sfRenderWindow* renderWindow, Color color);
+    void sfRenderWindow_setView(sfRenderWindow* renderWindow, const sfView* view);
+    const(sfView)* sfRenderWindow_getView(const sfRenderWindow* renderWindow);
+    const(sfView)* sfRenderWindow_getDefaultView(const sfRenderWindow* renderWindow);
+    IntRect sfRenderWindow_getViewport(const sfRenderWindow* renderWindow, const sfView* view);
+    Vector2f sfRenderWindow_mapPixelToCoords(const sfRenderWindow* renderWindow, Vector2i point, const sfView* view);
+    Vector2i sfRenderWindow_mapCoordsToPixel(const sfRenderWindow* renderWindow, Vector2f point, const sfView* view);
+
+    void sfRenderWindow_drawSprite(sfRenderWindow* renderWindow, const sfSprite* object, const sfRenderStates* states);
+    void sfRenderWindow_drawText(sfRenderWindow* renderWindow, const sfText* object, const sfRenderStates* states);
+    void sfRenderWindow_drawShape(sfRenderWindow* renderWindow, const sfShape* object, const sfRenderStates* states);
+    void sfRenderWindow_drawCircleShape(sfRenderWindow* renderWindow, const sfCircleShape* object,
+        const sfRenderStates* states);
+    void sfRenderWindow_drawConvexShape(sfRenderWindow* renderWindow, const sfConvexShape* object,
+        const sfRenderStates* states);
+    void sfRenderWindow_drawRectangleShape(sfRenderWindow* renderWindow, const sfRectangleShape* object,
+        const sfRenderStates* states);
+    void sfRenderWindow_drawVertexArray(sfRenderWindow* renderWindow, const sfVertexArray* object,
+        const sfRenderStates* states);
+    void sfRenderWindow_drawVertexBuffer(sfRenderWindow* renderWindow, const sfVertexBuffer* object,
+        const sfRenderStates* states);
+    void sfRenderWindow_drawPrimitives(sfRenderWindow* renderWindow, const Vertex* vertices,
+        size_t vertexCount, PrimitiveType type, const sfRenderStates* states);
+
+    void sfRenderWindow_pushGLStates(sfRenderWindow* renderWindow);
+    void sfRenderWindow_popGLStates(sfRenderWindow* renderWindow);
+    void sfRenderWindow_resetGLStates(sfRenderWindow* renderWindow);
+
+    // Deprecated :
+
+    sfImage* sfRenderWindow_capture(const sfRenderWindow* renderWindow);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
+    version (DSFML_Unittest_with_interaction)
     {
         import std.stdio;
-        import dsfml.graphics.image;
-        import dsfml.system.clock;
-        import dsfml.graphics.sprite;
+        import dsfml.window.keyboard;
+        writeln("Running RenderWindow unittest...");
 
-        writeln("Unit test for RenderWindow");
+        auto window = new RenderWindow(VideoMode(200, 300), "DSFML test");
 
-        //constructor
-        auto window = new RenderWindow(VideoMode(800,600),"Test Window");
-
-        //perform each window call
-        Vector2u windowSize = window.size;
-
-        windowSize.x = 1000;
-        windowSize.y = 1000;
-
-        window.size = windowSize;
-
-        Vector2i windowPosition = window.position;
-
-        windowPosition.x = 100;
-        windowPosition.y = 100;
-
-        window.position = windowPosition;
-
-        window.setTitle("thing");//uses the first set title
-
-        window.setTitle("素晴らしい ！"d);//forces the dstring override and uses utf-32
-
-        window.setActive(true);
-
-        window.setJoystickThreshhold(1);
-
-        window.setVisible(true);
-
-        window.setFramerateLimit(60);
-
-        window.setMouseCursorVisible(true);
-
-        window.setVerticalSyncEnabled(true);
-
-        auto settings = window.getSettings();
-
-        auto image = new Image();
-        image.loadFromFile("res/TestImage.png");
-
-        window.setIcon(image.getSize().x,image.getSize().x,image.getPixelArray());
-
-        auto texture = new Texture();
-
-        texture.loadFromImage(image);
-
-        auto sprite = new Sprite(texture);
-
-        auto clock = new Clock();
-
-        while(window.isOpen())
+        while (window.isOpen())
         {
             Event event;
-            if(window.pollEvent(event))
+            while (window.pollEvent(event))
             {
-                //no events
+
+                if (event.type == Event.Closed)
+                {
+                    window.close();
+                }
+                else if (event.type == Event.KeyPressed)
+                {
+                    if (event.key.code == Keyboard.Escape)
+                    {
+                        writeln("\tWindow closed !");
+                        window.close();
+                    }
+                    writeln("\t", event.key.code);
+                }
+                else
+                {
+                    writeln("\t", event.type);
+                }
             }
-
-            if(clock.getElapsedTime().asSeconds() > 1)
-            {
-                window.close();
-            }
-
-            window.clear();
-
-            window.draw(sprite);
-
-            window.display();
         }
-
-        writeln();
     }
 }
-
-package extern(C) struct sfRenderWindow;
-
-private extern(C):
-
-//Construct a new render window
-sfRenderWindow* sfRenderWindow_construct();
-
-//Construct a new render window from settings
-sfRenderWindow* sfRenderWindow_constructFromSettings(uint width, uint height, uint bitsPerPixel, const(dchar)* title, size_t titleLength, int style, uint depthBits, uint stencilBits, uint antialiasingLevel, uint majorVersion, uint minorVersion);
-
-//Construct a render window from an existing control
-sfRenderWindow* sfRenderWindow_constructFromHandle(WindowHandle handle, uint depthBits, uint stencilBits, uint antialiasingLevel, uint majorVersion, uint minorVersion);
-
-//Create(or recreate) a new render window from settings
-void sfRenderWindow_createFromSettings(sfRenderWindow* renderWindow, uint width, uint height, uint bitsPerPixel, const(dchar)* title, size_t titleLength, int style, uint depthBits, uint stencilBits, uint antialiasingLevel, uint majorVersion, uint minorVersion);
-
-//Create(or recreate) a render window from an existing control
-void sfRenderWindow_createFromHandle(sfRenderWindow* renderWindow, WindowHandle handle, uint depthBits, uint stencilBits, uint antialiasingLevel, uint majorVersion, uint minorVersion);
-
-//Destroy an existing render window
-void sfRenderWindow_destroy(sfRenderWindow* renderWindow);
-
-//Close a render window (but doesn't destroy the internal data)
-void sfRenderWindow_close(sfRenderWindow* renderWindow);
-
-//Tell whether or not a render window is opened
-bool sfRenderWindow_isOpen(const sfRenderWindow* renderWindow);
-
-//Get the creation settings of a render window
-void sfRenderWindow_getSettings(const sfRenderWindow* renderWindow, uint* depthBits, uint* stencilBits, uint* antialiasingLevel, uint* majorVersion, uint* minorVersion);
-
-//Get the event on top of event queue of a render window, if any, and pop it
-bool sfRenderWindow_pollEvent(sfRenderWindow* renderWindow, Event* event);
-
-//Wait for an event and return it
-bool sfRenderWindow_waitEvent(sfRenderWindow* renderWindow, Event* event);
-
-//Get the position of a render window
-void sfRenderWindow_getPosition(const sfRenderWindow* renderWindow, int* x, int* y);
-
-//Change the position of a render window on screen
-void sfRenderWindow_setPosition(sfRenderWindow* renderWindow, int x, int y);
-
-//Get the size of the rendering region of a render window
-void sfRenderWindow_getSize(const sfRenderWindow* renderWindow, uint* width, uint* height);
-
-//Change the size of the rendering region of a render window
-void sfRenderWindow_setSize(sfRenderWindow* renderWindow, int width, int height);
-
-//Change the title of a render window
-void sfRenderWindow_setTitle(sfRenderWindow* renderWindow, const(char)* title, size_t titleLength);
-
-//Change the title of a render window (with a UTF-32 string)
-void sfRenderWindow_setUnicodeTitle(sfRenderWindow* renderWindow, const(dchar)* title, size_t titleLength);
-
-//Change a render window's icon
-void sfRenderWindow_setIcon(sfRenderWindow* renderWindow, uint width, uint height, const ubyte* pixels);
-
-//Show or hide a render window
-void sfRenderWindow_setVisible(sfRenderWindow* renderWindow, bool visible);
-
-//Show or hide the mouse cursor on a render window
-void sfRenderWindow_setMouseCursorVisible(sfRenderWindow* renderWindow, bool show);
-
-//Enable / disable vertical synchronization on a render window
-void sfRenderWindow_setVerticalSyncEnabled(sfRenderWindow* renderWindow, bool enabled);
-
-//Enable or disable automatic key-repeat for keydown events
-void sfRenderWindow_setKeyRepeatEnabled(sfRenderWindow* renderWindow, bool enabled);
-
-//Activate or deactivate a render window as the current target for rendering
-bool sfRenderWindow_setActive(sfRenderWindow* renderWindow, bool active);
-
-//Display a render window on screen
-void sfRenderWindow_display(sfRenderWindow* renderWindow);
-
-//Limit the framerate to a maximum fixed frequency for a render window
-void sfRenderWindow_setFramerateLimit(sfRenderWindow* renderWindow, uint limit);
-
-//Change the joystick threshold, ie. the value below which no move event will be generated
-void sfRenderWindow_setJoystickThreshold(sfRenderWindow* renderWindow, float threshold);
-
-//Retrieve the OS-specific handle of a render window
-WindowHandle sfRenderWindow_getSystemHandle(const sfRenderWindow* renderWindow);
-
-//Clear a render window with the given color
-void sfRenderWindow_clear(sfRenderWindow* renderWindow, ubyte r, ubyte g, ubyte b, ubyte a);
-
-//Change the current active view of a render window
-void sfRenderWindow_setView(sfRenderWindow* renderWindow, float centerX, float centerY, float sizeX,
-                                                float sizeY, float rotation, float viewportLeft, float viewportTop, float viewportWidth,
-                                                float viewportHeight);
-
-//Get the current active view of a render window
-void sfRenderWindow_getView(const sfRenderWindow* renderWindow, float* centerX, float* centerY, float* sizeX,
-                                                float* sizeY, float* rotation, float* viewportLeft, float* viewportTop, float* viewportWidth,
-                                                float* viewportHeight);
-
-//Get the default view of a render window
-void sfRenderWindow_getDefaultView(const sfRenderWindow* renderWindow, float* centerX, float* centerY, float* sizeX,
-                                                float* sizeY, float* rotation, float* viewportLeft, float* viewportTop, float* viewportWidth,
-                                                float* viewportHeight);
-
-//Draw primitives defined by an array of vertices to a render window
-void sfRenderWindow_drawPrimitives(sfRenderWindow* renderWindow,const (void)* vertices, uint vertexCount, int type, int colorSrcFactor, int colorDstFactor, int colorEquation,
-    int alphaSrcFactor, int alphaDstFactor, int alphaEquation, const (float)* transform, const (sfTexture)* texture, const (sfShader)* shader);
-
-//Save the current OpenGL render states and matrices
-void sfRenderWindow_pushGLStates(sfRenderWindow* renderWindow);
-
-//Restore the previously saved OpenGL render states and matrices
-void sfRenderWindow_popGLStates(sfRenderWindow* renderWindow);
-
-//Reset the internal OpenGL states so that the target is ready for drawing
-void sfRenderWindow_resetGLStates(sfRenderWindow* renderWindow);
-
-//Copy the current contents of a render window to an image
-sfImage* sfRenderWindow_capture(const sfRenderWindow* renderWindow);
-
-//Get the current position of the mouse relatively to a render-window
-void sfMouse_getPositionRenderWindow(const sfRenderWindow* relativeTo, int* x, int* y);
-
-//Set the current position of the mouse relatively to a render-window
-void sfMouse_setPositionRenderWindow(int x, int y, const sfRenderWindow* relativeTo);

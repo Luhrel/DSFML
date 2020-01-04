@@ -24,7 +24,6 @@
  *
  * DSFML is based on SFML (Copyright Laurent Gomila)
  */
-
 /**
  *
  * $(U SoundSource) is not meant to be used directly, it only serves as a common
@@ -41,82 +40,110 @@ module dsfml.audio.soundsource;
 
 import dsfml.system.vector3;
 
+/// Enumeration of the sound source states.
+enum Status
+{
+    /// Sound is not playing.
+    Stopped,
+    /// Sound is paused.
+    Paused,
+    /// Sound is playing.
+    Playing
+}
+
 /**
  * Interface defining a sound's properties.
  */
 interface SoundSource
 {
-    /// Enumeration of the sound source states.
-    enum Status
-    {
-        /// Sound is not playing.
-        Stopped,
-        /// Sound is paused.
-        Paused,
-        /// Sound is playing.
-        Playing
-    }
 
     @property
     {
         /**
-         * The pitch of the sound.
+         * Set the pitch of the sound.
          *
          * The pitch represents the perceived fundamental frequency of a sound; thus
          * you can make a sound more acute or grave by changing its pitch. A side
          * effect of changing the pitch is to modify the playing speed of the sound
          * as well. The default value for the pitch is 1.
+         *
+         * Params:
+         * pitch = New pitch to apply to the sound
          */
-        void pitch(float newPitch);
+        abstract void pitch(float newPitch);
 
-        /// ditto
-        float pitch();
+        /**
+         * Get the pitch of the sound.
+         *
+         * Returns: Pitch of the sound
+         */
+        abstract float pitch();
     }
 
     @property
     {
         /**
-         * The volume of the sound.
+         * Set the volume of the sound.
          *
          * The volume is a vlue between 0 (mute) and 100 (full volume). The default
          * value for the volume is 100.
+         *
+         * Params:
+         * volume = Volume of the sound
          */
-        void volume(float newVolume);
+        abstract void volume(float newVolume);
 
-        /// ditto
-        float volume();
+        /**
+         * Get the volume of the sound.
+         *
+         * Returns: Volume of the sound, in the range [0, 100]
+         */
+        abstract float volume();
     }
 
     @property
     {
         /**
-         * The 3D position of the sound in the audio scene.
+         * Set the 3D position of the sound in the audio scene.
          *
          * Only sounds with one channel (mono sounds) can be spatialized. The
          * default position of a sound is (0, 0, 0).
+         *
+         * Params:
+         * position = Position of the sound in the scene
          */
-        void position(Vector3f newPosition);
+        abstract void position(Vector3f newPosition);
 
-        /// ditto
-        Vector3f position();
+        /**
+         * Get the 3D position of the sound in the audio scene.
+         *
+         * Returns: Position of the sound
+         */
+        abstract Vector3f position();
     }
 
     @property
     {
         /**
-         * Make the sound's position relative to the listener (true) or absolute
-         * (false).
+         * Make the sound's position relative to the listener or absolute.
          *
          * Making a sound relative to the listener will ensure that it will always
          * be played the same way regardless the position of the listener.  This can
          * be useful for non-spatialized sounds, sounds that are produced by the
          * listener, or sounds attached to it. The default value is false (position
          * is absolute).
+         *
+         * Params:
+         * relative = True to set the position relative, false to set it absolute
          */
-        void relativeToListener(bool relative);
+        abstract void relativeToListener(bool relative);
 
-        /// ditto
-        bool relativeToListener();
+        /**
+         * Tell whether the sound's position is relative to the listener or is absolute.
+         *
+         * Returns: True if the position is relative, false if it's absolute.
+         */
+        abstract bool relativeToListener();
     }
 
     @property
@@ -129,11 +156,20 @@ interface SoundSource
          * start to fade out according to its attenuation factor. A value of 0
          * ("inside the head of the listener") is an invalid value and is forbidden.
          * The default value of the minimum distance is 1.
+         *
+         * Params:
+         * distance = New minimum distance of the sound
+         *
+         * See_Also: attenuation
          */
-        void minDistance(float distance);
+        abstract void minDistance(float distance);
 
-        /// ditto
-        float minDistance();
+        /**
+         * Get the minimum distance of the sound.
+         *
+         * Returns: Minimum distance of the sound
+         */
+        abstract float minDistance();
     }
 
     @property
@@ -149,10 +185,69 @@ interface SoundSource
          * On the other hand, an attenuation value such as 100 will make the sound
          * fade out very quickly as it gets further from the listener. The default
          * value of the attenuation is 1.
+         *
+         * Params:
+         * attenuation = New attenuation factor of the sound
+         *
+         * See_Also: minDistance
          */
-        void attenuation(float newAttenuation);
+        abstract void attenuation(float newAttenuation);
 
-        /// ditto
-        float attenuation();
+        /**
+         * Get the attenuation factor of the sound.
+         *
+         * Returns: Attenuation factor of the sound
+         * See_Also: minDistance
+         */
+        abstract float attenuation();
     }
+
+    @property
+    {
+        /**
+         * Get the current status of the sound (stopped, paused, playing)
+         *
+         * Returns: Current status of the sound
+         *
+         * Reimplemented in Sound, and SoundStream.
+         */
+        abstract Status status();
+    }
+
+    /**
+     * Start or resume playing the sound source.
+     *
+     * This function starts the source if it was stopped, resumes it if it was
+     * paused, and restarts it from the beginning if it was already playing.
+     *
+     * See_Also: pause, stop
+     *
+     * Implemented in Sound, and SoundStream.
+     */
+    abstract void play();
+
+    /**
+     * Pause the sound source.
+     *
+     * This function pauses the source if it was playing, otherwise (source already
+     * paused or stopped) it has no effect.
+     *
+     * See_Also: play, stop
+     *
+     * Implemented in Sound, and SoundStream.
+     */
+    abstract void pause();
+
+    /**
+     * Stop playing the sound source.
+     *
+     * This function stops the source if it was playing or paused, and does nothing
+     * if it was already stopped. It also resets the playing position (unlike
+     * pause()).
+     *
+     * See_Also: play, pause
+     *
+     * Implemented in Sound, and SoundStream.
+     */
+    abstract void stop();
 }

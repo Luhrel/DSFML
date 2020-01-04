@@ -83,46 +83,12 @@ module dsfml.window.joystick;
  */
 final abstract class Joystick
 {
-    /// Structure holding a joystick's identification
     struct Identification
     {
-        private static dstring[immutable(uint)[2]] nameCache;
-
-        /// Index of the joystick.
-        uint index;
-
         /// Name of the joystick.
-        @property dstring name() const
-        {
-            //In theory, each vid:pid combination should only have one name associated with it.
-            //slightly arcane syntax to make older GDC happy.
-            uint[2] tempkey;
-            tempkey[0] = vendorId;
-            tempkey[1] = productId;
-            immutable(uint)[2] key = tempkey;
-
-            dstring* cachedName = (key in nameCache);
-            if (cachedName !is null) {
-                return *cachedName;
-            } else {
-                import std.exception;
-
-                dchar[] retrievedName;
-                dstring retval;
-
-                retrievedName.length = sfJoystick_getIdentificationNameLength(index);
-
-                sfJoystick_getIdentificationName(index, retrievedName.ptr);
-
-                nameCache[key] = retval = assumeUnique(retrievedName);
-
-                return retval;
-            }
-        }
-
+        const string name;
         /// Manufacturer identifier.
         uint vendorId;
-
         /// Product identifier.
         uint productId;
     }
@@ -165,7 +131,7 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns 0.
      *
      * Params:
-     * 		joystick = Index of the joystick
+     *         joystick = Index of the joystick
      *
      * Returns: Number of buttons supported by the joystick.
      */
@@ -180,8 +146,8 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns 0.
      *
      * Params:
-     * 		joystick = 	Index of the joystick
-     * 		axis     = Axis to check
+     *         joystick =     Index of the joystick
+     *         axis     = Axis to check
      *
      * Returns: Current position of the axis, in range [-100 .. 100].
      */
@@ -194,16 +160,15 @@ final abstract class Joystick
      * Get the joystick information
      *
      * Params:
-     * 		joystick = Index of the joystick
+     *         joystick = Index of the joystick
      *
      * Returns: Structure containing the joystick information.
      */
-    static Identification getIdentification(uint joystick) {
-        Identification identification;
-
-        sfJoystick_getIdentification(joystick, &identification.vendorId, &identification.productId);
-
-        return identification;
+    static Identification getIdentification(uint joystick)
+    {
+        if (isConnected(joystick))
+            return sfJoystick_getIdentification(joystick);
+        return Identification("No Joystick", 0, 0);
     }
 
     /**
@@ -212,8 +177,8 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns false.
      *
      * Params:
-     * 		joystick = 	Index of the joystick
-     * 		axis = Axis to check
+     *         joystick =     Index of the joystick
+     *         axis = Axis to check
      *
      * Returns: true if the joystick supports the axis, false otherwise.
      */
@@ -228,8 +193,8 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns false.
      *
      * Params:
-     * 		joystick = 	Index of the joystick
-     * 		button = Button to check
+     *         joystick =     Index of the joystick
+     *         button = Button to check
      *
      * Returns: true if the button is pressed, false otherwise.
      */
@@ -242,7 +207,7 @@ final abstract class Joystick
      * Check if a joystick is connected.
      *
      * Params:
-     * 		joystick = 	Index of the joystick
+     *         joystick =     Index of the joystick
      *
      * Returns: true if the joystick is connected, false otherwise.
      */
@@ -264,84 +229,24 @@ final abstract class Joystick
     {
         sfJoystick_update();
     }
-
 }
 
+private extern(C)
+{
+    bool sfJoystick_isConnected(uint joystick);
+    uint sfJoystick_getButtonCount(uint joystick);
+    bool sfJoystick_hasAxis(uint joystick, Joystick.Axis axis);
+    bool sfJoystick_isButtonPressed(uint joystick, uint button);
+    float sfJoystick_getAxisPosition(uint joystick, Joystick.Axis axis);
+    Joystick.Identification sfJoystick_getIdentification(uint joystick);
+    void sfJoystick_update();
+}
+/*
 unittest
 {
-    version(DSFML_Unittest_Window)
-    {
-        import std.stdio;
+    import std.stdio;
 
-        Joystick.update();
-
-        bool[] joysticks = [false,false,false,false,false,false,false,false];
-
-        for(uint i; i < Joystick.JoystickCount; ++i)
-        {
-            if(Joystick.isConnected(i))
-            {
-                auto id = Joystick.getIdentification(i);
-                joysticks[i] = true;
-                writeln("Joystick number ",i," is connected!");
-                writefln("Type: %s, ID: %x:%x", id.name, id.vendorId, id.productId);
-            }
-        }
-
-        foreach(uint i,bool joystick;joysticks)
-        {
-            if(joystick)
-            {
-                //Check buttons
-                uint buttonCounts = Joystick.getButtonCount(i);
-
-                for(uint j = 0; j<buttonCounts; ++j)
-                {
-                    if(Joystick.isButtonPressed(i,j))
-                    {
-                        writeln("Button ", j, " was pressed on joystick ", i);
-                    }
-                }
-
-                //check axis
-                for(int j = 0; j<Joystick.JoystickAxisCount;++j)
-                {
-                    Joystick.Axis axis = cast(Joystick.Axis)j;
-
-                    if(Joystick.hasAxis(i,axis))
-                    {
-                        writeln("Axis ", axis, " has a position of ", Joystick.getAxisPosition(i,axis), "for joystick", i);
-                    }
-                }
-            }
-        }
-    }
+    writeln("joystick.d");
+    writeln(Joystick.getIdentification(1).name);
 }
-
-private extern(C):
-//Check if a joystick is connected
-bool sfJoystick_isConnected(uint joystick);
-
-//Return the number of buttons supported by a joystick
-uint sfJoystick_getButtonCount(uint joystick);
-
-//Return the length of the joystick identification structure's name
-size_t sfJoystick_getIdentificationNameLength(uint joystick);
-
-//Write the name of the joystick into a D-allocated string buffer.
-void sfJoystick_getIdentificationName (uint joystick, dchar* nameBuffer);
-
-//Return the identification structure for a joystick
-void sfJoystick_getIdentification(uint joystick, uint* vendorID, uint* productId);
-
-//Check if a joystick supports a given axis
-bool sfJoystick_hasAxis(uint joystick, int axis);
-
-//Check if a joystick button is pressed
-bool sfJoystick_isButtonPressed(uint joystick, uint button);
-
-//Get the current position of a joystick axis
-float sfJoystick_getAxisPosition(uint joystick, int axis);
-
-//Update the states of all joysticks
-void sfJoystick_update();
+*/

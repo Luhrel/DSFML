@@ -58,9 +58,12 @@ enum PrimitiveType
     Quads,
 
     /// Deprecated: List of individual triangles.
+    deprecated
     LinesStrip = LineStrip,
     /// Deprecated: List of connected triangles.
+    deprecated
     TrianglesStrip = TriangleStrip,
     /// Deprecated: List of connected triangles.
+    deprecated
     TrianglesFan   = TriangleFan
 }

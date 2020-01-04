@@ -30,14 +30,12 @@ module dsfml.system;
 
 public
 {
-	import dsfml.system.clock;
-	import dsfml.system.config;
-	import dsfml.system.err;
-	import dsfml.system.inputstream;
-	import dsfml.system.lock;
-	import dsfml.system.mutex;
-	import dsfml.system.sleep;
-	import dsfml.system.thread;
-	import dsfml.system.vector2;
-	import dsfml.system.vector3;
+    import dsfml.system.clock;
+    import dsfml.system.inputstream;
+    import dsfml.system.mutex;
+    import dsfml.system.sleep;
+    import dsfml.system.thread;
+    import dsfml.system.time;
+    import dsfml.system.vector2;
+    import dsfml.system.vector3;
 }

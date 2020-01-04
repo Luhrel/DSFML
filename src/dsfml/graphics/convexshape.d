@@ -54,65 +54,461 @@
 module dsfml.graphics.convexshape;
 
 import dsfml.system.vector2;
+
+import dsfml.graphics.color;
+import dsfml.graphics.drawable;
+import dsfml.graphics.rect;
+import dsfml.graphics.rendertarget;
+import dsfml.graphics.renderstates;
 import dsfml.graphics.shape;
+import dsfml.graphics.texture;
+import dsfml.graphics.transform;
+import dsfml.graphics.transformable;
 
 /**
  * Specialized shape representing a convex polygon.
  */
 class ConvexShape : Shape
 {
-    private Vector2f[] m_points;
+    private sfConvexShape* m_convexShape;
 
     /**
      * Default constructor.
      *
      * Params:
-     * thePointCount = Number of points on the polygon
+     *     pointCount = Number of points of the polygon
      */
-    this(uint thePointCount = 0)
+    this(size_t pointCount=0)
     {
-        this.pointCount = thePointCount;
-        update();
+        m_convexShape = sfConvexShape_create();
+        this.pointCount = pointCount;
     }
 
-    /// Destructor.
+    /// Virtual destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
+        sfConvexShape_destroy(m_convexShape);
     }
 
     @property
     {
-        /// The number of points on the polygon
-        uint pointCount(uint newPointCount)
+        /**
+         * Change the source texture of the shape.
+         *
+         * The texture argument refers to a texture that must exist as long as the
+         * shape uses it. Indeed, the shape doesn't store its own copy of the
+         * texture, but rather keeps a pointer to the one that you passed to this
+         * function. If the source texture is destroyed and the shape tries to use
+         * it, the behaviour is undefined. texture can be NULL to disable texturing.
+         *
+         * If resetRect is true, the TextureRect property of the shape is
+         * automatically adjusted to the size of the new texture. If it is false,
+         * the texture rect is left unchanged.
+         *
+         * Params:
+         *     texture   = New texture
+         *     resetRect = Should the texture rect be reset to the size of the new
+         *              texture?
+         */
+        override void texture(Texture newTexture, bool resetRect = false)
         {
-            m_points.length = newPointCount;
-            update();
-            return newPointCount;
+            sfConvexShape_setTexture(m_convexShape, newTexture.ptr, resetRect);
         }
 
-        /// ditto
-        override uint pointCount() const
+        /**
+         * Get the source texture of the shape.
+         *
+         * If the shape has no source texture, a NULL pointer is returned. The
+         * returned pointer is const, which means that you can't modify the texture
+         * when you retrieve it with this function.
+         *
+         * Returns: The shape's texture.
+         */
+        override const(Texture) texture() const
         {
-            import std.algorithm;
-            return cast(uint)min(m_points.length, uint.max);
+            return new Texture(sfConvexShape_getTexture(m_convexShape));
         }
+    }
+
+    @property
+    {
+        /**
+         * Set the sub-rectangle of the texture that the shape will display.
+         *
+         * The texture rect is useful when you don't want to display the whole texture, but rather a part of it. By default, the texture rect covers the entire texture.
+         *
+         * Params:
+         *     rect = Rectangle defining the region of the texture to display
+         * See_Also: texture
+         */
+        override void textureRect(IntRect rect)
+        {
+            sfConvexShape_setTextureRect(m_convexShape, rect);
+        }
+
+        /**
+         * Get the sub-rectangle of the texture displayed by the shape.
+         *
+         * Returns: Texture rectangle of the shape
+         */
+        override IntRect textureRect() const
+        {
+            return sfConvexShape_getTextureRect(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the fill color of the shape.
+         *
+         * This color is modulated (multiplied) with the shape's texture if any. It
+         * can be used to colorize the shape, or change its global opacity. You can
+         * use Color.Transparent to make the inside of the shape transparent, and
+         * have the outline alone. By default, the shape's fill color is opaque
+         * white.
+         *
+         * Params:
+         *     color = New color of the shape
+         * See_Also: outlineColor
+         */
+        override void fillColor(Color color)
+        {
+            sfConvexShape_setFillColor(m_convexShape, color);
+        }
+
+        /**
+         * Get the fill color of the shape.
+         *
+         * Returns: Fill color of the shape
+         */
+        override Color fillColor() const
+        {
+            return sfConvexShape_getFillColor(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the outline color of the shape.
+         *
+         * By default, the shape's outline color is opaque white.
+         *
+         * Params:
+         *     color = New outline color of the shape
+         * See_Also: fillColor
+         */
+        override void outlineColor(Color color)
+        {
+            sfConvexShape_setOutlineColor(m_convexShape, color);
+        }
+
+        /**
+         * Get the outline color of the shape.
+         *
+         * Returns: Outline color of the shape
+         * See_Also: fillColor
+         */
+        override Color outlineColor() const
+        {
+            return sfConvexShape_getOutlineColor(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the thickness of the shape's outline.
+         *
+         * Note that negative values are allowed (so that the outline expands
+         * towards the center of the shape), and using zero disables the outline.
+         * By default, the outline thickness is 0.
+         *
+         * Params:
+         *     thickness = New outline thickness
+         */
+        override void outlineThickness(float thickness)
+        {
+            sfConvexShape_setOutlineThickness(m_convexShape, thickness);
+        }
+
+        /**
+         * Get the outline thickness of the shape.
+         *
+         * Returns: Outline thickness of the shape
+         */
+        override float outlineThickness() const
+        {
+            return sfConvexShape_getOutlineThickness(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the local origin of the object
+         *
+         * The origin of an object defines the center point for all transformations
+         * (position, scale, rotation). The coordinates of this point must be
+         * relative to the top-left corner of the object, and ignore all
+         * transformations (position, scale, rotation). The default origin of a
+         * transformable object is (0, 0).
+         *
+         * Params:
+         *     x = X coordinate of the new origin
+         *     y = Y coordinate of the new origin
+         */
+        override void origin(float x, float y)
+        {
+            origin(Vector2f(x, y));
+        }
+
+        /**
+         * Set the local origin of the object
+         *
+         * The origin of an object defines the center point for all transformations
+         * (position, scale, rotation). The coordinates of this point must be
+         * relative to the top-left corner of the object, and ignore all
+         * transformations (position, scale, rotation). The default origin of a
+         * transformable object is (0, 0).
+         *
+         * Params:
+         *     origin = New origin
+         */
+        override void origin(Vector2f newOrigin)
+        {
+            sfConvexShape_setOrigin(m_convexShape, newOrigin);
+        }
+
+        /**
+         * Get the local origin of the object
+         *
+         * Returns: Current origin
+         */
+        override Vector2f origin() const
+        {
+            return sfConvexShape_getOrigin(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the number of points of the polygon.
+         *
+         * count must be greater than 2 to define a valid shape.
+         *
+         * Params:
+         *     count = New number of points of the polygon
+         */
+        void pointCount(size_t count)
+        {
+            sfConvexShape_setPointCount(m_convexShape, count);
+        }
+
+        /**
+         * Get the number of points of the polygon.
+         *
+         * Returns: Number of points of the polygon
+         */
+        override size_t pointCount() const
+        {
+            return sfConvexShape_getPointCount(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the position of the object
+         *
+         * This function completely overwrites the previous position. See the move
+         * function to apply an offset based on the previous position instead. The
+         * default position of a transformable object is (0, 0).
+         *
+         * Params:
+         *     x = X coordinate of the new position
+         *     y = Y coordinate of the new position
+         * See_Also: move
+         */
+        override void position(float x, float y)
+        {
+            position(Vector2f(x, y));
+        }
+
+        /**
+         * Set the position of the object
+         *
+         * This function completely overwrites the previous position. See the move
+         * function to apply an offset based on the previous position instead. The
+         * default position of a transformable object is (0, 0).
+         *
+         * Params:
+         *     position = New position
+         * See_Also: move
+         */
+        override void position(Vector2f newPosition)
+        {
+            sfConvexShape_setPosition(m_convexShape, newPosition);
+        }
+
+        /**
+         * Get the position of the object
+         *
+         * Returns: Current position
+         */
+        override Vector2f position() const
+        {
+            return sfConvexShape_getPosition(m_convexShape);
+        }
+    }
+
+    /**
+     * Rotate the object.
+     *
+     * This function adds to the current rotation of the object, unlike the rotation
+     * property which overwrites it. Thus, it is equivalent to the following code:
+     * ---
+     * object.setRotation(object.rotation() + angle);
+     * ---
+     *
+     * Params:
+     *     angle = Angle of rotation, in degrees
+     */
+    override void rotate(float angle)
+    {
+        sfConvexShape_rotate(m_convexShape, angle);
+    }
+
+    @property
+    {
+        /**
+         * Set the orientation of the object
+         *
+         * This function completely overwrites the previous rotation. See the rotate
+         * function to add an angle based on the previous rotation instead. The
+         * default rotation of a transformable object is 0.
+         *
+         * Params:
+         *     angle = New rotation, in degrees
+         * See_Also: rotate
+         */
+        override void rotation(float angle)
+        {
+            sfConvexShape_setRotation(m_convexShape, angle);
+        }
+
+        /**
+         * Get the orientation of the object
+         *
+         * The rotation is always in the range [0, 360].
+         *
+         * Returns: Current rotation, in degrees
+         */
+        override float rotation() const
+        {
+            return sfConvexShape_getRotation(m_convexShape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the scale factors of the object
+         *
+         * This function completely overwrites the previous scale. See the scale
+         * function to add a factor based on the previous scale instead. The default
+         * scale of a transformable object is (1, 1).
+         *
+         * Params:
+         *     factorX = New horizontal scale factor
+         *     factorY = New vertical scale factor
+         */
+        override void scale(float factorX, float factorY)
+        {
+            scale(Vector2f(factorX, factorY));
+        }
+
+        /**
+         * Set the scale factors of the object
+         *
+         * This function completely overwrites the previous scale. See the scale
+         * function to add a factor based on the previous scale instead. The default
+         * scale of a transformable object is (1, 1).
+         *
+         * Params:
+         *     factors = New scale factors
+         */
+        override void scale(Vector2f factors)
+        {
+            sfConvexShape_setScale(m_convexShape, factors);
+        }
+
+        /**
+         * Get the current scale of the object
+         *
+         * Returns: Current scale factors
+         */
+        override Vector2f scale() const
+        {
+            return sfConvexShape_getScale(m_convexShape);
+        }
+    }
+
+    /**
+     * Get the global (non-minimal) bounding rectangle of the entity.
+     *
+     * The returned rectangle is in global coordinates, which means that it takes
+     * into account the transformations (translation, rotation, scale, ...) that are
+     * applied to the entity. In other words, this function returns the bounds of
+     * the shape in the global 2D world's coordinate system.
+     *
+     * This function does not necessarily return the minimal bounding rectangle. It
+     * merely ensures that the returned rectangle covers all the vertices (but
+     * possibly more). This allows for a fast approximation of the bounds as a first
+     * check; you may want to use more precise checks on top of that.
+     *
+     * Returns: Global bounding rectangle of the entity
+     */
+    @property
+    override FloatRect globalBounds() const
+    {
+        return sfConvexShape_getGlobalBounds(m_convexShape);
+    }
+
+    /**
+     * Get the local bounding rectangle of the entity.
+     *
+     * The returned rectangle is in local coordinates, which means that it
+     * ignores the transformations (translation, rotation, scale, ...) that are
+     * applied to the entity. In other words, this function returns the bounds
+     * of the entity in the entity's coordinate system.
+     *
+     * Returns: Local bounding rectangle of the entity.
+     */
+    @property
+    override FloatRect localBounds() const
+    {
+        return sfConvexShape_getLocalBounds(m_convexShape);
     }
 
     /**
      * Get the position of a point.
      *
+     * The returned point is in local coordinates, that is, the shape's
+     * transforms (position, rotation, scale) are not taken into account.
      * The result is undefined if index is out of the valid range.
      *
      * Params:
-     * 		index =	Index of the point to get, in range [0 .. `pointCount` - 1]
+     *     index = Index of the point to get, in range [0 .. pointCount() - 1]
      *
-     * Returns: Index-th point of the shape.
+     * Returns: Position of the index-th point of the polygon
+     * See_Also: setPoint
      */
-    override Vector2f getPoint(uint index) const
+    override Vector2f getPoint(size_t index = 0) const
     {
-        return m_points[index];
+        return sfConvexShape_getPoint(m_convexShape, index);
     }
 
     /**
@@ -121,79 +517,247 @@ class ConvexShape : Shape
      * Don't forget that the polygon must remain convex, and the points need to
      * stay ordered! `pointCount` must be changed first in order to set the total
      * number of points. The result is undefined if index is out of the valid
-     *range.
+     * range.
      *
      * Params:
      * 		index =	Index of the point to change, in range
-                    [0 .. `pointCount` - 1]
+     *              [0 .. `pointCount` - 1]
      * 		point =	New position of the point
+     * See_Also: getPoint
      */
-    void setPoint(uint index, Vector2f point)
+    void setPoint(size_t index, Vector2f point)
     {
-        m_points[index] = point;
+        sfConvexShape_setPoint(m_convexShape, index, point);
     }
 
     /**
-     * Add a point to the polygon.
+     * Overload of the slice operator (set).
+     * This function simply call `point(index, vec)`.
      *
-     * Don't forget that the polygon must remain convex, and the points need to
-     * stay ordered!
+     * example:
+     * ---
+     * convex[4] = Vector2f(4, 2);
+     * ---
+     */
+    void opIndexAssign(Vector2f vec, size_t index)
+    {
+        setPoint(index, vec);
+    }
+
+    /**
+     * Overload of the slice operator (set with operator).
+     *
+     * example:
+     * ---
+     * convex[4] += Vector2f(1, 6);
+     * ---
+     */
+    void opIndexOpAssign(string op)(Vector2f vec, size_t index)
+    {
+        mixin("Vector2f res = getPoint(index) " ~ op ~ " vec;");
+        setPoint(index, res);
+    }
+
+    /**
+     * Overload of the slice operator (set with operator).
+     *
+     * example:
+     * ---
+     * convex[4] -= 3;
+     * ---
+     */
+    void opIndexOpAssign(string op)(size_t num, size_t index)
+    {
+        mixin("Vector2f res = getPoint(index) " ~ op ~ " num;");
+        setPoint(index, res);
+    }
+
+    /**
+     * Draw the shape to a render target.
      *
      * Params:
-     * 		point =	Position of the new point.
+     *         renderTarget    = Target to draw to
+     *         renderStates    = Current render states
      */
-    void addPoint(Vector2f point)
+    override void draw(RenderTarget renderTarget, RenderStates renderStates = RenderStates.init)
     {
-        m_points ~=point;
-        update();
+        renderTarget.draw(this, renderStates);
     }
+
+    /**
+     * Get the inverse of the combined transform of the object
+     *
+     * Returns: Inverse of the combined transformations applied to the object
+     */
+    override Transform inverseTransform() const
+    {
+        return Transform(sfConvexShape_getInverseTransform(m_convexShape));
+    }
+
+    /**
+     * Get the combined transform of the object
+     *
+     * Returns: Transform combining the position/rotation/scale/origin of the object
+     * See_Also: inverseTransform
+     */
+    override Transform transform()
+    {
+        return Transform(sfConvexShape_getTransform(m_convexShape));
+    }
+
+    /**
+     * Move the object by a given offset.
+     *
+     * This function adds to the current position of the object, unlike the position
+     * property which overwrites it. Thus, it is equivalent to the following code:
+     * ---
+     * Vector2f pos = object.position();
+     * object.position(pos.x + offsetX, pos.y + offsetY);
+     * ---
+     *
+     * Params:
+     *     offsetX = X offset
+     *     offsetY = Y offset
+     * See_Also: position
+     */
+    override void move(float offsetX, float offsetY)
+    {
+        move(Vector2f(offsetX, offsetY));
+    }
+
+    /**
+     * Move the object by a given offset.
+     *
+     * This function adds to the current position of the object, unlike the position
+     * property which overwrites it. Thus, it is equivalent to the following code:
+     * ---
+     * object.position(object.getPosition() + offset);
+     * ---
+     *
+     * Params:
+     *     offset = Offset
+     */
+    override void move(Vector2f offset)
+    {
+        sfConvexShape_move(m_convexShape, offset);
+    }
+
+    // Returns the C pointer.
+    package sfConvexShape* ptr()
+    {
+        return m_convexShape;
+    }
+}
+
+package extern(C)
+{
+    struct sfConvexShape;
+}
+
+private extern(C)
+{
+    sfConvexShape* sfConvexShape_create();
+    sfConvexShape* sfConvexShape_copy(const sfConvexShape* shape);
+    void sfConvexShape_destroy(sfConvexShape* shape);
+    void sfConvexShape_setPosition(sfConvexShape* shape, Vector2f position);
+    void sfConvexShape_setRotation(sfConvexShape* shape, float angle);
+    void sfConvexShape_setScale(sfConvexShape* shape, Vector2f scale);
+    void sfConvexShape_setOrigin(sfConvexShape* shape, Vector2f origin);
+    Vector2f sfConvexShape_getPosition(const sfConvexShape* shape);
+    float sfConvexShape_getRotation(const sfConvexShape* shape);
+    Vector2f sfConvexShape_getScale(const sfConvexShape* shape);
+    Vector2f sfConvexShape_getOrigin(const sfConvexShape* shape);
+    void sfConvexShape_move(sfConvexShape* shape, Vector2f offset);
+    void sfConvexShape_rotate(sfConvexShape* shape, float angle);
+    void sfConvexShape_scale(sfConvexShape* shape, Vector2f factors);
+    sfTransform sfConvexShape_getTransform(const sfConvexShape* shape);
+    sfTransform sfConvexShape_getInverseTransform(const sfConvexShape* shape);
+    void sfConvexShape_setTexture(sfConvexShape* shape, const sfTexture* texture, bool resetRect);
+    void sfConvexShape_setTextureRect(sfConvexShape* shape, IntRect rect);
+    void sfConvexShape_setFillColor(sfConvexShape* shape, Color color);
+    void sfConvexShape_setOutlineColor(sfConvexShape* shape, Color color);
+    void sfConvexShape_setOutlineThickness(sfConvexShape* shape, float thickness);
+    const(sfTexture)* sfConvexShape_getTexture(const sfConvexShape* shape);
+    IntRect sfConvexShape_getTextureRect(const sfConvexShape* shape);
+    Color sfConvexShape_getFillColor(const sfConvexShape* shape);
+    Color sfConvexShape_getOutlineColor(const sfConvexShape* shape);
+    float sfConvexShape_getOutlineThickness(const sfConvexShape* shape);
+    size_t sfConvexShape_getPointCount(const sfConvexShape* shape);
+    Vector2f sfConvexShape_getPoint(const sfConvexShape* shape, size_t index);
+    void sfConvexShape_setPointCount(sfConvexShape* shape, size_t count);
+    void sfConvexShape_setPoint(sfConvexShape* shape, size_t index, Vector2f point);
+    FloatRect sfConvexShape_getLocalBounds(const sfConvexShape* shape);
+    FloatRect sfConvexShape_getGlobalBounds(const sfConvexShape* shape);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
-        import dsfml.graphics;
+    import std.stdio;
+    writeln("Running ConvexShape unittest...");
 
-        writeln("Unit test for ConvexShape");
-        auto window = new RenderWindow(VideoMode(800,600), "ConvexShape unittest");
+    auto convex = new ConvexShape();
 
-        auto convexShape = new ConvexShape();
+    auto pos = Vector2f(54_756.12593234f, 1325.312434736234f);
+    convex.position = pos;
+    assert(convex.position == pos);
+    convex.move(45_243.87406766, 74.687565264);
+    assert(convex.position == Vector2f(100_000, 1400));
 
-        convexShape.addPoint(Vector2f(0,20));
-        convexShape.addPoint(Vector2f(10,10));
-        convexShape.addPoint(Vector2f(20,20));
-        convexShape.addPoint(Vector2f(20,30));
-        convexShape.addPoint(Vector2f(10,40));
-        convexShape.addPoint(Vector2f(0,30));
+    auto rot = 60;
+    convex.rotation = rot;
+    assert(convex.rotation == rot);
+    convex.rotate(2*rot);
+    assert(convex.rotation == 3*rot);
 
-        convexShape.fillColor = Color.Blue;
+    auto scl = Vector2f(9876.54321f, 3.141515142314);
+    convex.scale = scl;
+    assert(convex.scale == scl);
 
-        convexShape.outlineColor = Color.Green;
+    auto orgn = Vector2f(2349, 87103);
+    convex.origin = orgn;
+    assert(convex.origin == orgn);
 
-        auto clock = new Clock();
+    Transform t = convex.transform;
+    Transform it = convex.inverseTransform;
+    // TODO:
+    //assert(t == Transform());
+    assert(t.inverse == it);
 
-        while(window.isOpen())
-        {
-            Event event;
+    Texture tex = new Texture();
+    tex.create(50, 270);
+    convex.texture = tex;
+    const Texture tex2 = convex.texture;
+    assert(tex2 !is null);
+    assert(tex.size == tex2.size);
 
-            while(window.pollEvent(event))
-            {
-                //no events gonna do stuffs!
-            }
+    IntRect ir = IntRect(90, 12, 54, 77);
+    convex.textureRect = ir;
+    assert(convex.textureRect == ir);
 
-            //draws the shape for a while before closing the window
-            if(clock.getElapsedTime().asSeconds() > 1)
-            {
-                window.close();
-            }
+    auto fcol = Color.Green;
+    convex.fillColor = fcol;
+    assert(convex.fillColor == fcol);
 
-            window.clear();
-            window.draw(convexShape);
-            window.display();
-        }
+    auto ocol = Color.Magenta;
+    convex.outlineColor = ocol;
+    assert(convex.outlineColor == ocol);
 
-        writeln();
-    }
+    float thc = 30.78;
+    convex.outlineThickness = thc;
+    assert(convex.outlineThickness == thc);
+
+    int pc = 4;
+    convex.pointCount = pc;
+    assert(convex.pointCount == pc);
+
+    Vector2f p0 = Vector2f(2, 3);
+    convex[0] = p0;
+    assert(convex[0] == p0);
+    convex[0] *= 2;
+    assert(convex[0] == Vector2f(4, 6));
+    convex[0] += Vector2f(2, 8);
+    assert(convex[0] == Vector2f(6, 14));
+
+    assert(convex.localBounds == FloatRect(-28.291285, -12.124836, 56.582569, 26.124836));
+    assert(convex.globalBounds == FloatRect(23020580, 274993.4375, 558840, 82.125));
 }

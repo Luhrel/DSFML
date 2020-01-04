@@ -38,6 +38,7 @@ public
     import dsfml.graphics.convexshape;
     import dsfml.graphics.drawable;
     import dsfml.graphics.font;
+    import dsfml.graphics.glsl;
     import dsfml.graphics.glyph;
     import dsfml.graphics.image;
     import dsfml.graphics.primitivetype;
@@ -56,5 +57,6 @@ public
     import dsfml.graphics.transformable;
     import dsfml.graphics.vertex;
     import dsfml.graphics.vertexarray;
+    import dsfml.graphics.vertexbuffer;
     import dsfml.graphics.view;
 }

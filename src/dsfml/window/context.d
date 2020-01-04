@@ -55,6 +55,9 @@
  */
 module dsfml.window.context;
 
+import dsfml.window.contextsettings;
+
+
 alias GlFunctionPointer = void*;
 
 /**
@@ -62,7 +65,7 @@ alias GlFunctionPointer = void*;
  */
 class Context
 {
-    package sfContext* sfPtr;
+    private sfContext* m_context;
 
     /**
      * Default constructor.
@@ -71,38 +74,105 @@ class Context
      */
     this()
     {
-        sfPtr = sfContext_create();
+        m_context = sfContext_create();
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfContext_destroy(sfPtr);
+        sfContext_destroy(m_context);
     }
 
     /**
      * Activate or deactivate explicitely the context.
      *
      * Params:
-     * 	active = true to activate, false to deactivate
+     *     active = true to activate, false to deactivate
      *
      * Returns: true on success, false on failure.
      */
-    void setActive(bool active)
+    @property
+    void active(bool active)
     {
-        sfContext_setActive(sfPtr,active);
+        sfContext_setActive(m_context, active);
+    }
+
+    /**
+     * Get the settings of the context.
+     *
+     * Note that these settings may be different than the ones passed to the
+     * constructor; they are indeed adjusted if the original settings are not
+     * directly supported by the system.
+     *
+     * Returns: Structure containing the settings
+     */
+    @property
+    ContextSettings settings()
+    {
+        return sfContext_getSettings(m_context);
+    }
+
+    /**
+     *
+     * Get the currently active context's ID.
+     *
+     * The context ID is used to identify contexts when managing unshareable OpenGL resources.
+     *
+     * Returns: The active context's ID or 0 if no context is currently active
+     */
+    static ulong activeContextId()
+    {
+        return sfContext_getActiveContextId();
+    }
+
+    /**
+     * Get the address of an OpenGL function.
+     *
+     * Params:
+     *     name = Name of the function to get the address of
+     *
+     * Returns: Address of the OpenGL function, 0 on failure
+     */
+    // TODO: Not yet implemented in CSFML
+    @disable
+    static GlFunctionPointer getFunction(const string name)
+    {
+        //return sfContext_getFunction(name.ptr);
+        return null;
+    }
+
+    /**
+     * Check whether a given OpenGL extension is available.
+     *
+     * Params:
+     *     name = Name of the extension to check for
+     *
+     * Returns: True if available, false if unavailable
+     */
+    // TODO: Not yet implemented in CSFML
+    @disable
+    static bool isExtensionAvailable(const string name)
+    {
+        //return sfContext_isExtensionAvailable(name.ptr);
+        return false;
     }
 }
 
-package extern(C)
+extern(C)
 {
     struct sfContext;
-}
-private extern(C)
-{
+
     sfContext* sfContext_create();
     void sfContext_destroy(sfContext* context);
-    void sfContext_setActive(sfContext* context, bool active);
+    bool sfContext_setActive(sfContext* context, bool active);
+    ContextSettings sfContext_getSettings(const sfContext* context);
+    ulong sfContext_getActiveContextId();
+}
+
+unittest
+{
+    import std.stdio;
+    writeln("Running Context unittest...");
+
+    //TODO: find a way to test this
 }

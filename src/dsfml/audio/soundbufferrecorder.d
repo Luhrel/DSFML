@@ -70,21 +70,14 @@ class SoundBufferRecorder : SoundRecorder
     private
     {
         short[] m_samples;
-        SoundBuffer m_buffer;
+        SoundBuffer m_soundBuffer;
     }
 
     /// Default constructor.
     this()
     {
-        // Constructor code
-        m_buffer = new SoundBuffer();
-    }
-
-    /// Destructor.
-    ~this()
-    {
-        import dsfml.system.config;
-        mixin(destructorOutput);
+        m_soundBuffer = new SoundBuffer();
+        super();
     }
 
     /**
@@ -96,9 +89,9 @@ class SoundBufferRecorder : SoundRecorder
      *
      * Returns: Read-only access to the sound buffer.
      */
-    const(SoundBuffer) getBuffer() const
+    @property const(SoundBuffer) buffer()
     {
-        return m_buffer;
+        return m_soundBuffer;
     }
 
     protected
@@ -110,9 +103,8 @@ class SoundBufferRecorder : SoundRecorder
          */
         override bool onStart()
         {
-            m_samples.length = 0;
-            m_buffer = new SoundBuffer();
-
+            m_samples = [];
+            m_soundBuffer = new SoundBuffer();
             return true;
         }
 
@@ -120,14 +112,13 @@ class SoundBufferRecorder : SoundRecorder
          * Process a new chunk of recorded samples.
          *
          * Params:
-         *	samples =	Array of the new chunk of recorded samples
+         *    samples =    Array of the new chunk of recorded samples
          *
          * Returns: true to continue the capture, or false to stop it.
          */
         override bool onProcessSamples(const(short)[] samples)
         {
             m_samples ~= samples;
-
             return true;
         }
 
@@ -136,9 +127,9 @@ class SoundBufferRecorder : SoundRecorder
          */
         override void onStop()
         {
-            if(m_samples.length >0)
+            if(m_samples.length > 0)
             {
-                m_buffer.loadFromSamples(m_samples,1,sampleRate);
+                m_soundBuffer.loadFromSamples(m_samples, channelCount, sampleRate);
             }
         }
     }
@@ -146,77 +137,51 @@ class SoundBufferRecorder : SoundRecorder
 
 unittest
 {
-    //When this unit test is run it occasionally throws an error which will vary, and
-    //is obviously in OpenAL. Probably something to do with the way the binding is done. Will be fixed in 2.1.
-    version(DSFML_Unittest_Audio)
+    import std.stdio;
+    import dsfml.system.sleep;
+
+    writeln("Running SoundBufferRecorder unittest...");
+    version (DSFML_Unittest_with_interaction)
     {
-        import std.stdio;
-        import dsfml.window.keyboard;
-        import dsfml.audio.sound;
-        import dsfml.system.clock;
-        import dsfml.system.sleep;
-
-        writeln("Unit test for SoundBufferRecorder.");
-
-        assert(SoundRecorder.isAvailable());
-
-        auto recorder = new SoundBufferRecorder();
-
-        auto clock = new Clock();
-
-        writeln("Recording for 5 seconds in...");
-        writeln("3");
-        clock.restart();
-
-        while(clock.getElapsedTime().asSeconds() <1)
+        if(!SoundBufferRecorder.isAvailable())
         {
-            //wait for a second
+            writeln("\tNo capture device available. Aborting audio capture unittest.");
+            return;
         }
 
-        writeln("2");
+        SoundBufferRecorder recorder = new SoundBufferRecorder();
 
-        clock.restart();
+        // Testing sampleRate (0 because not started)
+        assert(recorder.sampleRate == 0);
+        writefln("\tDefault device: %s", SoundRecorder.getDefaultDevice());
 
-        while(clock.getElapsedTime().asSeconds() <1)
+        const string[] devices = recorder.getAvailableDevices();
+
+        foreach(string d; devices)
         {
-            //wait for a second
+            writefln("\tStarting audio capture test for device '%s'", d);
+
+            if (!recorder.device(d) || !recorder.start())
+            {
+                writeln("\tUnable to start capture.\n
+                    \tAborting audio capture unittest for this device.");
+                break;
+            }
+            // Testing default value once started
+            assert(recorder.sampleRate == 44100);
+
+            writeln("\tPlease speak for 2s.");
+            sleep(seconds(2));
+            recorder.stop();
+
+            writefln("\tSaving to file 'record_%s.wav'...", d);
+            recorder.buffer.saveToFile("record_"~d~".wav");
+            writeln("\tFile saved !");
         }
 
-        writeln("1");
-
-        clock.restart();
-
-        while(clock.getElapsedTime().asSeconds() <1)
-        {
-            //wait for a second
-        }
-
-        writeln("Recording!");
-
-        recorder.start();
-        clock.restart();
-
-        while(clock.getElapsedTime().asSeconds() <5)
-        {
-            //wait for a second
-        }
-
-        writeln("Done!");
-
-        recorder.stop();
-
-        auto buffer = recorder.getBuffer();
-        auto recorderDuration = buffer.getDuration();
-        auto recorderSound = new Sound(buffer);
-
-        clock.restart();
-
-        recorderSound.play();
-        while(clock.getElapsedTime() < recorderDuration)
-        {
-            //sound playing
-        }
-
-        writeln();
+        if (devices.length == 0)
+            writeln("\tNo audio device found !");
+        else
+            writeln("\tListen to your records so see if it has worked.");
     }
 }

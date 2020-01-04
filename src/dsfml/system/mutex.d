@@ -43,10 +43,10 @@
  *
  * void thread1()
  * {
- * 	   // this call will block the thread if the mutex is already locked by thread2
+ *     // this call will block the thread if the mutex is already locked by thread2
  *     mutex.lock();
  *     database.write(...);
- *	   // if thread2 was waiting, it will now be unblocked
+ *     // if thread2 was waiting, it will now be unblocked
  *     mutex.unlock();
  * }
  *
@@ -88,78 +88,76 @@ import core = core.sync.mutex;
  */
 class Mutex
 {
-	private core.Mutex m_mutex;
+    private core.Mutex m_mutex;
 
-	/// Default Constructor
-	this()
-	{
-		m_mutex = new core.Mutex();
-	}
+    /// Default Constructor
+    this()
+    {
+        m_mutex = new core.Mutex();
+    }
 
-	/// Destructor
-	~this()
-	{
-		import dsfml.system.config;
-		mixin(destructorOutput);
-	}
+    /**
+     * Lock the mutex
+     *
+     * If the mutex is already locked in another thread, this call will block
+     * the execution until the mutex is released.
+     */
+    void lock()
+    {
+        m_mutex.lock();
+    }
 
-	/**
-	 * Lock the mutex
-	 *
-	 * If the mutex is already locked in another thread, this call will block
-	 * the execution until the mutex is released.
-	 */
-	void lock()
-	{
-		m_mutex.lock();
-	}
-
-	/// Unlock the mutex
-	void unlock()
-	{
-		m_mutex.unlock();
-	}
+    /// Unlock the mutex.
+    void unlock()
+    {
+        m_mutex.unlock();
+    }
 }
 
 unittest
 {
-	version(DSFML_Unittest_System)
-	{
-		import dsfml.system.thread;
-		import dsfml.system.sleep;
-		import std.stdio;
+    import dsfml.system.thread;
+    import dsfml.system.sleep;
+    import dsfml.system.time;
+    import std.stdio;
 
-		auto mutex = new Mutex();
+    writeln("Running Mutex unittest...");
 
-		void secondThreadHello()
-		{
-			mutex.lock();
-			for(int i = 0; i < 10; ++i)
-			{
-				writeln("Hello from the second thread!");
-			}
-			mutex.unlock();
-		}
+    auto mutex = new Mutex();
+    string result = "";
 
+    void thread1()
+    {
+        mutex.lock();
+        for(int i = 0; i < 10; ++i)
+        {
+            sleep(seconds(0.01));
+            result ~= "1";
+        }
+        mutex.unlock();
+    }
 
-		writeln("Unit test for Mutex class");
-		writeln();
+    void thread2()
+    {
+        mutex.lock();
+        for(int i = 0; i < 10; ++i)
+        {
+            sleep(seconds(0.01));
+            result ~= "2";
+        }
+        mutex.unlock();
+    }
 
-		writeln("Locking a mutex and then unlocking it later.");
+    auto t1 = new Thread(&thread1);
+    auto t2 = new Thread(&thread2);
+    t1.launch();
+    // Sometimes t2 is launched before t1
+    sleep(seconds(0.01));
+    t2.launch();
 
-		auto secondThread = new Thread(&secondThreadHello);
+    // waiting for the threads to finish before calling the asserts.
+    t1.wait();
+    t2.wait();
 
-		secondThread.launch();
-
-		mutex.lock();
-
-		for(int i = 0; i < 10; ++i)
-		{
-			writeln("Hello from the main thread!");
-		}
-
-		mutex.unlock();
-		sleep(seconds(1));//let's this unit test finish before moving on to the next one.
-		writeln();
-	}
+    assert(result == "11111111112222222222");
 }

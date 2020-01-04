@@ -54,66 +54,68 @@ import std.stdio;
 /**
 * Standard std.stdio.File instance used by DSFML to output warnings and errors.
 */
+
 File err;
 
 static this()
 {
-	//Let's our err output go to the console by default
-	err = stderr;
+    //Let's our err output go to the console by default
+    err = stderr;
 
-	//redirect sf:err()
-	sfErr_redirect(&writeToErr);
+    //redirect sf:err()
+    //sfErr_redirect(&writeToErr);
 }
-
+/*
 //Redirect sf::err() to write to our err File instance
 private extern(C) void sfErr_redirect(void function(const(char*) str, int size) writeFunc);
 
 //export a function to be used in C++ so that SFML can write to err
 private extern(C) void writeToErr(const(char*) str, int size)
 {
-	err.write(str[0..size]);
+    err.write(str[0..size]);
 }
+*/
 
 unittest
 {
-	version(DSFML_Unittest_System)
-	{
-		import std.stdio;
-		import std.file;
-		import dsfml.graphics.texture;
+    version (DSFML_Unittest_System)
+    {
+        import std.stdio;
+        import std.file;
+        import dsfml.graphics.texture;
 
-		writeln("Unit test for err");
+        writeln("Unit test for err");
 
-		writeln("Writing a line to err");
-		err.writeln("This line was written with err.");
+        writeln("Writing a line to err");
+        err.writeln("This line was written with err.");
 
-		writeln("Routing err to a file, and then writing to it.");
-		err.open("log.txt", "w");
+        writeln("Routing err to a file, and then writing to it.");
+        err.open("log.txt", "w");
 
-		err.writeln("This line was written with err after being routed to log.txt");
+        err.writeln("This line was written with err after being routed to log.txt");
 
-		auto noTexture = new Texture();
+        auto noTexture = new Texture();
 
-		//This should generate a message from SFML that get's written to out output file
-		noTexture.loadFromFile("nonexistantTexture1.png");
-		noTexture.loadFromFile("nonexistantTexture2.png");
+        //This should generate a message from SFML that get's written to out output file
+        noTexture.loadFromFile("nonexistantTexture1.png");
+        noTexture.loadFromFile("nonexistantTexture2.png");
 
 
-		err.detach();//need to detach before being able to read the contents of the file(it's in use while open)
+        err.detach();//need to detach before being able to read the contents of the file(it's in use while open)
 
-		writeln("Reading log.txt to confirm its contents.");
+        writeln("Reading log.txt to confirm its contents.");
 
-		auto contents = cast(string)read("log.txt");
+        auto contents = cast(string)read("log.txt");
 
-		writeln("The contents of the text file are as follows: ", contents);
+        writeln("The contents of the text file are as follows: ", contents);
 
-		writeln("Routing err back to the console.");
-		err = stderr;//in this case, stderr is still writing to the console, but I could have used stdout as well.
+        writeln("Routing err back to the console.");
+        err = stderr;//in this case, stderr is still writing to the console, but I could have used stdout as well.
 
-		writeln("And writing to err one final time.");
-		err.writeln("This is the last line in the unit test to be written to err!");
+        writeln("And writing to err one final time.");
+        err.writeln("This is the last line in the unit test to be written to err!");
 
-		writeln();
-	}
+        writeln();
+    }
 
 }

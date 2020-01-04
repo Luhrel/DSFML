@@ -88,54 +88,54 @@
  */
 module dsfml.audio.soundbuffer;
 
-public import dsfml.system.time;
-
-import dsfml.audio.inputsoundfile;
-import dsfml.audio.sound;
-
 import dsfml.system.inputstream;
+import dsfml.system.time;
 
-import std.stdio;
 import std.string;
-import std.algorithm;
-import std.array;
-
-import dsfml.system.err;
 
 /**
  * Storage for audio samples defining a sound.
  */
 class SoundBuffer
 {
-    package sfSoundBuffer* sfPtr;
-
-    /// Default constructor.
-    this()
-    {
-        sfPtr = sfSoundBuffer_construct();
-    }
+    private sfSoundBuffer* m_soundBuffer = null;
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfSoundBuffer_destroy(sfPtr);
+        sfSoundBuffer_destroy(m_soundBuffer);
+    }
+
+    /// Default constructor.
+    this()
+    {
+        // Nothing to do.
+    }
+
+    package this(sfSoundBuffer* soundBufferPointer)
+    {
+        m_soundBuffer = soundBufferPointer;
     }
 
     /**
      * Get the array of audio samples stored in the buffer.
      *
-     * The format of the returned samples is 16 bits signed integer (short).
+     * The format of the returned samples is 16 bits signed integer (short). The
+     * total number of samples in this array is given by the getSampleCount()
+     * function.
      *
-     *  Returns: Read-only array of sound samples.
+     * Returns: Read-only array of sound samples.
+     * See_Also: sampleCount
      */
-    const(short[]) getSamples() const
+    @property
+    const(short[]) samples() const
     {
-        auto sampleCount = sfSoundBuffer_getSampleCount(sfPtr);
-        if(sampleCount > 0)
-            return sfSoundBuffer_getSamples(sfPtr)[0 .. sampleCount];
-
+        if (m_soundBuffer !is null)
+        {
+            ulong sampleCount = sfSoundBuffer_getSampleCount(m_soundBuffer);
+            if(sampleCount > 0)
+                return sfSoundBuffer_getSamples(m_soundBuffer)[0 .. sampleCount];
+        }
         return null;
     }
 
@@ -146,10 +146,30 @@ class SoundBuffer
      * the better the quality (for example, 44100 samples/s is CD quality).
      *
      * Returns: Sample rate (number of samples per second).
+     * See_Also: channelCount, duration
      */
-    uint getSampleRate() const
+    @property
+    uint sampleRate() const
     {
-        return sfSoundBuffer_getSampleRate(sfPtr);
+        if (m_soundBuffer is null)
+            return 0;
+        return sfSoundBuffer_getSampleRate(m_soundBuffer);
+    }
+
+    /**
+     * Get the number of samples stored in the buffer.
+     *
+     * The array of samples can be accessed with the samples() function.
+     *
+     * Returns: Number of samples
+     * See_Also: samples
+     */
+    @property
+    ulong sampleCount() const
+    {
+        if (m_soundBuffer is null)
+            return 0;
+        return sfSoundBuffer_getSampleCount(m_soundBuffer);
     }
 
     /**
@@ -159,202 +179,185 @@ class SoundBuffer
      * etc.
      *
      * Returns: Number of channels.
+     * See_Also: sampleRate, duration
      */
-    uint getChannelCount() const
+    @property
+    uint channelCount() const
     {
-        return sfSoundBuffer_getChannelCount(sfPtr);
+        if (m_soundBuffer is null)
+            return 0;
+        return sfSoundBuffer_getChannelCount(m_soundBuffer);
     }
 
     /**
      * Get the total duration of the sound.
      *
      * Returns: Sound duration.
+     * See_Also: sampleRate, channelCount
      */
-    Time getDuration() const
+    @property
+    Time duration() const
     {
-        return microseconds(sfSoundBuffer_getDuration(sfPtr));
+        if (m_soundBuffer is null)
+            return Time();
+        return sfSoundBuffer_getDuration(m_soundBuffer);
     }
 
     /**
      * Load the sound buffer from a file.
      *
-     * The supported audio formats are: WAV (PCM only), OGG/Vorbis, FLAC. The
-     * supported sample sizes for FLAC and WAV are 8, 16, 24 and 32 bit.
+     * See the documentation of InputSoundFile for the list of supported formats.
      *
      * Params:
-     * 		filename =	Path of the sound file to load
+     * filename=Path of the sound file to load
      *
-     * Returns: true if loading succeeded, false if it failed.
+     * Returns: True if loading succeeded, false if it failed.
+     * See_Also: loadFromMemory, loadFromStream, loadFromSamples, saveToFile
      */
-    bool loadFromFile(const(char)[] filename)
+    bool loadFromFile(string filename)
     {
-        return sfSoundBuffer_loadFromFile(sfPtr, filename.ptr, filename.length);
+        m_soundBuffer = sfSoundBuffer_createFromFile(filename.toStringz);
+        return m_soundBuffer != null;
     }
 
     /**
      * Load the sound buffer from a file in memory.
      *
-     * The supported audio formats are: WAV (PCM only), OGG/Vorbis, FLAC. The
-     * supported sample sizes for FLAC and WAV are 8, 16, 24 and 32 bit.
+     * See the documentation of InputSoundFile for the list of supported formats.
      *
      * Params:
-     * 		data =	The array of data
+     * data=The array of data
      *
-     * Returns: true if loading succeeded, false if it failed.
+     * Returns: True if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromStream, loadFromSamples
      */
-    bool loadFromMemory(const(void)[] data)
+    bool loadFromMemory(const(void*) data)
     {
-        return sfSoundBuffer_loadFromMemory(sfPtr, data.ptr, data.length);
+        m_soundBuffer = sfSoundBuffer_createFromMemory(data, data.sizeof);
+        return m_soundBuffer != null;
     }
 
     /*
      * Load the sound buffer from a custom stream.
      *
-     * The supported audio formats are: WAV (PCM only), OGG/Vorbis, FLAC. The
-     * supported sample sizes for FLAC and WAV are 8, 16, 24 and 32 bit.
+     * See the documentation of InputSoundFile for the list of supported formats.
      *
      * Params:
-     * 		stream =	Source stream to read from
+     * stream=Source stream to read from
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory, loadFromSamples
      */
     bool loadFromStream(InputStream stream)
     {
-        return sfSoundBuffer_loadFromStream(sfPtr, new SoundBufferStream(stream));
+        m_soundBuffer = sfSoundBuffer_createFromStream(stream.ptr);
+        return m_soundBuffer != null;
     }
 
     /**
      * Load the sound buffer from an array of audio samples.
      *
-     * The assumed format of the audio samples is 16 bits signed integer
-     * (short).
+     * The assumed format of the audio samples is 16 bits signed integer (short).
      *
      * Params:
-     * 		samples      = Array of samples in memory
-     * 		channelCount = Number of channels (1 = mono, 2 = stereo, ...)
-     * 		sampleRate   = Sample rate (number of samples to play per second)
+     *         samples      = Array of samples in memory
+     *         channelCount = Number of channels (1 = mono, 2 = stereo, ...)
+     *         sampleRate   = Sample rate (number of samples to play per second)
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory, saveToFile
      */
     bool loadFromSamples(const(short[]) samples, uint channelCount, uint sampleRate)
     {
-        return sfSoundBuffer_loadFromSamples(sfPtr, samples.ptr, samples.length, channelCount, sampleRate);
+        m_soundBuffer = sfSoundBuffer_createFromSamples(samples.ptr, samples.length, channelCount, sampleRate);
+        return m_soundBuffer != null;
     }
 
     /**
      * Save the sound buffer to an audio file.
      *
-     * The supported audio formats are: WAV, OGG/Vorbis, FLAC.
+     * See the documentation of OutputSoundFile for the list of supported formats.
      *
      * Params:
-     * 		filename =	Path of the sound file to write
+     *         filename =    Path of the sound file to write
      *
-     * Returns: true if saving succeeded, false if it failed.
+     * Returns: True if saving succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory, loadFromSamples
      */
-    bool saveToFile(const(char)[] filename) const
+    bool saveToFile(string filename) const
     {
-        return sfSoundBuffer_saveToFile(sfPtr, filename.ptr, filename.length);
+        if (m_soundBuffer != null)
+            return sfSoundBuffer_saveToFile(m_soundBuffer, filename.toStringz);
+        return false;
     }
 
+    /**
+     * Returns de C pointer of the sound buffer
+     *
+     * Returns: Sound buffer pointer attached to the class (can be NULL)
+     *
+     * Implemented in the class Sound.
+     */
+    package sfSoundBuffer* ptr()
+    {
+        return m_soundBuffer;
+    }
+}
+
+package extern(C)
+{
+    struct sfSoundBuffer;
+}
+
+// CSFML's functions.
+private extern(C)
+{
+    void sfSoundBuffer_destroy(sfSoundBuffer* soundBuffer);
+    sfSoundBuffer* sfSoundBuffer_createFromFile(const char* filename);
+    sfSoundBuffer* sfSoundBuffer_createFromMemory(const void* data, size_t sizeInBytes);
+    sfSoundBuffer* sfSoundBuffer_createFromStream(sfInputStream* stream);
+    sfSoundBuffer* sfSoundBuffer_createFromSamples(const short* samples, long sampleCount, uint channelCount, uint sampleRate);
+    sfSoundBuffer* sfSoundBuffer_copy(const sfSoundBuffer* soundBuffer);
+    bool sfSoundBuffer_saveToFile(const sfSoundBuffer* soundBuffer, const char* filename);
+    const(short)* sfSoundBuffer_getSamples(const sfSoundBuffer* soundBuffer);
+    ulong sfSoundBuffer_getSampleCount(const sfSoundBuffer* soundBuffer);
+    uint sfSoundBuffer_getSampleRate(const sfSoundBuffer* soundBuffer);
+    uint sfSoundBuffer_getChannelCount(const sfSoundBuffer* soundBuffer);
+    Time sfSoundBuffer_getDuration(const sfSoundBuffer* soundBuffer);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Audio)
-    {
-        import std.stdio;
+    import std.stdio;
+    import std.path;
+    import std.file;
 
-        writeln("Unit test for sound buffer");
+    writeln("Running Soundbuffer unittest...");
 
-        auto soundbuffer = new SoundBuffer();
+    string filename = "unittest/res/The Paragon Axis - Spirits of Fall.wav";
 
-        if(!soundbuffer.loadFromFile("res/TestSound.ogg"))
-        {
-            //error
-            return;
-        }
+    SoundBuffer soundbuffer = new SoundBuffer();
+    // Should not crash when m_soundBuffer is null
+    // Same for all others delegates
+    soundbuffer.sampleRate;
+    assert(soundbuffer.loadFromFile(filename));
 
-        writeln("Sample Rate: ", soundbuffer.getSampleRate());
+    // Checking if the music has the correct informations
+    assert(soundbuffer.duration.asMicroseconds() == 221325120);
+    // 44100 Hz
+    assert(soundbuffer.sampleRate == 44100);
+    // 2 channels (stereo)
+    assert(soundbuffer.channelCount == 2);
 
-        writeln("Channel Count: ", soundbuffer.getChannelCount());
+    string filename_copy = baseName(stripExtension(filename)) ~ " (Copy from DSFML)" ~ extension(filename);
 
-        writeln("Duration: ", soundbuffer.getDuration().asSeconds());
+    // Displaying sampleCount because I didn't found how to get it (externally/not with SFML)
+    writefln("\tsampleCount: %s", soundbuffer.sampleCount);
+    writeln("\tsaving file '" ~ filename_copy ~ "'...");
+    assert(soundbuffer.saveToFile(filename_copy));
+    writeln("\tFile saved !");
 
-        writeln("Sample Count: ", soundbuffer.getSamples().length);
+    assert(exists(filename_copy));
 
-        //use sound buffer here
-
-        writeln();
-    }
+    // TODO: loadFromMemory, loadFromStream
 }
-
-private extern(C++) interface sfmlInputStream
-{
-    long read(void* data, long size);
-
-    long seek(long position);
-
-    long tell();
-
-    long getSize();
-}
-
-private class SoundBufferStream:sfmlInputStream
-{
-    private InputStream myStream;
-
-    this(InputStream stream)
-    {
-        myStream = stream;
-    }
-
-    extern(C++)long read(void* data, long size)
-    {
-        return myStream.read(data[0..cast(size_t)size]);
-    }
-
-    extern(C++)long seek(long position)
-    {
-        return myStream.seek(position);
-    }
-
-    extern(C++)long tell()
-    {
-        return myStream.tell();
-    }
-
-    extern(C++)long getSize()
-    {
-        return myStream.getSize();
-    }
-}
-
-package struct sfSoundBuffer;
-
-private extern(C):
-
-sfSoundBuffer* sfSoundBuffer_construct();
-
-bool sfSoundBuffer_loadFromFile(sfSoundBuffer* soundBuffer, const char* filename, size_t length);
-
-bool sfSoundBuffer_loadFromMemory(sfSoundBuffer* soundBuffer, const void* data, size_t sizeInBytes);
-
-bool sfSoundBuffer_loadFromStream(sfSoundBuffer* soundBuffer, sfmlInputStream stream);
-
-bool sfSoundBuffer_loadFromSamples(sfSoundBuffer* soundBuffer, const short* samples, size_t sampleCount, uint channelCount, uint sampleRate);
-
-sfSoundBuffer* sfSoundBuffer_copy(const sfSoundBuffer* soundBuffer);
-
-void sfSoundBuffer_destroy(sfSoundBuffer* soundBuffer);
-
-bool sfSoundBuffer_saveToFile(const sfSoundBuffer* soundBuffer, const char* filename, size_t length);
-
-const(short)* sfSoundBuffer_getSamples(const sfSoundBuffer* soundBuffer);
-
-size_t sfSoundBuffer_getSampleCount(const sfSoundBuffer* soundBuffer);
-
-uint sfSoundBuffer_getSampleRate(const sfSoundBuffer* soundBuffer);
-
-uint sfSoundBuffer_getChannelCount(const sfSoundBuffer* soundBuffer);
-
-long sfSoundBuffer_getDuration(const sfSoundBuffer* soundBuffer);

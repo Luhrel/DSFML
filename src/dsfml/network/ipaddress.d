@@ -1,3 +1,4 @@
+
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
@@ -60,23 +61,35 @@
  * IpAddress a7("www.google.com");
  *
  * // my address on the local network
- * IpAddress a8 = IpAddress.getLocalAddress();
+ * IpAddress a8 = IpAddress.localAddress();
  *
  * // my address on the internet
- * IpAddress a9 = IpAddress.getPublicAddress();
+ * IpAddress a9 = IpAddress.publicAddress();
  * ---
  */
 module dsfml.network.ipaddress;
 
-public import dsfml.system.time;
+import dsfml.system.time;
+
+import std.string;
+import std.conv;
 
 /**
  * Encapsulate an IPv4 network address.
  */
 struct IpAddress
 {
-    package uint m_address;
-    package bool m_valid;
+    /// Value representing an empty/invalid address.
+    static immutable(IpAddress) None;
+    /// Value representing any address (0.0.0.0)
+    static immutable(IpAddress) Any = IpAddress(0,0,0,0);
+    /// The "localhost" address (for connecting a computer to itself locally)
+    static immutable(IpAddress) LocalHost = IpAddress(127,0,0,1);
+    /// The "broadcast" address (for sending UDP messages to everyone on a local network)
+    static immutable(IpAddress) Broadcast = IpAddress(255,255,255,255);
+
+    private uint m_address;
+    private bool m_valid;
 
     /**
      * Construct the address from a string.
@@ -87,9 +100,10 @@ struct IpAddress
      * Params:
      * 		address = IP address or network name.
      */
-    this(const(char)[] address)
+    this(const(string) address)
     {
-        m_address=  htonl(sfIpAddress_integerFromString(address.ptr, address.length));
+        m_address = htonl(sfIpAddress_toInteger(
+            sfIpAddress_fromString(address.toStringz)));
         m_valid = true;
     }
 
@@ -106,7 +120,7 @@ struct IpAddress
      * 		byte2 = Third byte of the address.
      * 		byte3 = Fourth byte of the address.
      */
-    this(ubyte byte0,ubyte byte1,ubyte byte2,ubyte byte3)
+    this(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3)
     {
         m_address = htonl((byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3);
         m_valid = true;
@@ -121,12 +135,18 @@ struct IpAddress
      *
      * Params:
      * 	address = 4 bytes of the address packed into a 32-bits integer
+     * See_Also: toInteger
      */
     this(uint address)
     {
         m_address = htonl(address);
-
         m_valid = true;
+    }
+
+    // Internally used constructor.
+    package this(sfIpAddress ipAddress)
+    {
+        this(ipAddress.address.to!string);
     }
 
     /**
@@ -138,8 +158,9 @@ struct IpAddress
      * converted back to an $(U IpAddress) with the proper constructor.
      *
      * Returns: 32-bits unsigned integer representation of the address.
+     * See_Also: toString
      */
-    int toInteger() const
+    uint toInteger() const
     {
         return ntohl(m_address);
     }
@@ -154,18 +175,19 @@ struct IpAddress
      * string, make a copy.
      *
      * Returns: String representation of the address
+     * See_Also: toInteger
      */
-    const(char)[] toString() const @nogc @trusted
+    const(string) toString() const @trusted
     {
-        import core.stdc.stdio: sprintf;
+        import core.stdc.stdio : sprintf;
 
         //internal string buffer to prevent using the GC to build the strings
         static char[16] m_string;
 
-        ubyte* bytes = cast(ubyte*)&m_address;
+        ubyte* bytes = cast(ubyte*) &m_address;
         int length = sprintf(m_string.ptr, "%d.%d.%d.%d", bytes[0], bytes[1],
                                                           bytes[2], bytes[3]);
-        return m_string[0..length];
+        return m_string[0..length].to!string;
     }
 
     /**
@@ -177,12 +199,11 @@ struct IpAddress
      * function is fast and may be used safely anywhere.
      *
      * Returns: Local IP address of the computer.
+     * See_Also: publicAddress
      */
-    static IpAddress getLocalAddress()
+    static IpAddress localAddress()
     {
-        IpAddress temp;
-        sfIpAddress_getLocalAddress(&temp);
-        return temp;
+        return IpAddress(sfIpAddress_getLocalAddress().address.to!string);
     }
 
     /**
@@ -205,22 +226,45 @@ struct IpAddress
      * 	timeout = Maximum time to wait
      *
      * Returns: Public IP address of the computer.
+     * See_Also: localAddress
      */
-    static IpAddress getPublicAddress(Time timeout = Time.Zero)
+    static IpAddress publicAddress(Time timeout = Time.Zero)
     {
-        IpAddress temp;
-        sfIpAddress_getPublicAddress(&temp, timeout.asMicroseconds());
-        return temp;
+        return IpAddress(sfIpAddress_getPublicAddress(timeout).address.to!string);
     }
 
-    /// Value representing an empty/invalid address.
-    static immutable(IpAddress) None;
-    /// Value representing any address (0.0.0.0)
-    static immutable(IpAddress) Any = IpAddress(0,0,0,0);
-    /// The "localhost" address (for connecting a computer to itself locally)
-    static immutable(IpAddress) LocalHost = IpAddress(127,0,0,1);
-    /// The "broadcast" address (for sending UDP messages to everyone on a local network)
-    static immutable(IpAddress) Broadcast = IpAddress(255,255,255,255);
+    // Overloads the == operator.
+    bool opEquals(IpAddress otherIpAddress)
+    {
+        return m_valid == otherIpAddress.m_valid &&
+            m_address == otherIpAddress.m_address;
+    }
+
+    // Overloads the < > <= >= operators.
+    int opCmp(ref const IpAddress otherIpAddress) const
+    {
+        if (m_valid < otherIpAddress.m_valid)
+            return -1;
+        else if (otherIpAddress.m_valid < m_valid)
+            return 1;
+        else if (m_address < otherIpAddress.m_address)
+            return -1;
+        return 1;
+    }
+
+    /*
+     * Allow to declare (e.g.): IpAddress address = "192.168.0.124";
+     */
+    IpAddress opAssign(string address)
+    {
+        return IpAddress(address);
+    }
+
+    // Returns the C struct.
+    package sfIpAddress toc()
+    {
+        return sfIpAddress_fromInteger(ntohl(m_address));
+    }
 }
 
 //these have the same implementation, but use different names for readability
@@ -237,55 +281,51 @@ private uint htonl(uint host) nothrow @nogc @safe
     }
 }
 
-private uint ntohl(uint network) nothrow @nogc @safe
+private alias ntohl = htonl;
+
+package extern(C)
 {
-    version(LittleEndian)
+    struct sfIpAddress
     {
-        import core.bitop;
-        return bswap(network);
+        char[16] address;
     }
-    else
-    {
-        return network;
-    }
+}
+
+private extern(C)
+{
+    sfIpAddress sfIpAddress_fromString(const char* address);
+    sfIpAddress sfIpAddress_fromBytes(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3);
+    sfIpAddress sfIpAddress_fromInteger(uint address);
+    void sfIpAddress_toString(sfIpAddress address, char* _string);
+    uint sfIpAddress_toInteger(sfIpAddress address);
+    sfIpAddress sfIpAddress_getLocalAddress();
+    sfIpAddress sfIpAddress_getPublicAddress(Time timeout);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Network)
+    import std.stdio;
+    writeln("Running IpAddress unittest...");
+
+    auto ia1 = IpAddress(192,168,0,55);
+    auto ia2 = IpAddress(192,168,0,54);
+
+    assert(ia1 != ia2);
+    assert(ia1 == ia1);
+    assert(ia2 < ia1);
+    assert(ia1 > ia2);
+    assert(ia1 >= ia2);
+    assert(ia2 <= ia1);
+
+    assert(ia2.toInteger == 3232235574);
+    assert(ia1.toInteger == 3232235575);
+
+    version (DSFML_Unittest_with_interaction)
     {
-        import std.stdio;
-
-        writeln("Unittest for IpAdress");
-
-        IpAddress address1;
-
-        assert(address1 == IpAddress.None);
-        assert(IpAddress.LocalHost == IpAddress("127.0.0.1"));
-        assert(IpAddress.LocalHost == IpAddress(127,0,0,1));
-        assert(IpAddress(127, 0, 0, 1) == IpAddress(IpAddress(127,0,0,1).toInteger()));
-
-        IpAddress googleIP = IpAddress("google.com");
-
-        writeln("Google's Ip address: ",googleIP);
-
-        writeln("Your local Ip Address: ", IpAddress.getLocalAddress());
-
-        writeln("Your public Ip Address: ", IpAddress.getPublicAddress());
-
-        writeln("Full Ip Address: ", IpAddress(111,111,111,111));
-
-        writeln();
+        writeln("\nYour local address: %s", IpAddress.localAddress);
+        writeln("\nYour public address: %s", IpAddress.publicAddress);
     }
+
+    IpAddress myIp = "192.168.0.124";
+    assert(myIp == IpAddress(192,168,0,124));
 }
-
-private extern(C):
-
-///Create an address from a string
-uint sfIpAddress_integerFromString(const(char)* address, size_t addressLength);
-
-///Get the computer's local address
-void sfIpAddress_getLocalAddress(IpAddress* ipAddress);
-
-///Get the computer's public address
-void sfIpAddress_getPublicAddress(IpAddress* ipAddress, long timeout);

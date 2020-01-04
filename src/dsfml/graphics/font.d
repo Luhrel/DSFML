@@ -98,27 +98,22 @@ module dsfml.graphics.font;
 import dsfml.graphics.texture;
 import dsfml.graphics.glyph;
 import dsfml.system.inputstream;
-import dsfml.system.err;
+
+import std.conv;
 
 /**
  * Class for loading and manipulating character fonts.
  */
 class Font
 {
-
     /// Holds various information about a font.
     struct Info
     {
         /// The font family.
-        const(char)[] family;
+        const(string) family;
     }
 
-    package sfFont* sfPtr;
-    private Info m_info;
-    private Texture[int] textures;
-
-    //keeps an instance of the C++ stream stored if used
-    private fontStream m_stream;
+    private sfFont* m_font;
 
     /**
      * Default constructor.
@@ -127,20 +122,22 @@ class Font
      */
     this()
     {
-        sfPtr = sfFont_construct();
+        // Nothing to do.
     }
 
-    package this(sfFont* newFont)
+    package this(const sfFont* fontPointer)
     {
-        sfPtr = newFont;
+        m_font = sfFont_copy(fontPointer);
     }
 
-    /// Destructor.
+    /**
+     * Destructor.
+     *
+     * Cleans up all the internal resources used by the font
+     */
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfFont_destroy(sfPtr);
+        sfFont_destroy(m_font);
     }
 
     /**
@@ -151,6 +148,7 @@ class Font
      * nothing about the standard fonts installed on the user's system, thus you
      * can't load them directly.
      *
+     * Warning:
      * DSFML cannot preload all the font data in this function, so the file has
      * to remain accessible until the Font object loads a new font or is
      * destroyed.
@@ -159,10 +157,12 @@ class Font
      * 		filename	= Path of the font file to load
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromMemory, loadFromStream
      */
-    bool loadFromFile(const(char)[] filename)
+    bool loadFromFile(const(string) filename)
     {
-        return sfFont_loadFromFile(sfPtr, filename.ptr, filename.length);
+        m_font = sfFont_createFromFile(filename.ptr);
+        return m_font != null;
     }
 
     /**
@@ -179,10 +179,12 @@ class Font
      * 		data	= data holding the font file
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(void)[] data)
     {
-        return sfFont_loadFromMemory(sfPtr, data.ptr, data.length);
+        m_font = sfFont_createFromMemory(data.ptr, data.sizeof);
+        return m_font != null;
     }
 
     /**
@@ -198,20 +200,36 @@ class Font
      * 		stream	= Source stream to read from
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream stream)
     {
-        m_stream = new fontStream(stream);
-        return sfFont_loadFromStream(sfPtr, m_stream);
+        //m_stream = new fontStream(stream);
+        m_font = sfFont_createFromStream(stream.ptr);
+        return m_font != null;
     }
 
-    ref const(Info) getInfo() const
+    /**
+     * Get the font information.
+     *
+     * Returns: A structure that holds the font information
+     */
+    @property
+    const(Info) info() const
     {
-        return m_info;
+        if (m_font is null)
+            return Info.init;
+        return Info(sfFont_getInfo(m_font).family.to!string);
     }
 
     /**
      * Retrieve a glyph of the font.
+     *
+     * If the font is a bitmap font, not all character sizes might be available. If
+     * the glyph is not available at the requested size, an empty glyph is returned.
+     *
+     * Be aware that using a negative value for the outline thickness will cause
+     * distorted rendering
      *
      * Params:
      * 		codePoint		 = Unicode code point of the character ot get
@@ -221,13 +239,11 @@ class Font
      *
      * Returns: The glyph corresponding to codePoint and characterSize.
      */
-    Glyph getGlyph(dchar codePoint, uint characterSize, bool bold, float outlineThickness = 0) const
+    Glyph glyph(dchar codePoint, uint characterSize, bool bold, float outlineThickness = 0) const
     {
-        Glyph temp;
-
-        sfFont_getGlyph(sfPtr, cast(uint)codePoint, characterSize, bold, outlineThickness, &temp.advance,&temp.bounds.left,&temp.bounds.top,&temp.bounds.width,&temp.bounds.height,&temp.textureRect.left,&temp.textureRect.top,&temp.textureRect.width,&temp.textureRect.height);
-
-        return temp;
+        if (m_font is null)
+            return Glyph.init;
+        return sfFont_getGlyph(m_font, cast(uint) codePoint, characterSize, bold, outlineThickness);
     }
 
     /**
@@ -246,15 +262,17 @@ class Font
      *
      * Returns: Kerning value for first and second, in pixels.
      */
-    float getKerning (dchar first, dchar second, uint characterSize) const
+    float kerning(dchar first, dchar second, uint characterSize) const
     {
-        return sfFont_getKerning(sfPtr, cast(uint)first, cast(uint)second, characterSize);
+        if (m_font is null)
+            return 0;
+        return sfFont_getKerning(m_font, cast(uint) first, cast(uint) second, characterSize);
     }
 
     /**
      * Get the line spacing.
      *
-     * The spacing is the vertical offset to apply between consecutive lines of
+     * Line spacing is the vertical offset to apply between two consecutive lines of
      * text.
      *
      * Params:
@@ -262,9 +280,11 @@ class Font
      *
      * Returns: Line spacing, in pixels.
      */
-    float getLineSpacing (uint characterSize) const
+    float lineSpacing(uint characterSize) const
     {
-        return sfFont_getLineSpacing(sfPtr, characterSize);
+        if (m_font is null)
+            return 0;
+        return sfFont_getLineSpacing(m_font, characterSize);
     }
 
     /**
@@ -277,10 +297,13 @@ class Font
      * 		characterSize	= Reference character size
      *
      * Returns: Underline position, in pixels.
+     * See_Also: getUnderlineThickness
      */
-    float getUnderlinePosition (uint characterSize) const
+    float getUnderlinePosition(uint characterSize) const
     {
-        return sfFont_getUnderlinePosition(sfPtr, characterSize);
+        if (m_font is null)
+            return 0;
+        return sfFont_getUnderlinePosition(m_font, characterSize);
     }
 
     /**
@@ -292,10 +315,13 @@ class Font
      * 		characterSize	= Reference character size
      *
      * Returns: Underline thickness, in pixels.
+     * See_Also: getUnderlinePosition
      */
-    float getUnderlineThickness (uint characterSize) const
+    float getUnderlineThickness(uint characterSize) const
     {
-        return sfFont_getUnderlineThickness(sfPtr, characterSize);
+        if (m_font is null)
+            return 0;
+        return sfFont_getUnderlineThickness(m_font, characterSize);
     }
 
     /**
@@ -310,17 +336,11 @@ class Font
      *
      * Returns: Texture containing the glyphs of the requested size.
      */
-    const(Texture) getTexture (uint characterSize)
+    const(Texture) texture(uint characterSize)
     {
-        Texture ret = textures.get(characterSize, null);
-
-        if(ret is null)
-        {
-            ret = new Texture(sfFont_getTexture(sfPtr, characterSize));
-            textures[characterSize] = ret;
-        }
-
-        return ret;
+        if (m_font is null)
+            return null;
+        return new Texture(sfFont_getTexture(m_font, characterSize));
     }
 
     /**
@@ -331,112 +351,65 @@ class Font
     @property
     Font dup() const
     {
-        return new Font(sfFont_copy(sfPtr));
+        return new Font(m_font);
     }
+
+    // Returns the C pointer
+    package sfFont* ptr()
+    {
+        return m_font;
+    }
+}
+
+package extern(C)
+{
+    struct sfFont;
+    struct sfFontInfo
+    {
+        const(char)* family;
+    }
+}
+
+private extern(C)
+{
+    sfFont* sfFont_createFromFile(const char* filename);
+    sfFont* sfFont_createFromMemory(const void* data, size_t sizeInBytes);
+    sfFont* sfFont_createFromStream(sfInputStream* stream);
+    sfFont* sfFont_copy(const sfFont* font);
+    void sfFont_destroy(sfFont* font);
+    Glyph sfFont_getGlyph(const sfFont* font, uint codePoint, uint characterSize, bool bold, float outlineThickness);
+    float sfFont_getKerning(const sfFont* font, uint first, uint second, uint characterSize);
+    float sfFont_getLineSpacing(const sfFont* font, uint characterSize);
+    float sfFont_getUnderlinePosition(const sfFont* font, uint characterSize);
+    float sfFont_getUnderlineThickness(const sfFont* font, uint characterSize);
+    const(sfTexture)* sfFont_getTexture(sfFont* font, uint characterSize);
+    sfFontInfo sfFont_getInfo(const sfFont* font);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
+    import std.stdio;
+    import dsfml.graphics.rect;
 
-        import dsfml.graphics.text;
+    writeln("Running Font unittest...");
 
-        writeln("Unitest for Font");
+    auto font = new Font();
+    assert(font.loadFromFile("unittest/res/Warenhaus-Standard.ttf"));
 
-        auto font = new Font();
-        assert(font.loadFromFile("res/Warenhaus-Standard.ttf"));
+    uint charSize = 12;
 
-        Text text;
-        text = new Text("Sample String", font);
+    assert(font.glyph('G', charSize, true, 2) == Glyph(7, FloatRect(0, -7, 10, 11), IntRect(1, 4, 11, 12)));
+    assert(font.kerning('A', 'V', charSize) == 0);
+    assert(font.lineSpacing(charSize) == 13);
+    assert(font.getUnderlinePosition(charSize) == 1.734375);
+    assert(font.getUnderlineThickness(charSize) == 0.578125);
+    assert(font.info == Font.Info("Warenhaus Typenhebel"));
+
+    Font fakeFont = new Font();
+    // ... or whatever function
+    fakeFont.lineSpacing(charSize); // Shouldn't crash
 
 
-        //draw text or something
+    //draw text or something
 
-        writeln();
-    }
 }
-
-
-private:
-private extern(C++) interface fontInputStream
-{
-    long read(void* data, long size);
-
-    long seek(long position);
-
-    long tell();
-
-    long getSize();
-}
-
-
-private class fontStream:fontInputStream
-{
-    private InputStream myStream;
-
-    this(InputStream stream)
-    {
-        myStream = stream;
-    }
-
-    extern(C++)long read(void* data, long size)
-    {
-        return myStream.read(data[0..cast(size_t)size]);
-    }
-
-    extern(C++)long seek(long position)
-    {
-        return myStream.seek(position);
-    }
-
-    extern(C++)long tell()
-    {
-        return myStream.tell();
-    }
-
-    extern(C++)long getSize()
-    {
-        return myStream.getSize();
-    }
-}
-
-package extern(C) struct sfFont;
-
-private extern(C):
-
-sfFont* sfFont_construct();
-
-//Create a new font from a file
-bool sfFont_loadFromFile(sfFont* font, const(char)* filename, size_t length);
-
-//Create a new image font a file in memory
-bool sfFont_loadFromMemory(sfFont* font, const(void)* data, size_t sizeInBytes);
-
-//Create a new image font a custom stream
-bool sfFont_loadFromStream(sfFont* font, fontInputStream stream);
-
-// Copy an existing font
-sfFont* sfFont_copy(const sfFont* font);
-
-//Destroy an existing font
-void sfFont_destroy(sfFont* font);
-
-//Get a glyph in a font
-void sfFont_getGlyph(const(sfFont)* font, uint codePoint, int characterSize, bool bold, float outlineThickness, float* glyphAdvance, float* glyphBoundsLeft, float* glyphBoundsTop, float* glyphBoundsWidth, float* glyphBoundsHeight, int* glyphTextRectLeft, int* glyphTextRectTop, int* glyphTextRectWidth, int* glyphTextRectHeight);
-
-//Get the kerning value corresponding to a given pair of characters in a font
-float sfFont_getKerning(const(sfFont)* font, uint first, uint second, uint characterSize);
-
-//Get the line spacing value
-float sfFont_getLineSpacing(const(sfFont)* font, uint characterSize);
-
-//Get the position of the underline
-float sfFont_getUnderlinePosition (const(sfFont)* font, uint characterSize);
-
-//Get the thickness of the underline
-float sfFont_getUnderlineThickness (const(sfFont)* font, uint characterSize);
-
-//Get the font texture for a given character size
-sfTexture* sfFont_getTexture(const(sfFont)* font, uint characterSize);

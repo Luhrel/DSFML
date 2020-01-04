@@ -1,3 +1,4 @@
+
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
@@ -110,30 +111,26 @@ import dsfml.network.ipaddress;
 import dsfml.network.packet;
 import dsfml.network.socket;
 
-import dsfml.system.err;
-
 /**
  * Specialized socket using the UDP protocol.
  */
-class UdpSocket:Socket
+class UdpSocket : Socket
 {
-    package sfUdpSocket* sfPtr;
+    private sfUdpSocket* m_udpSocket;
 
     /// The maximum number of bytes that can be sent in a single UDP datagram.
-    enum maxDatagramSize = 65507;
+    enum MaxDatagramSize = 65507;
 
     /// Default constructor.
     this()
     {
-        sfPtr = sfUdpSocket_create();
+        m_udpSocket = sfUdpSocket_create();
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfUdpSocket_destroy(sfPtr);
+        sfUdpSocket_destroy(m_udpSocket);
     }
 
     /**
@@ -142,27 +139,34 @@ class UdpSocket:Socket
      * If the socket is not bound to a port, this function returns 0.
      *
      * Returns: Port to which the socket is bound.
+     * See_Also: bind
      */
-    ushort getLocalPort() const
+    @property
+    ushort localPort() const
     {
-        return sfUdpSocket_getLocalPort(sfPtr);
+        return sfUdpSocket_getLocalPort(m_udpSocket);
     }
 
     /**
      * Set the blocking state of the socket.
      *
      * In blocking mode, calls will not return until they have completed their
-     * task. For example, a call to Receive in blocking mode won't return until
-     * some data was actually received. In non-blocking mode, calls will always
-     * return immediately, using the return code to signal whether there was
-     * data available or not. By default, all sockets are blocking.
+     * task.
+     * For example, a call to Receive in blocking mode won't return until some
+     * data was actually received.
+     *
+     * In non-blocking mode, calls will always return immediately, using the
+     * return code to signal whether there was data available or not.
+     *
+     * By default, all sockets are blocking.
      *
      * Params:
      * 	blocking = true to set the socket as blocking, false for non-blocking
      */
-    void setBlocking(bool blocking)
+    @property
+    void blocking(bool _blocking)
     {
-        sfUdpSocket_setBlocking(sfPtr,blocking);
+        sfUdpSocket_setBlocking(m_udpSocket, _blocking);
     }
 
     /**
@@ -171,17 +175,18 @@ class UdpSocket:Socket
      * Binding the socket to a port is necessary for being able to receive data
      * on that port. You can use the special value Socket.AnyPort to tell the
      * system to automatically pick an available port, and then call
-     * getLocalPort to retrieve the chosen port.
+     * localPort to retrieve the chosen port.
      *
      * Params:
      * 	port    = Port to bind the socket to
      *  address = Address of the interface to bind to
      *
      * Returns: Status code.
+     * See_Also: unbind, localPort
      */
     Status bind(ushort port, IpAddress address = IpAddress.Any)
     {
-        return sfUdpSocket_bind(sfPtr,port, &address);
+        return sfUdpSocket_bind(m_udpSocket, port, address.toc);
     }
 
     /**
@@ -189,9 +194,10 @@ class UdpSocket:Socket
      *
      * Returns: true if the socket is blocking, false otherwise.
      */
-    bool isBlocking() const
+    @property
+    bool blocking() const
     {
-        return (sfUdpSocket_isBlocking(sfPtr));
+        return sfUdpSocket_isBlocking(m_udpSocket);
     }
 
     /**
@@ -206,12 +212,12 @@ class UdpSocket:Socket
      * 	port    = Port of the receiver to send the data to
      *
      * Returns: Status code.
+     * See_Also: receive
      */
     Status send(const(void)[] data, IpAddress address, ushort port)
     {
-        Status toReturn = sfUdpSocket_send(sfPtr,data.ptr, data.length,&address,port);
-
-        return toReturn;
+        return sfUdpSocket_send(m_udpSocket, data.ptr, data.length,
+            address.toc, port);
     }
 
     /**
@@ -227,17 +233,12 @@ class UdpSocket:Socket
      * 	port = Port of the receiver to send the data to
      *
      * Returns: Status code.
+     * See_Also: receive
      */
     Status send(Packet packet, IpAddress address, ushort port)
     {
-        //temporary packet to be removed on function exit
-        scope SfPacket temp = new SfPacket();
-
-        //getting packet's "to send" data
-        temp.append(packet.onSend());
-
-        //send the data
-        return sfUdpSocket_sendPacket(sfPtr, temp.sfPtr, &address, port);
+        packet.onSendJunction();
+        return sfUdpSocket_sendPacket(m_udpSocket, packet.ptr, address.toc, port);
     }
 
     /**
@@ -257,11 +258,15 @@ class UdpSocket:Socket
      * 		port = Port of the peer that sent the data
      *
      * Returns: Status code.
+     * See_Also: send
      */
     Status receive(void[] data, out size_t sizeReceived, out IpAddress address, out ushort port)
     {
-        return sfUdpSocket_receive(sfPtr, data.ptr, data.length,
-                                            &sizeReceived, &address, &port);
+        sfIpAddress ia;
+        Status status = sfUdpSocket_receive(m_udpSocket, data.ptr, data.length,
+            &sizeReceived, &ia, &port);
+        address = IpAddress(ia);
+        return status;
     }
 
     /**
@@ -276,18 +281,19 @@ class UdpSocket:Socket
      * 	port = Port of the peer that sent the data
      *
      * Returns: Status code.
+     * See_Also: send
      */
     Status receive(Packet packet, out IpAddress address, out ushort port)
     {
-        //temporary packet to be removed on function exit
-        scope SfPacket temp = new SfPacket();
+        // Temporary packet that will be filled.
+        auto tmp = new Packet();
+        sfIpAddress ia;
+        Status status = sfUdpSocket_receivePacket(m_udpSocket, tmp.ptr, &ia,
+            &port);
+        address = IpAddress(ia);
 
-        //get the sent data
-        Status status =  sfUdpSocket_receivePacket(sfPtr, temp.sfPtr, &address, &port);
-
-        //put data into the packet so that it can process it first if it wants.
-        packet.onRecieve(temp.getData());
-
+        // Put the temporary data into the packet so that it can process it first if it wants.
+        packet.onReceiveJunction(tmp.data);
         return status;
     }
 
@@ -297,88 +303,107 @@ class UdpSocket:Socket
      * The port that the socket was previously using is immediately available
      * after this function is called. If the socket is not bound to a port, this
      * function has no effect.
+     *
+     * See_Also: bind
      */
     void unbind()
     {
-        sfUdpSocket_unbind(sfPtr);
+        sfUdpSocket_unbind(m_udpSocket);
     }
+
+    @property
+    package sfUdpSocket* ptr()
+    {
+        return m_udpSocket;
+    }
+}
+
+package extern(C)
+{
+    struct sfUdpSocket;
+}
+
+private extern(C)
+{
+    sfUdpSocket* sfUdpSocket_create();
+    void sfUdpSocket_destroy(sfUdpSocket* socket);
+    void sfUdpSocket_setBlocking(sfUdpSocket* socket, bool blocking);
+    bool sfUdpSocket_isBlocking(const sfUdpSocket* socket);
+    ushort sfUdpSocket_getLocalPort(const sfUdpSocket* socket);
+    Socket.Status sfUdpSocket_bind(sfUdpSocket* socket, ushort port, sfIpAddress address);
+    void sfUdpSocket_unbind(sfUdpSocket* socket);
+    Socket.Status sfUdpSocket_send(sfUdpSocket* socket, const void* data, size_t size, sfIpAddress remoteAddress, ushort remotePort);
+    Socket.Status sfUdpSocket_receive(sfUdpSocket* socket, void* data, size_t size, size_t* received, sfIpAddress* remoteAddress, ushort* remotePort);
+    Socket.Status sfUdpSocket_sendPacket(sfUdpSocket* socket, sfPacket* packet, sfIpAddress remoteAddress, ushort remotePort);
+    Socket.Status sfUdpSocket_receivePacket(sfUdpSocket* socket, sfPacket* packet, sfIpAddress* remoteAddress, ushort* remotePort);
+    uint sfUdpSocket_maxDatagramSize();
 }
 
 unittest
 {
-    version(DSFML_Unittest_Network)
+    import std.stdio;
+    import dsfml.system.thread;
+    writeln("Running UdpSocket unittest...");
+
+    // May change in the future
+    assert(UdpSocket.MaxDatagramSize == sfUdpSocket_maxDatagramSize());
+
+    void clientSide()
     {
-        import std.stdio;
+        auto socket = new UdpSocket();
 
-        writeln("Unittest for Udp Socket");
+        // True by default
+        assert(socket.blocking);
+        socket.blocking = false;
+        assert(!socket.blocking);
 
-        auto clientSocket = new UdpSocket();
+        ushort port = 55000;
+        auto status = socket.bind(port);
+        assert(status == Socket.Status.Done);
+        assert(socket.localPort == port);
 
-        //bind this socket to this port for receiving data
-        clientSocket.bind(56001);
+        auto packet = new Packet();
+        packet << 1.24f << 56 << "bc";
+        status = socket.send(packet, IpAddress.LocalHost, 55001);
+        assert(status == Socket.Status.Done);
 
-        auto serverSocket = new UdpSocket();
-
-        serverSocket.bind(56002);
-
-        //send the data to the port our server is listening to
-        writeln("Sending data!");
-        clientSocket.send("I sent you data!", IpAddress.LocalHost, 56002);
-
-        ////////////////////////////////////////////////////////////////////////
-
-        IpAddress receivedFrom;
-        ushort receivedPort;
-        auto receivedPacket = new Packet();
-
-        //get the information received as well as information about the sender
-
-        char[1024] temp2;
-        size_t received;
-
-        writeln("Receiving data!");
-        serverSocket.receive(temp2,received, receivedFrom, receivedPort);
-
-        //What did we get?!
-        writeln("The data received from ", receivedFrom, " at port ", receivedPort, " was: ", cast(string)temp2[0..received]);
-
-        writeln();
+        socket.unbind();
     }
+
+    void serverSide()
+    {
+        auto socket = new UdpSocket();
+
+        ushort port = 55001;
+        auto status = socket.bind(port);
+        assert(status == Socket.Status.Done);
+        assert(socket.localPort == port);
+
+        Packet packet = new Packet();
+        IpAddress address;
+        ushort client_port;
+        status = socket.receive(packet, address, client_port);
+        assert(status == Socket.Status.Done);
+        assert(address == IpAddress.LocalHost);
+        assert(client_port == 55000);
+
+        float f;
+        int i;
+        string s;
+        packet >> f >> i >> s;
+        assert(f == 1.24f);
+        assert(i == 56);
+        assert(s == "bc");
+
+        socket.unbind();
+    }
+
+    auto serverTh = new Thread(&serverSide);
+    auto clientTh = new Thread(&clientSide);
+
+    serverTh.launch();
+    clientTh.launch();
+
+    serverTh.wait();
+    clientTh.wait();
 }
-
-package extern(C):
-
-struct sfUdpSocket;
-
-//Create a new UDP socket
-sfUdpSocket* sfUdpSocket_create();
-
-//Destroy a UDP socket
-void sfUdpSocket_destroy(sfUdpSocket* socket);
-
-//Set the blocking state of a UDP listener
-void sfUdpSocket_setBlocking(sfUdpSocket* socket, bool blocking);
-
-//Tell whether a UDP socket is in blocking or non-blocking mode
-bool sfUdpSocket_isBlocking(const sfUdpSocket* socket);
-
-//Get the port to which a UDP socket is bound locally
-ushort sfUdpSocket_getLocalPort(const(sfUdpSocket)* socket);
-
-//Bind a UDP socket to a specific port
-Socket.Status sfUdpSocket_bind(sfUdpSocket* socket, ushort port, IpAddress* ipAddress);
-
-//Unbind a UDP socket from the local port to which it is bound
-void sfUdpSocket_unbind(sfUdpSocket* socket);
-
-//Send raw data to a remote peer with a UDP socket
-Socket.Status sfUdpSocket_send(sfUdpSocket* socket, const(void)* data, size_t size, IpAddress* receiver, ushort port);
-
-//Receive raw data from a remote peer with a UDP socket
-Socket.Status sfUdpSocket_receive(sfUdpSocket* socket, void* data, size_t maxSize, size_t* sizeReceived, IpAddress* sender, ushort* port);
-
-//Send a formatted packet of data to a remote peer with a UDP socket
-Socket.Status sfUdpSocket_sendPacket(sfUdpSocket* socket, sfPacket* packet, IpAddress* receiver, ushort port);
-
-//Receive a formatted packet of data from a remote peer with a UDP socket
-Socket.Status sfUdpSocket_receivePacket(sfUdpSocket* socket, sfPacket* packet, IpAddress* sender, ushort* port);

@@ -89,7 +89,7 @@ struct Rect(T)
     /// Top coordinate of the rectangle.
     T top = 0;
     /// Width of the rectangle.
-    T width= 0;
+    T width = 0;
     /// Height of the rectangle.
     T height = 0;
 
@@ -100,7 +100,7 @@ struct Rect(T)
      * and height, not the right and bottom coordinates!
      *
      * Params:
-     *	rectLeft   = Left coordinate of the rectangle
+     *    rectLeft   = Left coordinate of the rectangle
      *  rectTop    = Top coordinate of the rectangle
      *  rectWidth  = Width of the rectangle
      *  rectHeight = Height of the rectangle
@@ -132,75 +132,71 @@ struct Rect(T)
     }
 
     /**
-     * Check if a point is inside the rectangle's area.
+     * Construct the rectangle from another type of rectangle.
+     *
+     * This constructor doesn't replace the copy constructor, it's called only
+     * when U != T. A call to this constructor will fail to compile if U is not
+     * convertible to T.
      *
      * Params:
-     * 		x	= X coordinate of the point to test
-     * 		y	= Y coordinate of the point to test
-     *
-     * Returns: true if the point is inside, false otherwise.
+     *     rectangle = Rectangle to convert
      */
-    bool contains(E)(E x, E y) const
-        if(isNumeric!(E))
+    this(U)(Rect!(U) rectangle)
     {
-        if(left <= x && x<= (left + width))
-        {
-            if(top <= y && y <= (top + height))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        left = cast(T) rectangle.left;
+        top = cast(T) rectangle.top;
+        width = cast(T) rectangle.width;
+        height = cast(T) rectangle.height;
+
     }
 
     /**
      * Check if a point is inside the rectangle's area.
      *
      * Params:
-     * 		point	= Point to test
+     *         x    = X coordinate of the point to test
+     *         y    = Y coordinate of the point to test
      *
      * Returns: true if the point is inside, false otherwise.
+     * See_Also: intersects
+     */
+    bool contains(E)(E x, E y) const
+        if(isNumeric!(E))
+    {
+        return left <= x &&
+               x <= (left + width) &&
+               top <= y &&
+               y <= (top + height);
+    }
+
+    /**
+     * Check if a point is inside the rectangle's area.
+     *
+     * Params:
+     *         point    = Point to test
+     *
+     * Returns: true if the point is inside, false otherwise.
+     * See_Also: intersects
      */
     bool contains(E)(Vector2!(E) point) const
         if(isNumeric!(E))
     {
-        if(left <= point.x && point.x<= (left + width))
-        {
-            if(top <= point.y && point.y <= (top + height))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            return false;
-        }
+        return contains(point.x, point.y);
     }
 
     /**
      * Check the intersection between two rectangles.
      *
      * Params:
-     * 		rectangle	= Rectangle to test
+     *         rectangle    = Rectangle to test
      *
      * Returns: true if rectangles overlap, false otherwise.
+     * See_Also: contains
      */
     bool intersects(E)(Rect!(E) rectangle) const
     if(isNumeric!(E))
     {
         Rect!(T) rect;
-
         return intersects(rectangle, rect);
     }
 
@@ -211,10 +207,11 @@ struct Rect(T)
      * parameter.
      *
      * Params:
-     * 		rectangle		= Rectangle to test
-     * 		intersection	= Rectangle to be filled with the intersection
+     *         rectangle        = Rectangle to test
+     *         intersection    = Rectangle to be filled with the intersection
      *
      * Returns: true if rectangles overlap, false otherwise.
+     * See_Also: contains
      */
     bool intersects(E,O)(Rect!(E) rectangle, out Rect!(O) intersection) const
         if(isNumeric!(E) && isNumeric!(O))
@@ -240,7 +237,10 @@ struct Rect(T)
     bool opEquals(E)(const Rect!(E) otherRect) const
         if(isNumeric!(E))
     {
-        return ((left == otherRect.left) && (top == otherRect.top) && (width == otherRect.width) && (height == otherRect.height) );
+        return left == otherRect.left &&
+               top == otherRect.top &&
+               width == otherRect.width &&
+               height == otherRect.height;
     }
 
     /// Output the string representation of the Rect.
@@ -261,36 +261,62 @@ struct Rect(T)
     }
 }
 
+/// Definition of a Rect using integers.
+alias IntRect = Rect!(int);
+/// Definition of a Rect using floats.
+alias FloatRect = Rect!(float);
+
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
+    import std.stdio;
 
-        writeln("Unit test for Rect");
+    writeln("Running Rect unittest...");
 
-        auto rect1 = IntRect(0,0,100,100);
-        auto rect2 = IntRect(10,10,100,100);
-        auto rect3 = IntRect(10,10,10,10);
-        auto point = Vector2f(-20,-20);
+    auto rect1 = IntRect(1, 1, 3, 4);
 
-        assert(rect1.intersects(rect2));
+    // Contains should return true when on a corner.
+    assert(rect1.contains(1, 1)); // top left edge
+    assert(rect1.contains(1, 5)); // bottom left edge
+    assert(rect1.contains(4, 5)); // bottom right edge
+    assert(rect1.contains(4, 1)); // top right edge
 
-        FloatRect interRect;
+    // Testing others values on the edge
+    assert(rect1.contains(1, 2));
+    assert(rect1.contains(3, 5));
+    assert(rect1.contains(4, 3));
+    assert(rect1.contains(2, 1));
 
-        rect1.intersects(rect2, interRect);
+    // Testing values in the rectangle
+    assert(rect1.contains(2, 2));
+    assert(rect1.contains(3, 3));
+    assert(rect1.contains(4, 4));
+    assert(rect1.contains(4, 2));
 
-        assert(interRect == IntRect(10,10, 90, 90));
+    // Testing values out of the rectangle
+    assert(!rect1.contains(0, 0));
+    assert(!rect1.contains(2, 6));
+    assert(!rect1.contains(5, 4));
+    assert(!rect1.contains(6, 5));
 
-        assert(rect1.contains(10,10));
 
-        assert(!rect1.contains(point));
+    auto rect2 = IntRect(0, 2, 10, 10);
+    FloatRect interRect;
 
-        writeln();
-    }
+    assert(rect2.intersects(rect1, interRect));
+    assert(interRect == FloatRect(1, 2, 3, 3));
+
+    assert(!rect2.intersects(IntRect(20, 20, 1, 1), interRect));
+    assert(interRect == IntRect(0, 0, 0, 0));
+
+    assert(rect1.intersects(rect2));
+
+    assert(rect1 == FloatRect(1, 1, 3, 4));
+    assert(rect1 != FloatRect(1, 2, 3, 4));
+
+    auto rect3 = Rect!(ubyte)(IntRect(-1, 1, 46, 256));
+    assert(rect3.left == 255);
+    assert(rect3.top == 1);
+    assert(rect3.width == 46);
+    assert(rect3.height == 0);
+
 }
-
-/// Definition of a Rect using integers.
-alias Rect!(int) IntRect;
-/// Definition of a Rect using floats.
-alias Rect!(float) FloatRect;

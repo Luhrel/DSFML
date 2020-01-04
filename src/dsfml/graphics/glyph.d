@@ -39,7 +39,7 @@
  */
 module dsfml.graphics.glyph;
 
-public import dsfml.graphics.rect;
+import dsfml.graphics.rect;
 
 /**
  * Structure describing a glyph.

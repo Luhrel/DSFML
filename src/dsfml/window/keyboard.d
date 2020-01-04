@@ -64,6 +64,9 @@ module dsfml.window.keyboard;
  */
 final abstract class Keyboard
 {
+    // Allow to do (e.g.) Keyboard.A instead of Keyboard.Key.A, etc.
+    alias Key this;
+
     /// Key codes.
     enum Key
     {
@@ -166,7 +169,7 @@ final abstract class Keyboard
         /// The ] key
         RBracket,
         /// The ; key
-        SemiColon,
+        Semicolon,
         /// The , key
         Comma,
         /// The . key
@@ -176,19 +179,19 @@ final abstract class Keyboard
         /// The / key
         Slash,
         /// The \ key
-        BackSlash,
+        Backslash,
         /// The ~ key
         Tilde,
         /// The = key
         Equal,
         /// The - key
-        Dash,
+        Hyphen,
         /// The Space key
         Space,
-        /// The Return key
-        Return,
+        /// The Enter key
+        Enter,
         /// The Backspace key
-        BackSpace,
+        Backspace,
         /// The Tabulation key
         Tab,
         /// The Page up key
@@ -273,160 +276,74 @@ final abstract class Keyboard
         Pause,
 
         /// Keep last -- the total number of keyboard keys
-        KeyCount
+        Count,
+
+        deprecated Dash = Hyphen,
+        deprecated BackSpace = Backspace,
+        deprecated BackSlash = Backslash,
+        deprecated SemiColon = Semicolon,
+        deprecated Return = Enter
     }
 
     /**
      * Check if a key is pressed.
      *
      * Params:
-     * 		key = Key to check
+     *         key = Key to check
      *
      * Returns: true if the key is pressed, false otherwise.
      */
     static bool isKeyPressed(Key key)
     {
-        return (sfKeyboard_isKeyPressed(key));
+        return sfKeyboard_isKeyPressed(key);
     }
+
+    /*
+     * Show or hide the virtual keyboard.
+     *
+     * Warning: the virtual keyboard is not supported on all systems. It will
+     * typically be implemented on mobile OSes (Android, iOS) but not on desktop
+     * OSes (Windows, Linux, ...).
+     *
+     * If the virtual keyboard is not available, this function does nothing.
+     *
+     * Params:
+     * visible=True to show, false to hide
+     */
+    static void setVirtualKeyboardVisible(bool visible)
+    {
+        sfKeyboard_setVirtualKeyboardVisible(visible);
+    }
+}
+
+private extern(C)
+{
+    bool sfKeyboard_isKeyPressed(int key);
+    void sfKeyboard_setVirtualKeyboardVisible(byte visible);
 }
 
 //known bugs:
 //cannot press two keys at once for this unit test
 unittest
 {
-    version(DSFML_Unittest_Window)
+    version (DSFML_Unittest_with_interaction)
     {
         import std.stdio;
-
-        writeln("Unit test for Keyboard realtime input");
+        import std.conv;
+        writeln("Running Keyboard unittest...");
+        writeln("Press any key for real time input. Press ESC to exit.");
 
         bool running = true;
 
-        writeln("Press any key for real time input. Press esc to exit.");
-
-        string[int] keys;
-        //in its own scope for code folding
-        {
-            keys[-1] = "Unknown";
-            keys[0] = 	"A";
-            keys[1] =	"B";
-            keys[2] =	"C";
-            keys[3] =	"D";
-            keys[4] =	"E";
-            keys[5] =	"F";
-            keys[6] =	"G";
-            keys[7] =	"H";
-            keys[8] =	"I";
-            keys[9] =	"J";
-            keys[10] =	"K";
-            keys[11] =	"L";
-            keys[12] =	"M";
-            keys[13] =	"N";
-            keys[14] =	"O";
-            keys[15] =	"P";
-            keys[16] =	"Q";
-            keys[17] =	"R";
-            keys[18] =	"S";
-            keys[19] =	"T";
-            keys[20] =	"U";
-            keys[21] =	"V";
-            keys[22] =	"W";
-            keys[23] =	"X";
-            keys[24] =	"Y";
-            keys[25] =	"Z";
-            keys[26] =	"Num0";
-            keys[26] =	"Num1";
-            keys[28] =	"Num2";
-            keys[29] =	"Num3";
-            keys[30] =	"Num4";
-            keys[31] =	"Num5";
-            keys[32] =	"Num6";
-            keys[33] =	"Num7";
-            keys[34] =	"Num8";
-            keys[35] =	"Num9";
-            keys[36] =	"Escape";
-            keys[37] =	"LControl";
-            keys[38] =	"LShift";
-            keys[39] =	"LAlt";
-            keys[40] =	"LSystem";
-            keys[41] =	"RControl";
-            keys[42] =	"RShift";
-            keys[43] =	"RAlt";
-            keys[44] =	"RSystem";
-            keys[45] =	"Menu";
-            keys[46] =	"LBracket";
-            keys[47] =	"RBracket";
-            keys[48] =	"SemiColon";
-            keys[49] =	"Comma";
-            keys[50] =	"Period";
-            keys[51] =	"Quote";
-            keys[52] =	"Slash";
-            keys[53] =	"BackSlash";
-            keys[54] =	"Tilde";
-            keys[55] =	"Equal";
-            keys[56] =	"Dash";
-            keys[57] =	"Space";
-            keys[58] =	"Return";
-            keys[59] =	"BackSpace";
-            keys[60] =	"Tab";
-            keys[61] =	"PageUp";
-            keys[62] =	"PageDown";
-            keys[63] =	"End";
-            keys[64] =	"Home";
-            keys[65] =	"Insert";
-            keys[66] =	"Delete";
-            keys[67] =	"Add";
-            keys[68] =	"Subtract";
-            keys[69] =	"Multiply";
-            keys[70] =	"Divide";
-            keys[71] =	"Left";
-            keys[72] =	"Right";
-            keys[73] =	"Up";
-            keys[74] =	"Down";
-            keys[75] =	"Numpad0";
-            keys[76] =	"Numpad1";
-            keys[77] =	"Numpad2";
-            keys[78] =	"Numpad3";
-            keys[79] =	"Numpad4";
-            keys[80] =	"Numpad5";
-            keys[81] =	"Numpad6";
-            keys[82] =	"Numpad7";
-            keys[83] =	"Numpad8";
-            keys[84] =	"Numpad9";
-            keys[85] =	"F1";
-            keys[86] =	"F2";
-            keys[87] =	"F3";
-            keys[88] =	"F4";
-            keys[89] =	"F5";
-            keys[90] =	"F6";
-            keys[91] =	"F7";
-            keys[92] =	"F8";
-            keys[93] =	"F9";
-            keys[94] =	"F10";
-            keys[95] =	"F11";
-            keys[96] =	"F12";
-            keys[97] =	"F13";
-            keys[98] =	"F14";
-            keys[99] =	"F15";
-            keys[100] =	"Pause";
-        }
-
-        //must check for each possible key
         while(running)
         {
-            for(int i =-1;i<101;++i)
+            for(int i = -1; i < Keyboard.Key.Count; ++i)
             {
-                if(Keyboard.isKeyPressed(cast(Keyboard.Key)i))
+                Keyboard.Key k = cast(Keyboard.Key) i;
+                if(Keyboard.isKeyPressed(k))
                 {
-                    if(i in keys)
-                    {
-                        writeln("Key "~ keys[i] ~ " was pressed.");
-                    }
-                    else
-                    {
-                        writeln(i);
-                    }
-                    if(i == 36)
+                    writeln("Key " ~ k.to!string ~ " was pressed.");
+                    if (k == Keyboard.Key.Escape)
                     {
                         running = false;
                     }
@@ -434,9 +351,4 @@ unittest
             }
         }
     }
-}
-
-private extern(C)
-{
-    bool sfKeyboard_isKeyPressed(int key);
 }

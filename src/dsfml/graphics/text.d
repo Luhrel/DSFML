@@ -60,9 +60,9 @@
  *
  * // Create a text
  * auto text = new Text("hello", font);
- * text.setCharacterSize(30);
- * text.setStyle(Text.Style.Bold);
- * text.setColor(Color.Red);
+ * text.characterSize(30);
+ * text.style(Text.Style.Bold);
+ * text.color(Color.Red);
  *
  * // Draw it
  * window.draw(text);
@@ -74,24 +74,23 @@
 module dsfml.graphics.text;
 
 import dsfml.graphics.font;
-import dsfml.graphics.glyph;
 import dsfml.graphics.color;
 import dsfml.graphics.rect;
+import dsfml.graphics.transform;
 import dsfml.graphics.transformable;
 import dsfml.graphics.drawable;
-import dsfml.graphics.texture;
-import dsfml.graphics.vertexarray;
 import dsfml.graphics.vertex;
 import dsfml.graphics.rendertarget;
 import dsfml.graphics.renderstates;
-import dsfml.graphics.primitivetype;
 
 import dsfml.system.vector2;
+
+import std.string;
 
 /**
  * Graphical text that can be drawn to a render target.
  */
-class Text : Drawable, Transformable
+class Text : Transformable, Drawable
 {
     /// Enumeration of the string drawing styles.
     enum Style
@@ -108,36 +107,7 @@ class Text : Drawable, Transformable
         StrikeThrough = 1 << 3
     }
 
-    mixin NormalTransformable;
-
-    private
-    {
-        dchar[] m_string;
-        Font m_font;
-        uint m_characterSize;
-        Style m_style;
-        Color m_fillColor;
-        Color m_outlineColor;
-        float m_outlineThickness;
-        VertexArray m_vertices;
-        VertexArray m_outlineVertices;
-        FloatRect m_bounds;
-        bool m_geometryNeedUpdate;
-
-        //helper function to copy input string into character buffer
-        void stringCopy(T)(const(T)[] str)
-        if (is(T == dchar)||is(T == wchar)||is(T == char))
-        {
-            import std.utf: byDchar;
-
-            //make a conservative estimate on how much room we'll need
-            m_string.reserve(dchar.sizeof * str.length);
-            m_string.length = 0;
-
-            foreach(dchar c; str.byDchar())
-                m_string~=c;
-        }
-    }
+    private sfText* m_text;
 
     /**
      * Default constructor
@@ -146,48 +116,7 @@ class Text : Drawable, Transformable
      */
     this()
     {
-        m_characterSize = 30;
-        m_style = Style.Regular;
-        m_fillColor = Color(255,255,255);
-        m_outlineColor = Color(0,0,0);
-        m_outlineThickness = 0;
-        m_vertices = new VertexArray(PrimitiveType.Triangles);
-        m_outlineVertices = new VertexArray(PrimitiveType.Triangles);
-        m_bounds = FloatRect();
-        m_geometryNeedUpdate = false;
-    }
-
-    /**
-     * Construct the text from a string, font and size
-     *
-     * Note that if the used font is a bitmap font, it is not scalable, thus not
-     * all requested sizes will be available to use. This needs to be taken into
-     * consideration when setting the character size. If you need to display
-     * text of a certain size, make sure the corresponding bitmap font that
-     * supports that size is used.
-     *
-     * Params:
-     *	text          = Text assigned to the string
-     *	font          = Font used to draw the string
-     *	characterSize = Base size of characters, in pixels
-     *
-     * Deprecated: Use the constructor that takes a 'const(dchar)[]' instead.
-     */
-    deprecated("Use the constructor that takes a 'const(dchar)[]' instead.")
-    this(T)(const(T)[] text, Font font, uint characterSize = 30)
-        if (is(T == dchar)||is(T == wchar)||is(T == char))
-    {
-        stringCopy(text);
-        m_font = font;
-        m_characterSize = characterSize;
-        m_style = Style.Regular;
-        m_fillColor = Color(255,255,255);
-        m_outlineColor = Color(0,0,0);
-        m_outlineThickness = 0;
-        m_vertices = new VertexArray(PrimitiveType.Triangles);
-        m_outlineVertices = new VertexArray(PrimitiveType.Triangles);
-        m_bounds = FloatRect();
-        m_geometryNeedUpdate = true;
+        m_text = sfText_create();
     }
 
     /**
@@ -204,32 +133,25 @@ class Text : Drawable, Transformable
      *	font          = Font used to draw the string
      *	characterSize = Base size of characters, in pixels
      */
-    this(T)(const(dchar)[] text, Font font, uint characterSize = 30)
+    this(const(dstring) text, Font font, uint characterSize = 30)
     {
-        stringCopy(text);
-        m_font = font;
-        m_characterSize = characterSize;
-        m_style = Style.Regular;
-        m_fillColor = Color(255,255,255);
-        m_outlineColor = Color(0,0,0);
-        m_outlineThickness = 0;
-        m_vertices = new VertexArray(PrimitiveType.Triangles);
-        m_outlineVertices = new VertexArray(PrimitiveType.Triangles);
-        m_bounds = FloatRect();
-        m_geometryNeedUpdate = true;
+        this();
+        str = text;
+        this.font = font;
+        this.characterSize = characterSize;
+
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
+        sfText_destroy(m_text);
     }
 
     @property
     {
         /**
-         * The character size in pixels.
+         * Set the character size.
          *
          * The default size is 30.
          *
@@ -238,414 +160,353 @@ class Text : Drawable, Transformable
          * taken into consideration when setting the character size. If you need
          * to display text of a certain size, make sure the corresponding bitmap
          * font that supports that size is used.
+         *
+         * Params:
+         *     size = New character size, in pixels
          */
-        uint characterSize(uint size)
+        void characterSize(uint size)
         {
-            if(m_characterSize != size)
-            {
-                m_characterSize = size;
-                m_geometryNeedUpdate = true;
-            }
-            return m_characterSize;
+            sfText_setCharacterSize(m_text, size);
         }
 
-        /// ditto
+        /**
+         * Get the character size.
+         *
+         * Returns: Size of the characters, in pixels
+         */
         uint characterSize() const
         {
-            return m_characterSize;
+            return sfText_getCharacterSize(m_text);
         }
     }
 
     /**
-     * Set the character size.
+     * Set the local origin of the object
      *
-     * The default size is 30.
-     *
-     * Note that if the used font is a bitmap font, it is not scalable, thus
-     * not all requested sizes will be available to use. This needs to be
-     * taken into consideration when setting the character size. If you need
-     * to display text of a certain size, make sure the corresponding bitmap
-     * font that supports that size is used.
+     * The origin of an object defines the center point for all transformations
+     * (position, scale, rotation). The coordinates of this point must be
+     * relative to the top-left corner of the object, and ignore all
+     * transformations (position, scale, rotation). The default origin of a
+     * transformable object is (0, 0).
      *
      * Params:
-     * 		size	= New character size, in pixels.
-     *
-     * Deprecated: Use the 'characterSize' property instead.
+     *     x = X coordinate of the new origin
+     *     y = Y coordinate of the new origin
      */
-    deprecated("Use the 'characterSize' property instead.")
-    void setCharacterSize(uint size)
+    @property
+    override void origin(float x, float y)
     {
-        characterSize = size;
+        origin(Vector2f(x, y));
     }
 
     /**
-     * Get the character size.
+     * Set the local origin of the object
      *
-     * Returns: Size of the characters, in pixels.
+     * The origin of an object defines the center point for all transformations
+     * (position, scale, rotation). The coordinates of this point must be
+     * relative to the top-left corner of the object, and ignore all
+     * transformations (position, scale, rotation). The default origin of a
+     * transformable object is (0, 0).
      *
-     * Deprecated: Use the 'characterSize' property instead.
+     * Params:
+     *     origin = New origin
      */
-    deprecated("Use the 'characterSize' property instead.")
-    uint getCharacterSize() const
+    @property
+    override void origin(Vector2f newOrigin)
     {
-        return characterSize;
+        sfText_setOrigin(m_text, newOrigin);
+    }
+
+    /**
+     * Get the local origin of the object
+     *
+     * Returns: Current origin
+     */
+    @property
+    override Vector2f origin() const
+    {
+        return sfText_getOrigin(m_text);
     }
 
     /**
      * Set the fill color of the text.
      *
-     * By default, the text's color is opaque white.
+     * By default, the text's fill color is opaque white. Setting the fill color
+     * to a transparent color with an outline will cause the outline to be
+     * displayed in the fill area of the text.
      *
-     * Params:
-     * 		color	= New color of the text.
+     * Parameters
+     *     color = New fill color of the text
      *
-     * Deprecated: Use the 'fillColor' or 'outlineColor' properties instead.
+     * See_Also: fillColor
      */
-    deprecated("Use the 'fillColor' or 'outlineColor' properties instead.")
-    void setColor(Color color)
+    @property
+    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.")
+    void color(Color color_)
     {
-        fillColor = color;
+        sfText_setColor(m_text, color_);
     }
 
     /**
      * Get the fill color of the text.
      *
-     * Returns: Fill color of the text.
+     * Returns: Fill color of the text
      *
-     * Deprecated: Use the 'fillColor' or 'outlineColor' properties instead.
+     * See_Also: fillColor
      */
-    deprecated("Use the 'fillColor' or 'outlineColor' properties instead.")
-    Color getColor() const
+    @property
+    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.")
+    Color color()
     {
-        return fillColor;
+        return sfText_getColor(m_text);
     }
 
     @property
     {
         /**
-        * The fill color of the text.
-        *
-        * By default, the text's fill color is opaque white. Setting the fill
-        * color to a transparent color with an outline will cause the outline to
-        * be displayed in the fill area of the text.
-        */
-        Color fillColor(Color color)
+         * Set the fill color of the text.
+         *
+         * By default, the text's fill color is opaque white. Setting the fill
+         * color to a transparent color with an outline will cause the outline
+         * to be displayed in the fill area of the text.
+         *
+         * Params:
+         *     color = New fill color of the text
+         */
+        void fillColor(Color color)
         {
-            if(m_fillColor != color)
-            {
-                m_fillColor = color;
-
-                // Change vertex colors directly, no need to update whole geometry
-                // (if geometry is updated anyway, we can skip this step)
-                if(!m_geometryNeedUpdate)
-                {
-                    for(int i = 0; i < m_vertices.getVertexCount(); ++i)
-                    {
-                        m_vertices[i].color = m_fillColor;
-                    }
-                }
-            }
-
-            return m_fillColor;
+            sfText_setFillColor(m_text, color);
         }
 
-        /// ditto
+        /**
+         * Get the fill color of the text.
+         *
+         * Returns: Fill color of the text
+         */
         Color fillColor() const
         {
-            return m_fillColor;
+            return sfText_getFillColor(m_text);
         }
     }
 
     @property
     {
         /**
-        * The outline color of the text.
-        *
-        * By default, the text's outline color is opaque black.
-        */
-        Color outlineColor(Color color)
+         * Set the outline color of the text.
+         *
+         * By default, the text's outline color is opaque black.
+         *
+         * Params:
+         *     color = New outline color of the text
+         */
+        void outlineColor(Color color)
         {
-            if(m_outlineColor != color)
-            {
-                m_outlineColor = color;
-
-                // Change vertex colors directly, no need to update whole geometry
-                // (if geometry is updated anyway, we can skip this step)
-                if(!m_geometryNeedUpdate)
-                {
-                    for(int i = 0; i < m_outlineVertices.getVertexCount(); ++i)
-                    {
-                        m_outlineVertices[i].color = m_outlineColor;
-                    }
-                }
-            }
-
-            return m_outlineColor;
+            sfText_setOutlineColor(m_text, color);
         }
 
-        /// ditto
+        /**
+         * Get the outline color of the text.
+         *
+         * Returns: Outline color of the text
+         */
         Color outlineColor() const
         {
-            return m_outlineColor;
+            return sfText_getOutlineColor(m_text);
         }
     }
 
     @property
     {
         /**
-        * The outline color of the text.
-        *
-        * By default, the text's outline color is opaque black.
-        */
-        float outlineThickness(float thickness)
+         * Set the thickness of the text's outline.
+         *
+         * By default, the outline thickness is 0.
+         *
+         * Be aware that using a negative value for the outline thickness will
+         * cause distorted rendering.
+         *
+         * Params:
+         *     thickness = New outline thickness, in pixels
+         */
+        void outlineThickness(float thickness)
         {
-            if(m_outlineThickness != thickness)
-            {
-                m_outlineThickness = thickness;
-                m_geometryNeedUpdate = true;
-            }
-
-            return m_outlineThickness;
+            sfText_setOutlineThickness(m_text, thickness);
         }
 
-        /// ditto
+        /**
+         * Get the outline thickness of the text.
+         *
+         * Returns: Outline thickness of the text, in pixels
+         */
         float outlineThickness() const
         {
-            return m_outlineThickness;
+            return sfText_getOutlineThickness(m_text);
         }
     }
 
     @property
     {
         /**
-        * The text's font.
-        */
-        const(Font) font(Font newFont)
+         * Set the text's font.
+         *
+         * The font argument refers to a font that must exist as long as the
+         * text uses it. Indeed, the text doesn't store its own copy of the
+         * font, but rather keeps a pointer to the one that you passed to this
+         * function. If the font is destroyed and the text tries to use it, the
+         * behavior is undefined.
+         *
+         * Params:
+         *     font = New font
+         */
+        void font(Font newFont)
         {
-            if (m_font !is newFont)
-            {
-                m_font = newFont;
-                m_geometryNeedUpdate = true;
-            }
-
-            return m_font;
+            sfText_setFont(m_text, newFont.ptr);
         }
 
-        /// ditto
+        /**
+         * Get the text's font.
+         *
+         * If the text has no font attached, a NULL pointer is returned. The
+         * returned pointer is const, which means that you cannot modify the
+         * font when you get it from this function.
+         *
+         * Returns: Text's font
+         */
         const(Font) font() const
         {
-            return m_font;
+            return new Font(sfText_getFont(m_text));
         }
     }
 
     /**
-     * Set the text's font.
+     * Get the global bounding rectangle of the entity.
+     *
+     * The returned rectangle is in global coordinates, which means that it
+     * takes in account the transformations (translation, rotation, scale, ...)
+     * that are applied to the entity. In other words, this function returns the
+     * bounds of the sprite in the global 2D world's coordinate system.
+     *
+     * Returns: Global bounding rectangle of the entity.
+     */
+    @property
+    FloatRect globalBounds()
+    {
+        return sfText_getGlobalBounds(m_text);
+    }
+
+    /**
+     * Get the local bounding rectangle of the entity.
+     *
+     * The returned rectangle is in local coordinates, which means that it
+     * ignores the transformations (translation, rotation, scale, ...) that are
+     * applied to the entity. In other words, this function returns the bounds
+     * of the entity in the entity's coordinate system.
+     *
+     * Returns: Local bounding rectangle of the entity.
+     */
+    @property
+    FloatRect localBounds() const
+    {
+        return sfText_getLocalBounds(m_text);
+    }
+
+    /**
+     * Move the object by a given offset.
+     *
+     * This function adds to the current position of the object, unlike the
+     * position property which overwrites it. Thus, it is equivalent to the
+     * following code:
+     * ---
+     * Vector2f pos = object.position();
+     * object.position(pos.x + offsetX, pos.y + offsetY);
+     * ---
      *
      * Params:
-     * 		newFont	= New font
-     *
-     * Deprecated: Use the 'font' property instead.
+     *     offsetX = X offset
+     *     offsetY = Y offset
+     * See_Also: position
      */
-    deprecated("Use the 'font' property instead.")
-    void setFont(Font newFont)
+    override void move(float offsetX, float offsetY)
     {
-        font = newFont;
+        move(Vector2f(offsetX, offsetY));
     }
 
     /**
-     * Get thet text's font.
+     * Move the object by a given offset.
      *
-     * Returns: Text's font.
+     * This function adds to the current position of the object, unlike the
+     * position property which overwrites it. Thus, it is equivalent to the
+     * following code:
+     * ---
+     * object.setPosition(object.position() + offset);
+     * ---
      *
-     * Deprecated: Use the 'font' property instead.
+     * Params:
+     *     offset = Offset
+     * See_Also: position
      */
-    deprecated("Use the 'font' property instead.")
-    const(Font) getFont() const
+    override void move(Vector2f offset)
     {
-        return font;
-    }
-
-    /**
-     * Get the global bounding rectangle of the entity.
-     *
-     * The returned rectangle is in global coordinates, which means that it
-     * takes in account the transformations (translation, rotation, scale, ...)
-     * that are applied to the entity. In other words, this function returns the
-     * bounds of the sprite in the global 2D world's coordinate system.
-     *
-     * Returns: Global bounding rectangle of the entity.
-     */
-    @property FloatRect globalBounds()
-    {
-        return getTransform().transformRect(localBounds);
-    }
-
-    /**
-     * Get the global bounding rectangle of the entity.
-     *
-     * The returned rectangle is in global coordinates, which means that it
-     * takes in account the transformations (translation, rotation, scale, ...)
-     * that are applied to the entity. In other words, this function returns the
-     * bounds of the sprite in the global 2D world's coordinate system.
-     *
-     * Returns: Global bounding rectangle of the entity.
-     *
-     * Deprecated: Use the 'globalBounds' property instead.
-     */
-    deprecated("Use the 'globalBounds' property instead.")
-    FloatRect getGlobalBounds()
-    {
-        return globalBounds;
-    }
-
-    /**
-     * Get the local bounding rectangle of the entity.
-     *
-     * The returned rectangle is in local coordinates, which means that it
-     * ignores the transformations (translation, rotation, scale, ...) that are
-     * applied to the entity. In other words, this function returns the bounds
-     * of the entity in the entity's coordinate system.
-     *
-     * Returns: Local bounding rectangle of the entity.
-     */
-    @property FloatRect localBounds() const
-    {
-        return m_bounds;
-    }
-
-    /**
-     * Get the local bounding rectangle of the entity.
-     *
-     * The returned rectangle is in local coordinates, which means that it
-     * ignores the transformations (translation, rotation, scale, ...) that are
-     * applied to the entity. In other words, this function returns the bounds
-     * of the entity in the entity's coordinate system.
-     *
-     * Returns: Local bounding rectangle of the entity.
-     *
-     * Deprecated: Use the 'globalBounds' property instead.
-     */
-    deprecated("Use the 'localBounds' property instead.")
-    FloatRect getLocalBounds() const
-    {
-        return localBounds;
+        sfText_move(m_text, offset);
     }
 
     @property
     {
         /**
-         * The text's style.
+         * Set the text's style.
          *
          * You can pass a combination of one or more styles, for example
-         * Style.Bold | Text.Italic.
+         * Text.Style.Bold | Text.Style.Italic.
+         *
+         * The default style is sf::Text::Regular.
+         *
+         * Params:
+         *     style = New style
          */
-        Style style(Style newStyle)
+        void style(Style newStyle)
         {
-            if(m_style != newStyle)
-            {
-                m_style = newStyle;
-                m_geometryNeedUpdate = true;
-            }
-
-            return m_style;
+            sfText_setStyle(m_text, newStyle);
         }
 
-        /// ditto
+        /**
+         * Get the text's style.
+         *
+         * Returns: Text's style
+         */
         Style style() const
         {
-            return m_style;
+            return sfText_getStyle(m_text);
         }
-    }
-
-    /**
-     * Set the text's style.
-     *
-     * You can pass a combination of one or more styles, for example
-     * Style.Bold | Text.Italic.
-     *
-     * Params:
-     *      newStyle = New style
-     *
-     * Deprecated: Use the 'style' property instead.
-     */
-    deprecated("Use the 'style' property instead.")
-    void setStyle(Style newStyle)
-    {
-        style = newStyle;
-    }
-
-    /**
-     * Get the text's style.
-     *
-     * Returns: Text's style.
-     *
-     * Deprecated: Use the 'style' property instead.
-     */
-    deprecated("Use the 'style' property instead.")
-    Style getStyle() const
-    {
-        return style;
     }
 
     @property
     {
         /**
-         * The text's string.
+         * Set the text's string.
          *
          * A text's string is empty by default.
+         *
+         * Params:
+         *     text = New string
          */
-        const(dchar)[] string(const(dchar)[] str)
+        void str(dstring text)
         {
-            // Because of the conversion, assume the text is new
-            stringCopy(str);
-            m_geometryNeedUpdate = true;
-            return m_string;
+            sfText_setUnicodeString(m_text, representation(text).ptr);
         }
-        /// ditto
-        const(dchar)[] string() const
+
+        /**
+         * Get the text's string.
+         *
+         * Returns: Text's string
+         */
+        const(dstring) str() const
         {
-            return m_string;
+            uint* utf32 = sfText_getUnicodeString(m_text);
+            // Converts uint* to uint[] and then to dchar[]
+            dstring converted = utf32[0 .. utf32.sizeof].assumeUTF;
+            // Remove pending zeros
+            return converted.ptr.fromStringz;
         }
-    }
-
-    /**
-     * Set the text's string.
-     *
-     * A text's string is empty by default.
-     *
-     * Params:
-     * 		text	= New string
-     *
-     * Deprecated: Use the 'string' property instead.
-     */
-    deprecated("Use the 'string' property instead.")
-    void setString(T)(const(T)[] text)
-        if (is(T == dchar)||is(T == wchar)||is(T == char))
-    {
-        // Because of the conversion, assume the text is new
-        stringCopy(text);
-        m_geometryNeedUpdate = true;
-    }
-
-    /**
-     * Get a copy of the text's string.
-     *
-     * Returns: a copy of the text's string.
-     *
-     * Deprecated: Use the 'string' property instead.
-     */
-    deprecated("Use the 'string' property instead.")
-    const(T)[] getString(T=char)() const
-        if (is(T == dchar)||is(T == wchar)||is(T == char))
-    {
-        import std.utf: toUTF8, toUTF16, toUTF32;
-
-        static if(is(T == char))
-		    return toUTF8(m_string);
-	    else static if(is(T == wchar))
-		    return toUTF16(m_string);
-	    else static if(is(T == dchar))
-		    return toUTF32(m_string);
     }
 
     /**
@@ -657,19 +518,7 @@ class Text : Drawable, Transformable
      */
     void draw(RenderTarget renderTarget, RenderStates renderStates)
     {
-        if (m_font !is null)
-        {
-            ensureGeometryUpdate();
-
-            renderStates.transform *= getTransform();
-            renderStates.texture =  m_font.getTexture(m_characterSize);
-
-            // Only draw the outline if there is something to draw
-            if (m_outlineThickness != 0)
-                renderTarget.draw(m_outlineVertices, renderStates);
-
-            renderTarget.draw(m_vertices, renderStates);
-        }
+        renderTarget.draw(this, renderStates);
     }
 
     /**
@@ -687,339 +536,360 @@ class Text : Drawable, Transformable
      */
     Vector2f findCharacterPos(size_t index)
     {
-        // Make sure that we have a valid font
-        if(m_font is null)
-        {
-            return Vector2f(0,0);
-        }
-
-        // Adjust the index if it's out of range
-        if(index > m_string.length)
-        {
-            index = m_string.length;
-        }
-
-        // Precompute the variables needed by the algorithm
-        bool bold  = (m_style & Style.Bold) != 0;
-        float hspace = cast(float)(m_font.getGlyph(' ', m_characterSize, bold).advance);
-        float vspace = cast(float)(m_font.getLineSpacing(m_characterSize));
-
-        // Compute the position
-        Vector2f position;
-        dchar prevChar = 0;
-        for (size_t i = 0; i < index; ++i)
-        {
-            dchar curChar = m_string[i];
-
-            // Apply the kerning offset
-            position.x += cast(float)(m_font.getKerning(prevChar, curChar, m_characterSize));
-            prevChar = curChar;
-
-            // Handle special characters
-            switch (curChar)
-            {
-                case ' ' : position.x += hspace; continue;
-                case '\t' : position.x += hspace * 4; continue;
-                case '\n' : position.y += vspace; position.x = 0; continue;
-                case '\v' : position.y += vspace * 4; continue;
-                default : break;
-            }
-
-            // For regular characters, add the advance offset of the glyph
-            position.x += cast(float)(m_font.getGlyph(curChar, m_characterSize, bold).advance);
-        }
-
-        // Transform the position to global coordinates
-        position = getTransform().transformPoint(position);
-
-        return position;
+        return sfText_findCharacterPos(m_text, index);
     }
 
-private:
-    void ensureGeometryUpdate()
+    /**
+     * Set the letter spacing factor.
+     *
+     * The default spacing between letters is defined by the font. This factor
+     * doesn't directly apply to the existing spacing between each character, it
+     * rather adds a fixed space between them which is calculated from the font
+     * metrics and the character size. Note that factors below 1 (including
+     * negative numbers) bring characters closer to each other. By default the
+     * letter spacing factor is 1.
+     *
+     * Params:
+     *     spacingFactor = New letter spacing factor
+     */
+    @property
+    void letterSpacing(float spacingFactor)
     {
-        import std.math: floor;
-        import std.algorithm: max, min;
-
-        // Add an underline or strikethrough line to the vertex array
-        static void addLine(VertexArray vertices, float lineLength,
-                            float lineTop, ref const(Color) color, float offset,
-                            float thickness, float outlineThickness = 0)
-        {
-            float top = floor(lineTop + offset - (thickness / 2) + 0.5f);
-            float bottom = top + floor(thickness + 0.5f);
-
-            vertices.append(Vertex(Vector2f(-outlineThickness,             top    - outlineThickness), color, Vector2f(1, 1)));
-            vertices.append(Vertex(Vector2f(lineLength + outlineThickness, top    - outlineThickness), color, Vector2f(1, 1)));
-            vertices.append(Vertex(Vector2f(-outlineThickness,             bottom + outlineThickness), color, Vector2f(1, 1)));
-            vertices.append(Vertex(Vector2f(-outlineThickness,             bottom + outlineThickness), color, Vector2f(1, 1)));
-            vertices.append(Vertex(Vector2f(lineLength + outlineThickness, top    - outlineThickness), color, Vector2f(1, 1)));
-            vertices.append(Vertex(Vector2f(lineLength + outlineThickness, bottom + outlineThickness), color, Vector2f(1, 1)));
-        }
-
-        // Add a glyph quad to the vertex array
-        static void addGlyphQuad(VertexArray vertices, Vector2f position,
-                                 ref const(Color) color, ref const(Glyph) glyph,
-                                 float italic, float outlineThickness = 0)
-        {
-            float left   = glyph.bounds.left;
-            float top    = glyph.bounds.top;
-            float right  = glyph.bounds.left + glyph.bounds.width;
-            float bottom = glyph.bounds.top  + glyph.bounds.height;
-
-            float u1 = glyph.textureRect.left;
-            float v1 = glyph.textureRect.top;
-            float u2 = glyph.textureRect.left + glyph.textureRect.width;
-            float v2 = glyph.textureRect.top  + glyph.textureRect.height;
-
-            vertices.append(Vertex(Vector2f(position.x + left  - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, Vector2f(u1, v1)));
-            vertices.append(Vertex(Vector2f(position.x + right - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, Vector2f(u2, v1)));
-            vertices.append(Vertex(Vector2f(position.x + left  - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, Vector2f(u1, v2)));
-            vertices.append(Vertex(Vector2f(position.x + left  - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, Vector2f(u1, v2)));
-            vertices.append(Vertex(Vector2f(position.x + right - italic * top    - outlineThickness, position.y + top    - outlineThickness), color, Vector2f(u2, v1)));
-            vertices.append(Vertex(Vector2f(position.x + right - italic * bottom - outlineThickness, position.y + bottom - outlineThickness), color, Vector2f(u2, v2)));
-        }
-
-        // Do nothing, if geometry has not changed
-        if (!m_geometryNeedUpdate)
-            return;
-
-        // Mark geometry as updated
-        m_geometryNeedUpdate = false;
-
-        // Clear the previous geometry
-        m_vertices.clear();
-        m_outlineVertices.clear();
-        m_bounds = FloatRect();
-
-        // No font or text: nothing to draw
-        if (!m_font || m_string.length == 0)
-            return;
-
-        // Compute values related to the text style
-        bool  bold               = (m_style & Style.Bold) != 0;
-        bool  underlined         = (m_style & Style.Underlined) != 0;
-        bool  strikeThrough      = (m_style & Style.StrikeThrough) != 0;
-        float italic             = (m_style & Style.Italic) ? 0.208f : 0.0f; // 12 degrees
-        float underlineOffset    = m_font.getUnderlinePosition(m_characterSize);
-        float underlineThickness = m_font.getUnderlineThickness(m_characterSize);
-
-        // Compute the location of the strike through dynamically
-        // We use the center point of the lowercase 'x' glyph as the reference
-        // We reuse the underline thickness as the thickness of the strike through as well
-        FloatRect xBounds = m_font.getGlyph('x', m_characterSize, bold).bounds;
-        float strikeThroughOffset = xBounds.top + xBounds.height / 2.0f;
-
-        // Precompute the variables needed by the algorithm
-        float hspace = m_font.getGlyph(' ', m_characterSize, bold).advance;
-        float vspace = m_font.getLineSpacing(m_characterSize);
-        float x      = 0.0f;
-        float y      = cast(float)m_characterSize;
-
-        // Create one quad for each character
-        float minX = cast(float)m_characterSize;
-        float minY = cast(float)m_characterSize;
-        float maxX = 0.0f;
-        float maxY = 0.0f;
-        dchar prevChar = '\0';
-        for (size_t i = 0; i < m_string.length; ++i)
-        {
-            dchar curChar = m_string[i];
-
-            // Apply the kerning offset
-            x += m_font.getKerning(prevChar, curChar, m_characterSize);
-            prevChar = curChar;
-
-            // If we're using the underlined style and there's a new line, draw a line
-            if (underlined && (curChar == '\n'))
-            {
-                addLine(m_vertices, x, y, m_fillColor, underlineOffset, underlineThickness);
-
-                if (m_outlineThickness != 0)
-                    addLine(m_outlineVertices, x, y, m_outlineColor, underlineOffset, underlineThickness, m_outlineThickness);
-            }
-
-            // If we're using the strike through style and there's a new line, draw a line across all characters
-            if (strikeThrough && (curChar == '\n'))
-            {
-                addLine(m_vertices, x, y, m_fillColor, strikeThroughOffset, underlineThickness);
-
-                if (m_outlineThickness != 0)
-                    addLine(m_outlineVertices, x, y, m_outlineColor, strikeThroughOffset, underlineThickness, m_outlineThickness);
-            }
-
-            // Handle special characters
-            if ((curChar == ' ') || (curChar == '\t') || (curChar == '\n'))
-            {
-                // Update the current bounds (min coordinates)
-                minX = min(minX, x);
-                minY = min(minY, y);
-
-                switch (curChar)
-                {
-                    case ' ':  x += hspace;        break;
-                    case '\t': x += hspace * 4;    break;
-                    case '\n': y += vspace; x = 0; break;
-                    default : break;
-                }
-
-                // Update the current bounds (max coordinates)
-                maxX = max(maxX, x);
-                maxY = max(maxY, y);
-
-                // Next glyph, no need to create a quad for whitespace
-                continue;
-            }
-
-            // Apply the outline
-            if (m_outlineThickness != 0)
-            {
-                Glyph glyph = m_font.getGlyph(curChar, m_characterSize, bold, m_outlineThickness);
-
-                float left   = glyph.bounds.left;
-                float top    = glyph.bounds.top;
-                float right  = glyph.bounds.left + glyph.bounds.width;
-                float bottom = glyph.bounds.top  + glyph.bounds.height;
-
-                // Add the outline glyph to the vertices
-                addGlyphQuad(m_outlineVertices, Vector2f(x, y), m_outlineColor, glyph, italic, m_outlineThickness);
-
-                // Update the current bounds with the outlined glyph bounds
-                minX = min(minX, x + left   - italic * bottom - m_outlineThickness);
-                maxX = max(maxX, x + right  - italic * top    - m_outlineThickness);
-                minY = min(minY, y + top    - m_outlineThickness);
-                maxY = max(maxY, y + bottom - m_outlineThickness);
-            }
-
-            // Extract the current glyph's description
-            const Glyph glyph = m_font.getGlyph(curChar, m_characterSize, bold);
-
-            // Add the glyph to the vertices
-            addGlyphQuad(m_vertices, Vector2f(x, y), m_fillColor, glyph, italic);
-
-            // Update the current bounds with the non outlined glyph bounds
-            if (m_outlineThickness == 0)
-            {
-                float left   = glyph.bounds.left;
-                float top    = glyph.bounds.top;
-                float right  = glyph.bounds.left + glyph.bounds.width;
-                float bottom = glyph.bounds.top  + glyph.bounds.height;
-
-                minX = min(minX, x + left  - italic * bottom);
-                maxX = max(maxX, x + right - italic * top);
-                minY = min(minY, y + top);
-                maxY = max(maxY, y + bottom);
-            }
-
-            // Advance to the next character
-            x += glyph.advance;
-        }
-
-        // If we're using the underlined style, add the last line
-        if (underlined && (x > 0))
-        {
-            addLine(m_vertices, x, y, m_fillColor, underlineOffset, underlineThickness);
-
-            if (m_outlineThickness != 0)
-                addLine(m_outlineVertices, x, y, m_outlineColor, underlineOffset, underlineThickness, m_outlineThickness);
-        }
-
-        // If we're using the strike through style, add the last line across all characters
-        if (strikeThrough && (x > 0))
-        {
-            addLine(m_vertices, x, y, m_fillColor, strikeThroughOffset, underlineThickness);
-
-            if (m_outlineThickness != 0)
-                addLine(m_outlineVertices, x, y, m_outlineColor, strikeThroughOffset, underlineThickness, m_outlineThickness);
-        }
-
-        // Update the bounding rectangle
-        m_bounds.left = minX;
-        m_bounds.top = minY;
-        m_bounds.width = maxX - minX;
-        m_bounds.height = maxY - minY;
+        sfText_setLetterSpacing(m_text, spacingFactor);
     }
+
+    /**
+     * Get the size of the letter spacing factor.
+     *
+     * Returns: Size of the letter spacing factor
+     */
+    @property
+    float letterSpacing() const
+    {
+        return sfText_getLetterSpacing(m_text);
+    }
+
+    /**
+     * Set the line spacing factor.
+     *
+     * The default spacing between lines is defined by the font. This method
+     * enables you to set a factor for the spacing between lines.
+     * By default the line spacing factor is 1.
+     *
+     * Params:
+     *     spacingFactor = New line spacing factor
+     */
+    @property
+    void lineSpacing(float spacingFactor)
+    {
+        sfText_setLineSpacing(m_text, spacingFactor);
+    }
+
+    /**
+     * Get the size of the line spacing factor.
+     *
+     * Returns: Size of the line spacing factor
+     */
+    @property
+    float lineSpacing()
+    {
+        return sfText_getLineSpacing(m_text);
+    }
+
+    /**
+     * Set the position of the object
+     *
+     * This function completely overwrites the previous position. See the move
+     * function to apply an offset based on the previous position instead. The
+     * default position of a transformable object is (0, 0).
+     *
+     * Params:
+     *     x = X coordinate of the new position
+     *     y = Y coordinate of the new position
+     * See_Also: move
+     */
+    @property
+    override void position(float x, float y)
+    {
+        position(Vector2f(x, y));
+    }
+
+    /**
+     * Set the position of the object
+     *
+     * This function completely overwrites the previous position. See the move
+     * function to apply an offset based on the previous position instead.
+     * The default position of a transformable object is (0, 0).
+     *
+     * Params:
+     *     position = New position
+     * See_Also: move
+     */
+    @property
+    override void position(Vector2f newPosition)
+    {
+        sfText_setPosition(m_text, newPosition);
+    }
+
+    /**
+     * Get the position of the object
+     *
+     * Returns: Current position
+     */
+    @property
+    override Vector2f position() const
+    {
+        return sfText_getPosition(m_text);
+    }
+
+    /**
+     * Rotate the object.
+     *
+     * This function adds to the current rotation of the object, unlike the
+     * rotation property which overwrites it. Thus, it is equivalent to the
+     * following code:
+     * ---
+     * object.setRotation(object.getRotation() + angle);
+     *
+     * Params:
+     *     angle = Angle of rotation, in degrees
+     */
+    override void rotate(float angle)
+    {
+        sfText_rotate(m_text, angle);
+    }
+
+    /**
+     * Set the orientation of the object
+     *
+     * This function completely overwrites the previous rotation. See the rotate
+     * function to add an angle based on the previous rotation instead. The
+     * default rotation of a transformable object is 0.
+     *
+     * Params:
+     *     angle = New rotation, in degrees
+     */
+    @property
+    override void rotation(float angle)
+    {
+        sfText_setRotation(m_text, angle);
+    }
+
+    /**
+     * Get the orientation of the object
+     *
+     * The rotation is always in the range [0, 360].
+     *
+     * Returns: Current rotation, in degrees
+     */
+    @property
+    override float rotation() const
+    {
+        return sfText_getRotation(m_text);
+    }
+
+    /**
+     * Set the scale factors of the object
+     *
+     * This function completely overwrites the previous scale. See the scale
+     * function to add a factor based on the previous scale instead. The default
+     * scale of a transformable object is (1, 1).
+     *
+     * Params:
+     *     factorX = New horizontal scale factor
+     *     factorY = New vertical scale factor
+     */
+    @property
+    override void scale(float factorX, float factorY)
+    {
+        scale(Vector2f(factorX, factorY));
+    }
+
+    /**
+     * Set the scale factors of the object
+     *
+     * This function completely overwrites the previous scale. See the scale
+     * function to add a factor based on the previous scale instead. The default
+     * scale of a transformable object is (1, 1).
+     *
+     * Params:
+     *     factors = New scale factors
+     */
+    @property
+    override void scale(Vector2f factors)
+    {
+        sfText_setScale(m_text, factors);
+    }
+
+    /**
+     * Get the current scale of the object
+     *
+     * Returns: Current scale factors
+     */
+    @property
+    override Vector2f scale() const
+    {
+        return sfText_getScale(m_text);
+    }
+
+    /**
+     * Get the combined transform of the object
+     *
+     * Returns: Transform combining the position/rotation/scale/origin of the object
+     */
+    override const(Transform) transform() const
+    {
+        return Transform(sfText_getTransform(m_text));
+    }
+
+    /**
+     * Get the inverse of the combined transform of the object
+     *
+     * Returns: Inverse of the combined transformations applied to the object
+     */
+    override const(Transform) inverseTransform() const
+    {
+        return Transform(sfText_getInverseTransform(m_text));
+    }
+
+    // Returns the C pointer.
+    package sfText* ptr()
+    {
+        return m_text;
+    }
+}
+
+package extern(C)
+{
+    struct sfText;
+}
+
+private extern(C)
+{
+    //enum sfTextStyle;
+
+    sfText* sfText_create();
+    sfText* sfText_copy(const sfText* text);
+    void sfText_destroy(sfText* text);
+    void sfText_setPosition(sfText* text, Vector2f position);
+    void sfText_setRotation(sfText* text, float angle);
+    void sfText_setScale(sfText* text, Vector2f scale);
+    void sfText_setOrigin(sfText* text, Vector2f origin);
+    Vector2f sfText_getPosition(const sfText* text);
+    float sfText_getRotation(const sfText* text);
+    Vector2f sfText_getScale(const sfText* text);
+    Vector2f sfText_getOrigin(const sfText* text);
+    void sfText_move(sfText* text, Vector2f offset);
+    void sfText_rotate(sfText* text, float angle);
+    void sfText_scale(sfText* text, Vector2f factors);
+    sfTransform sfText_getTransform(const sfText* text);
+    sfTransform sfText_getInverseTransform(const sfText* text);
+    void sfText_setString(sfText* text, const char* str);
+    void sfText_setUnicodeString(sfText* text, const uint* str);
+    void sfText_setFont(sfText* text, const sfFont* font);
+    void sfText_setCharacterSize(sfText* text, uint size);
+    void sfText_setLineSpacing(sfText* text, float spacingFactor);
+    void sfText_setLetterSpacing(sfText* text, float spacingFactor);
+    void sfText_setStyle(sfText* text, uint style);
+    void sfText_setColor(sfText* text, Color color);
+    void sfText_setFillColor(sfText* text, Color color);
+    void sfText_setOutlineColor(sfText* text, Color color);
+    void sfText_setOutlineThickness(sfText* text, float thickness);
+    char* sfText_getString(const sfText* text); //const
+    uint* sfText_getUnicodeString(const sfText* text); //const
+    sfFont* sfText_getFont(const sfText* text); //const
+    uint sfText_getCharacterSize(const sfText* text);
+    float sfText_getLetterSpacing(const sfText* text);
+    float sfText_getLineSpacing(const sfText* text);
+    Text.Style sfText_getStyle(const sfText* text);
+    Color sfText_getColor(const sfText* text);
+    Color sfText_getFillColor(const sfText* text);
+    Color sfText_getOutlineColor(const sfText* text);
+    float sfText_getOutlineThickness(const sfText* text);
+    Vector2f sfText_findCharacterPos(const sfText* text, size_t index);
+    FloatRect sfText_getLocalBounds(const sfText* text);
+    FloatRect sfText_getGlobalBounds(const sfText* text);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
-        import dsfml.graphics.rendertexture;
+    import std.stdio;
+    writeln("Running Text unittest...");
 
-        writeln("Unit test for Text");
+    auto font = new Font();
+    font.loadFromFile("unittest/res/Warenhaus-Standard.ttf");
+    dstring str = "DSFML";
+    uint csize = 15;
 
-        auto renderTexture = new RenderTexture();
+    Text text = new Text(str, font, csize);
 
-        renderTexture.create(400,200);
+    assert(text.str == str);
+    dstring utf32 = "å ø ∑ 😦";
+    text.str = utf32;
+    assert(text.str == utf32);
 
-        auto font = new Font();
-        assert(font.loadFromFile("res/Warenhaus-Standard.ttf"));
+    assert(text.characterSize == csize);
+    csize = 12;
+    text.characterSize = csize;
+    assert(text.characterSize == csize);
 
-        Text regular = new Text("Regular", font, 20);
-        Text bold = new Text("Bold", font, 20);
-        Text italic = new Text("Italic", font, 20);
-        Text boldItalic = new Text("Bold Italic", font, 20);
-        Text strikeThrough = new Text("Strike Through", font, 20);
-        Text italicStrikeThrough = new Text("Italic Strike Through", font, 20);
-        Text boldStrikeThrough = new Text("Bold Strike Through", font, 20);
-        Text boldItalicStrikeThrough = new Text("Bold Italic Strike Through", font, 20);
-        Text outlined = new Text("Outlined", font, 20);
-        Text outlinedBoldItalicStrikeThrough = new Text("Outlined Bold Italic Strike Through", font, 20);
+    // text.font is const
+    assert(text.font != font);
 
-        bold.style = Text.Style.Bold;
-        bold.position = Vector2f(0,20);
+    auto pos = Vector2f(20, 30);
+    text.position = pos;
+    assert(text.position == pos);
+    text.move(30, 20);
+    assert(text.position == Vector2f(50, 50));
 
-        italic.style = Text.Style.Italic;
-        italic.position = Vector2f(0,40);
+    assert(text.findCharacterPos(1) == Vector2f(56, 50));
 
-        boldItalic.style = Text.Style.Bold | Text.Style.Italic;
-        boldItalic.position = Vector2f(0,60);
+    float rot = 44.5;
+    text.rotation = rot;
+    assert(text.rotation == rot);
+    text.rotate(rot);
+    assert(text.rotation == 2*rot);
 
-        strikeThrough.style = Text.Style.StrikeThrough;
-        strikeThrough.position = Vector2f(0,80);
+    auto scl = Vector2f(2, 5);
+    text.scale = scl;
+    assert(text.scale == scl);
 
-        italicStrikeThrough.style = Text.Style.Italic | Text.Style.StrikeThrough;
-        italicStrikeThrough.position = Vector2f(0,100);
+    auto orgn = Vector2f(123.456, 456.789);
+    text.origin = orgn;
+    assert(text.origin == orgn);
 
-        boldStrikeThrough.style = Text.Style.Bold | Text.Style.StrikeThrough;
-        boldStrikeThrough.position = Vector2f(0,120);
+    auto t = text.transform;
+    auto it = text.inverseTransform;
+    // TODO:
+    //assert(t == Transform());
+    assert(t.inverse == it);
 
-        boldItalicStrikeThrough.style = Text.Style.Bold | Text.Style.Italic | Text.Style.StrikeThrough;
-        boldItalicStrikeThrough.position = Vector2f(0,140);
+    float ls = 10;
+    text.lineSpacing = ls;
+    assert(text.lineSpacing == ls);
 
-        outlined.outlineColor = Color.Red;
-        outlined.outlineThickness = 0.5f;
-        outlined.position = Vector2f(0,160);
+    text.letterSpacing = ls;
+    assert(text.letterSpacing == ls);
 
-        outlinedBoldItalicStrikeThrough.style = Text.Style.Bold | Text.Style.Italic | Text.Style.StrikeThrough;
-        outlinedBoldItalicStrikeThrough.outlineColor = Color.Red;
-        outlinedBoldItalicStrikeThrough.outlineThickness = 0.5f;
-        outlinedBoldItalicStrikeThrough.position = Vector2f(0,180);
+    auto style = Text.Style.Bold;
+    text.style = style;
+    assert(text.style == style);
 
-        writeln(regular.string);
+    auto color = Color.Red;
+    text.color = color;
+    assert(text.color == color);
 
-        renderTexture.clear();
+    text.fillColor = color;
+    assert(text.color == color);
 
-        renderTexture.draw(regular);
-        renderTexture.draw(bold);
-        renderTexture.draw(italic);
-        renderTexture.draw(boldItalic);
-        renderTexture.draw(strikeThrough);
-        renderTexture.draw(italicStrikeThrough);
-        renderTexture.draw(boldStrikeThrough);
-        renderTexture.draw(boldItalicStrikeThrough);
-        renderTexture.draw(outlined);
-        renderTexture.draw(outlinedBoldItalicStrikeThrough);
+    text.outlineColor = color;
+    assert(text.outlineColor == color);
 
-        renderTexture.display();
+    float thck = 10;
+    text.outlineThickness = thck;
+    assert(text.outlineThickness == thck);
 
-        //grab that texture for usage
-        auto texture = renderTexture.getTexture();
-
-        texture.copyToImage().saveToFile("Text.png");
-
-        writeln();
-    }
+    // TODO:
+    //localBounds
+    //globalBounds
 }

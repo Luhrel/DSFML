@@ -129,40 +129,35 @@
  */
 module dsfml.audio.soundrecorder;
 
-import core.thread;
-import dsfml.system.string;
-import dsfml.system.err;
+import dsfml.audio.soundbuffer;
+import dsfml.system.time;
+import std.conv;
+import std.string;
+
 
 /**
  * Abstract base class for capturing sound data.
  */
 class SoundRecorder
 {
-    package sfSoundRecorder* sfPtr;
-    private SoundRecorderCallBacks callBacks;
+    private sfSoundRecorder* m_soundRecorder;
 
-    /// Default constructor.
-    protected this()
+    /**
+     * Default constructor.
+     *
+     * This constructor is only meant to be called by derived classes.
+     */
+    // Not putting protected attribute otherwise it'll be null when calling it directly
+    this()
     {
-        callBacks = new SoundRecorderCallBacks(this);
-        sfPtr = sfSoundRecorder_construct(callBacks);
-
-        //Fix for some strange bug that I can't seem to track down.
-        //This bug causes the array in SoundBufferRecorder to segfault if
-        //its length reaches 1024, but creating an array of this size before capturing happens
-        //seems to fix it. This fix should allow other implementations to not segfault as well.
-        //I will look into the cause when I have more time, but this at least renders it usable.
-        short[] temp;
-        temp.length = 1024;
-        temp.length =0;
+        m_soundRecorder = sfSoundRecorder_create(&onStartCallback,
+            &onProcessSamplesCallback, &onStopCallback, cast(void*) this);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfSoundRecorder_destroy(sfPtr);
+        sfSoundRecorder_destroy(m_soundRecorder);
     }
 
     /**
@@ -176,16 +171,17 @@ class SoundRecorder
      *
      * Params:
      *  theSampleRate = Desired capture rate, in number of samples per second
+     * Returns: True, if start of capture was successful
      */
-    void start(uint theSampleRate = 44100)
+    bool start(uint theSampleRate = 44100)
     {
-        sfSoundRecorder_start(sfPtr, theSampleRate);
+        return sfSoundRecorder_start(m_soundRecorder, theSampleRate);
     }
 
     /// Stop the capture.
     void stop()
     {
-        sfSoundRecorder_stop(sfPtr);
+        sfSoundRecorder_stop(m_soundRecorder);
     }
 
     @property
@@ -196,40 +192,75 @@ class SoundRecorder
          * The sample rate defines the number of audio samples captured per second.
          * The higher, the better the quality (for example, 44100 samples/sec is CD
          * quality).
+         *
+         * Returns: Sample rate, in samples per second
          */
         uint sampleRate() const
         {
-            return sfSoundRecorder_getSampleRate(sfPtr);
+            return sfSoundRecorder_getSampleRate(m_soundRecorder);
         }
     }
 
-    /**
-     * Get the name of the current audio capture device.
-     *
-     * Returns: The name of the current audio capture device.
-     */
-    string getDevice() const {
-        return .toString(sfSoundRecorder_getDevice(sfPtr));
+    @property
+    {
+        /**
+         * Get the name of the current audio capture device.
+         *
+         * Returns: The name of the current audio capture device.
+         */
+        string device()
+        {
+            return sfSoundRecorder_getDevice(m_soundRecorder).to!string;
+        }
+
+        /**
+         * Set the audio capture device.
+         *
+         * This function sets the audio capture device to the device with the given
+         * name. It can be called on the fly (i.e: while recording). If you do so
+         * while recording and opening the device fails, it stops the recording.
+         *
+         * Params:
+         *  name = The name of the audio capture device
+         *
+         * Returns: true, if it was able to set the requested device.
+         *
+         * See_Also: getAvailableDevices
+         */
+        bool device(string name)
+        {
+            return sfSoundRecorder_setDevice(m_soundRecorder, name.toStringz);
+        }
     }
 
-    /**
-     * Set the audio capture device.
-     *
-     * This function sets the audio capture device to the device with the given
-     * name. It can be called on the fly (i.e: while recording). If you do so
-     * while recording and opening the device fails, it stops the recording.
-     *
-     * Params:
-     *  name = The name of the audio capture device
-     *
-     * Returns: true, if it was able to set the requested device.
-     *
-     * See_Also:
-     * `getAvailableDevices`, `getDefaultDevice`
-     */
-    bool setDevice (const(char)[] name)
+    @property
     {
-        return sfSoundRecorder_setDevice(sfPtr, name.ptr, name.length);
+        /**
+         * Get the number of channels used by this recorder.
+         *
+         * Currently only mono and stereo are supported, so the value is either 1
+         * (for mono) or 2 (for stereo).
+         *
+         * Returns: Number of channels
+         */
+        uint channelCount() const
+        {
+            return sfSoundRecorder_getChannelCount(m_soundRecorder);
+        }
+
+        /**
+         * Set the channel count of the audio capture device.
+         *
+         * This method allows you to specify the number of channels used for
+         * recording. Currently only 16-bit mono and 16-bit stereo are supported.
+         *
+         * Params:
+         * channelCount=Number of channels. Currently only mono (1) and stereo (2) are supported.
+         */
+        void channelCount(uint newChannelCount)
+        {
+            sfSoundRecorder_setChannelCount(m_soundRecorder, newChannelCount);
+        }
     }
 
     /**
@@ -248,7 +279,7 @@ class SoundRecorder
         //if getAvailableDevices hasn't been called yet
         if(availableDevices.length == 0)
         {
-            const (char)** devices;
+            char** devices;
             size_t counts;
 
             devices = sfSoundRecorder_getAvailableDevices(&counts);
@@ -257,12 +288,11 @@ class SoundRecorder
             availableDevices.length = counts;
 
             //populate availableDevices
-            for(uint i = 0; i < counts; i++)
+            for(ulong i = 0; i < counts; i++)
             {
-                availableDevices[i] = .toString(devices[i]);
+                availableDevices[i] = devices[i].to!string;
             }
         }
-
         return availableDevices;
     }
 
@@ -274,8 +304,9 @@ class SoundRecorder
      *
      * Returns: The name of the default audio capture device.
      */
-    static string getDefaultDevice() {
-        return .toString(sfSoundRecorder_getDefaultDevice());
+    static string getDefaultDevice()
+    {
+        return sfSoundRecorder_getDefaultDevice().to!string;
     }
 
     /**
@@ -309,9 +340,9 @@ class SoundRecorder
          * Params:
          *  interval = Processing interval
          */
-        void setProcessingInterval (Duration interval) {
-            sfSoundRecorder_setProcessingInterval(sfPtr,
-                                                  interval.total!"usecs");
+        void setProcessingInterval(Time interval)
+        {
+            sfSoundRecorder_setProcessingInterval(m_soundRecorder, interval);
         }
 
         /**
@@ -326,6 +357,7 @@ class SoundRecorder
          */
         bool onStart()
         {
+            // Nothing to do
             return true;
         }
 
@@ -337,7 +369,7 @@ class SoundRecorder
          * with it (storing it, playing it, sending it over the network, etc.).
          *
          * Params:
-         * 		samples =	Array of the new chunk of recorded samples
+         *         samples =    Array of the new chunk of recorded samples
          *
          * Returns: true to continue the capture, or false to stop it.
          */
@@ -352,66 +384,69 @@ class SoundRecorder
          */
         void onStop()
         {
+            // Nothing to do
         }
     }
+
+    /**
+     * This function is called by CSFML.
+     *
+     * CSFML's "sfBool" is a byte of 0 or 1.
+     * Passing a bool to CSFML will simply fail.
+     */
+    private extern(C) static byte onProcessSamplesCallback(const short* samples, size_t sampleCount, void* userData)
+    {
+        SoundRecorder sr = cast(SoundRecorder) userData;
+        return sr.onProcessSamples(samples[0..sampleCount]);
+    }
+
+    /**
+     * This function is called by CSFML.
+     *
+     * CSFML's "sfBool" is a byte of 0 or 1.
+     * That's why we return a byte and not a bool.
+     */
+    private extern(C) static byte onStartCallback(void* userData)
+    {
+        SoundRecorder sr = cast(SoundRecorder) userData;
+        return sr.onStart();
+    }
+
+    /**
+     * This function is called by CSFML.
+     */
+    private extern(C) static void onStopCallback(void* userData)
+    {
+        SoundRecorder sr = cast(SoundRecorder) userData;
+        sr.onStop();
+    }
 }
 
-private:
-
-extern(C++) interface sfmlSoundRecorderCallBacks
+// CSFML's functions.
+private extern(C)
 {
-    bool onStart();
-    bool onProcessSamples(const(short)* samples, size_t sampleCount);
-    void onStop();
+    // C Callbacks
+    alias sfSoundRecorderStartCallback = byte function(void*);
+    alias sfSoundRecorderProcessCallback = byte function(const short*, size_t, void*);
+    alias sfSoundRecorderStopCallback = void function(void*);
+
+    struct sfSoundRecorder;
+
+    sfSoundRecorder* sfSoundRecorder_create(sfSoundRecorderStartCallback onStart,
+        sfSoundRecorderProcessCallback onProcess,
+        sfSoundRecorderStopCallback onStop, void* userData);
+    void sfSoundRecorder_destroy(sfSoundRecorder* soundRecorder);
+    bool sfSoundRecorder_start(sfSoundRecorder* soundRecorder, uint sampleRate);
+    void sfSoundRecorder_stop(sfSoundRecorder* soundRecorder);
+    uint sfSoundRecorder_getSampleRate(const sfSoundRecorder* soundRecorder);
+    bool sfSoundRecorder_isAvailable();
+    void sfSoundRecorder_setProcessingInterval(sfSoundRecorder* soundRecorder, Time interval);
+    char** sfSoundRecorder_getAvailableDevices(size_t* count);
+    char* sfSoundRecorder_getDefaultDevice();
+    bool sfSoundRecorder_setDevice(sfSoundRecorder* soundRecorder, const char* name);
+    char* sfSoundRecorder_getDevice(sfSoundRecorder* soundRecorder);
+    void sfSoundRecorder_setChannelCount(sfSoundRecorder* soundRecorder, uint channelCount);
+    uint sfSoundRecorder_getChannelCount(const sfSoundRecorder* soundRecorder);
 }
 
-class SoundRecorderCallBacks: sfmlSoundRecorderCallBacks
-{
-    import std.stdio;
-
-    SoundRecorder m_recorder;
-
-    this(SoundRecorder recorder)
-    {
-        m_recorder = recorder;
-    }
-
-    extern(C++) bool onStart()
-    {
-        return m_recorder.onStart();
-    }
-    extern(C++) bool onProcessSamples(const(short)* samples, size_t sampleCount)
-    {
-        return m_recorder.onProcessSamples(samples[0..sampleCount]);
-    }
-    extern(C++) void onStop()
-    {
-        m_recorder.onStop();
-    }
-}
-
-private extern(C):
-
-struct sfSoundRecorder;
-
-sfSoundRecorder* sfSoundRecorder_construct(sfmlSoundRecorderCallBacks newCallBacks);
-
-void sfSoundRecorder_destroy(sfSoundRecorder* soundRecorder);
-
-void sfSoundRecorder_start(sfSoundRecorder* soundRecorder, uint sampleRate);
-
-void sfSoundRecorder_stop(sfSoundRecorder* soundRecorder);
-
-uint sfSoundRecorder_getSampleRate(const sfSoundRecorder* soundRecorder);
-
-bool sfSoundRecorder_setDevice(sfSoundRecorder* soundRecorder, const(char)* name, size_t length);
-
-const(char)* sfSoundRecorder_getDevice(const (sfSoundRecorder)* soundRecorder);
-
-const(char)** sfSoundRecorder_getAvailableDevices(size_t* count);
-
-const(char)* sfSoundRecorder_getDefaultDevice();
-
-bool sfSoundRecorder_isAvailable();
-
-void sfSoundRecorder_setProcessingInterval(sfSoundRecorder* soundRecorder, ulong time);
+// unittests in soundbufferrecorder.d

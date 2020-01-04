@@ -120,7 +120,10 @@ alias Bvec4 = Vector4!(bool);
  * auto matrix = Mat3(transform);
  * ---
  */
-alias Mat3 = Matrix!(3,3);
+struct Mat3
+{
+    float[3 * 3] array;
+}
 
 /**
  * 4x4 float matrix (mat4 in GLSL)
@@ -145,7 +148,10 @@ alias Mat3 = Matrix!(3,3);
  * auto matrix = Mat4(transform);
  * ---
  */
-alias Mat4 = Matrix!(4,4);
+struct Mat4
+{
+    float[4 * 4] array;
+}
 
 /**
  * 4D vector type, used to set uniforms in GLSL.
@@ -221,55 +227,20 @@ struct Vector4(T)
     }
 }
 
-/**
- * Matrix type, used to set uniforms in GLSL.
- */
-struct Matrix(uint C, uint R)
+unittest
 {
-    /// Array holding matrix data.
-    float[C * R] array;
+    import std.stdio;
+    writeln("Running GLSL unittest...");
 
-    /**
-     * Construct from DSFML transform.
-     *
-     * This constructor is only supported for 3x3 and 4x4 matrices.
-     *
-     * Params:
-     * source = A DSFML Transform
-     */
-    this(ref const(Transform) source)
-    {
-        static assert(C == R && (C == 3 || C == 4),
-        "This constructor is only supported for 3x3 and 4x4 matrices.");
+    Vec4 v = Color.Red;
+    assert(v.x == 1);
+    assert(v.y == 0);
+    assert(v.z == 0);
+    assert(v.w == 1);
 
-        const(float)[] from = source.getMatrix();
-
-        static if(C == 3)
-        {
-            float[] to = array;                 // 3x3
-        // Use only left-upper 3x3 block (for a 2D transform)
-        to[0] = from[ 0]; to[1] = from[ 1]; to[2] = from[ 3];
-        to[3] = from[ 4]; to[4] = from[ 5]; to[5] = from[ 7];
-        to[6] = from[12]; to[7] = from[13]; to[8] = from[15];
-        }
-        else static if(C == 4)
-        {
-            array[] = from[];
-        }
-    }
-
-    /**
-     * Construct from raw data.
-     *
-     * The elements in source are copied to the instance.
-     *
-     * Params:
-     * source = An array that has the size of the matrix.
-     */
-    this(const(float)[] source)
-    {
-        assert(array.length == source.length);
-
-        array[0..$] = source[0 .. $];
-    }
+    Ivec4 iv = Color.Red;
+    assert(iv.x == 255);
+    assert(iv.y == 0);
+    assert(iv.z == 0);
+    assert(iv.w == 255);
 }

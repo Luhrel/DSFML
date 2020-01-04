@@ -130,237 +130,338 @@
 module dsfml.graphics.transformable;
 
 import dsfml.system.vector2;
-
-//public import so that people don't have to worry about
-//importing transform when they import transformable
-public import dsfml.graphics.transform;
+import dsfml.graphics.transform;
 
 /**
  * Decomposed transform defined by a position, a rotation, and a scale.
  */
-interface Transformable
+class Transformable
 {
+    private sfTransformable* m_transformable;
+
+    /// Default constructor.
+    this()
+    {
+        m_transformable = sfTransformable_create();
+    }
+
+    package this(sfTransformable* transformablePointer)
+    {
+        m_transformable = transformablePointer;
+    }
+
+    /// Virtual destructor.
+    ~this()
+    {
+        sfTransformable_destroy(m_transformable);
+    }
+
+
     @property
     {
         /**
-         * The local origin of the object.
+         * Set the local origin of the object
          *
-         * The origin of an object defines the center point for all
-         * transformations (position, scale, ratation).
+         * The origin of an object defines the center point for all transformations
+         * (position, scale, rotation). The coordinates of this point must be
+         * relative to the top-left corner of the object, and ignore all
+         * transformations (position, scale, rotation). The default origin of a
+         * transformable object is (0, 0).
          *
-         * The coordinates of this point must be relative to the top-left corner
-         * of the object, and ignore all transformations (position, scale,
-         * rotation).
-         *
-         * The default origin of a transformable object is (0, 0).
+         * Params:
+         *     origin = New origin
          */
-        Vector2f origin(Vector2f newOrigin);
+        void origin(Vector2f newOrigin)
+        {
+            sfTransformable_setOrigin(m_transformable, newOrigin);
+        }
 
-        /// ditto
-        Vector2f origin() const;
+        /**
+         * Set the local origin of the object
+         *
+         * The origin of an object defines the center point for all transformations
+         * (position, scale, rotation). The coordinates of this point must be
+         * relative to the top-left corner of the object, and ignore all
+         * transformations (position, scale, rotation). The default origin of a
+         * transformable object is (0, 0).
+         *
+         * Params:
+         *     x = X coordinate of the new origin
+         *     y = Y coordinate of the new origin
+         */
+        void origin(float x, float y)
+        {
+            origin(Vector2f(x, y));
+        }
+
+        /**
+         * Get the local origin of the object
+         *
+         * Returns: Current origin
+         */
+        Vector2f origin() const
+        {
+            return sfTransformable_getOrigin(m_transformable);
+        }
     }
 
     @property
     {
-        /// The position of the object. The default is (0, 0).
-        Vector2f position(Vector2f newPosition);
+        /**
+         * Set the position of the object
+         *
+         * This function completely overwrites the previous position. See the move
+         * function to apply an offset based on the previous position instead. The
+         * default position of a transformable object is (0, 0).
+         *
+         * Params:
+         *     position = New position
+         * See_Also: move
+         */
+        void position(Vector2f newPosition)
+        {
+            sfTransformable_setPosition(m_transformable, newPosition);
+        }
 
-        /// ditto
-        Vector2f position() const;
-    }
+        /**
+         * Set the position of the object
+         *
+         * This function completely overwrites the previous position. See the move
+         * function to apply an offset based on the previous position instead. The
+         * default position of a transformable object is (0, 0).
+         *
+         * Params:
+         *     x = X coordinate of the new position
+         *     y = Y coordinate of the new position
+         * See_Also: move
+         */
+        void position(float x, float y)
+        {
+            position(Vector2f(x, y));
+        }
 
-    @property
-    {
-        /// The orientation of the object, in degrees. The default is 0 degrees.
-        float rotation(float newRotation);
-
-        /// ditto
-        float rotation() const;
-    }
-
-    @property
-    {
-        /// The scale factors of the object. The default is (1, 1).
-        Vector2f scale(Vector2f newScale);
-
-        /// ditto
-        Vector2f scale() const;
+        /**
+         * Get the position of the object
+         *
+         * Returns: Current position
+         */
+        Vector2f position() const
+        {
+            return sfTransformable_getPosition(m_transformable);
+        }
     }
 
     /**
-     * Get the inverse of the combined transform of the object.
+     * Rotate the object.
      *
-     * Returns: Inverse of the combined transformations applied to the object.
+     * This function adds to the current rotation of the object, unlike the
+     * rotation property which overwrites it. Thus, it is equivalent to the
+     * following code:
+     * ---
+     * object.rotation(object.rotation() + angle);
+     * ---
+     *
+     * Params:
+     *     angle = Angle of rotation, in degrees
      */
-    const(Transform) getTransform();
+    void rotate(float angle)
+    {
+        sfTransformable_rotate(m_transformable, angle);
+    }
+
+    @property
+    {
+        /**
+         * Set the orientation of the object
+         *
+         * This function completely overwrites the previous rotation. See the rotate
+         * function to add an angle based on the previous rotation instead. The
+         * default rotation of a transformable object is 0.
+         *
+         * Params:
+         *     angle = New rotation, in degrees
+         * See_Also: rotate
+         */
+        void rotation(float angle)
+        {
+            sfTransformable_setRotation(m_transformable, angle);
+        }
+
+        /**
+         * Get the orientation of the object
+         *
+         * The rotation is always in the range [0, 360].
+         *
+         * Returns: Current rotation, in degrees
+         * See_Also: rotate
+         */
+        float rotation() const
+        {
+            return sfTransformable_getRotation(m_transformable);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the scale factors of the object
+         *
+         * This function completely overwrites the previous scale. See the scale
+         * function to add a factor based on the previous scale instead. The default
+         * scale of a transformable object is (1, 1).
+         *
+         * Params:
+         *     factors = New scale factors
+         */
+        void scale(Vector2f newScale)
+        {
+            sfTransformable_setScale(m_transformable, newScale);
+        }
+
+        /**
+         * Set the scale factors of the object
+         *
+         * This function completely overwrites the previous scale. See the scale
+         * function to add a factor based on the previous scale instead. The
+         * default scale of a transformable object is (1, 1).
+         *
+         * Params:
+         *     factorX = New horizontal scale factor
+         *     factorY = New vertical scale factor
+         */
+        void scale(float factorX, float factorY)
+        {
+            scale(Vector2f(factorX, factorY));
+        }
+
+        /**
+         * Get the current scale of the object
+         *
+         * Returns: Current scale factors
+         */
+        Vector2f scale() const
+        {
+            return sfTransformable_getScale(m_transformable);
+        }
+    }
 
     /**
-     * Get the combined transform of the object.
+     * Get the combined transform of the object
      *
-     * Returns: Transform combining the position/rotation/scale/origin of the
-     * object.
+     * Returns: Transform combining the position/rotation/scale/origin of the object
+     * See_Also: inverseTransform
      */
-    const(Transform) getInverseTransform();
+    const(Transform) transform()
+    {
+        return Transform(sfTransformable_getTransform(m_transformable));
+    }
+
+    /**
+     * get the inverse of the combined transform of the object
+     *
+     * Returns: Inverse of the combined transformations applied to the object
+     * See_Also: transform
+     */
+    const(Transform) inverseTransform()
+    {
+        return Transform(sfTransformable_getInverseTransform(m_transformable));
+    }
 
     /**
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it.
+     * position property which overwrites it. Thus, it is equivalent to the
+     * following code:
+     * ---
+     * object.position(object.position() + offset);
+     * ---
      *
      * Params:
-     * 		offset	= The offset
+     *     offset = The offset
+     * See_Also: position
      */
-    void move(Vector2f offset);
-}
-
-/**
- * Mixin template that generates the boilerplate code for the $(U Transformable)
- * interface.
- *
- * This template is provided for convenience, so that you don't have to add the
- * properties and functions manually.
- */
-mixin template NormalTransformable()
-{
-    private
-    {
-        // Origin of translation/rotation/scaling of the object
-        Vector2f m_origin = Vector2f(0,0);
-        // Position of the object in the 2D world
-        Vector2f m_position = Vector2f(0,0);
-        // Orientation of the object, in degrees
-        float m_rotation = 0;
-        // Scale of the object
-        Vector2f m_scale = Vector2f(1,1);
-        // Combined transformation of the object
-        Transform m_transform;
-        // Does the transform need to be recomputed?
-        bool m_transformNeedUpdate;
-        // Combined transformation of the object
-        Transform m_inverseTransform;
-        // Does the transform need to be recomputed?
-        bool m_inverseTransformNeedUpdate;
-    }
-
-    @property
-    {
-        Vector2f origin(Vector2f newOrigin)
-        {
-            m_origin = newOrigin;
-            m_transformNeedUpdate = true;
-            m_inverseTransformNeedUpdate = true;
-            return newOrigin;
-        }
-
-        Vector2f origin() const
-        {
-            return m_origin;
-        }
-    }
-
-    @property
-    {
-        Vector2f position(Vector2f newPosition)
-        {
-            m_position = newPosition;
-            m_transformNeedUpdate = true;
-            m_inverseTransformNeedUpdate = true;
-            return newPosition;
-        }
-
-        Vector2f position() const
-        {
-            return m_position;
-        }
-    }
-
-    @property
-    {
-        import std.math: fmod;
-        float rotation(float newRotation)
-        {
-            m_rotation = cast(float)fmod(newRotation, 360);
-            if(m_rotation < 0)
-            {
-                m_rotation += 360;
-            }
-            m_transformNeedUpdate = true;
-            m_inverseTransformNeedUpdate = true;
-            return newRotation;
-        }
-
-        float rotation() const
-        {
-            return m_rotation;
-        }
-    }
-
-    @property
-    {
-        Vector2f scale(Vector2f newScale)
-        {
-            m_scale = newScale;
-            m_transformNeedUpdate = true;
-            m_inverseTransformNeedUpdate = true;
-            return newScale;
-        }
-
-        Vector2f scale() const
-        {
-            return m_scale;
-        }
-    }
-
-    const(Transform) getInverseTransform()
-    {
-        if (m_inverseTransformNeedUpdate)
-        {
-            m_inverseTransform = getTransform().getInverse();
-            m_inverseTransformNeedUpdate = false;
-        }
-
-        return m_inverseTransform;
-    }
-
-    const(Transform) getTransform()
-    {
-        import std.math: cos, sin;
-        if (m_transformNeedUpdate)
-        {
-            float angle = -m_rotation * 3.141592654f / 180f;
-            float cosine = cast(float)(cos(angle));
-            float sine = cast(float)(sin(angle));
-            float sxc = m_scale.x * cosine;
-            float syc = m_scale.y * cosine;
-            float sxs = m_scale.x * sine;
-            float sys = m_scale.y * sine;
-            float tx = -m_origin.x * sxc - m_origin.y * sys + m_position.x;
-            float ty = m_origin.x * sxs - m_origin.y * syc + m_position.y;
-
-            m_transform = Transform( sxc, sys, tx,
-                                    -sxs, syc, ty,
-                                    0f, 0f, 1f);
-            m_transformNeedUpdate = false;
-        }
-
-        return m_transform;
-    }
-
     void move(Vector2f offset)
     {
-        position = position + offset;
+        sfTransformable_move(m_transformable, offset);
+    }
+
+    /**
+     * Move the object by a given offset.
+     *
+     * This function adds to the current position of the object, unlike the
+     * position property which overwrites it. Thus, it is equivalent to the
+     * following code:
+     * ---
+     * Vector2f pos = object.position();
+     * object.setPosition(pos.x + offsetX, pos.y + offsetY);
+     * ---
+     *
+     * Params:
+     *     offsetX = X offset
+     *     offsetY = Y offset
+     * See_Also: position
+     */
+    void move(float offsetX, float offsetY)
+    {
+        move(Vector2f(offsetX, offsetY));
     }
 }
 
-/**
- * Concrete class that implements the $(U Transformable) interface.
- *
- * This class is provided for convenience, so that a $(U Transformable) object
- * can be used as a member of a class instead of inheriting from
- * $(U Transformable).
- */
-class TransformableMember: Transformable
+private extern(C)
 {
-    mixin NormalTransformable;
+    struct sfTransformable;
+
+    sfTransformable* sfTransformable_create();
+    sfTransformable* sfTransformable_copy(const sfTransformable* transformable);
+    void sfTransformable_destroy(sfTransformable* transformable);
+    void sfTransformable_setPosition(sfTransformable* transformable, Vector2f position);
+    void sfTransformable_setRotation(sfTransformable* transformable, float angle);
+    void sfTransformable_setScale(sfTransformable* transformable, Vector2f scale);
+    void sfTransformable_setOrigin(sfTransformable* transformable, Vector2f origin);
+    Vector2f sfTransformable_getPosition(const sfTransformable* transformable);
+    float sfTransformable_getRotation(const sfTransformable* transformable);
+    Vector2f sfTransformable_getScale(const sfTransformable* transformable);
+    Vector2f sfTransformable_getOrigin(const sfTransformable* transformable);
+    void sfTransformable_move(sfTransformable* transformable, Vector2f offset);
+    void sfTransformable_rotate(sfTransformable* transformable, float angle);
+    void sfTransformable_scale(sfTransformable* transformable, Vector2f factors);
+    sfTransform sfTransformable_getTransform(const sfTransformable* transformable);
+    sfTransform sfTransformable_getInverseTransform(const sfTransformable* transformable);
+}
+
+unittest
+{
+    import std.stdio;
+
+    writeln("Running Transformable unittest...");
+
+    auto t = new Transformable();
+
+    auto pos = Vector2f(5, 6);
+    t.position = pos;
+    assert(t.position == pos);
+    t.move(5, 3);
+    assert(t.position == Vector2f(10, 9));
+
+    int angle = 90;
+    t.rotation = angle;
+    assert(t.rotation == angle);
+    t.rotate(angle);
+    assert(t.rotation == angle*2);
+
+    auto scl = Vector2f(3, 4);
+    t.scale = scl;
+    assert(t.scale == scl);
+    // TODO: https://issues.dlang.org/show_bug.cgi?id=8006
+    //t.scale *= Vector2f(2, 3);
+    //assert(t.scale == Vector2f(6, 12));
+
+    auto orgn = Vector2f(1, 3);
+    t.origin = orgn;
+    assert(t.origin == orgn);
+
+    //TODO: god dawn floats
+    //assert(t.transform == Transform(-3, 0, 12.999999, 0, -4, 21, 0, 0, 1));
+    assert(t.transform.inverse == t.inverseTransform);
 }

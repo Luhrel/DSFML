@@ -61,6 +61,7 @@ module dsfml.window.mouse;
 
 import dsfml.system.vector2;
 import dsfml.window.window;
+import dsfml.graphics.renderwindow;
 
 /**
 * Give access to the real-time state of the mouse.
@@ -102,11 +103,11 @@ final abstract class Mouse
      * desktop.
      *
      * Params:
-     * 		position = New position of the mouse
+     *         position = New position of the mouse
      */
     static void setPosition(Vector2i position)
     {
-        sfMouse_setPosition(position.x, position.y,null);
+        sfMouse_setPosition(position, null);
     }
 
     /**
@@ -115,13 +116,28 @@ final abstract class Mouse
      * This function sets the current position of the mouse cursor, relative to the given window.
      *
      * Params:
-     * 		position   = New position of the mouse
-     * 		relativeTo = Reference window
+     *         position   = New position of the mouse
+     *         relativeTo = Reference window
      */
-    static void setPosition(Vector2i position, const(Window) relativeTo)
+    static void setPosition(Vector2i position, Window relativeTo)
     {
-        relativeTo.mouse_SetPosition(position);
+        sfMouse_setPosition(position, relativeTo.ptr);
     }
+
+    /**
+     * Set the current position of the mouse in window coordinates.
+     *
+     * This function sets the current position of the mouse cursor, relative to the given window.
+     *
+     * Params:
+     *         position   = New position of the mouse
+     *         relativeTo = Reference window
+     */
+    static void setPosition(Vector2i position, RenderWindow relativeTo)
+    {
+        sfMouse_setPositionRenderWindow(position, relativeTo.ptr);
+    }
+
 
     /**
      * Get the current position of the mouse in desktop coordinates.
@@ -133,10 +149,7 @@ final abstract class Mouse
      */
     static Vector2i getPosition()
     {
-        Vector2i temp;
-        sfMouse_getPosition(null,&temp.x, &temp.y);
-
-        return temp;
+        return sfMouse_getPosition(null);
     }
 
     /**
@@ -150,49 +163,77 @@ final abstract class Mouse
      *
      * Returns: Current position of the mouse.
      */
-    static Vector2i getPosition(const(Window) relativeTo)
+    static Vector2i getPosition(Window relativeTo)
     {
-        return relativeTo.mouse_getPosition();
+        return sfMouse_getPosition(relativeTo.ptr);
+    }
+
+    /**
+     * Get the current position of the mouse in window coordinates.
+     *
+     * This function returns the current position of the mouse cursor, relative
+     * to the given window.
+     *
+     * Params:
+     *     relativeTo = Reference window
+     *
+     * Returns: Current position of the mouse.
+     */
+    static Vector2i getPosition(RenderWindow relativeTo)
+    {
+        return sfMouse_getPositionRenderWindow(relativeTo.ptr);
     }
 
     /**
      * Check if a mouse button is pressed.
      *
      * Params:
-     * 		button = Button to check
+     *         button = Button to check
      *
      * Returns: true if the button is pressed, false otherwise.
      */
     static bool isButtonPressed(Button button)
     {
-        return (sfMouse_isButtonPressed(button) );
-    }
-}
-
-unittest
-{
-    version(DSFML_Unittest_Window)
-    {
-        import std.stdio;
-
-        writeln("Unit test for Mouse class");
-
-        writeln("Current mouse position: ", Mouse.getPosition().toString());
-
-        Mouse.setPosition(Vector2i(100,400));
-
-        writeln("New mouse position: ", Mouse.getPosition().toString());
+        return sfMouse_isButtonPressed(button);
     }
 }
 
 private extern(C)
 {
-    //Check if a mouse button is pressed
-    bool sfMouse_isButtonPressed(int button);
+    bool sfMouse_isButtonPressed(Mouse.Button button);
+    Vector2i sfMouse_getPosition(const sfWindow* relativeTo);
+    void sfMouse_setPosition(Vector2i position, const sfWindow* relativeTo);
+    Vector2i sfMouse_getPositionRenderWindow(const sfRenderWindow* relativeTo);
+    void sfMouse_setPositionRenderWindow(Vector2i position, const sfRenderWindow* relativeTo);
+}
 
-    //Get the current position of the mouse
-    void sfMouse_getPosition(const(sfWindow)* relativeTo, int* x, int* y);
+unittest
+{
+    version (DSFML_Unittest_with_interaction)
+    {
+        import std.stdio;
+        import std.conv;
+        import dsfml.window.keyboard;
+        writeln("Running Mouse unittest...");
+        writeln("Press any mouse button for real time input. Press ESC to exit.");
 
-    //Set the current position of the mouse
-    void sfMouse_setPosition(int x, int y, const(sfWindow)* relativeTo);
+        bool running = true;
+
+        //must check for each possible key
+        while(running)
+        {
+            for(int i =-1; i < Mouse.Button.Count; ++i)
+            {
+                Mouse.Button b = cast(Mouse.Button) i;
+                if(Mouse.isButtonPressed(b))
+                {
+                    writeln("Button " ~ b.to!string ~ " was pressed.");
+                }
+            }
+            if (Keyboard.isKeyPressed(Keyboard.Key.Escape))
+            {
+                running = false;
+            }
+        }
+    }
 }

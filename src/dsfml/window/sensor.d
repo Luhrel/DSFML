@@ -104,11 +104,11 @@ final abstract class Sensor
     * Check if a sensor is available on the underlying platform.
     *
     * Params:
-    *	sensor = Sensor to check
+    *    sensor = Sensor to check
     *
     * Returns: true if the sensor is available, false otherwise.
     */
-    static bool isAvailable (Type sensor)
+    static bool isAvailable(Type sensor)
     {
         return sfSensor_isAvailable(sensor);
     }
@@ -126,7 +126,7 @@ final abstract class Sensor
     *   sensor = Sensor to enable
     *   enabled = true to enable, false to disable
     */
-    static void setEnabled (Type sensor, bool enabled)
+    static void setEnabled(Type sensor, bool enabled)
     {
         sfSensor_setEnabled(sensor, enabled);
     }
@@ -139,23 +139,43 @@ final abstract class Sensor
     *
     * Returns: The current sensor value.
     */
-    static Vector3f getValue (Type sensor)
+    static Vector3f getValue(Type sensor)
     {
-        Vector3f getValue;
-        sfSensor_getValue(sensor, &getValue.x, &getValue.y, &getValue.z);
-
-        return getValue;
+        return sfSensor_getValue(sensor);
     }
 }
 
 private extern(C)
 {
-    //Check if a sensor is available
-    bool sfSensor_isAvailable (int sensor);
+    // Check if a sensor is available
+    bool sfSensor_isAvailable(Sensor.Type sensor);
 
-    //Enable or disable a given sensor
-    void sfSensor_setEnabled (int sensor, bool enabled);
+    // Enable or disable a given sensor
+    void sfSensor_setEnabled(Sensor.Type sensor, byte enabled);
 
-    //Set the current value of teh sensor
-    void sfSensor_getValue (int sensor, float* x, float* y, float* z);
+    // Get the current value of the sensor
+    Vector3f sfSensor_getValue(Sensor.Type sensor);
+}
+
+unittest
+{
+    version (Android)
+    {
+        import std.stdio;
+        import std.conv;
+        writeln("Running Sensor unittest...");
+
+        for (int i = 0; i < Sensor.Type.Count; i++)
+        {
+            Sensor.Type st = cast(Sensor.Type) i;
+            bool av = Sensor.isAvailable(st);
+            writefln("Sensor %s is %savailable.", st.to!string, av ? "" : "un");
+            if (av)
+            {
+                Sensor.setEnabled(st, true);
+                writefln("%s value: %s", st.to!string, Sensor.getValue(st));
+                Sensor.setEnabled(st, false);
+            }
+        }
+    }
 }

@@ -88,19 +88,27 @@
  */
 module dsfml.graphics.rendertexture;
 
+import dsfml.graphics.circleshape;
 import dsfml.graphics.color;
+import dsfml.graphics.convexshape;
 import dsfml.graphics.drawable;
 import dsfml.graphics.primitivetype;
 import dsfml.graphics.rect;
 import dsfml.graphics.renderstates;
 import dsfml.graphics.rendertarget;
+import dsfml.graphics.rectangleshape;
 import dsfml.graphics.shader;
+import dsfml.graphics.shape;
+import dsfml.graphics.sprite;
 import dsfml.graphics.text;
 import dsfml.graphics.texture;
 import dsfml.graphics.vertex;
+import dsfml.graphics.vertexarray;
+import dsfml.graphics.vertexbuffer;
 import dsfml.graphics.view;
 
-import dsfml.system.err;
+import dsfml.window.contextsettings;
+
 import dsfml.system.vector2;
 
 /**
@@ -108,23 +116,24 @@ import dsfml.system.vector2;
  */
 class RenderTexture : RenderTarget
 {
-    package sfRenderTexture* sfPtr;
-    private Texture m_texture;
-    private View m_currentView, m_defaultView;
+    private sfRenderTexture* m_renderTexture;
 
-    /// Default constructor.
+    /**
+     * Default constructor.
+     *
+     * Constructs an empty, invalid render-texture. You must call create to have a valid render-texture.
+     *
+     * See_Also: create
+     */
     this()
     {
-        sfPtr = sfRenderTexture_construct();
-        m_texture = new Texture(sfRenderTexture_getTexture(sfPtr));
+        // Nothing to do.
     }
 
     /// Desructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfRenderTexture_destroy(sfPtr);
+        sfRenderTexture_destroy(m_renderTexture);
     }
 
     /**
@@ -146,26 +155,88 @@ class RenderTexture : RenderTarget
      *
      * Returns: True if creation has been successful.
      */
+    deprecated("Deprecated: Use create(uint, uint, ContextSettings) instead.")
     bool create(uint width, uint height, bool depthBuffer = false)
     {
-        return sfRenderTexture_create(sfPtr, width, height, depthBuffer);
+        m_renderTexture = sfRenderTexture_create(width, height, depthBuffer);
+        return m_renderTexture != null;
+    }
+
+    /**
+     * Create the render-texture.
+     *
+     * Before calling this function, the render-texture is in an invalid state, thus
+     * it is mandatory to call it before doing anything with the render-texture. The
+     * last parameter, settings, is useful if you want to enable multi-sampling or
+     * use the render-texture for OpenGL rendering that requires a depth or stencil
+     * buffer. Otherwise it is unnecessary, and you should leave this parameter at
+     * its default value.
+     *
+     * Params:
+     *     width    = Width of the render-texture
+     *     height   = Height of the render-texture
+     *     settings = Additional settings for the underlying OpenGL texture and context
+     * Returns: True if creation has been successful
+     */
+    @disable
+    bool create(uint width, uint height, ref ContextSettings settings)
+    {
+        // TODO
+        //m_renderTexture = sfRenderTexture_createWithSettings(width, height, &settings);
+        return m_renderTexture != null;
+    }
+
+    @property
+    {
+        /**
+         * Enable or disable texture repeating.
+         *
+         * This function is similar to Texture::setRepeated. This parameter is
+         * disabled by default.
+         *
+         * Params:
+         *     repeated = True to enable repeating, false to disable it
+         */
+        void repeated(bool repeat)
+        {
+            sfRenderTexture_setRepeated(m_renderTexture, repeat);
+        }
+
+        /**
+         * Tell whether the texture is repeated or not.
+         *
+         * Returns: True if texture is repeated
+         */
+        bool repeated()
+        {
+            return sfRenderTexture_isRepeated(m_renderTexture);
+        }
     }
 
     @property
     {
         /**
          * Enable or disable texture smoothing.
+         *
+         * This function is similar to Texture.smooth. This parameter is
+         * disabled by default.
+         *
+         * Params:
+         *     smooth = True to enable smoothing, false to disable it
          */
-        bool smooth(bool newSmooth)
+        void smooth(bool newSmooth)
         {
-            sfRenderTexture_setSmooth(sfPtr, newSmooth);
-            return newSmooth;
+            sfRenderTexture_setSmooth(m_renderTexture, newSmooth);
         }
 
-        /// ditto
+        /**
+         * Tell whether the smooth filtering is enabled or not.
+         *
+         * Returns: True if texture smoothing is enabled
+         */
         bool smooth() const
         {
-            return (sfRenderTexture_isSmooth(sfPtr));
+            return (sfRenderTexture_isSmooth(m_renderTexture));
         }
     }
 
@@ -182,32 +253,46 @@ class RenderTexture : RenderTarget
          * necessary to keep the original one alive after calling this function.
          * To restore the original view of the target, you can pass the result
          * of `getDefaultView()` to this function.
+         *
+         * Params:
+         *     view = New view to use
+         * See_Also: defaultView
          */
-        override View view(View newView)
+        override void view(View newView)
         {
-            sfRenderTexture_setView(sfPtr, newView.center.x, newView.center.y, newView.size.x, newView.size.y, newView.rotation,
-                                    newView.viewport.left, newView.viewport.top, newView.viewport.width, newView.viewport.height);
-            return newView;
+            sfRenderTexture_setView(m_renderTexture, newView.ptr);
         }
 
-        /// ditto
+        /**
+         * Get the view currently in use in the render target.
+         *
+         * Returns: The view object that is currently used
+         * See_Also: defaultView
+         */
         override View view() const
         {
-            View currentView;
+            return new View(cast(sfView*) sfRenderTexture_getView(m_renderTexture));
+        }
+    }
 
-            Vector2f currentCenter, currentSize;
-            float currentRotation;
-            FloatRect currentViewport;
-
-            sfRenderTexture_getView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
-                                    &currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
-
-            currentView.center = currentCenter;
-            currentView.size = currentSize;
-            currentView.rotation = currentRotation;
-            currentView.viewport = currentViewport;
-
-            return currentView;
+    @property
+    {
+        /**
+         * Get the viewport of a view, applied to this render target.
+         *
+         * The viewport is defined in the view as a ratio, this function simply
+         * applies this ratio to the current dimensions of the render target to
+         * calculate the pixels rectangle that the viewport actually covers in
+         * the target.
+         *
+         * Params:
+         *     view = The view for which we want to compute the viewport
+         *
+         * Returns: Viewport rectangle, expressed in pixels
+         */
+        IntRect viewport(View view) const
+        {
+            return sfRenderTexture_getViewport(m_renderTexture, view.ptr);
         }
     }
 
@@ -218,36 +303,25 @@ class RenderTexture : RenderTarget
      * changes after the target has been created.
      *
      * Returns: The default view of the render target.
+     * See_Also: view
      */
-    View getDefaultView() const
+    @property
+    View defaultView() const
     {
-        View currentView;
-
-        Vector2f currentCenter, currentSize;
-        float currentRotation;
-        FloatRect currentViewport;
-
-        sfRenderTexture_getDefaultView(sfPtr, &currentCenter.x, &currentCenter.y, &currentSize.x, &currentSize.y, &currentRotation,
-                                &currentViewport.left, &currentViewport.top, &currentViewport.width, &currentViewport.height);
-
-        currentView.center = currentCenter;
-        currentView.size = currentSize;
-        currentView.rotation = currentRotation;
-        currentView.viewport = currentViewport;
-
-        return currentView;
+        return new View(cast(sfView*) sfRenderTexture_getDefaultView(m_renderTexture));
     }
 
     /**
      * Return the size of the rendering region of the target.
      *
+     * The returned value is the size that you passed to the create function.
+     *
      * Returns: Size in pixels.
      */
-    Vector2u getSize() const
+    @property
+    override Vector2u size() const
     {
-        Vector2u temp;
-        sfRenderTexture_getSize(sfPtr, &temp.x, &temp.y);
-        return temp;
+        return sfRenderTexture_getSize(m_renderTexture);
     }
 
     /**
@@ -265,7 +339,7 @@ class RenderTexture : RenderTarget
      */
     const(Texture) getTexture() const
     {
-        return m_texture;
+        return new Texture(cast(sfTexture*) sfRenderTexture_getTexture(m_renderTexture));
     }
 
     /**
@@ -281,10 +355,12 @@ class RenderTexture : RenderTarget
      *
      * Params:
      * 		active	= true to activate, false to deactivate
+     * Returns: True if operation was successful, false otherwise
      */
-    void setActive(bool active = true)
+    @property
+    bool active(bool active = true)
     {
-        sfRenderTexture_setActive(sfPtr, active);
+        return sfRenderTexture_setActive(m_renderTexture, active);
     }
 
     /**
@@ -298,7 +374,7 @@ class RenderTexture : RenderTarget
      */
     void clear(Color color = Color.Black)
     {
-        sfRenderTexture_clear(sfPtr, color.r,color.g, color.b, color.a);
+        sfRenderTexture_clear(m_renderTexture, color);
     }
 
     /**
@@ -310,7 +386,7 @@ class RenderTexture : RenderTarget
      */
     void display()
     {
-        sfRenderTexture_display(sfPtr);
+        sfRenderTexture_display(m_renderTexture);
     }
 
     /**
@@ -320,7 +396,7 @@ class RenderTexture : RenderTarget
      * 		drawable	= Object to draw
      * 		states		= Render states to use for drawing
      */
-    override void draw(Drawable drawable, RenderStates states = RenderStates.init)
+    void draw(Drawable drawable, ref RenderStates states)
     {
         drawable.draw(this, states);
     }
@@ -333,13 +409,164 @@ class RenderTexture : RenderTarget
      * 		type		= Type of primitives to draw
      * 		states		= Render states to use for drawing
      */
-    override void draw(const(Vertex)[] vertices, PrimitiveType type, RenderStates states = RenderStates.init)
+    void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
     {
-        import std.algorithm;
+         sfRenderTexture_drawPrimitives(m_renderTexture, vertices.ptr, vertices.length, type, states.ptr);
+    }
 
-        sfRenderTexture_drawPrimitives(sfPtr, vertices.ptr, cast(uint)min(uint.max, vertices.length),type,states.blendMode.colorSrcFactor, states.blendMode.alphaDstFactor,
-            states.blendMode.colorEquation, states.blendMode.alphaSrcFactor, states.blendMode.alphaDstFactor, states.blendMode.alphaEquation,
-            states.transform.m_matrix.ptr, states.texture?states.texture.sfPtr:null, states.shader?states.shader.sfPtr:null);
+    /**
+     * Draw primitives defined by a vertex buffer.
+     *
+     * Params:
+     *     vertexBuffer = Vertex buffer
+     *     firstVertex  = Index of the first vertex to render
+     *     vertexCount  = Number of vertices to render
+     *     states       = Render states to use for drawing
+     */
+    // TODO: implements firstVertex and vertexCount
+    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t vertexCount, ref RenderStates states)
+    {
+        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr, states.ptr);
+    }
+
+    /**
+     * Draw primitives defined by a vertex buffer.
+     *
+     * Params:
+     *     vertexBuffer = Vertex buffer
+     *     states       = Render states to use for drawing
+     */
+    void draw(VertexBuffer vertexBuffer, ref RenderStates states)
+    {
+        draw(vertexBuffer, 0, vertexBuffer.vertexCount, states);
+    }
+
+    /**
+     * Generate a mipmap using the current texture data.
+     *
+     * This function is similar to Texture::generateMipmap and operates on the
+     * texture used as the target for drawing. Be aware that any draw operation
+     * may modify the base level image data. For this reason, calling this function
+     * only makes sense after all drawing is completed and display has been called.
+     *
+     * Not calling display after subsequent drawing will lead to undefined behavior
+     * if a mipmap had been previously generated.
+     *
+     * Returns: True if mipmap generation was successful, false if unsuccessful
+     */
+    bool generateMipmap()
+    {
+        return sfRenderTexture_generateMipmap(m_renderTexture);
+    }
+
+    /**
+     * Get the maximum anti-aliasing level supported by the system.
+     *
+     * Returns: The maximum anti-aliasing level supported by the system
+     */
+    // TODO
+    @disable
+    static uint getMaximumAntialiasingLevel()
+    {
+        // TODO
+        //return sfRenderTexture_getMaximumAntialiasingLevel();
+        return 0;
+    }
+
+    /**
+     * Convert a point from world coordinates to target coordinates, using the current view.
+     *
+     * This function is an overload of the mapCoordsToPixel function that implicitly
+     * uses the current view. It is equivalent to:
+     * ---
+     * target.mapCoordsToPixel(point, target.getView());
+     * ---
+     *
+     * Params:
+     *     point = Point to convert
+     * Returns: The converted point, in target coordinates (pixels)
+     * See_Also: mapPixelToCoords
+     */
+    Vector2i mapCoordsToPixel(Vector2f point) const
+    {
+        return mapCoordsToPixel(point, view());
+    }
+
+    /**
+     * Convert a point from world coordinates to target coordinates.
+     *
+     * This function finds the pixel of the render target that matches the given
+     * 2D point. In other words, it goes through the same process as the graphics
+     * card, to compute the final position of a rendered point.
+     *
+     * Initially, both coordinate systems (world units and target pixels) match
+     * perfectly. But if you define a custom view or resize your render target,
+     * this assertion is not true anymore, i.e. a point located at (150, 75) in
+     * your 2D world may map to the pixel (10, 50) of your render target – if
+     * the view is translated by (140, 25).
+     *
+     * This version uses a custom view for calculations, see the other overload
+     * of the function if you want to use the current view of the render target.
+     *
+     * Params:
+     *     point = Point to convert
+     *     view  = The view to use for converting the point
+     * Returns: The converted point, in target coordinates (pixels)
+     * See_Also: mapPixelToCoords
+     */
+    Vector2i mapCoordsToPixel(Vector2f point, View theView) const
+    {
+        return sfRenderTexture_mapCoordsToPixel(m_renderTexture, point, theView.ptr);
+    }
+
+    /**
+     * Convert a point from target coordinates to world coordinates, using the
+     * current view.
+     *
+     * This function is an overload of the mapPixelToCoords function that implicitly
+     * uses the current view. It is equivalent to:
+     * ---
+     * target.mapPixelToCoords(point, target.getView());
+     * ---
+     *
+     * Params:
+     *     point = Pixel to convert
+     * Returns: The converted point, in "world" coordinates
+     * See_Also: mapCoordsToPixel
+     */
+    Vector2f mapPixelToCoords(Vector2i point) const
+    {
+        return mapPixelToCoords(point, view());
+    }
+
+    /**
+     * Convert a point from target coordinates to world coordinates.
+     *
+     * This function finds the 2D position that matches the given pixel of the
+     * render target. In other words, it does the inverse of what the graphics
+     * card does, to find the initial position of a rendered pixel.
+     *
+     * Initially, both coordinate systems (world units and target pixels) match
+     * perfectly. But if you define a custom view or resize your render target,
+     * this assertion is not true anymore, i.e. a point located at (10, 50) in
+     * your render target may map to the point (150, 75) in your 2D world – if
+     * the view is translated by (140, 25).
+     *
+     * For render-windows, this function is typically used to find which point
+     * (or object) is located below the mouse cursor.
+     *
+     * This version uses a custom view for calculations, see the other overload
+     * of the function if you want to use the current view of the render target.
+     *
+     * Params:
+     *     point = Pixel to convert
+     *     view  = The view to use for converting the point
+     * Returns: The converted point, in "world" units
+     * See_Also: mapCoordsToPixel
+     */
+    Vector2f mapPixelToCoords(Vector2i point, View theView) const
+    {
+        return sfRenderTexture_mapPixelToCoords(m_renderTexture, point, theView.ptr);
     }
 
     /**
@@ -347,10 +574,12 @@ class RenderTexture : RenderTarget
      *
      * See the description of pushGLStates to get a detailed description of
      * these functions.
+     *
+     * See_Also: pushGLStates
      */
     void popGLStates()
     {
-        sfRenderTexture_popGLStates(sfPtr);
+        sfRenderTexture_popGLStates(m_renderTexture);
     }
 
     /**
@@ -363,7 +592,15 @@ class RenderTexture : RenderTarget
      * $(LI your OpenGL states are not modified by a call to an SFML function))
      *
      * $(PARA More specifically, it must be used around the code that calls
-     * `draw` functions.
+     * `draw` functions. Example:
+     * ---
+     * // OpenGL code here...
+     * window.pushGLStates();
+     * window.draw(...);
+     * window.draw(...);
+     * window.popGLStates();
+     * // OpenGL code here...
+     * ---
      *
      * Note that this function is quite expensive: it saves all the possible
 	 * OpenGL states and matrices, even the ones you don't care about.Therefore
@@ -371,10 +608,12 @@ class RenderTexture : RenderTarget
 	 * results will be achieved if you handle OpenGL states yourself (because
 	 * you know which states have really changed, and need to be saved and
 	 * restored). Take a look at the `resetGLStates` function if you do so.)
+     *
+     * See_Also: popGLStates
      */
     void pushGLStates()
     {
-        sfRenderTexture_pushGLStates(sfPtr);
+        sfRenderTexture_pushGLStates(m_renderTexture);
     }
 
     /**
@@ -384,102 +623,66 @@ class RenderTexture : RenderTarget
      * rendering, if you choose not to use pushGLStates/popGLStates. It makes
      * sure that all OpenGL states needed by DSFML are set, so that subsequent
      * `draw()` calls will work as expected.
+     * Example:
+     * ---
+     * // OpenGL code here...
+     * glPushAttrib(...);
+     * window.resetGLStates();
+     * window.draw(...);
+     * window.draw(...);
+     * glPopAttrib(...);
+     * // OpenGL code here...
+     * ---
      */
     void resetGLStates()
     {
-        sfRenderTexture_resetGLStates(sfPtr);
+        sfRenderTexture_resetGLStates(m_renderTexture);
     }
 }
 
-unittest
+package extern(C)
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
-        import dsfml.graphics.sprite;
-
-        writeln("Unit tests for RenderTexture");
-
-        auto renderTexture = new RenderTexture();
-
-        renderTexture.create(100,100);
-
-        //doesn't need a texture for this unit test
-        Sprite testSprite = new Sprite();
-
-        //clear before doing anything
-        renderTexture.clear();
-
-        renderTexture.draw(testSprite);
-
-        //prepare the RenderTexture for usage after drawing
-        renderTexture.display();
-
-        //grab that texture for usage
-        auto texture = renderTexture.getTexture();
-
-        writeln();
-    }
+    struct sfRenderTexture;
 }
 
-package extern(C) struct sfRenderTexture;
+private extern(C)
+{
+    sfRenderTexture* sfRenderTexture_create(uint width, uint height, bool depthBuffer);
+    // TODO not yet released
+    //sfRenderTexture* sfRenderTexture_createWithSettings(uint width, uint height, const ContextSettings* settings);
+    void sfRenderTexture_destroy(sfRenderTexture* renderTexture);
+    Vector2u sfRenderTexture_getSize(const sfRenderTexture* renderTexture);
+    bool sfRenderTexture_setActive(sfRenderTexture* renderTexture, bool active);
+    void sfRenderTexture_display(sfRenderTexture* renderTexture);
+    void sfRenderTexture_clear(sfRenderTexture* renderTexture, Color color);
+    void sfRenderTexture_setView(sfRenderTexture* renderTexture, const sfView* view);
+    const(sfView)* sfRenderTexture_getView(const sfRenderTexture* renderTexture);
+    const(sfView)* sfRenderTexture_getDefaultView(const sfRenderTexture* renderTexture);
+    IntRect sfRenderTexture_getViewport(const sfRenderTexture* renderTexture, const sfView* view);
+    Vector2f sfRenderTexture_mapPixelToCoords(const sfRenderTexture* renderTexture, Vector2i point, const sfView* view);
+    Vector2i sfRenderTexture_mapCoordsToPixel(const sfRenderTexture* renderTexture, Vector2f point, const sfView* view);
 
-private extern(C):
+    void sfRenderTexture_drawSprite(sfRenderTexture* renderTexture, const sfSprite* object, const sfRenderStates* states);
+    void sfRenderTexture_drawText(sfRenderTexture* renderTexture, const sfText* object, const sfRenderStates* states);
+    void sfRenderTexture_drawShape(sfRenderTexture* renderTexture, const sfShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawCircleShape(sfRenderTexture* renderTexture, const sfCircleShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawConvexShape(sfRenderTexture* renderTexture, const sfConvexShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawRectangleShape(sfRenderTexture* renderTexture, const sfRectangleShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawVertexArray(sfRenderTexture* renderTexture, const sfVertexArray* object, const sfRenderStates* states);
+    void sfRenderTexture_drawVertexBuffer(sfRenderTexture* renderTexture, const sfVertexBuffer* object, const sfRenderStates* states);
 
-//Construct a new render texture
-sfRenderTexture* sfRenderTexture_construct();
-
-//Construct a new render texture
-bool sfRenderTexture_create(sfRenderTexture* renderTexture, uint width, uint height, bool depthBuffer);
-
-//Destroy an existing render texture
-void sfRenderTexture_destroy(sfRenderTexture* renderTexture);
-
-//Get the size of the rendering region of a render texture
-void sfRenderTexture_getSize(const sfRenderTexture* renderTexture, uint* x, uint* y);
-
-//Activate or deactivate a render texture as the current target for rendering
-bool sfRenderTexture_setActive(sfRenderTexture* renderTexture, bool active);
-
-//Update the contents of the target texture
-void sfRenderTexture_display(sfRenderTexture* renderTexture);
-
-//Clear the rendertexture with the given color
-void sfRenderTexture_clear(sfRenderTexture* renderTexture, ubyte r, ubyte g, ubyte b, ubyte a);
-
-//Change the current active view of a render texture
-void sfRenderTexture_setView(sfRenderTexture* renderTexture, float centerX, float centerY, float sizeX,
-                                                float sizeY, float rotation, float viewportLeft, float viewportTop, float viewportWidth,
-                                                float viewportHeight);
-
-//Get the current active view of a render texture
-void sfRenderTexture_getView(const sfRenderTexture* renderTexture, float* centerX, float* centerY, float* sizeX,
-                                                float* sizeY, float* rotation, float* viewportLeft, float* viewportTop, float* viewportWidth,
-                                                float* viewportHeight);
-
-//Get the default view of a render texture
-void sfRenderTexture_getDefaultView(const sfRenderTexture* renderTexture, float* centerX, float* centerY, float* sizeX,
-                                                float* sizeY, float* rotation, float* viewportLeft, float* viewportTop, float* viewportWidth,
-                                                float* viewportHeight);
-
-//Draw primitives defined by an array of vertices to a render texture
-void sfRenderTexture_drawPrimitives(sfRenderTexture* renderTexture,  const void* vertices, uint vertexCount, int type, int colorSrcFactor, int colorDstFactor, int colorEquation,
-    int alphaSrcFactor, int alphaDstFactor, int alphaEquation, const float* transform, const sfTexture* texture, const sfShader* shader);
-
-//Save the current OpenGL render states and matrices
-void sfRenderTexture_pushGLStates(sfRenderTexture* renderTexture);
-
-//Restore the previously saved OpenGL render states and matrices
-void sfRenderTexture_popGLStates(sfRenderTexture* renderTexture);
-
-//Reset the internal OpenGL states so that the target is ready for drawing
-void sfRenderTexture_resetGLStates(sfRenderTexture* renderTexture);
-
-//Get the target texture of a render texture
-sfTexture* sfRenderTexture_getTexture(const sfRenderTexture* renderTexture);
-
-//Enable or disable the smooth filter on a render texture
-void sfRenderTexture_setSmooth(sfRenderTexture* renderTexture, bool smooth);
-
-//Tell whether the smooth filter is enabled or not for a render texture
-bool sfRenderTexture_isSmooth(const sfRenderTexture* renderTexture);
+    void sfRenderTexture_drawPrimitives(sfRenderTexture* renderTexture,
+                                                       const Vertex* vertices, size_t vertexCount,
+                                                       PrimitiveType type, const sfRenderStates* states);
+    void sfRenderTexture_pushGLStates(sfRenderTexture* renderTexture);
+    void sfRenderTexture_popGLStates(sfRenderTexture* renderTexture);
+    void sfRenderTexture_resetGLStates(sfRenderTexture* renderTexture);
+    const(sfTexture)* sfRenderTexture_getTexture(const sfRenderTexture* renderTexture);
+    // TODO not yet released
+    //uint sfRenderTexture_getMaximumAntialiasingLevel();
+    void sfRenderTexture_setSmooth(sfRenderTexture* renderTexture, bool smooth);
+    bool sfRenderTexture_isSmooth(const sfRenderTexture* renderTexture);
+    void sfRenderTexture_setRepeated(sfRenderTexture* renderTexture, bool repeated);
+    bool sfRenderTexture_isRepeated(const sfRenderTexture* renderTexture);
+    bool sfRenderTexture_generateMipmap(sfRenderTexture* renderTexture);
+}

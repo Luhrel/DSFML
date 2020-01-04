@@ -47,20 +47,25 @@
 module dsfml.window.windowhandle;
 
 
-//TODO: Make the Windows Window Handle the right type?
-//(ie, a HWND from std.c.windows.windows?
-version(Windows)
+version (Windows)
 {
-	//import std.c.windows.windows;
-	struct HWND__;
-	alias HWND__* WindowHandle;
+    // In SFML, HWND__ is an alias of Windows' HWND.
+    import std.c.windows.windows;
+    alias WindowHandle = HWND*;
 }
-version(OSX)
+version (OSX)
 {
-	import core.stdc.config;
-	alias c_ulong WindowHandle;
+    alias WindowHandle = void*;
 }
-version(linux)
+version (Android)
 {
-	alias void* WindowHandle;
+    alias WindowHandle = void*;
+}
+version (FreeBSD)
+{
+    alias WindowHandle = ulong;
+}
+version (linux)
+{
+    alias WindowHandle = ulong;
 }

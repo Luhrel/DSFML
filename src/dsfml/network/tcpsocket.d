@@ -82,7 +82,7 @@
  * // Wait for a connection
  * auto socket = new TcpSocket();
  * listener.accept(socket);
- * writeln("New client connected: ", socket.getRemoteAddress());
+ * writeln("New client connected: ", socket.remoteAddress());
  *
  * // Receive a message from the client
  * char[1024] buffer;
@@ -100,33 +100,35 @@
  */
 module dsfml.network.tcpsocket;
 
-public import dsfml.system.time;
+import dsfml.system.time;
 
 import dsfml.network.ipaddress;
 import dsfml.network.packet;
 import dsfml.network.socket;
 
-import dsfml.system.err;
-
 /**
  * Specialized socket using the TCP protocol.
  */
-class TcpSocket:Socket
+class TcpSocket : Socket
 {
-    package sfTcpSocket* sfPtr;
+    private sfTcpSocket* m_tcpSocket;
 
     /// Default constructor.
     this()
     {
-        sfPtr = sfTcpSocket_create();
+        m_tcpSocket = sfTcpSocket_create();
+    }
+
+    // Used by TcpListener.accept().
+    package this(sfTcpSocket* tcpSocketPointer)
+    {
+        m_tcpSocket = tcpSocketPointer;
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfTcpSocket_destroy(sfPtr);
+        sfTcpSocket_destroy(m_tcpSocket);
     }
 
     /**
@@ -135,10 +137,12 @@ class TcpSocket:Socket
      * If the socket is not connected, this function returns 0.
      *
      * Returns: Port to which the socket is bound.
+     * See_Also: connect, remotePort
      */
-    ushort getLocalPort() const
+    @property
+    ushort localPort() const
     {
-        return sfTcpSocket_getLocalPort(sfPtr);
+        return sfTcpSocket_getLocalPort(m_tcpSocket);
     }
 
     /**
@@ -147,14 +151,12 @@ class TcpSocket:Socket
      * It the socket is not connected, this function returns `IpAddress.None`.
      *
      * Returns: Address of the remote peer.
+     * See_Also: remotePort
      */
-    IpAddress getRemoteAddress() const
+    @property
+    IpAddress remoteAddress() const
     {
-        IpAddress temp;
-
-        sfTcpSocket_getRemoteAddress(sfPtr,&temp);
-
-        return temp;
+        return IpAddress(sfTcpSocket_getRemoteAddress(m_tcpSocket));
     }
 
     /**
@@ -163,10 +165,12 @@ class TcpSocket:Socket
      * If the socket is not connected, this function returns 0.
      *
      * Returns: Remote port to which the socket is connected.
+     * See_Also: remoteAddress
      */
-    ushort getRemotePort() const
+    @property
+    ushort remotePort() const
     {
-        return sfTcpSocket_getRemotePort(sfPtr);
+        return sfTcpSocket_getRemotePort(m_tcpSocket);
     }
 
     /**
@@ -183,9 +187,10 @@ class TcpSocket:Socket
      * Params:
      *  blocking = true to set the socket as blocking, false for non-blocking
      */
-    void setBlocking(bool blocking)
+    @property
+    void blocking(bool _blocking)
     {
-        sfTcpSocket_setBlocking(sfPtr, blocking);
+        sfTcpSocket_setBlocking(m_tcpSocket, _blocking);
     }
 
     /**
@@ -203,10 +208,11 @@ class TcpSocket:Socket
      * 	timeout = Optional maximum time to wait
      *
      * Returns: Status code.
+     * See_Also: disconnect
      */
     Status connect(IpAddress host, ushort port, Time timeout = Time.Zero)
     {
-        return sfTcpSocket_connect(sfPtr, &host, port, timeout.asMicroseconds());
+        return sfTcpSocket_connect(m_tcpSocket, host.toc, port, timeout);
     }
 
     /**
@@ -214,10 +220,12 @@ class TcpSocket:Socket
      *
      * This function gracefully closes the connection. If the socket is not
      * connected, this function has no effect.
+     *
+     * See_Also: connect
      */
     void disconnect()
     {
-        sfTcpSocket_disconnect(sfPtr);
+        sfTcpSocket_disconnect(m_tcpSocket);
     }
 
     /**
@@ -225,9 +233,28 @@ class TcpSocket:Socket
      *
      * Returns: true if the socket is blocking, false otherwise.
      */
-    bool isBlocking() const
+    @property
+    bool blocking() const
     {
-        return (sfTcpSocket_isBlocking(sfPtr));
+        return sfTcpSocket_isBlocking(m_tcpSocket);
+    }
+
+    /**
+     * Send raw data to the remote peer.
+     *
+     * To be able to handle partial sends over non-blocking sockets, use the
+     * send(const(void)[], out size_t) overload instead.
+     * This function will fail if the socket is not connected.
+     *
+     * Params:
+     * 	data = Sequence of bytes to send
+     *
+     * Returns: Status code.
+     * See_Also: receive
+     */
+    Status send(const(void)[] data)
+    {
+        return sfTcpSocket_send(m_tcpSocket, data.ptr, data.length);
     }
 
     /**
@@ -237,12 +264,14 @@ class TcpSocket:Socket
      *
      * Params:
      * 	data = Sequence of bytes to send
+     *  sent = The number of bytes sent will be written here
      *
      * Returns: Status code.
+     * See_Also: receive
      */
-    Status send(const(void)[] data)
+    Status send(const(void)[] data, out size_t sent)
     {
-        return sfTcpSocket_send(sfPtr, data.ptr, data.length);
+        return sfTcpSocket_sendPartial(m_tcpSocket, data.ptr, data.length, &sent);
     }
 
     /**
@@ -254,18 +283,11 @@ class TcpSocket:Socket
      * 	packet = Packet to send
      *
      * Returns: Status code.
+     * See_Also: receive
      */
     Status send(Packet packet)
     {
-        import std.stdio;
-        //temporary packet to be removed on function exit
-        scope SfPacket temp = new SfPacket();
-
-        //getting packet's "to send" data
-        temp.append(packet.onSend());
-
-        //send the data
-        return sfTcpSocket_sendPacket(sfPtr, temp.sfPtr);
+        return sfTcpSocket_sendPacket(m_tcpSocket, packet.ptr);
     }
 
     /**
@@ -280,10 +302,12 @@ class TcpSocket:Socket
                        received
      *
      * Returns: Status code.
+     * See_Also: send
      */
-    Status receive(void[] data , out size_t sizeReceived)
+    Status receive(void[] data, out size_t sizeReceived)
     {
-        return sfTcpSocket_receive(sfPtr, data.ptr, data.length, &sizeReceived);
+        return sfTcpSocket_receive(m_tcpSocket, data.ptr, data.length,
+            &sizeReceived);
     }
 
     /**
@@ -296,132 +320,61 @@ class TcpSocket:Socket
      * 	packet = Packet to fill with the received data
      *
      * Returns: Status code.
+     * See_Also: send
      */
     Status receive(Packet packet)
     {
-        //temporary packet to be removed on function exit
-        scope SfPacket temp = new SfPacket();
+        // Temporary packet that will be filled.
+        auto tmp = new Packet();
+        Status status = sfTcpSocket_receivePacket(m_tcpSocket, tmp.ptr);
 
-        //get the sent data
-        Status status = sfTcpSocket_receivePacket(sfPtr, temp.sfPtr);
-
-        //put data into the packet so that it can process it first if it wants.
-        packet.onRecieve(temp.getData());
-
+        // Put the temporary data into the packet so that it can process it first if it wants.
+        packet.onReceiveJunction(tmp.data);
         return status;
     }
+
+    @property
+    package sfTcpSocket* ptr()
+    {
+        return m_tcpSocket;
+    }
+}
+
+package extern(C)
+{
+    struct sfTcpSocket;
+}
+
+private extern(C)
+{
+    sfTcpSocket* sfTcpSocket_create();
+    void sfTcpSocket_destroy(sfTcpSocket* socket);
+    void sfTcpSocket_setBlocking(sfTcpSocket* socket, bool blocking);
+    bool sfTcpSocket_isBlocking(const sfTcpSocket* socket);
+    ushort sfTcpSocket_getLocalPort(const sfTcpSocket* socket);
+    sfIpAddress sfTcpSocket_getRemoteAddress(const sfTcpSocket* socket);
+    ushort sfTcpSocket_getRemotePort(const sfTcpSocket* socket);
+    Socket.Status sfTcpSocket_connect(sfTcpSocket* socket, sfIpAddress remoteAddress, ushort remotePort, Time timeout);
+    void sfTcpSocket_disconnect(sfTcpSocket* socket);
+    Socket.Status sfTcpSocket_send(sfTcpSocket* socket, const void* data, size_t size);
+    Socket.Status sfTcpSocket_sendPartial(sfTcpSocket* socket, const void* data, size_t size, size_t* sent);
+    Socket.Status sfTcpSocket_receive(sfTcpSocket* socket, void* data, size_t size, size_t* received);
+    Socket.Status sfTcpSocket_sendPacket(sfTcpSocket* socket, sfPacket* packet);
+    Socket.Status sfTcpSocket_receivePacket(sfTcpSocket* socket, sfPacket* packet);
 }
 
 unittest
 {
-    //TODO: Expand to use more methods in TcpSocket
-    version(DSFML_Unittest_Network)
-    {
-        import std.stdio;
-        import dsfml.network.tcplistener;
+    import std.stdio;
 
-        writeln("Unittest for Tcp Socket");
+    writeln("Running TcpSocket unittest...");
 
-        //socket connecting to server
-        auto clientSocket = new TcpSocket();
+    auto tcpSoc = new TcpSocket();
 
-        //listener looking for new sockets
-        auto listener = new TcpListener();
-        listener.listen(55003);
+    // True by default
+    assert(tcpSoc.blocking);
+    tcpSoc.blocking = false;
+    assert(!tcpSoc.blocking);
 
-        //get our client socket to connect to the server
-        clientSocket.connect(IpAddress.LocalHost, 55003);
-
-        //packet to send data
-        auto sendPacket = new Packet();
-
-        //Packet to receive data
-        auto receivePacket = new Packet();
-
-        //socket on the server side connected to the client's socket
-        auto serverSocket = new TcpSocket();
-
-        //accepts a new connection and binds it to the socket in the parameter
-        listener.accept(serverSocket);
-
-        string temp = "I'm sending you stuff!";
-
-        //Let's greet the server!
-        //sendPacket.writeString("Hello, I'm a client!");
-        //clientSocket.send(sendPacket);
-
-        clientSocket.send(temp);
-
-        //And get the data on the server side
-        //serverSocket.receive(receivePacket);
-
-        char[1024] temp2;
-        size_t received;
-
-        serverSocket.receive(temp2, received);
-
-        //What did we get from the client?
-        writeln("Gotten from client: ", cast(string)temp2[0..received]);
-
-        //clear the packets to send/get new information
-        sendPacket.clear();
-        receivePacket.clear();
-
-        //Respond back to the client
-        sendPacket.write("Hello, I'm your server.");
-
-        serverSocket.send(sendPacket);
-
-        clientSocket.receive(receivePacket);
-
-        string message;
-        receivePacket.read!string(message);
-        writeln("Gotten from server: ", message);
-
-        clientSocket.disconnect();
-        writeln();
-    }
+    // other unittests in TcpListener
 }
-
-package extern(C):
-
-struct sfTcpSocket;
-
-//Create a new TCP socket
-sfTcpSocket* sfTcpSocket_create();
-
-//Destroy a TCP socket
-void sfTcpSocket_destroy(sfTcpSocket* socket);
-
-//Set the blocking state of a TCP listener
-void sfTcpSocket_setBlocking(sfTcpSocket* socket, bool blocking);
-
-//Tell whether a TCP socket is in blocking or non-blocking mode
-bool sfTcpSocket_isBlocking(const(sfTcpSocket)* socket);
-
-//Get the port to which a TCP socket is bound locally
-ushort sfTcpSocket_getLocalPort(const(sfTcpSocket)* socket);
-
-//Get the address of the connected peer of a TCP socket
-void sfTcpSocket_getRemoteAddress(const(sfTcpSocket)* socket, IpAddress* ipAddress);
-
-//Get the port of the connected peer to which a TCP socket is connected
-ushort sfTcpSocket_getRemotePort(const(sfTcpSocket)* socket);
-
-//Connect a TCP socket to a remote peer
-Socket.Status sfTcpSocket_connect(sfTcpSocket* socket, IpAddress* host, ushort port, long timeout);
-
-//Disconnect a TCP socket from its remote peer
-void sfTcpSocket_disconnect(sfTcpSocket* socket);
-
-//Send raw data to the remote peer of a TCP socket
-Socket.Status sfTcpSocket_send(sfTcpSocket* socket, const void* data, size_t size);
-
-//Receive raw data from the remote peer of a TCP socket
-Socket.Status sfTcpSocket_receive(sfTcpSocket* socket, void* data, size_t maxSize, size_t* sizeReceived);
-
-//Send a formatted packet of data to the remote peer of a TCP socket
-Socket.Status sfTcpSocket_sendPacket(sfTcpSocket* socket, sfPacket* packet);
-
-//Receive a formatted packet of data from the remote peer
-Socket.Status sfTcpSocket_receivePacket(sfTcpSocket* socket, sfPacket* packet);

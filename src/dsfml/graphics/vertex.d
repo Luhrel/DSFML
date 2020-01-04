@@ -140,22 +140,22 @@ struct Vertex
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        //not really needed, but implemented for code coverage later.
-        import std.stdio;
+    //not really needed, but implemented for code coverage later.
+    import std.stdio;
 
-        writeln("Unit test for Vertex");
+    writeln("Running Vertex unittest...");
 
+    auto vertex = Vertex();
 
-        auto vertex = Vertex();
+    auto pos = Vector2f(1,1);
+    vertex.position = pos;
+    assert(vertex.position == pos);
 
-        vertex.position = Vector2f(1,1);
+    auto blue = Color.Blue;
+    vertex.color = blue;
+    assert(vertex.color == blue);
 
-        vertex.color = Color.Blue;
-
-        vertex.texCoords = Vector2f(20,10);
-
-        writeln();
-    }
+    auto tcoords = Vector2f(20,10);
+    vertex.texCoords = tcoords;
+    assert(vertex.texCoords == tcoords);
 }

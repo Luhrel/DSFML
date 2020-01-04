@@ -212,13 +212,86 @@ struct BlendMode
         alphaEquation = alphaBlendEquation;
     }
 
+    package this(sfBlendMode blendMode)
+    {
+        colorSrcFactor = cast(Factor) blendMode.colorSrcFactor;
+        colorDstFactor = cast(Factor) blendMode.colorDstFactor;
+        colorEquation = cast(Equation) blendMode.colorEquation;
+
+        alphaSrcFactor = cast(Factor) blendMode.alphaSrcFactor;
+        alphaDstFactor = cast(Factor) blendMode.alphaDstFactor;
+        alphaEquation = cast(Equation) blendMode.alphaEquation;
+    }
+
     bool opEquals(BlendMode rhs) const
-	{
-		return (colorSrcFactor == rhs.colorSrcFactor &&
+    {
+        return (colorSrcFactor == rhs.colorSrcFactor &&
                 colorDstFactor == rhs.colorDstFactor &&
                 colorEquation == rhs.colorEquation   &&
                 alphaSrcFactor == rhs.alphaSrcFactor &&
                 alphaDstFactor == rhs.alphaDstFactor &&
                 alphaEquation == rhs.alphaEquation );
-	}
+    }
+
+    // Returns a converted C BlendMode.
+    package sfBlendMode toc()
+    {
+        return cast(sfBlendMode) this;
+        /*
+        return sfBlendMode(cast(sfBlendFactor) colorSrcFactor,
+                           cast(sfBlendFactor) colorDstFactor,
+                           cast(sfBlendEquation) colorEquation,
+                           cast(sfBlendFactor) alphaSrcFactor,
+                           cast(sfBlendFactor) alphaDstFactor,
+                           cast(sfBlendEquation) alphaEquation);
+                           */
+    }
+}
+
+package extern(C)
+{
+    enum sfBlendFactor
+    {
+        sfBlendFactorZero,             ///< (0, 0, 0, 0)
+        sfBlendFactorOne,              ///< (1, 1, 1, 1)
+        sfBlendFactorSrcColor,         ///< (src.r, src.g, src.b, src.a)
+        sfBlendFactorOneMinusSrcColor, ///< (1, 1, 1, 1) - (src.r, src.g, src.b, src.a)
+        sfBlendFactorDstColor,         ///< (dst.r, dst.g, dst.b, dst.a)
+        sfBlendFactorOneMinusDstColor, ///< (1, 1, 1, 1) - (dst.r, dst.g, dst.b, dst.a)
+        sfBlendFactorSrcAlpha,         ///< (src.a, src.a, src.a, src.a)
+        sfBlendFactorOneMinusSrcAlpha, ///< (1, 1, 1, 1) - (src.a, src.a, src.a, src.a)
+        sfBlendFactorDstAlpha,         ///< (dst.a, dst.a, dst.a, dst.a)
+        sfBlendFactorOneMinusDstAlpha  ///< (1, 1, 1, 1) - (dst.a, dst.a, dst.a, dst.a)
+    }
+
+    enum sfBlendEquation
+    {
+        sfBlendEquationAdd,            ///< Pixel = Src * SrcFactor + Dst * DstFactor
+        sfBlendEquationSubtract,       ///< Pixel = Src * SrcFactor - Dst * DstFactor
+        sfBlendEquationReverseSubtract ///< Pixel = Dst * DstFactor - Src * SrcFactor
+    }
+
+    struct sfBlendMode
+    {
+        sfBlendFactor colorSrcFactor;  ///< Source blending factor for the color channels
+        sfBlendFactor colorDstFactor;  ///< Destination blending factor for the color channels
+        sfBlendEquation colorEquation; ///< Blending equation for the color channels
+        sfBlendFactor alphaSrcFactor;  ///< Source blending factor for the alpha channel
+        sfBlendFactor alphaDstFactor;  ///< Destination blending factor for the alpha channel
+        sfBlendEquation alphaEquation; ///< Blending equation for the alpha channel
+    }
+
+}
+
+unittest
+{
+    import std.stdio;
+    writeln("Running BlendMode unittest...");
+    alias Factor = BlendMode.Factor;
+    alias Equation = BlendMode.Equation;
+    BlendMode blendmode1 = BlendMode(Factor.SrcAlpha, Factor.OneMinusSrcAlpha,
+                                     Equation.Add, Factor.One, Factor.OneMinusSrcAlpha,
+                                     Equation.Add);
+    BlendMode blendmode2 = BlendMode.Alpha;
+    assert(blendmode1 == blendmode2);
 }

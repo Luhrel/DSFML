@@ -60,13 +60,19 @@
  *
  * // Extract the variables contained in the packet
  * int x;
- *  s;
+ * string s;
  * double d;
  * if (packet.read(x) && packet.read(s) && packet.read(d))
  * {
  *     // Data extracted successfully...
  * }
  * ---
+ *
+ * Packets have built-in operator >> and << overloads for standard types:
+ * - bool
+ * - fixed-size integer types ([u]byte, [u]short, [u]int)
+ * - floating point numbers (float, double)
+ * - string types (string and wstring)
  *
  * $(PARA Packets also provide an extra feature that allows to apply custom
  * transformations to the data before it is sent, and after it is received. This
@@ -95,9 +101,7 @@
  *
  * // Use like regular packets:
  * auto packet = new ZipPacket();
- * packet.write(x);
- * packet.write(s);
- * packet.write(d);
+ * packet << x << s << d;
  * ---
  *
  * See_Also:
@@ -105,33 +109,42 @@
  */
 module dsfml.network.packet;
 
+import core.stdc.stddef;
+
+import std.conv;
 import std.traits;
 import std.range;
+import std.string;
+
+import dsfml.system.err;
 
 /**
  * Utility class to build blocks of data to transfer over the network.
  */
 class Packet
 {
-    private
-    {
-        ubyte[] m_data;    /// Data stored in the packet
-        size_t  m_readPos; /// Current reading position in the packet
-        bool    m_isValid; /// Reading state of the packet
-    }
+    private sfPacket* m_packet;
 
-    /// Default constructor.
+    /**
+     * Default constructor.
+     *
+     * Creates an empty packet.
+     */
     this()
     {
-        m_readPos = 0;
-        m_isValid = true;
+        m_packet = sfPacket_create();
+    }
+
+    // Copy constructor.
+    package this(sfPacket* packetPointer)
+    {
+        m_packet = sfPacket_copy(packetPointer);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
+        sfPacket_destroy(m_packet);
     }
 
     /**
@@ -139,35 +152,33 @@ class Packet
      *
      * Returns: Slice containing the data.
      */
-    const(void)[] getData() const
+    const(void)[] data() const
     {
-        return m_data;
+        size_t length = sfPacket_getDataSize(m_packet);
+        return sfPacket_getData(m_packet)[0 .. length];
     }
 
     /**
      * Append data to the end of the packet.
      *
      * Params:
-     *	data = Pointer to the sequence of bytes to append
+     *	data = Pointer to the sequence of bytes to append.
+     * See_Also: clear
      */
     void append(const(void)[] data)
     {
-        if(data != null && data.length > 0)
-        {
-            m_data ~= cast(ubyte[])data;
-        }
+        sfPacket_append(m_packet, data.ptr, data.length);
     }
 
     /**
      * Clear the packet.
      *
      * After calling Clear, the packet is empty.
+     * See_Also: append
      */
     void clear()
     {
-        m_data.length = 0;
-        m_readPos = 0;
-        m_isValid = true;
+        sfPacket_clear(m_packet);
     }
 
     /**
@@ -177,10 +188,11 @@ class Packet
      * without actually reading it.
      *
      * Returns: true if all data was read, false otherwise.
+     * See_Also: opCast
      */
     bool endOfPacket() const
     {
-        return m_readPos >= m_data.length;
+        return sfPacket_endOfPacket(m_packet);
     }
 
     /**
@@ -191,70 +203,156 @@ class Packet
      * Returns: true if last data extraction from packet was successful.
      */
     bool read(T)(out T value)
-    if(isScalarType!T)
     {
-        import std.bitmanip;
+        // Calls this.opCast(bool)().
+        bool success = cast(bool) this;
 
-        if (checkSize(T.sizeof))
+        // TODO: Add a way  modify this var through config.d
+        // No one will exceed this limit, right ?
+        immutable ARRAY_SIZE = 512;
+
+        static if (is(T == bool))
         {
-            value = std.bitmanip.peek!T(m_data, m_readPos);
-            m_readPos += T.sizeof;
+            value = sfPacket_readBool(m_packet);
         }
-
-        return m_isValid;
-    }
-
-    /// ditto
-    bool read(T)(out T value)
-    if(isSomeString!T)
-    {
-        import std.conv;
-
-        //Get the element type of the string
-        static if(isNarrowString!T)
-            alias ET = Unqual!(ElementEncodingType!T);
+        else static if (is(T == byte))
+        {
+            value = sfPacket_readInt8(m_packet);
+        }
+        else static if (is(T == ubyte))
+        {
+            value = sfPacket_readUint8(m_packet);
+        }
+        else static if (is(T == short))
+        {
+            value = sfPacket_readInt16(m_packet);
+        }
+        else static if (is(T == ushort))
+        {
+            value = sfPacket_readUint16(m_packet);
+        }
+        else static if (is(T == int))
+        {
+            value = sfPacket_readInt32(m_packet);
+        }
+        else static if (is(T == uint))
+        {
+            value = sfPacket_readUint32(m_packet);
+        }
+        else static if (is(T == float))
+        {
+            value = sfPacket_readFloat(m_packet);
+        }
+        else static if (is(T == double))
+        {
+            value = sfPacket_readDouble(m_packet);
+        }
+        else static if (is(T == string))
+        {
+            char[ARRAY_SIZE] c;
+            sfPacket_readString(m_packet, c.ptr);
+            value = fromStringz(c.ptr).to!string;
+        }
         else
-            alias ET = Unqual!(ElementType!T);
-
-        //get string length
-        uint length;
-        read(length);
-        ET[] temp = new ET[](length);
-
-        //read each dchar of the string and put it in.
-        for(int i = 0; i < length && m_isValid; ++i)
         {
-            read!ET(temp[i]);
+            // wchar_t is an alias for dchar on Posix, wchar on Windows.
+            version (Posix)
+            {
+                static if (is(T == dstring))
+                {
+                    dchar[ARRAY_SIZE] dc;
+                    sfPacket_readWideString(m_packet, dc.ptr);
+                    value = fromStringz(dc.ptr).to!dstring;
+                }
+                else
+                {
+                    success = false;
+                }
+            }
+            else version (Windows)
+            {
+                static if (is(T == wstring))
+                {
+                    dchar[ARRAY_SIZE] dc;
+                    sfPacket_readWideString(m_packet, dc.ptr);
+                    value = fromStringz(dc.ptr).to!dstring;
+                }
+                else
+                {
+                    success = false;
+                }
+            }
+            else
+            {
+                success = false;
+            }
         }
-
-        value = temp.to!T();
-
-        return m_isValid;
+        return success;
     }
 
     /// Writes a scalar data type or string to the packet.
     void write(T)(T value)
-    if(isScalarType!T)
     {
-        import std.bitmanip;
-
-        size_t index = m_data.length;
-        m_data.reserve(value.sizeof);
-        m_data.length += value.sizeof;
-
-        std.bitmanip.write!T(m_data, value, index);
-    }
-
-    /// ditto
-    void write(T)(T value)
-    if(isSomeString!T)
-    {
-        //write length of string.
-        write(cast(uint) value.length);
-        //write append the string data
-        for(int i = 0; i < value.length; ++i)
+        static if (is(T == bool))
         {
-            write(value[i]);
+            sfPacket_writeBool(m_packet, cast(bool) value);
+        }
+        else static if (is(T == byte))
+        {
+            sfPacket_writeInt8(m_packet, cast(byte) value);
+        }
+        else static if (is(T == ubyte))
+        {
+            sfPacket_writeUint8(m_packet, cast(ubyte) value);
+        }
+        else static if (is(T == short))
+        {
+            sfPacket_writeInt16(m_packet, cast(short) value);
+        }
+        else static if (is(T == ushort))
+        {
+            sfPacket_writeUint16(m_packet, cast(ushort) value);
+        }
+        else static if (is(T == int))
+        {
+            sfPacket_writeInt32(m_packet, cast(int) value);
+        }
+        else static if (is(T == uint))
+        {
+            sfPacket_writeUint32(m_packet, cast(uint) value);
+        }
+        else static if (is(T == float))
+        {
+            sfPacket_writeFloat(m_packet, cast(float) value);
+        }
+        else static if (is(T == double))
+        {
+            sfPacket_writeDouble(m_packet, cast(double) value);
+        }
+        else static if (is(T == string))
+        {
+            string s = cast(string) value;
+            sfPacket_writeString(m_packet, s.toStringz);
+        }
+        else
+        {
+            // wchar_t is an alias for dchar on Posix, wchar on Windows.
+            version (Posix)
+            {
+                static if (is(T == dstring))
+                {
+                    dstring ds = cast(dstring) value;
+                    sfPacket_writeWideString(m_packet, ds.ptr);
+                }
+            }
+            else version (Windows)
+            {
+                static if (is(T == wstring))
+                {
+                    wstring ds = cast(wstring) value;
+                    sfPacket_writeWideString(m_packet, ds.ptr);
+                }
+            }
         }
     }
 
@@ -270,9 +368,9 @@ class Packet
      *
      * Returns:  Array of bytes to send.
      */
-    const(void)[] onSend()
+    protected const(void)[] onSend()
     {
-        return getData();
+        return data();
     }
 
     /**
@@ -288,189 +386,237 @@ class Packet
      *
      * Params:
      * 		data = Array of the received bytes
+     * See_Also: onSend
      */
-    void onRecieve(const(void)[] data)
+    protected void onReceive(const(void)[] data)
     {
         append(data);
     }
 
-    private bool checkSize(size_t size)
+    /**
+     * Overloads the >> operator.
+     *
+     * This function simply calls read().
+     */
+    Packet opBinary(string op, T)(out T value)
+        if (op == ">>")
     {
-        m_isValid = m_isValid && (m_readPos + size <= m_data.length);
+        read(value);
+        return this;
+    }
 
-        return m_isValid;
+    /**
+     * Overloads the << operator.
+     *
+     * This function simply calls write().
+     */
+    Packet opBinary(string op, T)(T value)
+        if (op == "<<")
+    {
+        write(value);
+        return this;
+    }
+
+    /*
+     * Allow other DSFML's classes to call onReceive() without breaking the
+     * protected attribute.
+     *
+     * Used by [Udp/Tcp]Socket.send() .
+     */
+    package void onSendJunction()
+    {
+        onSend();
+    }
+
+    /*
+     * Allow other DSFML's classes to call onReceive() without breaking the
+     * protected attribute.
+     *
+     * Used by [Udp/Tcp]Socket.receive() .
+     */
+    package void onReceiveJunction(const(void)[] data)
+    {
+        onReceive(data);
+    }
+
+    /**
+     * Test the validity of the packet, for reading.
+     *
+     * This operator allows to test the packet as a boolean variable, to check
+     * if a reading operation was successful.
+     *
+     * A packet will be in an invalid state if it has no more data to read.
+     *
+     * This behavior is the same as standard C++ streams.
+     *
+     * Usage example:
+     * ---
+     * float x;
+     * packet >> x;
+     * if (packet)
+     * {
+     *     // ok, x was extracted successfully
+     * }
+     * // -- or --
+     * float x;
+     * if (packet >> x)
+     * {
+     *     // ok, x was extracted successfully
+     * }
+     * ---
+     *
+     * Don't focus on the return type, it's equivalent to bool but it disallows
+     * unwanted implicit conversions to integer or pointer types.
+     *
+     * Returns: True if last data extraction from packet was successful
+     * See_Also: endOfPacket
+     */
+    bool opCast(T : bool)()
+    {
+        // sfPacket_canRead calls the BoolType operator of sf::Packet
+        return sfPacket_canRead(m_packet);
+    }
+
+    @property
+    package sfPacket* ptr()
+    {
+        return m_packet;
     }
 }
 
-/*
- * Utility class used internally to interact with DSFML-C to transfer Packet's
- * data.
- */
-package class SfPacket
+package extern(C)
 {
-    package sfPacket* sfPtr;
+    struct sfPacket;
+}
 
-    //Default constructor
-    this()
-    {
-        sfPtr = sfPacket_create();
-    }
+private extern(C)
+{
+    sfPacket* sfPacket_create();
+    sfPacket* sfPacket_copy(const sfPacket* packet);
+    void sfPacket_destroy(sfPacket* packet);
+    void sfPacket_append(sfPacket* packet, const void* data, size_t sizeInBytes);
+    void sfPacket_clear(sfPacket* packet);
+    const(void)* sfPacket_getData(const sfPacket* packet);
+    size_t sfPacket_getDataSize(const sfPacket* packet);
+    bool sfPacket_endOfPacket(const sfPacket* packet);
 
-    //Destructor
-    ~this()
-    {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfPacket_destroy(sfPtr);
-    }
+    bool sfPacket_canRead(const sfPacket* packet);
+    bool sfPacket_readBool(sfPacket* packet);
+    byte sfPacket_readInt8(sfPacket* packet);
+    ubyte sfPacket_readUint8(sfPacket* packet);
+    short sfPacket_readInt16(sfPacket* packet);
+    ushort sfPacket_readUint16(sfPacket* packet);
+    int sfPacket_readInt32(sfPacket* packet);
+    uint sfPacket_readUint32(sfPacket* packet);
+    float sfPacket_readFloat(sfPacket* packet);
+    double sfPacket_readDouble(sfPacket* packet);
+    void sfPacket_readString(sfPacket* packet, char* _string);
+    void sfPacket_readWideString(sfPacket* packet, wchar_t* _string);
 
-    //Get a slice of the data contained in the packet.
-    //
-    //Returns: Slice containing the data.
-    const(void)[] getData() const
-    {
-        return sfPacket_getData(sfPtr)[0 .. sfPacket_getDataSize(sfPtr)];
-    }
-
-    //Append data to the end of the packet.
-    //Params:
-    //		data = Pointer to the sequence of bytes to append.
-    void append(const(void)[] data)
-    {
-        sfPacket_append(sfPtr, data.ptr, void.sizeof * data.length);
-    }
+    void sfPacket_writeBool(sfPacket* packet, bool value);
+    void sfPacket_writeInt8(sfPacket* packet, byte value);
+    void sfPacket_writeUint8(sfPacket* packet, ubyte value);
+    void sfPacket_writeInt16(sfPacket* packet, short value);
+    void sfPacket_writeUint16(sfPacket* packet, ushort value);
+    void sfPacket_writeInt32(sfPacket* packet, int value);
+    void sfPacket_writeUint32(sfPacket* packet, uint value);
+    void sfPacket_writeFloat(sfPacket* packet, float value);
+    void sfPacket_writeDouble(sfPacket* packet, double value);
+    void sfPacket_writeString(sfPacket* packet, const char* _string);
+    void sfPacket_writeWideString(sfPacket* packet, const wchar_t* _string);
 }
 
 unittest
 {
-    //TODO: Expand to use more of the mehtods found in Packet
-    version(DSFML_Unittest_Network)
+    import std.stdio;
+    import dsfml.network.socket;
+    import dsfml.network.tcpsocket;
+    import dsfml.network.tcplistener;
+    import dsfml.network.ipaddress;
+    writeln("Running Packet unittest...");
+
+    auto sendPacket = new Packet();
+    auto receivePacket = new Packet();
+
+    bool b = true;
+    byte bt = -123;
+    ubyte ubt = 137;
+    short s = -31954;
+    ushort us = 62043;
+    int i = -19928121;
+    uint ui = 2147483647;
+    float f = 341.1238641246;
+    double d = 2542.1245315135;
+    string str = "Hello, I'm a client !\nIf this string exceed 512 characters, it may not work :(";
+
+    sendPacket << b << bt << ubt << s << us << i << ui << f << d << str;
+    receivePacket.onReceiveJunction(sendPacket.onSend());
+
+
+    bool b1;
+    byte bt1;
+    ubyte ubt1;
+    short s1;
+    ushort us1;
+    int i1;
+    uint ui1;
+    float f1;
+    double d1;
+    string str1;
+
+    receivePacket >> b1 >> bt1 >> ubt1 >> s1 >> us1 >> i1 >> ui1 >> f1 >> d1 >> str1;
+
+    assert(b == b1);
+    assert(bt == bt1);
+    assert(ubt == ubt1);
+    assert(s == s1);
+    assert(us == us1);
+    assert(i == i1);
+    assert(ui == ui1);
+    assert(f == f1);
+    assert(d == d1);
+
+
+    sendPacket.clear();
+    receivePacket.clear();
+
+    version (Posix)
     {
-        import std.stdio;
+        dstring dstr = "❄ 🍷 🍓 弈 ⯳";
+        sendPacket.write(dstr);
+        receivePacket.onReceiveJunction(sendPacket.onSend());
 
-        import dsfml.network.socket;
-        import dsfml.network.tcpsocket;
-        import dsfml.network.tcplistener;
-        import dsfml.network.ipaddress;
+        dstring dstr1;
+        receivePacket.read(dstr1);
 
-        writeln("Unittest for Packet");
-
-        //packet to send data
-        auto sendPacket = new Packet();
-        //Packet to receive data
-        auto receivePacket = new Packet();
-
-        //Let's greet the server!
-        sendPacket.write("Hello, I'm a client!");
-        sendPacket.write(42);
-        sendPacket.write(cast(double) 3.141592);
-        sendPacket.write(false);
-
-        receivePacket.onRecieve(sendPacket.onSend());
-
-        //What did we get from the client?
-        string message;
-        int sentInt;
-        double sentDouble;
-        bool sentBool;
-        assert(receivePacket.read!string(message));
-        assert(message == "Hello, I'm a client!");
-
-        assert(receivePacket.read(sentInt));
-        assert(sentInt == 42);
-
-        assert(receivePacket.read(sentDouble));
-        assert(sentDouble == 3.141592);
-
-        assert(receivePacket.read(sentBool));
-        assert(!sentBool);
-        writeln("Gotten from client: ", message, ", ", sentInt, ", ", sentDouble, ", ", sentBool);
-
-        //clear the packets to send/get new information
-        sendPacket.clear();
-        receivePacket.clear();
-
-        //Respond back to the client
-        sendPacket.write("Hello, I'm your server.");
-        sendPacket.write(420UL);
-        sendPacket.write(cast(float) 2.7182818);
-        sendPacket.write(true);
-
-        receivePacket.onRecieve(sendPacket.onSend());
-
-        ulong sentULong;
-        float sentFloat;
-        assert(receivePacket.read!string(message));
-        assert(message == "Hello, I'm your server.");
-
-        assert(receivePacket.read(sentULong));
-        assert(sentULong == 420UL);
-
-        assert(receivePacket.read(sentFloat));
-        assert(sentFloat == 2.7182818f);
-
-        assert(receivePacket.read(sentBool));
-        assert(sentBool);
-        writeln("Gotten from server: ", message, ", ", sentULong, ", ", sentFloat, ", ", sentBool);
-
-        writeln("Done!");
-        writeln();
+        assert(dstr == dstr1);
     }
+    else version (Windows)
+    {
+        wstring wstr = "❄ 🍷 🍓 弈 ⯳";
+        sendPacket.write(wstr);
+        receivePacket.onReceiveJunction(sendPacket.onSend());
+
+        wstring wstr1;
+        receivePacket.read(wstr1);
+
+        assert(wstr == wstr1);
+    }
+
+
+    class EmptyPacket : Packet
+    {
+        override protected void onReceive(const(void)[] data)
+        {
+            // Not calling append, so the data will always be null
+            //append(data);
+        }
+    }
+
+    auto emptyPacket = new EmptyPacket();
+
+    const(void)[] randomData = ["hey", "ho"];
+    emptyPacket.onReceiveJunction(randomData);
+
+    assert(emptyPacket.data() == null);
 }
-
-package extern(C):
-
-struct sfPacket;
-
-///Create a new packet
-sfPacket* sfPacket_create();
-
-///Create a new packet by copying an existing one
-sfPacket* sfPacket_copy(const sfPacket* packet);
-
-///Destroy a packet
-void sfPacket_destroy(sfPacket* packet);
-
-///Append data to the end of a packet
-void sfPacket_append(sfPacket* packet, const void* data, size_t sizeInBytes);
-
-///Clear a packet
-void sfPacket_clear(sfPacket* packet);
-
-///Get a pointer to the data contained in a packet
-const(void)* sfPacket_getData(const sfPacket* packet);
-
-///Get the size of the data contained in a packet
-size_t sfPacket_getDataSize(const sfPacket* packet);
-
-///Tell if the reading position has reached the end of a packet
-bool sfPacket_endOfPacket(const sfPacket* packet);
-
-///Test the validity of a packet, for reading
-bool sfPacket_canRead(const sfPacket* packet);
-
-///Functions to extract data from a packet
-bool    sfPacket_readBool(sfPacket* packet);
-byte    sfPacket_readInt8(sfPacket* packet);
-ubyte   sfPacket_readUint8(sfPacket* packet);
-short   sfPacket_readInt16(sfPacket* packet);
-ushort  sfPacket_readUint16(sfPacket* packet);
-int     sfPacket_readInt32(sfPacket* packet);
-uint    sfPacket_readUint32(sfPacket* packet);
-float    sfPacket_readFloat(sfPacket* packet);
-double   sfPacket_readDouble(sfPacket* packet);
-
-//Remove in lieu of readUint16 and readUint32 for W and D chars in D?
-//void     sfPacket_readString(sfPacket* packet, char* string);
-//void     sfPacket_readWideString(sfPacket* packet, wchar_t* string);
-
-///Functions to insert data into a packet
-void sfPacket_writeBool(sfPacket* packet, bool);
-void sfPacket_writeInt8(sfPacket* packet, byte);
-void sfPacket_writeUint8(sfPacket* packet, ubyte);
-void sfPacket_writeInt16(sfPacket* packet, short);
-void sfPacket_writeUint16(sfPacket* packet, ushort);
-void sfPacket_writeInt32(sfPacket* packet, int);
-void sfPacket_writeUint32(sfPacket* packet, uint);
-void sfPacket_writeFloat(sfPacket* packet, float);
-void sfPacket_writeDouble(sfPacket* packet, double);

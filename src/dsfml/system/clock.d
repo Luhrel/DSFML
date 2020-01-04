@@ -50,7 +50,7 @@
  */
 module dsfml.system.clock;
 
-public import dsfml.system.time;
+import dsfml.system.time;
 import core.time: MonoTime, Duration;
 
 /**
@@ -58,74 +58,67 @@ import core.time: MonoTime, Duration;
  */
 class Clock
 {
-	package MonoTime m_startTime;
-	private alias currTime = MonoTime.currTime;
+    private MonoTime m_startTime;
+    private alias currTime = MonoTime.currTime;
 
-	/// Default constructor.
-	this()
-	{
-		m_startTime = currTime;
-	}
+    /// Default constructor.
+    this()
+    {
+        m_startTime = currTime;
+    }
 
-	/// Destructor
-	~this()
-	{
-		import dsfml.system.config;
-		mixin(destructorOutput);
-	}
+    /**
+     * Get the elapsed time.
+     *
+     * This function returns the time elapsed since the last call to `restart()`
+     * (or the construction of the instance if `restart()` has not been called).
+     *
+     * Returns: Time elapsed.
+     */
+    Time getElapsedTime() const
+    {
+        return microseconds((currTime - m_startTime).total!"usecs");
+    }
 
-	/**
-	 * Get the elapsed time.
-	 *
-	 * This function returns the time elapsed since the last call to `restart()`
-	 * (or the construction of the instance if `restart()` has not been called).
-	 *
-	 * Returns: Time elapsed.
-	 */
-	Time getElapsedTime() const
-	{
-		return microseconds((currTime - m_startTime).total!"usecs");
-	}
+    /**
+     * Restart the clock.
+     *
+     * This function puts the time counter back to zero. It also returns the
+     * time elapsed since the clock was started.
+     *
+     * Returns: Time elapsed.
+     */
+    Time restart()
+    {
+        MonoTime now = currTime;
+        auto elapsed = now - m_startTime;
+        m_startTime = now;
 
-	/**
-	 * Restart the clock.
-	 *
-	 * This function puts the time counter back to zero. It also returns the
-	 * time elapsed since the clock was started.
-	 *
-	 * Returns: Time elapsed.
-	 */
-	Time restart()
-	{
-		MonoTime now = currTime;
-		auto elapsed = now - m_startTime;
-		m_startTime = now;
-
-		return microseconds(elapsed.total!"usecs");
-	}
+        return microseconds(elapsed.total!"usecs");
+    }
 
 }
 
 unittest
 {
-	version(DSFML_Unittest_System)
-	{
-		import std.stdio;
-		import dsfml.system.sleep;
-		import std.math;
+    import std.stdio;
+    import dsfml.system.sleep;
+    import std.math;
 
-		writeln("Unit test for Clock");
+    writeln("Running Clock unittest...");
 
-		Clock clock = new Clock();
+    Clock clock = new Clock();
 
-		writeln("Counting Time for 5 seconds.(rounded to nearest second)");
+    writeln("\tCounting Time for 3 seconds.(rounded to nearest second)");
 
-		while(clock.getElapsedTime().asSeconds() < 5)
-		{
-			writeln(clock.getElapsedTime().asSeconds());
-			sleep(seconds(1));
-		}
+    bool turn0, turn1, turn2;
 
-		writeln();
-	}
+    for(int i = 0; clock.getElapsedTime().asSeconds() < 3; i++)
+    {
+        real et = clock.getElapsedTime().asSeconds();
+        real rnum = round(et);
+        writefln("\t%f\t~> %ss elapsed.", et, rnum);
+        assert(rnum == i);
+        sleep(seconds(1));
+    }
 }

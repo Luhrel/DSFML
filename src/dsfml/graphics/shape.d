@@ -63,164 +63,402 @@ import dsfml.system.vector2;
 
 import dsfml.graphics.color;
 import dsfml.graphics.drawable;
-import dsfml.graphics.primitivetype;
 import dsfml.graphics.rect;
 import dsfml.graphics.rendertarget;
 import dsfml.graphics.renderstates;
 import dsfml.graphics.texture;
+import dsfml.graphics.transform;
 import dsfml.graphics.transformable;
-import dsfml.graphics.vertexarray;
-
-import std.typecons : Rebindable;
 
 /**
  * Base class for textured shapes with outline.
  */
-class Shape : Drawable, Transformable
+class Shape : Transformable, Drawable
 {
-    mixin NormalTransformable;
+    private sfShape* m_shape;
 
-    protected this()
+    /// Default constructor.
+    this()
     {
-        m_vertices = new VertexArray(PrimitiveType.TrianglesFan,0);
-        m_outlineVertices = new VertexArray(PrimitiveType.TrianglesStrip,0);
+        m_shape = sfShape_create(&getPointCountCallback, &getPointCallback, cast(void*) this);
     }
 
-    private
+    /// Virtual destructor.
+    ~this()
     {
-        // Texture of the shape
-        Rebindable!(const(Texture)) m_texture;
-        // Rectangle defining the area of the source texture to display
-        IntRect m_textureRect;
-        // Fill color
-        Color m_fillColor;
-        // Outline color
-        Color m_outlineColor;
-        // Thickness of the shape's outline
-        float m_outlineThickness = 0;
-        // Vertex array containing the fill geometry
-        VertexArray m_vertices;
-        // Vertex array containing the outline geometry
-        VertexArray m_outlineVertices;
-        // Bounding rectangle of the inside (fill)
-        FloatRect m_insideBounds;
-        // Bounding rectangle of the whole shape (outline + fill)
-        FloatRect m_bounds;
+        sfShape_destroy(m_shape);
     }
 
     @property
     {
         /**
-         * The sub-rectangle of the texture that the shape will display.
+         * Change the source texture of the shape.
          *
-         * The texture rect is useful when you don't want to display the whole
-         * texture, but rather a part of it. By default, the texture rect covers
-         * the entire texture.
+         * The texture argument refers to a texture that must exist as long as the
+         * shape uses it. Indeed, the shape doesn't store its own copy of the
+         * texture, but rather keeps a pointer to the one that you passed to this
+         * function. If the source texture is destroyed and the shape tries to use
+         * it, the behaviour is undefined. texture can be NULL to disable texturing.
+         *
+         * If resetRect is true, the TextureRect property of the shape is
+         * automatically adjusted to the size of the new texture. If it is false,
+         * the texture rect is left unchanged.
+         *
+         * Params:
+         *     texture   = New texture
+         *     resetRect = Should the texture rect be reset to the size of the new
+         *              texture?
          */
-        IntRect textureRect(IntRect rect)
+        void texture(Texture newTexture, bool resetRect = false)
         {
-            m_textureRect = rect;
-            updateTexCoords();
-            return rect;
+            sfShape_setTexture(m_shape, newTexture.ptr, resetRect);
         }
 
-        /// ditto
+        /**
+         * Get the source texture of the shape.
+         *
+         * If the shape has no source texture, a NULL pointer is returned. The
+         * returned pointer is const, which means that you can't modify the texture
+         * when you retrieve it with this function.
+         *
+         * Returns: The shape's texture.
+         */
+        const(Texture) texture() const
+        {
+            return new Texture(sfShape_getTexture(m_shape));
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the sub-rectangle of the texture that the shape will display.
+         *
+         * The texture rect is useful when you don't want to display the whole texture, but rather a part of it. By default, the texture rect covers the entire texture.
+         *
+         * Params:
+         *     rect = Rectangle defining the region of the texture to display
+         * See_Also: texture
+         */
+        void textureRect(IntRect rect)
+        {
+            sfShape_setTextureRect(m_shape, rect);
+        }
+
+        /**
+         * Get the sub-rectangle of the texture displayed by the shape.
+         *
+         * Returns: Texture rectangle of the shape
+         */
         IntRect textureRect() const
         {
-            return m_textureRect;
+            return sfShape_getTextureRect(m_shape);
         }
     }
 
     @property
     {
         /**
-         * The fill color of the shape.
+         * Set the fill color of the shape.
          *
-         * This color is modulated (multiplied) with the shape's texture if any.
-         * It can be used to colorize the shape, or change its global opacity.
-         * You can use `Color.Transparent` to make the inside of the shape
-         * transparent, and have the outline alone. By default, the shape's fill
-         * color is opaque white.
+         * This color is modulated (multiplied) with the shape's texture if any. It
+         * can be used to colorize the shape, or change its global opacity. You can
+         * use Color.Transparent to make the inside of the shape transparent, and
+         * have the outline alone. By default, the shape's fill color is opaque
+         * white.
+         *
+         * Params:
+         *     color = New color of the shape
+         * See_Also: outlineColor
          */
-        Color fillColor(Color color)
+        void fillColor(Color color)
         {
-            m_fillColor = color;
-            updateFillColors();
-            return color;
+            sfShape_setFillColor(m_shape, color);
         }
 
-        /// ditto
+        /**
+         * Get the fill color of the shape.
+         *
+         * Returns: Fill color of the shape
+         */
         Color fillColor() const
         {
-            return m_fillColor;
+            return sfShape_getFillColor(m_shape);
         }
     }
 
     @property
     {
         /**
-         * The outline color of the shape.
+         * Set the outline color of the shape.
          *
          * By default, the shape's outline color is opaque white.
+         *
+         * Params:
+         *     color = New outline color of the shape
+         * See_Also: fillColor
          */
-        Color outlineColor(Color color)
+        void outlineColor(Color color)
         {
-            m_outlineColor = color;
-            updateOutlineColors();
-            return color;
+            sfShape_setOutlineColor(m_shape, color);
         }
 
-        /// ditto
+        /**
+         * Get the outline color of the shape.
+         *
+         * Returns: Outline color of the shape
+         * See_Also: fillColor
+         */
         Color outlineColor() const
         {
-            return m_outlineColor;
+            return sfShape_getOutlineColor(m_shape);
         }
     }
 
     @property
     {
         /**
-         * The thickness of the shape's outline.
+         * Set the thickness of the shape's outline.
          *
          * Note that negative values are allowed (so that the outline expands
-         * towards the center of the shape), and using zero disables the
-         * outline. By default, the outline thickness is 0.
+         * towards the center of the shape), and using zero disables the outline.
+         * By default, the outline thickness is 0.
+         *
+         * Params:
+         *     thickness = New outline thickness
          */
-        float outlineThickness(float thickness)
+        void outlineThickness(float thickness)
         {
-            m_outlineThickness = thickness;
-            update();
-            return thickness;
+            sfShape_setOutlineThickness(m_shape, thickness);
         }
 
-        /// ditto
+        /**
+         * Get the outline thickness of the shape.
+         *
+         * Returns: Outline thickness of the shape
+         */
         float outlineThickness() const
         {
-            return m_outlineThickness;
+            return sfShape_getOutlineThickness(m_shape);
         }
     }
 
     @property
     {
         /**
-         * The total number of points in the shape.
+         * Set the local origin of the object
+         *
+         * The origin of an object defines the center point for all transformations
+         * (position, scale, rotation). The coordinates of this point must be
+         * relative to the top-left corner of the object, and ignore all
+         * transformations (position, scale, rotation). The default origin of a
+         * transformable object is (0, 0).
+         *
+         * Params:
+         *     x = X coordinate of the new origin
+         *     y = Y coordinate of the new origin
          */
-        abstract uint pointCount() const;
+        override void origin(float x, float y)
+        {
+            origin(Vector2f(x, y));
+        }
+
+        /**
+         * Set the local origin of the object
+         *
+         * The origin of an object defines the center point for all transformations
+         * (position, scale, rotation). The coordinates of this point must be
+         * relative to the top-left corner of the object, and ignore all
+         * transformations (position, scale, rotation). The default origin of a
+         * transformable object is (0, 0).
+         *
+         * Params:
+         *     origin = New origin
+         */
+        override void origin(Vector2f newOrigin)
+        {
+            sfShape_setOrigin(m_shape, newOrigin);
+        }
+
+        /**
+         * Get the local origin of the object
+         *
+         * Returns: Current origin
+         */
+        override Vector2f origin() const
+        {
+            return sfShape_getOrigin(m_shape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Get the total number of points of the shape.
+         *
+         * Returns: Number of points of the shape
+         * See_Also: getPoint
+         */
+        abstract size_t pointCount() const;
+    }
+
+    @property
+    {
+        /**
+         * Set the position of the object
+         *
+         * This function completely overwrites the previous position. See the move
+         * function to apply an offset based on the previous position instead. The
+         * default position of a transformable object is (0, 0).
+         *
+         * Params:
+         *     x = X coordinate of the new position
+         *     y = Y coordinate of the new position
+         * See_Also: move
+         */
+        override void position(float x, float y)
+        {
+            position(Vector2f(x, y));
+        }
+
+        /**
+         * Set the position of the object
+         *
+         * This function completely overwrites the previous position. See the move
+         * function to apply an offset based on the previous position instead. The
+         * default position of a transformable object is (0, 0).
+         *
+         * Params:
+         *     position = New position
+         * See_Also: move
+         */
+        override void position(Vector2f newPosition)
+        {
+            sfShape_setPosition(m_shape, newPosition);
+        }
+
+        /**
+         * Get the position of the object
+         *
+         * Returns: Current position
+         */
+        override Vector2f position() const
+        {
+            return sfShape_getPosition(m_shape);
+        }
     }
 
     /**
-     * Get the global bounding rectangle of the entity.
+     * Rotate the object.
      *
-     * The returned rectangle is in global coordinates, which means that it
-     * takes in account the transformations (translation, rotation, scale, ...)
-     * that are applied to the entity. In other words, this function returns the
-     * bounds of the sprite in the global 2D world's coordinate system.
+     * This function adds to the current rotation of the object, unlike the rotation
+     * property which overwrites it. Thus, it is equivalent to the following code:
+     * ---
+     * object.setRotation(object.rotation() + angle);
+     * ---
      *
-     * Returns: Global bounding rectangle of the entity.
+     * Params:
+     *     angle = Angle of rotation, in degrees
      */
-    FloatRect getGlobalBounds()
+    override void rotate(float angle)
     {
-        return getTransform().transformRect(getLocalBounds());
+        sfShape_rotate(m_shape, angle);
+    }
+
+    @property
+    {
+        /**
+         * Set the orientation of the object
+         *
+         * This function completely overwrites the previous rotation. See the rotate
+         * function to add an angle based on the previous rotation instead. The
+         * default rotation of a transformable object is 0.
+         *
+         * Params:
+         *     angle = New rotation, in degrees
+         * See_Also: rotate
+         */
+        override void rotation(float angle)
+        {
+            sfShape_setRotation(m_shape, angle);
+        }
+
+        /**
+         * Get the orientation of the object
+         *
+         * The rotation is always in the range [0, 360].
+         *
+         * Returns: Current rotation, in degrees
+         */
+        override float rotation() const
+        {
+            return sfShape_getRotation(m_shape);
+        }
+    }
+
+    @property
+    {
+        /**
+         * Set the scale factors of the object
+         *
+         * This function completely overwrites the previous scale. See the scale
+         * function to add a factor based on the previous scale instead. The default
+         * scale of a transformable object is (1, 1).
+         *
+         * Params:
+         *     factorX = New horizontal scale factor
+         *     factorY = New vertical scale factor
+         */
+        override void scale(float factorX, float factorY)
+        {
+            scale(Vector2f(factorX, factorY));
+        }
+
+        /**
+         * Set the scale factors of the object
+         *
+         * This function completely overwrites the previous scale. See the scale
+         * function to add a factor based on the previous scale instead. The default
+         * scale of a transformable object is (1, 1).
+         *
+         * Params:
+         *     factors = New scale factors
+         */
+        override void scale(Vector2f factors)
+        {
+            sfShape_setScale(m_shape, factors);
+        }
+
+        /**
+         * Get the current scale of the object
+         *
+         * Returns: Current scale factors
+         */
+        override Vector2f scale() const
+        {
+            return sfShape_getScale(m_shape);
+        }
+    }
+
+    /**
+     * Get the global (non-minimal) bounding rectangle of the entity.
+     *
+     * The returned rectangle is in global coordinates, which means that it takes
+     * into account the transformations (translation, rotation, scale, ...) that are
+     * applied to the entity. In other words, this function returns the bounds of
+     * the shape in the global 2D world's coordinate system.
+     *
+     * This function does not necessarily return the minimal bounding rectangle. It
+     * merely ensures that the returned rectangle covers all the vertices (but
+     * possibly more). This allows for a fast approximation of the bounds as a first
+     * check; you may want to use more precise checks on top of that.
+     *
+     * Returns: Global bounding rectangle of the entity
+     */
+    @property
+    FloatRect globalBounds() const
+    {
+        return sfShape_getGlobalBounds(m_shape);
     }
 
     /**
@@ -233,229 +471,263 @@ class Shape : Drawable, Transformable
      *
      * Returns: Local bounding rectangle of the entity.
      */
-    FloatRect getLocalBounds() const
+    @property
+    FloatRect localBounds() const
     {
-        return m_bounds;
+        return sfShape_getLocalBounds(m_shape);
     }
 
     /**
      * Get a point of the shape.
      *
-     * The result is undefined if index is out of the valid range.
+     * The returned point is in local coordinates, that is, the shape's transforms
+     * (position, rotation, scale) are not taken into account. The result is
+     * undefined if index is out of the valid range.
      *
      * Params:
-     * 	index = Index of the point to get, in range [0 .. getPointCount() - 1]
+     *     index = Index of the point to get, in range [0 .. pointCount() - 1]
      *
      * Returns: Index-th point of the shape.
+     * See_Also: pointCount
      */
-    abstract Vector2f getPoint(uint index) const;
-
-    /**
-     * Get the source texture of the shape.
-     *
-     * If the shape has no source texture, a NULL pointer is returned. The
-     * returned pointer is const, which means that you can't modify the texture
-     * when you retrieve it with this function.
-     *
-     * Returns: The shape's texture.
-     */
-    const(Texture) getTexture() const
-    {
-        return m_texture;
-    }
-
-    /**
-     * Change the source texture of the shape.
-     *
-     * The texture argument refers to a texture that must exist as long as the
-     * shape uses it. Indeed, the shape doesn't store its own copy of the
-     * texture, but rather keeps a pointer to the one that you passed to this
-     * function. If the source texture is destroyed and the shape tries to use
-     * it, the behaviour is undefined. texture can be NULL to disable texturing.
-     *
-     * If resetRect is true, the TextureRect property of the shape is
-     * automatically adjusted to the size of the new texture. If it is false,
-     * the texture rect is left unchanged.
-     *
-     * Params:
-     * 	texture	  = New texture
-     * 	resetRect = Should the texture rect be reset to the size of the new
-     *              texture?
-     */
-    void setTexture(const(Texture) texture, bool resetRect = false)
-    {
-        if((texture !is null) && (resetRect || (m_texture is null)))
-        {
-            textureRect = IntRect(0, 0, texture.getSize().x, texture.getSize().y);
-        }
-
-        m_texture = (texture is null)? null:texture;
-    }
+    abstract Vector2f getPoint(size_t index = 0) const;
 
     /**
      * Draw the shape to a render target.
      *
      * Params:
-     * 		renderTarget	= Target to draw to
-     * 		renderStates	= Current render states
+     *         renderTarget    = Target to draw to
+     *         renderStates    = Current render states
      */
-    override void draw(RenderTarget renderTarget, RenderStates renderStates)
+    override void draw(RenderTarget renderTarget, RenderStates renderStates = RenderStates.init)
     {
-        renderStates.transform = renderStates.transform * getTransform();
-        renderStates.texture = m_texture;
-        renderTarget.draw(m_vertices, renderStates);
+        renderTarget.draw(this, renderStates);
+    }
 
-        // Render the outline
-        if (m_outlineThickness != 0)
-        {
-            renderStates.texture = null;
-            renderTarget.draw(m_outlineVertices, renderStates);
-        }
+    /**
+     * Get the inverse of the combined transform of the object
+     *
+     * Returns: Inverse of the combined transformations applied to the object
+     */
+    override Transform inverseTransform() const
+    {
+        return Transform(sfShape_getInverseTransform(m_shape));
+    }
+
+    /**
+     * Get the combined transform of the object
+     *
+     * Returns: Transform combining the position/rotation/scale/origin of the object
+     * See_Also: inverseTransform
+     */
+    override Transform transform()
+    {
+        return Transform(sfShape_getTransform(m_shape));
+    }
+
+    /**
+     * Move the object by a given offset.
+     *
+     * This function adds to the current position of the object, unlike the position
+     * property which overwrites it. Thus, it is equivalent to the following code:
+     * ---
+     * Vector2f pos = object.position();
+     * object.position(pos.x + offsetX, pos.y + offsetY);
+     * ---
+     *
+     * Params:
+     *     offsetX = X offset
+     *     offsetY = Y offset
+     * See_Also: position
+     */
+    override void move(float offsetX, float offsetY)
+    {
+        move(Vector2f(offsetX, offsetY));
+    }
+
+    /**
+     * Move the object by a given offset.
+     *
+     * This function adds to the current position of the object, unlike the position
+     * property which overwrites it. Thus, it is equivalent to the following code:
+     * ---
+     * object.position(object.getPosition() + offset);
+     * ---
+     *
+     * Params:
+     *     offset = Offset
+     */
+    override void move(Vector2f offset)
+    {
+        sfShape_move(m_shape, offset);
     }
 
     /**
      * Recompute the internal geometry of the shape.
      *
      * This function must be called by the derived class everytime the shape's
-     * points change (ie. the result of either `getPointCount` or `getPoint` is
+     * points change (i.e. the result of either getPointCount or getPoint is
      * different).
      */
     protected void update()
     {
-        // Get the total number of points of the shape
-        uint count = pointCount();
-        if (count < 3)
-        {
-            m_vertices.resize(0);
-            m_outlineVertices.resize(0);
-            return;
-        }
-
-        m_vertices.resize(count + 2); // + 2 for center and repeated first point
-
-        // Position
-        for (uint i = 0; i < count; ++i)
-        {
-            m_vertices[i + 1].position = getPoint(i);
-        }
-        m_vertices[count + 1].position = m_vertices[1].position;
-
-        // Update the bounding rectangle
-        m_vertices[0] = m_vertices[1]; // so that the result of getBounds() is correct
-        m_insideBounds = m_vertices.getBounds();
-
-        // Compute the center and make it the first vertex
-        m_vertices[0].position.x = m_insideBounds.left + m_insideBounds.width / 2;
-        m_vertices[0].position.y = m_insideBounds.top + m_insideBounds.height / 2;
-
-        // Color
-        updateFillColors();
-
-        // Texture coordinates
-        updateTexCoords();
-
-        // Outline
-        updateOutline();
+        sfShape_update(m_shape);
     }
 
-    private
+    /**
+     * Overload of the slice operator (get).
+     * This function simply call `point(index)`.
+     *
+     * example:
+     * ---
+     * Vector2f p2 = shape[2];
+     * ---
+     */
+    Vector2f opIndex(size_t index) const
     {
-        Vector2f computeNormal(Vector2f p1, Vector2f p2)
-        {
-            import std.math:sqrt;
-            Vector2f normal = Vector2f(p1.y - p2.y, p2.x - p1.x);
-            float length = sqrt(normal.x * normal.x + normal.y * normal.y);
-            if (length != 0f)
-            {
-                normal /= length;
-            }
-            return normal;
-        }
-
-        float dotProduct(Vector2f p1, Vector2f p2)
-        {
-            return (p1.x * p2.x) + (p1.y * p2.y);
-        }
-
-        //update methods
-        void updateFillColors()
-        {
-            for(uint i = 0; i < m_vertices.getVertexCount(); ++i)
-            {
-                m_vertices[i].color = m_fillColor;
-            }
-        }
-
-        void updateTexCoords()
-        {
-
-            for (uint i = 0; i < m_vertices.getVertexCount(); ++i)
-            {
-                float xratio = (m_vertices[i].position.x - m_insideBounds.left) / m_insideBounds.width;
-                float yratio = (m_vertices[i].position.y - m_insideBounds.top) / m_insideBounds.height;
-
-                m_vertices[i].texCoords.x = m_textureRect.left + m_textureRect.width * xratio;
-                m_vertices[i].texCoords.y = m_textureRect.top + m_textureRect.height * yratio;
-
-            }
-        }
-
-        void updateOutline()
-        {
-            uint count = m_vertices.getVertexCount() - 2;
-            m_outlineVertices.resize((count + 1) * 2);
-
-            for (uint i = 0; i < count; ++i)
-            {
-                uint index = i + 1;
-
-                // Get the two segments shared by the current point
-                Vector2f p0 = (i == 0) ? m_vertices[count].position : m_vertices[index - 1].position;
-                Vector2f p1 = m_vertices[index].position;
-                Vector2f p2 = m_vertices[index + 1].position;
-
-                // Compute their normal
-                Vector2f n1 = computeNormal(p0, p1);
-                Vector2f n2 = computeNormal(p1, p2);
-
-                // Make sure that the normals point towards the outside of the shape
-                // (this depends on the order in which the points were defined)
-                if (dotProduct(n1, m_vertices[0].position - p1) > 0)
-                    n1 = -n1;
-                if (dotProduct(n2, m_vertices[0].position - p1) > 0)
-                    n2 = -n2;
-
-                // Combine them to get the extrusion direction
-                float factor = 1f + (n1.x * n2.x + n1.y * n2.y);
-                Vector2f normal = (n1 + n2) / factor;
-
-                // Update the outline points
-                m_outlineVertices[i * 2 + 0].position = p1;
-                m_outlineVertices[i * 2 + 1].position = p1 + normal * m_outlineThickness;
-            }
-
-            // Duplicate the first point at the end, to close the outline
-            m_outlineVertices[count * 2 + 0].position = m_outlineVertices[0].position;
-            m_outlineVertices[count * 2 + 1].position = m_outlineVertices[1].position;
-
-            // Update outline colors
-            updateOutlineColors();
-
-            // Update the shape's bounds
-            m_bounds = m_outlineVertices.getBounds();
-        }
-
-        void updateOutlineColors()
-        {
-            for (uint i = 0; i < m_outlineVertices.getVertexCount(); ++i)
-            {
-                m_outlineVertices[i].color = m_outlineColor;
-            }
-        }
+        return getPoint(index);
     }
+
+    /*
+     * Called by CSFML when sfShape_getPointCount() is called.
+     */
+    private extern(C) static size_t getPointCountCallback(void* userData)
+    {
+        Shape shape = cast(Shape) userData;
+        return shape.pointCount();
+    }
+
+    /*
+     * Called by CSFML when sfShape_getPoint(index) is called.
+     */
+    private extern(C) static Vector2f getPointCallback(size_t index, void* userData)
+    {
+        Shape shape = cast(Shape) userData;
+        return shape.getPoint(index);
+    }
+
+    // Returns the C pointer.
+    package sfShape* ptr()
+    {
+        return m_shape;
+    }
+}
+
+package extern(C)
+{
+    struct sfShape;
+}
+
+private extern(C)
+{
+    alias sfShapeGetPointCountCallback = size_t function(void*);
+    alias sfShapeGetPointCallback = Vector2f function(size_t, void*);
+
+    sfShape* sfShape_create(sfShapeGetPointCountCallback getPointCount,
+                                           sfShapeGetPointCallback getPoint,
+                                           void* userData);
+    void sfShape_destroy(sfShape* shape);
+    void sfShape_setPosition(sfShape* shape, Vector2f position);
+    void sfShape_setRotation(sfShape* shape, float angle);
+    void sfShape_setScale(sfShape* shape, Vector2f scale);
+    void sfShape_setOrigin(sfShape* shape, Vector2f origin);
+    Vector2f sfShape_getPosition(const sfShape* shape);
+    float sfShape_getRotation(const sfShape* shape);
+    Vector2f sfShape_getScale(const sfShape* shape);
+    Vector2f sfShape_getOrigin(const sfShape* shape);
+    void sfShape_move(sfShape* shape, Vector2f offset);
+    void sfShape_rotate(sfShape* shape, float angle);
+    void sfShape_scale(sfShape* shape, Vector2f factors);
+    sfTransform sfShape_getTransform(const sfShape* shape);
+    sfTransform sfShape_getInverseTransform(const sfShape* shape);
+    void sfShape_setTexture(sfShape* shape, const sfTexture* texture, bool resetRect);
+    void sfShape_setTextureRect(sfShape* shape, IntRect rect);
+    void sfShape_setFillColor(sfShape* shape, Color color);
+    void sfShape_setOutlineColor(sfShape* shape, Color color);
+    void sfShape_setOutlineThickness(sfShape* shape, float thickness);
+    const(sfTexture)* sfShape_getTexture(const sfShape* shape);
+    IntRect sfShape_getTextureRect(const sfShape* shape);
+    Color sfShape_getFillColor(const sfShape* shape);
+    Color sfShape_getOutlineColor(const sfShape* shape);
+    float sfShape_getOutlineThickness(const sfShape* shape);
+    size_t sfShape_getPointCount(const sfShape* shape);
+    Vector2f sfShape_getPoint(const sfShape* shape, size_t index);
+    FloatRect sfShape_getLocalBounds(const sfShape* shape);
+    FloatRect sfShape_getGlobalBounds(const sfShape* shape);
+    void sfShape_update(sfShape* shape);
 }
 
 unittest
 {
-    //meant to be inherited. Unit test?
+    import std.stdio;
+    writeln("Running Shape unittest...");
+
+    class MyShape : Shape
+    {
+        this() { super(); }
+
+        // Dummy implementation
+        @property
+        override size_t pointCount() const
+        {
+            return 1;
+        }
+
+        // Dummy implementation
+        override Vector2f getPoint(size_t index = 0) const
+        {
+            return Vector2f(0, 0);
+        }
+    }
+
+    auto shape = new MyShape();
+
+    auto pos = Vector2f(2.945, 6.1);
+    shape.position = pos;
+    assert(shape.position == pos);
+    shape.move(1.055, 0.9);
+    assert(shape.position == Vector2f(4, 7));
+
+    auto rot = 80;
+    shape.rotation = rot;
+    assert(shape.rotation == rot);
+    shape.rotate(rot);
+    assert(shape.rotation == 2*rot);
+
+    auto scl = Vector2f(1, 2);
+    shape.scale = scl;
+    assert(shape.scale == scl);
+
+    auto orgn = Vector2f(5, 6);
+    shape.origin = orgn;
+    assert(shape.origin == orgn);
+
+    auto t = shape.transform;
+    auto it = shape.inverseTransform;
+    // TODO:
+    // assert(t == Transform());
+    assert(t.inverse == it);
+
+    // TODO:
+    // assert(shape.texture == );
+
+    auto texR = IntRect(2, 4, 6, 8);
+    shape.textureRect = texR;
+    assert(shape.textureRect == texR);
+
+    auto fc = Color.Red;
+    shape.fillColor = fc;
+    assert(shape.fillColor == fc);
+
+    auto oc = Color.Green;
+    shape.outlineColor = oc;
+    assert(shape.outlineColor == oc);
+
+    float thck = 18;
+    shape.outlineThickness = thck;
+    assert(shape.outlineThickness == thck);
+
+    //TODO:
+    // localBounds
+    // globalBounds
 }

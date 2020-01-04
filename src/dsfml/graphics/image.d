@@ -73,49 +73,52 @@ module dsfml.graphics.image;
 import dsfml.graphics.color;
 import dsfml.graphics.rect;
 
-import dsfml.system.err;
 import dsfml.system.inputstream;
 import dsfml.system.vector2;
+import dsfml.system.err;
+
+import std.string;
 
 /**
  * Class for loading, manipulating and saving images.
  */
 class Image
 {
-    package sfImage* sfPtr;
+    private sfImage* m_image;
 
-    /// Default constructor.
+    /**
+     * Default constructor.
+     *
+     * Creates an empty image.
+     */
     this()
     {
-        sfPtr = sfImage_construct();
+        m_image = sfImage_create(0, 0);
     }
 
-    package this(sfImage* image)
+    package this(const sfImage* image)
     {
-        sfPtr = image;
+        m_image = sfImage_copy(image);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfImage_destroy(sfPtr);
+        sfImage_destroy(m_image);
     }
 
     /**
      * Create the image and fill it with a unique color.
      *
      * Params:
-     * 		width	= Width of the image
-     * 		height	= Height of the image
-     * 		color	= Fill color
+     *         width    = Width of the image
+     *         height    = Height of the image
+     *         color    = Fill color
      *
      */
-    void create(uint width, uint height, Color color)
+    void create(uint width, uint height, Color color = Color.init)
     {
-
-        sfImage_createFromColor(sfPtr, width, height,color.r, color.b, color.g, color.a);
+        m_image = sfImage_createFromColor(width, height, color);
     }
 
     /**
@@ -126,14 +129,14 @@ class Image
      * is null, an empty image is created.
      *
      * Params:
-     * 		width	= Width of the image
-     * 		height	= Height of the image
-     * 		pixels	= Array of pixels to copy to the image
+     *         width    = Width of the image
+     *         height    = Height of the image
+     *         pixels    = Array of pixels to copy to the image
      *
      */
     void create(uint width, uint height, const(ubyte)[] pixels)
     {
-        sfImage_createFromPixels(sfPtr, width, height,pixels.ptr);
+        m_image = sfImage_createFromPixels(width, height, pixels.ptr);
     }
 
     /**
@@ -144,13 +147,15 @@ class Image
      * this function fails, the image is left unchanged.
      *
      * Params:
-     * 		filename	= Path of the image file to load
+     *         filename = Path of the image file to load
      *
      * Returns: true if loading succeeded, false if it failed
+     * See_Also: loadFromMemory, loadFromStream, saveToFile
      */
-    bool loadFromFile(const(char)[] filename)
+    bool loadFromFile(string filename)
     {
-        return sfImage_loadFromFile(sfPtr, filename.ptr, filename.length);
+        m_image = sfImage_createFromFile(filename.toStringz);
+        return m_image != null;
     }
 
     /**
@@ -161,13 +166,15 @@ class Image
      * this function fails, the image is left unchanged.
      *
      * Params:
-     * 		data	= Data file in memory to load
+     *         data    = Data file in memory to load
      *
      * Returns: true if loading succeeded, false if it failed
+     * See_Also: loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(void)[] data)
     {
-        return sfImage_loadFromMemory(sfPtr, data.ptr, data.length);
+        m_image = sfImage_createFromMemory(data.ptr, data.length);
+        return m_image != null;
     }
 
     /**
@@ -178,13 +185,51 @@ class Image
      * this function fails, the image is left unchanged.
      *
      * Params:
-     * 		stream	= Source stream to read from
+     *         stream    = Source stream to read from
      *
      * Returns: true if loading succeeded, false if it failed
+     * See_Also: loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream stream)
     {
-        return sfImage_loadFromStream(sfPtr, new imageStream(stream));
+        m_image = sfImage_createFromStream(stream.ptr);
+        return m_image != null;
+    }
+
+    // pixelPtr is remplaced by pixelArray, which converts directly the pointer
+    // to an array
+    alias pixelPtr = pixelArray;
+
+    /**
+     * Get the read-only array of pixels that make up the image.
+     *
+     * The returned value points to an array of RGBA pixels made of 8 bits
+     * integers components. The size of the array is:
+     * `width * height * 4 (size().x * size().y * 4)`.
+     *
+     * Warning: the returned slice may become invalid if you modify the image,
+     * so you should never store it for too long.
+     *
+     * Returns: Read-only array of pixels that make up the image.
+     */
+    const(ubyte[]) pixelArray() const
+    {
+        int length = size.x * size.y * 4;
+        if(length > 0)
+            return sfImage_getPixelsPtr(m_image)[0..length];
+        err.writeln("Trying to access the pixels of an empty image");
+        return [];
+    }
+
+    /**
+     * Return the size (width and height) of the image.
+     *
+     * Returns: Size of the image, in pixels.
+     */
+    @property
+    Vector2u size() const
+    {
+        return sfImage_getSize(m_image);
     }
 
     /**
@@ -194,56 +239,14 @@ class Image
      * out-of-range values will result in an undefined behaviour.
      *
      * Params:
-     * 		x	= X coordinate of the pixel to get
-     * 		y	= Y coordinate of the pixel to get
+     *         x    = X coordinate of the pixel to get
+     *         y    = Y coordinate of the pixel to get
      *
      * Returns: Color of the pixel at coordinates (x, y)
      */
-    Color getPixel(uint x, uint y) const
+    Color pixel(uint x, uint y) const
     {
-        Color temp;
-        sfImage_getPixel(sfPtr, x,y, &temp.r, &temp.b, &temp.g, &temp.a);
-        return temp;
-    }
-
-    /**
-     * Get the read-only array of pixels that make up the image.
-     *
-     * The returned value points to an array of RGBA pixels made of 8 bits
-     * integers components. The size of the array is:
-     * `width * height * 4 (getSize().x * getSize().y * 4)`.
-     *
-     * Warning: the returned slice may become invalid if you modify the image,
-     * so you should never store it for too long.
-     *
-     * Returns: Read-only array of pixels that make up the image.
-     */
-    const(ubyte)[] getPixelArray() const
-    {
-        Vector2u size = getSize();
-        int length = size.x * size.y * 4;
-
-        if(length!=0)
-        {
-            return sfImage_getPixelsPtr(sfPtr)[0..length];
-        }
-        else
-        {
-            err.writeln("Trying to access the pixels of an empty image");
-            return [];
-        }
-    }
-
-    /**
-     * Return the size (width and height) of the image.
-     *
-     * Returns: Size of the image, in pixels.
-     */
-    Vector2u getSize() const
-    {
-        Vector2u temp;
-        sfImage_getSize(sfPtr,&temp.x, &temp.y);
-        return temp;
+        return sfImage_getPixel(m_image, x, y);
     }
 
     /**
@@ -253,13 +256,69 @@ class Image
      * out-of-range values will result in an undefined behaviour.
      *
      * Params:
-     * 		x		= X coordinate of pixel to change
-     * 		y		= Y coordinate of pixel to change
-     * 		color	= New color of the pixel
+     *         x        = X coordinate of pixel to change
+     *         y        = Y coordinate of pixel to change
+     *         color    = New color of the pixel
      */
-    void setPixel(uint x, uint y, Color color)
+    void pixel(uint x, uint y, Color color)
     {
-        sfImage_setPixel(sfPtr, x,y,color.r, color.b,color.g, color.a);
+        sfImage_setPixel(m_image, x, y, color);
+    }
+
+    /**
+     * Overload of the slice operator (set).
+     * This function simply call `pixel(x, y, color)`.
+     *
+     * example:
+     * ---
+     * image[2, 3] = Color.Red;
+     * ---
+     */
+    void opIndexAssign(Color color, uint x, uint y)
+    {
+        pixel(x, y, color);
+    }
+
+    /**
+     * Overload of the slice operator (set with operator).
+     *
+     * example:
+     * ---
+     * image[2, 3] += Color.Green;
+     * ---
+     */
+    void opIndexOpAssign(string op)(Color color, uint x, uint y)
+    {
+        mixin("Color res = pixel(x, y) " ~ op ~ " color;");
+        pixel(x, y, res);
+    }
+
+    /**
+     * Overload of the slice operator (set with operator).
+     *
+     * example:
+     * ---
+     * image[2, 3] += 50;
+     * ---
+     */
+    void opIndexOpAssign(string op)(size_t num, uint x, uint y)
+    {
+        mixin("Color res = pixel(x, y) " ~ op ~ " num;");
+        pixel(x, y, res);
+    }
+
+    /**
+     * Overload of the slice operator (get).
+     * This function simply call `pixel(x, y)`.
+     *
+     * example:
+     * ---
+     * Color pixelX2Y3 = convex[2, 3];
+     * ---
+     */
+    Color opIndex(uint x, uint y) const
+    {
+        return pixel(x, y);
     }
 
     /**
@@ -275,15 +334,15 @@ class Image
      * the pixels are copied unchanged with their alpha value.
      *
      * Params:
-     * 	source		= Source image to copy
-     * 	destX		= X coordinate of the destination position
-     * 	destY		= Y coordinate of the destination position
-     * 	sourceRect	= Sub-rectangle of the source image to copy
-     * 	applyAlpha	= Should the copy take the source transparency into account?
+     *     source     = Source image to copy
+     *     destX      = X coordinate of the destination position
+     *     destY      = Y coordinate of the destination position
+     *     sourceRect = Sub-rectangle of the source image to copy
+     *     applyAlpha = Should the copy take the source transparency into account?
      */
-    void copyImage(const(Image) source, uint destX, uint destY, IntRect sourceRect = IntRect(0,0,0,0), bool applyAlpha = false)
+    void copy(Image source, uint destX, uint destY, IntRect sourceRect = IntRect.init, bool applyAlpha = false)
     {
-        sfImage_copyImage(sfPtr, source.sfPtr, destX, destY,sourceRect.left, sourceRect.top, sourceRect.width, sourceRect.height, applyAlpha);
+        sfImage_copyImage(m_image, source.ptr, destX, destY, sourceRect, applyAlpha);
     }
 
     /**
@@ -293,30 +352,31 @@ class Image
      * color to alpha (0 by default) so that they become transparent.
      *
      * Params:
-     * 		maskColor   = Color to make transparent
-     * 		alpha	    = Alpha value to assign to transparent pixels
+     *         color = Color to make transparent
+     *         alpha = Alpha value to assign to transparent pixels
      */
-    void createMaskFromColor(Color maskColor, ubyte alpha = 0)
+    void createMaskFromColor(Color color, ubyte alpha = 0)
     {
-        sfImage_createMaskFromColor(sfPtr,maskColor.r,maskColor.b, maskColor.g, maskColor.a, alpha);
+        sfImage_createMaskFromColor(m_image, color, alpha);
     }
 
     /// Create a copy of the Image.
-    @property Image dup() const
+    @property
+    Image dup() const
     {
-        return new Image(sfImage_copy(sfPtr));
+        return new Image(m_image);
     }
 
     /// Flip the image horizontally (left <-> right)
     void flipHorizontally()
     {
-        sfImage_flipHorizontally(sfPtr);
+        sfImage_flipHorizontally(m_image);
     }
 
     /// Flip the image vertically (top <-> bottom)
     void flipVertically()
     {
-        sfImage_flipVertically(sfPtr);
+        sfImage_flipVertically(m_image);
     }
 
     /**
@@ -328,142 +388,98 @@ class Image
      * empty.
      *
      * Params:
-     * 		filename	= Path of the file to save
+     *         filename    = Path of the file to save
      *
      * Returns: true if saving was successful
+     * See_Also: create, loadFromFile, loadFromMemory
      */
-    bool saveToFile(const(char)[] filename) const
+    bool saveToFile(string filename) const
     {
-        return sfImage_saveToFile(sfPtr, filename.ptr, filename.length);
+        return sfImage_saveToFile(m_image, filename.toStringz);
     }
+
+    // Returns the C pointer.
+    package sfImage* ptr()
+    {
+        return m_image;
+    }
+}
+
+package extern(C)
+{
+    struct sfImage;
+}
+
+private extern(C)
+{
+    sfImage* sfImage_create(uint width, uint height);
+    sfImage* sfImage_createFromColor(uint width, uint height, Color color);
+    sfImage* sfImage_createFromPixels(uint width, uint height, const ubyte* pixels);
+    sfImage* sfImage_createFromFile(const char* filename);
+    sfImage* sfImage_createFromMemory(const void* data, size_t size);
+    sfImage* sfImage_createFromStream(sfInputStream* stream);
+    sfImage* sfImage_copy(const sfImage* image);
+    void sfImage_destroy(sfImage* image);
+    bool sfImage_saveToFile(const sfImage* image, const char* filename);
+    Vector2u sfImage_getSize(const sfImage* image);
+    void sfImage_createMaskFromColor(sfImage* image, Color color, ubyte alpha);
+    void sfImage_copyImage(sfImage* image, const sfImage* source, uint destX, uint destY, IntRect sourceRect, bool applyAlpha);
+    void sfImage_setPixel(sfImage* image, uint x, uint y, Color color);
+    Color sfImage_getPixel(const sfImage* image, uint x, uint y);
+    const(ubyte*) sfImage_getPixelsPtr(const sfImage* image);
+    void sfImage_flipHorizontally(sfImage* image);
+    void sfImage_flipVertically(sfImage* image);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
+    import std.stdio;
+    writeln("Running Image unittest...");
 
-        writeln("Unit test for Image");
+    auto image = new Image();
+    assert(image.ptr !is null);
 
-        auto image = new Image();
+    assert(image.loadFromFile("unittest/res/TestImage.png"));
+    assert(image.size == Vector2u(640, 640));
 
-        image.create(100,100,Color.Blue);
+    assert(image[0, 0] == Color.Transparent);
+    assert(image[218, 150] == Color.Black);
+    assert(image[150, 218] == Color(217, 9, 9, 255));
+    image[0, 0] = Color.Green;
+    assert(image[0, 0] == Color.Green);
+    image[0, 0] += 50;
+    assert(image[0, 0] == Color(50, 255, 50, 255));
+    image[0, 0] -= Color.Red;
+    assert(image[0, 0] == Color(0, 255, 50, 0));
 
-        assert(image.getPixel(0,0) == Color.Blue);
+    const(ubyte[]) pixels = image.pixelArray();
+    assert(image[0, 0] == Color(pixels[0], pixels[1], pixels[2], pixels[3]));
 
-        image.setPixel(0,0,Color.Green);
 
-        assert(image.getPixel(0,0) == Color.Green);
+    auto image2 = new Image();
+    image2.create(2, 2, [255, 0, 0, 255,
+                         0, 255, 0, 255,
+                         0, 0, 255, 255,
+                         127, 127, 127, 255]);
+    assert(image2[0, 0] == Color.Red);
+    assert(image2[1, 0] == Color.Green);
+    assert(image2[0, 1] == Color.Blue);
+    assert(image2[1, 1] == Color(127, 127, 127, 255));
 
-        image.flipHorizontally();
+    image2.flipHorizontally();
+    assert(image2[0, 0] == Color.Green);
+    assert(image2[1, 0] == Color.Red);
 
-        assert(image.getPixel(99,0) == Color.Green);
+    image2.flipVertically();
+    assert(image2[0, 1] == Color.Green);
+    assert(image2[1, 1] == Color.Red);
 
-        image.flipVertically();
+    image2.createMaskFromColor(Color.Red);
+    assert(image2[1, 1] == Color(255, 0, 0, 0));
 
-        assert(image.getPixel(99,99) == Color.Green);
+    image.copy(image2, 10, 10);
+    assert(image[10, 10] == Color(127, 127, 127, 255));
 
-        assert(image.getSize() == Vector2u(100,100));
-
-        writeln();
-    }
+    //TODO:
+    // saveToFile
 }
-
-private extern(C++) interface imageInputStream
-{
-    long read(void* data, long size);
-
-    long seek(long position);
-
-    long tell();
-
-    long getSize();
-}
-
-private class imageStream:imageInputStream
-{
-    private InputStream myStream;
-
-    this(InputStream stream)
-    {
-        myStream = stream;
-    }
-
-    extern(C++)long read(void* data, long size)
-    {
-        return myStream.read(data[0..cast(size_t)size]);
-    }
-
-    extern(C++)long seek(long position)
-    {
-        return myStream.seek(position);
-    }
-
-    extern(C++)long tell()
-    {
-        return myStream.tell();
-    }
-
-    extern(C++)long getSize()
-    {
-        return myStream.getSize();
-    }
-}
-
-package extern(C) struct sfImage;
-
-private extern(C):
-
-//Construct a new image
-sfImage* sfImage_construct();
-
-void sfImage_create(sfImage* image, uint width, uint height);
-
-//Create an image and fill it with a unique color
-void sfImage_createFromColor(sfImage* image, uint width, uint height, ubyte r, ubyte b, ubyte g, ubyte a);
-
-//Create an image from an array of pixels
-void sfImage_createFromPixels(sfImage* image, uint width, uint height, const(ubyte)* pixels);
-
-//Create an image from a file on disk
-bool sfImage_loadFromFile(sfImage* image, const(char)* filename, size_t length);
-
-//Create an image from a file in memory
-bool sfImage_loadFromMemory(sfImage* image, const(void)* data, size_t size);
-
-//Create an image from a custom stream
-bool sfImage_loadFromStream(sfImage* image, imageInputStream stream);
-
-//Copy an existing image
-sfImage* sfImage_copy(const(sfImage)* image);
-
-//Destroy an existing image
-void sfImage_destroy(sfImage* image);
-
-//Save an image to a file on disk
-bool sfImage_saveToFile(const sfImage* image, const char* filename, size_t length);
-
-//Return the size of an image
-void sfImage_getSize(const sfImage* image, uint* width, uint* height);
-
-//Create a transparency mask from a specified color-key
-void sfImage_createMaskFromColor(sfImage* image, ubyte r, ubyte b, ubyte g, ubyte a, ubyte alpha);
-
-//Copy pixels from an image onto another
-void sfImage_copyImage(sfImage* image, const(sfImage)* source, uint destX, uint destY, int sourceRectLeft, int sourceRectTop, int sourceRectWidth, int sourceRectHeight, bool applyAlpha);
-
-//Change the color of a pixel in an image
-void sfImage_setPixel(sfImage* image, uint x, uint y, ubyte r, ubyte b, ubyte g, ubyte a);
-
-//Get the color of a pixel in an image
-void sfImage_getPixel(const sfImage* image, uint x, uint y, ubyte* r, ubyte* b, ubyte* g, ubyte* a);
-
-//Get a read-only pointer to the array of pixels of an image
-const(ubyte)* sfImage_getPixelsPtr(const sfImage* image);
-
-//Flip an image horizontally (left <-> right)
-void sfImage_flipHorizontally(sfImage* image);
-
-//Flip an image vertically (top <-> bottom)
-void sfImage_flipVertically(sfImage* image);

@@ -66,7 +66,6 @@
 module dsfml.graphics.color;
 
 import std.algorithm;
-import std.math;
 import std.traits;
 
 /**
@@ -75,23 +74,73 @@ import std.traits;
 struct Color
 {
     /// Red component
-    ubyte r;
+    ubyte r = 0;
     /// Green component
-    ubyte g;
+    ubyte g = 0;
     /// Blue component
-    ubyte b;
+    ubyte b = 0;
     /// Alpha component
     ubyte a = 255;
 
+    /**
+     * Construct the color from its 4 RGBA components.
+     *
+     * Params:
+     *     red   = Red component (in the range [0, 255])
+     *     green = Green component (in the range [0, 255])
+     *     blue  = Blue component (in the range [0, 255])
+     *     alpha = Alpha (opacity) component (in the range [0, 255])
+     */
+    this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255)
+    {
+        r = red;
+        g = green;
+        b = blue;
+        a = alpha;
+    }
+
+    /**
+     * Construct the color from 32-bit unsigned integer.
+     *
+     * Params:
+     *     color = Number containing the RGBA components (in that order)
+     */
+    this(uint color)
+    {
+        r = (color & 0xff000000) >> 24;
+        g = (color & 0x00ff0000) >> 16;
+        b = (color & 0x0000ff00) >> 8;
+        a = (color & 0x000000ff) >> 0;
+    }
+
+    /// Black predefined color.
     static immutable Black = Color(0, 0, 0, 255);
+    /// White predefined color.
     static immutable White = Color(255, 255, 255, 255);
+    /// Red predefined color.
     static immutable Red = Color(255, 0, 0, 255);
+    /// Green predefined color.
     static immutable Green = Color(0, 255, 0,255);
-    static immutable Blue = Color(0, 0, 255,255);
+    /// Blue predefined color.
+    static immutable Blue = Color(0, 0, 255, 255);
+    /// Yellow predefined color.
     static immutable Yellow = Color(255, 255, 0, 255);
+    /// Magenta predefined color.
     static immutable Magenta = Color(255, 0, 255, 255);
+    /// Cyan predefined color.
     static immutable Cyan = Color(0, 255, 255, 255);
+    /// Transparent predefined color.
     static immutable Transparent = Color(0, 0, 0, 0);
+
+    /**
+     * Retrieve the color as a 32-bit unsigned integer.
+     *
+     * Returns: Color represented as a 32-bit unsigned integer
+     */
+    uint toInteger() const
+    {
+        return (r << 24) | (g << 16) | (b << 8) | a;
+    }
 
     /// Get the string representation of the Color.
     string toString() const
@@ -101,7 +150,7 @@ struct Color
     }
 
     /**
-     * Overlolad of the `+`, `-`, and `*` operators.
+     * Overload of the `+`, `-`, `*` and `/` operators.
      *
      * This operator returns the component-wise sum, subtraction, or
      * multiplication (also called"modulation") of two colors.
@@ -111,41 +160,25 @@ struct Color
      * by 255 so that the result is still in the range [0, 255].
      *
      * Params:
-     * otherColor = The Color to be added to/subtracted from/bultiplied by this
-     *              one
+     * otherColor = The Color to be added to/subtracted from/multiplied by/divided by
+     *              this one
      *
      * Returns:
      * The addition, subtraction, or multiplication between this Color and the
      * other.
      */
     Color opBinary(string op)(Color otherColor) const
-        if((op == "+") || (op == "-") || (op == "*"))
+        if(op == "+" || op == "-" || op == "*" || op == "/")
     {
-        static if(op == "+")
-        {
-            return Color(cast(ubyte)min(r+otherColor.r, 255),
-                         cast(ubyte)min(g+otherColor.g, 255),
-                         cast(ubyte)min(b+otherColor.b, 255),
-                         cast(ubyte)min(a+otherColor.a, 255));
-        }
-        static if(op == "-")
-        {
-            return Color(cast(ubyte)max(r-otherColor.r, 0),
-                         cast(ubyte)max(g-otherColor.g, 0),
-                         cast(ubyte)max(b-otherColor.b, 0),
-                         cast(ubyte)max(a-otherColor.a, 0));
-        }
-        static if(op == "*")
-        {
-            return Color(cast(ubyte)(r*otherColor.r / 255),
-                         cast(ubyte)(g*otherColor.g / 255),
-                         cast(ubyte)(b*otherColor.b / 255),
-                         cast(ubyte)(a*otherColor.a / 255));
-        }
+        mixin("ubyte red = assure(r" ~ op ~ "otherColor.r);");
+        mixin("ubyte green = assure(g" ~ op ~ "otherColor.g);");
+        mixin("ubyte blue = assure(b" ~ op ~ "otherColor.b);");
+        mixin("ubyte alpha = assure(a" ~ op ~ "otherColor.a);");
+        return Color(red, green, blue, alpha);
     }
 
     /**
-     * Overlolad of the `*` and `/` operators.
+     * Overload of the `+` , `-`, `*` and `/` operators.
      *
      * This operator returns the component-wise multiplicaton or division of a
      * color and a scalar.
@@ -153,54 +186,23 @@ struct Color
      * clamped to 0.
      *
      * Params:
-     * num = the scalar to multiply/divide the Color.
+     * num = the scalar to add/substract/multiply/divide to the Color.
      *
      * Returns:
      * The multiplication or division of this Color by the scalar.
      */
     Color opBinary(string op, E)(E num) const
-        if(isNumeric!(E) && ((op == "*") || (op == "/")))
+        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
-        static if(op == "*")
-        {
-            //actually dividing or multiplying by a negative
-            if(num < 1)
-            {
-                return Color(cast(ubyte)max(r*num, 0),
-                             cast(ubyte)max(g*num, 0),
-                             cast(ubyte)max(b*num, 0),
-                             cast(ubyte)max(a*num, 0));
-            }
-            else
-            {
-                return Color(cast(ubyte)min(r*num, 255),
-                             cast(ubyte)min(g*num, 255),
-                             cast(ubyte)min(b*num, 255),
-                             cast(ubyte)min(a*num, 255));
-            }
-        }
-        static if(op == "/")
-        {
-            //actually multiplying or dividing by a negative
-            if(num < 1)
-            {
-                return Color(cast(ubyte)min(r/num, 255),
-                             cast(ubyte)min(g/num, 255),
-                             cast(ubyte)min(b/num, 255),
-                             cast(ubyte)min(a/num, 255));
-            }
-            else
-            {
-                return Color(cast(ubyte)max(r/num, 0),
-                             cast(ubyte)max(g/num, 0),
-                             cast(ubyte)max(b/num, 0),
-                             cast(ubyte)max(a/num, 0));
-            }
-        }
+        mixin("ubyte red = assure(r" ~ op ~ "num);");
+        mixin("ubyte green = assure(g" ~ op ~ "num);");
+        mixin("ubyte blue = assure(b" ~ op ~ "num);");
+        mixin("ubyte alpha = assure(a" ~ op ~ "num);");
+        return Color(red, green, blue, alpha);
     }
 
     /**
-     * Overlolad of the `+=, `-=`, and `*=` operators.
+     * Overload of the `+=`, `-=`, `*=` and `/=` operators.
      *
      * This operation computes the component-wise sum, subtraction, or
      * multiplication (also called"modulation") of two colors and assigns it to
@@ -210,43 +212,25 @@ struct Color
      * by 255 so that the result is still in the range [0, 255].
      *
      * Params:
-     * otherColor = The Color to be added to/subtracted from/bultiplied by this
-     *              one
+     * otherColor = The Color to be added to/subtracted from/multiplied by/divided by
+     *              this one
      *
      * Returns:
      * A reference to this color after performing the addition, subtraction, or
      * multiplication.
      */
     ref Color opOpAssign(string op)(Color otherColor)
-        if((op == "+") || (op == "-") || (op == "*"))
+        if(op == "+" || op == "-" || op == "*" || op == "/")
     {
-        static if(op == "+")
-        {
-            r = cast(ubyte)min(r+otherColor.r, 255);
-            g = cast(ubyte)min(g+otherColor.g, 255);
-            b = cast(ubyte)min(b+otherColor.b, 255);
-            a = cast(ubyte)min(a+otherColor.a, 255);
-        }
-        static if(op == "-")
-        {
-            r = cast(ubyte)max(r-otherColor.r, 0);
-            g = cast(ubyte)max(g-otherColor.g, 0);
-            b = cast(ubyte)max(b-otherColor.b, 0);
-            a = cast(ubyte)max(a-otherColor.a, 0);
-        }
-        static if(op == "*")
-        {
-            r = cast(ubyte)(r*otherColor.r / 255);
-            g = cast(ubyte)(g*otherColor.g / 255);
-            b = cast(ubyte)(b*otherColor.b / 255);
-            a = cast(ubyte)(a*otherColor.a / 255);
-        }
-
+        mixin("r = assure(r" ~ op ~ "otherColor.r);");
+        mixin("g = assure(g" ~ op ~ "otherColor.g);");
+        mixin("b = assure(b" ~ op ~ "otherColor.b);");
+        mixin("a = assure(a" ~ op ~ "otherColor.a);");
         return this;
     }
 
     /**
-     * Overlolad of the `*=` and `/=` operators.
+     * Overload of the `+=`, `-=`, `*=` and `/=` operators.
      *
      * This operation computers the component-wise multiplicaton or division of
      * a color and a scalar, then assignes it to the color.
@@ -254,56 +238,22 @@ struct Color
      * clamped to 0.
      *
      * Params:
-     * num = the scalar to multiply/divide the Color
+     * num = the scalar to add/substract/multiply/divide to the Color.
      *
      * Returns:
      * A reference to this color after performing the multiplication or
      * division.
      */
     ref Color opOpAssign(string op, E)(E num)
-        if(isNumeric!(E) && ((op == "*") || (op == "/")))
+        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
-        static if(op == "*")
-        {
-            //actually dividing or multiplying by a negative
-            if(num < 1)
-            {
-                r = cast(ubyte)max(r*num, 0);
-                g = cast(ubyte)max(g*num, 0);
-                b = cast(ubyte)max(b*num, 0);
-                a = cast(ubyte)max(a*num, 0);
-            }
-            else
-            {
-                r = cast(ubyte)min(r*num, 255);
-                g = cast(ubyte)min(g*num, 255);
-                b = cast(ubyte)min(b*num, 255);
-                a = cast(ubyte)min(a*num, 255);
-            }
-
-            return this;
-        }
-        static if(op == "/")
-        {
-            //actually multiplying or dividing by a negative
-            if( num < 1)
-            {
-                r = cast(ubyte)min(r/num, 255);
-                g = cast(ubyte)min(g/num, 255);
-                b = cast(ubyte)min(b/num, 255);
-                a = cast(ubyte)min(a/num, 255);
-            }
-            else
-            {
-                r = cast(ubyte)max(r/num, 0);
-                g = cast(ubyte)max(g/num, 0);
-                b = cast(ubyte)max(b/num, 0);
-                a = cast(ubyte)max(a/num, 0);
-            }
-
-            return this;
-        }
+        mixin("r = assure(r" ~ op ~ "num);");
+        mixin("g = assure(g" ~ op ~ "num);");
+        mixin("b = assure(b" ~ op ~ "num);");
+        mixin("a = assure(a" ~ op ~ "num);");
+        return this;
     }
+
     /**
      * Overload of the `==` and `!=` operators.
      *
@@ -318,38 +268,116 @@ struct Color
     {
         return ((r == otherColor.r) && (g == otherColor.g) && (b == otherColor.b) && (a == otherColor.a));
     }
+
+    /**
+     * This function assures that the number parameter is between 0 and 255.
+     * If not, it set it to 0 or 255 (to the closer one).
+     * ---
+     * int i = -55;
+     * i = assure(i);
+     * // i now egal 0
+     * ---
+     *
+     * Params:
+     *     i = Number to assure
+     * Returns: The number as a ubyte [0 .. 255]
+     */
+    private ubyte assure(int i) const
+    {
+        return cast(ubyte) min(max(i, 0), 255);
+    }
+
+    private ubyte assure(double d) const
+    {
+        return assure(cast(int) d);
+    }
+
+
+}
+
+private extern(C)
+{
+    struct sfColor;
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
+    import std.stdio;
 
-        writeln("Unit test for Color");
+    writeln("Running Color unittest...");
 
-        //will perform arithmatic on Color to make sure everything works right.
+    //will perform arithmatic on Color to make sure everything works right.
 
-        Color color = Color(100,100,100, 100);
+    Color color = Color(100, 101, 102, 255);
 
-        color*= 2;//(200, 200, 200, 200)
+    // operator "+"
 
-        color = color *.5;//(100, 100, 100, 100)
+    color += 100;
+    assert(color == Color(200, 201, 202, 255));
 
-        color = color / 2;//(50, 50, 50, 50)
+    color = color + 5;
+    assert(color == Color(205, 206, 207, 255));
 
-        color/= 2;//(25, 25, 25, 25)
+    color = color + Color(10, 10, 10, 10);
+    assert(color == Color(215, 216, 217, 255));
 
-        color+= Color(40,20,10,5);//(65,45, 35, 30)
+    color += Color(50, 149, 248, 30);
+    assert(color == Color(255, 255, 255, 255));
 
-        color-= Color(5,10,20,40);//(60, 35, 15, 0)
+    // The addition of RGB equals white
+    assert(Color.Red + Color.Green + Color.Blue == Color.White);
 
-        color = color + Color(40, 20, 10, 5);//(100, 55, 25, 5)
+    // operator "-"
 
-        color = color - Color(5, 10, 20, 40);//(95, 45, 5, 0)
+    color -= 75;
+    assert(color == Color(180, 180, 180, 180));
 
-        assert(color == Color(95, 45, 5, 0));
+    color = color - 250;
+    assert(color == Color(0, 0, 0, 0));
 
-        writeln();
-    }
+    color = Color(255, 255, 255, 255) - Color(255, 0, 95, 135);
+    assert(color == Color(0, 255, 160, 120));
+
+    color -= Color(0, 95, 255, 5);
+    assert(color == Color(0, 160, 0, 115));
+
+    // White minus RGB equals Transparent
+    assert(Color.White - Color.Red - Color.Green - Color.Blue == Color.Transparent);
+
+    // operator "*"
+
+    color *= 2;
+    assert(color == Color(0, 255, 0, 230));
+
+    color = color *.5;
+    assert(color == Color(0, 127, 0, 115));
+
+    color *= Color(130, 50, 67, 250);
+    assert(color == Color(0, 255, 0, 255));
+
+    color = Color(20, 40, 60, 120) * Color(2, 3, 5, 2);
+    assert(color == Color(40, 120, 255, 240));
+
+    // operator "/"
+
+    color /= 2;
+    assert(color == Color(20, 60, 127, 120));
+
+    color = color / 1.5;
+    assert(color == Color(13, 40, 84, 80));
+
+    color /= -2;
+    assert(color == Color(0, 0, 0, 0));
+
+    color = Color(120, 120, 180, 160) / Color(2, 2, 2, 2);
+    assert(color == Color(60, 60, 90, 80));
+
+    color /= Color(1, 4, 2, 3);
+    assert(color == Color(60, 15, 45, 26));
+
+    // 256^3*r + 256^2*g + 256^1*b + 256^0*a
+    int i = 16777216*60 + 65536*15 + 256*45 + 26;
+    assert(color.toInteger == i);
+    i -= 16777216 + 65536 + 256 + 26;
+    assert(Color(i) == Color(59, 14, 44, 0));
 }

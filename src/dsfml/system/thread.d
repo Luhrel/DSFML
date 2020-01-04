@@ -76,97 +76,91 @@ import core = core.thread;
  */
 class Thread
 {
-	private core.Thread m_thread;
+    private core.Thread m_thread;
 
-	/**
-	 * Construct the thread from a functor with no argument
-	 *
-	 * Params:
-	 * 		fn  = The function to use as the entry point of the thread
-	 * 		sz  = The size of the stack
-	 */
-	this(void function() fn, size_t sz = 0)
-	{
-		m_thread = new core.Thread(fn,sz);
-	}
+    /**
+     * Construct the thread from a function with no argument
+     *
+     * Params:
+     *         fn  = The function to use as the entry point of the thread
+     *         sz  = The size of the stack
+     */
+    this(void function() fn, size_t sz = 0)
+    {
+        m_thread = new core.Thread(fn,sz);
+    }
 
-	/**
-	 * Construct the thread from a delegate with no argument
-	 *
-	 * Params:
-	 * 		dg  = The delegate to use as the entry point of the thread
-	 * 		sz  = The size of the stack
-	 */
-	this(void delegate() dg, size_t sz = 0)
-	{
-		m_thread = new core.Thread(dg, sz);
-	}
+    /**
+     * Construct the thread from a delegate with no argument
+     *
+     * Params:
+     *         dg  = The delegate to use as the entry point of the thread
+     *         sz  = The size of the stack
+     */
+    this(void delegate() dg, size_t sz = 0)
+    {
+        m_thread = new core.Thread(dg, sz);
+    }
 
-	/// Destructor
-	~this()
-	{
-		import dsfml.system.config;
-		mixin(destructorOutput);
-	}
+    /**
+     * Destructor.
+     *
+     * This destructor calls wait(), so that the internal thread cannot survive
+     * after its Thread instance is destroyed.
+     */
+    ~this()
+    {
+        wait();
+    }
 
-	/// Run the thread.
-	void launch()
-	{
-		m_thread.start();
-	}
+    /// Run the thread.
+    void launch()
+    {
+        m_thread.start();
+    }
 
-	/// Wait until the thread finishes.
-	void wait()
-	{
-		if(m_thread.isRunning())
-		{
-			m_thread.join(true);
-		}
-	}
+    /// Wait until the thread finishes.
+    void wait()
+    {
+        if(m_thread.isRunning())
+        {
+            m_thread.join(true);
+        }
+    }
 }
 
 unittest
 {
-	version(DSFML_Unittest_System)
-	{
-		import std.stdio;
-		import dsfml.system.sleep;
+    import std.stdio;
+    import dsfml.system.sleep;
+    import dsfml.system.time;
 
-		void secondThreadHello()
-		{
-			for(int i = 0; i < 10; ++i)
-			{
-				writeln("Hello from the second thread!");
-			}
-		}
+    writeln("Running Thread unittest...");
 
-		writeln("Unit test for Thread class");
-		writeln();
+    void thread1()
+    {
+        for(int i = 0; i < 10; ++i)
+        {
+            writeln("\tThread 1");
+            sleep(seconds(0.01));
+        }
+    }
 
-		writeln("Running two functions at once.");
+    void thread2()
+    {
+        for(int i = 0; i < 10; ++i)
+        {
+            writeln("\tThread 2");
+            sleep(seconds(0.02));
+        }
+    }
 
-		auto secondThread = new Thread(&secondThreadHello);
+    auto t1 = new Thread(&thread1);
+    auto t2 = new Thread(&thread2);
+    t1.launch();
+    t2.launch();
 
-		secondThread.launch();
-
-		for(int i = 0; i < 10; ++i)
-		{
-			writeln("Hello from the main thread!");
-		}
-
-		sleep(seconds(1));
-
-		//writeln("Letting a thread run completely before going back to the main thread.");
-
-		//secondThread = new Thread(&secondThreadHello);//To prevent threading errors, create a new thread before calling launch again
-
-		//secondThread.launch();
-
-		//secondThread.wait();
-
-		//for(int i = 0; i < 10; ++i)
-		//{
-		//	writeln("Hello from the main thread!");
-		//}
-	}
+    // Destroy t1 and t2. So we wait for them to finish.
+    destroy(t1);
+    destroy(t2);
 }

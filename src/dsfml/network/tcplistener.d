@@ -56,7 +56,7 @@
  *     if (listener.accept(client) == Socket.Status.Done)
  *     {
  *         // A new client just connected!
- *         writeln("New connection received from ", client.getRemoteAddress());
+ *         writeln("New connection received from ", client.remoteAddress());
  *         doSomethingWith(client);
  *     }
  * }
@@ -70,27 +70,24 @@ module dsfml.network.tcplistener;
 import dsfml.network.ipaddress;
 import dsfml.network.socket;
 import dsfml.network.tcpsocket;
-import dsfml.system.err;
 
 /**
  * Socket that listens to new TCP connections.
  */
-class TcpListener:Socket
+class TcpListener : Socket
 {
-    package sfTcpListener* sfPtr;
+    private sfTcpListener* m_tcpListener;
 
     /// Default constructor.
     this()
     {
-        sfPtr = sfTcpListener_create();
+        m_tcpListener = sfTcpListener_create();
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfTcpListener_destroy(sfPtr);
+        sfTcpListener_destroy(m_tcpListener);
     }
 
     /**
@@ -99,10 +96,11 @@ class TcpListener:Socket
      * If the socket is not listening to a port, this function returns 0.
      *
      * Returns: Port to which the socket is bound.
+     * See_Also: listen
      */
-    ushort getLocalPort() const
+    ushort localPort() const
     {
-        return sfTcpListener_getLocalPort(sfPtr);
+        return sfTcpListener_getLocalPort(m_tcpListener);
     }
 
     /**
@@ -119,9 +117,10 @@ class TcpListener:Socket
      * Params:
      *  blocking = true to set the socket as blocking, false for non-blocking
      */
-    void setBlocking(bool blocking)
+    @property
+    void blocking(bool _blocking)
     {
-        sfTcpListener_setBlocking(sfPtr, blocking);
+        sfTcpListener_setBlocking(m_tcpListener, _blocking);
     }
 
     /**
@@ -135,9 +134,12 @@ class TcpListener:Socket
      *
      * Returns: Status code.
      */
-    Status accept(TcpSocket socket)
+    Status accept(out TcpSocket socket)
     {
-        return sfTcpListener_accept(sfPtr, socket.sfPtr);
+        sfTcpSocket* client;
+        Status status = sfTcpListener_accept(m_tcpListener, &client);
+        socket = new TcpSocket(client);
+        return status;
     }
 
     /**
@@ -152,10 +154,11 @@ class TcpListener:Socket
      *  address = Address of the interface to listen on
      *
      * Returns: Status code.
+     * See_Also: accept, close
      */
     Status listen(ushort port, IpAddress address = IpAddress.Any)
     {
-        return sfTcpListener_listen(sfPtr, port, &address);
+        return sfTcpListener_listen(m_tcpListener, port, address.toc);
     }
 
     /**
@@ -163,63 +166,114 @@ class TcpListener:Socket
      *
      * Returns: true if the socket is blocking, false otherwise.
      */
-    bool isBlocking() const
+    @property
+    bool blocking() const
     {
-        return (sfTcpListener_isBlocking(sfPtr));
+        return sfTcpListener_isBlocking(m_tcpListener);
     }
+
+    @property
+    package sfTcpListener* ptr()
+    {
+        return m_tcpListener;
+    }
+}
+
+package extern(C)
+{
+    struct sfTcpListener;
+}
+
+private extern(C)
+{
+    sfTcpListener* sfTcpListener_create();
+    void sfTcpListener_destroy(sfTcpListener* listener);
+    void sfTcpListener_setBlocking(sfTcpListener* listener, bool blocking);
+    bool sfTcpListener_isBlocking(const sfTcpListener* listener);
+    ushort sfTcpListener_getLocalPort(const sfTcpListener* listener);
+    Socket.Status sfTcpListener_listen(sfTcpListener* listener, ushort port, sfIpAddress address);
+    Socket.Status sfTcpListener_accept(sfTcpListener* listener, sfTcpSocket** connected);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Network)
+    import std.stdio;
+    import dsfml.network.packet;
+    import dsfml.system.thread;
+    import dsfml.system.sleep;
+    writeln("Running TcpListener unittest...");
+
+    int clientPort;
+
+    void clientSide()
     {
-        import std.stdio;
-        import dsfml.network.ipaddress;
+        // Connect the client to the server
+        auto socket = new TcpSocket();
+        auto status = socket.connect(IpAddress.LocalHost, 53000);
+        assert(status == Socket.Status.Done);
 
-        writeln("Unittest for Listener");
-        //socket connecting to server
-        auto clientSocket = new TcpSocket();
+        clientPort = socket.localPort;
 
-        //listener looking for new sockets
-        auto listener = new TcpListener();
-        listener.listen(55002);
+        // Send server's data to the client (server-side)
+        int[] clientData = [12, 34, 56];
+        status = socket.send(clientData);
+        assert(status == Socket.Status.Done);
 
-        writeln("The listener is listening to port ", listener.getLocalPort());
+        sleep(seconds(0.2));
 
-        //get our client socket to connect to the server
-        clientSocket.connect(IpAddress.LocalHost, 55002);
-
-        //socket on the server side connected to the client's socket
-        auto serverSocket = new TcpSocket();
-
-        //accepts a new connection and binds it to the socket in the parameter
-        listener.accept(serverSocket);
-
-        clientSocket.disconnect();
-        writeln();
+        auto packet = new Packet();
+        packet << 12 << "hey" << true;
+        assert(status == Socket.Status.Done);
     }
+
+    void serverSide()
+    {
+        auto listener = new TcpListener();
+
+        // True by default
+        assert(listener.blocking);
+        listener.blocking = false;
+        assert(!listener.blocking);
+
+        // Listen to the port
+        ushort port = 53000;
+        auto status = listener.listen(port);
+        assert(status == Socket.Status.Done);
+        assert(listener.localPort == port);
+
+        // Accept a new connection
+        auto client = new TcpSocket();
+        status = listener.accept(client);
+        assert(status == Socket.Status.Done);
+
+        // Receive the data
+        int[3] clientData; // Be careful, it won't work with dynamic arrays
+        size_t sizeReceived;
+        status = client.receive(clientData, sizeReceived);
+        assert(status == Socket.Status.Done);
+        assert(client.remoteAddress == IpAddress.LocalHost);
+        assert(clientData == [12, 34, 56]);
+        assert(client.remotePort == clientPort);
+
+        Packet packet;
+        int i;
+        string s;
+        bool b;
+        status = client.receive(packet);
+        assert(status == Socket.Status.Done);
+        packet >> i >> s >> b;
+        assert(i == 12);
+        assert(s == "hey");
+        assert(b);
+    }
+
+    auto clientTh = new Thread(&clientSide);
+    auto serverTh = new Thread(&serverSide);
+
+    serverTh.launch();
+    clientTh.launch();
+
+    clientTh.wait();
+    serverTh.wait();
+
 }
-
-package extern(C):
-
-struct sfTcpListener;
-
-sfTcpListener* sfTcpListener_create();
-
-//Destroy a TCP listener
-void sfTcpListener_destroy(sfTcpListener* listener);
-
-//Set the blocking state of a TCP listener
-void sfTcpListener_setBlocking(sfTcpListener* listener, bool blocking);
-
-//Tell whether a TCP listener is in blocking or non-blocking mode
-bool sfTcpListener_isBlocking(const sfTcpListener* listener);
-
-//Get the port to which a TCP listener is bound locally
-ushort sfTcpListener_getLocalPort(const(sfTcpListener)* listener);
-
-//Start listening for connections
-Socket.Status sfTcpListener_listen(sfTcpListener* listener, ushort port, IpAddress* address);
-
-//Accept a new connection
-Socket.Status sfTcpListener_accept(sfTcpListener* listener, sfTcpSocket* connected);

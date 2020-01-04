@@ -62,19 +62,7 @@ import dsfml.system.vector2;
  */
 class VertexArray : Drawable
 {
-    /**
-     * The type of primitive to draw.
-     *
-     * Can be any of the following:
-     * - Points
-     * - Lines
-     * - Triangles
-     * - Quads
-     *
-     * The default primitive type is Points.
-     */
-    PrimitiveType primitiveType;
-    private Vertex[] Vertices;
+    private sfVertexArray* m_vertexArray;
 
     /**
      * Default constructor
@@ -83,6 +71,7 @@ class VertexArray : Drawable
      */
     this()
     {
+        m_vertexArray = sfVertexArray_create();
     }
 
     /**
@@ -92,23 +81,17 @@ class VertexArray : Drawable
      *  type        = Type of primitives
      *  vertexCount = Initial number of vertices in the array
      */
-    this(PrimitiveType type, uint vertexCount = 0)
+    this(PrimitiveType type, size_t vertexCount = 0)
     {
+        this();
         primitiveType = type;
-        Vertices = new Vertex[vertexCount];
-    }
-
-    private this(PrimitiveType type, Vertex[] vertices)
-    {
-        primitiveType = type;
-        Vertices = vertices;
+        resize(vertexCount);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
+        sfVertexArray_destroy(m_vertexArray);
     }
 
     /**
@@ -119,38 +102,42 @@ class VertexArray : Drawable
      *
      * Returns: Bounding rectangle of the vertex array.
      */
-    FloatRect getBounds() const
+    @property
+    FloatRect bounds() const
     {
-        if (Vertices.length>0)
-        {
-            float left = Vertices[0].position.x;
-            float top = Vertices[0].position.y;
-            float right = Vertices[0].position.x;
-            float bottom = Vertices[0].position.y;
+        return sfVertexArray_getBounds(cast(sfVertexArray*) m_vertexArray);
+    }
 
-            for (size_t i = 1; i < Vertices.length; ++i)
-            {
-                Vector2f position = Vertices[i].position;
+    /**
+     * Set the type of primitives to draw.
+     *
+     * This function defines how the vertices must be interpreted when it's time
+     * to draw them:
+     * - As points
+     * - As lines
+     * - As triangles
+     * - As quads
+     *
+     * The default primitive type is PrimitiveType.Points.
+     *
+     * Params:
+     *     type = Type of primitive
+     */
+    @property
+    void primitiveType(PrimitiveType type)
+    {
+        sfVertexArray_setPrimitiveType(m_vertexArray, type);
+    }
 
-                // Update left and right
-                if (position.x < left)
-                    left = position.x;
-                else if (position.x > right)
-                    right = position.x;
-
-                // Update top and bottom
-                if (position.y < top)
-                    top = position.y;
-                else if (position.y > bottom)
-                    bottom = position.y;
-            }
-
-            return FloatRect(left, top, right - left, bottom - top);
-        }
-        else
-        {
-            return FloatRect(0,0,0,0);
-        }
+    /**
+     * Get the type of primitives drawn by the vertex array.
+     *
+     * Returns: Primitive type
+     */
+    @property
+    PrimitiveType primitiveType() const
+    {
+        return sfVertexArray_getPrimitiveType(cast(sfVertexArray*) m_vertexArray);
     }
 
     /**
@@ -158,10 +145,9 @@ class VertexArray : Drawable
      *
      * Returns: Number of vertices in the array
      */
-    uint getVertexCount() const
+    ulong vertexCount() const
     {
-        import std.algorithm;
-        return cast(uint)min(uint.max, Vertices.length);
+        return sfVertexArray_getVertexCount(m_vertexArray);
     }
 
     /**
@@ -172,7 +158,7 @@ class VertexArray : Drawable
      */
     void append(Vertex newVertex)
     {
-        Vertices ~= newVertex;
+        sfVertexArray_append(m_vertexArray, newVertex);
     }
 
     /**
@@ -184,7 +170,7 @@ class VertexArray : Drawable
      */
     void clear()
     {
-        Vertices.length = 0;
+        sfVertexArray_clear(m_vertexArray);
     }
 
     /**
@@ -196,10 +182,7 @@ class VertexArray : Drawable
      */
     override void draw(RenderTarget renderTarget, RenderStates renderStates)
     {
-        if(Vertices.length != 0)
-        {
-            renderTarget.draw(Vertices, primitiveType,renderStates);
-        }
+        renderTarget.draw(this, renderStates);
     }
 
     /**
@@ -213,9 +196,9 @@ class VertexArray : Drawable
      * Params:
      * 		vertexCount	= New size of the array (number of vertices).
      */
-    void resize(uint vertexCount)
+    void resize(size_t vertexCount)
     {
-        Vertices.length = vertexCount;
+        sfVertexArray_resize(m_vertexArray, vertexCount);
     }
 
     /**
@@ -231,50 +214,63 @@ class VertexArray : Drawable
      */
     ref Vertex opIndex(size_t index)
     {
-        return Vertices[index];
+        return *sfVertexArray_getVertex(m_vertexArray, index);
     }
 
-    //TODO: const ref Vertex opIndex(size_t) const, perhaps?
+    /// Overrides the $ attribute.
+    @property
+    ulong opDollar(size_t dim)()
+    {
+        return vertexCount;
+    }
+
+    // Returns the C pointer.
+    package sfVertexArray* ptr()
+    {
+        return m_vertexArray;
+    }
+}
+
+package extern(C)
+{
+    struct sfVertexArray;
+}
+
+private extern(C)
+{
+    sfVertexArray* sfVertexArray_create();
+    sfVertexArray* sfVertexArray_copy(const sfVertexArray* vertexArray);
+    void sfVertexArray_destroy(sfVertexArray* vertexArray);
+    size_t sfVertexArray_getVertexCount(const sfVertexArray* vertexArray);
+    Vertex* sfVertexArray_getVertex(sfVertexArray* vertexArray, size_t index);
+    void sfVertexArray_clear(sfVertexArray* vertexArray);
+    void sfVertexArray_resize(sfVertexArray* vertexArray, size_t vertexCount);
+    void sfVertexArray_append(sfVertexArray* vertexArray, Vertex vertex);
+    void sfVertexArray_setPrimitiveType(sfVertexArray* vertexArray, PrimitiveType type);
+    PrimitiveType sfVertexArray_getPrimitiveType(sfVertexArray* vertexArray);
+    FloatRect sfVertexArray_getBounds(sfVertexArray* vertexArray);
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
-    {
-        import std.stdio;
-        import dsfml.graphics.texture;
-        import dsfml.graphics.rendertexture;
-        import dsfml.graphics.color;
+    import std.stdio;
+    import dsfml.graphics.color;
+    writeln("Running VertexArray unittest...");
 
-        writeln("Unit test for VertexArray");
+    auto va = new VertexArray(PrimitiveType.Triangles, 2);
+    assert(va.vertexCount == 2);
+    assert(va.primitiveType == PrimitiveType.Triangles);
 
-        auto texture = new Texture();
+    auto v0 = Vertex(Vector2f(2, 6));
+    auto v1 = Vertex(Vector2f(1, 3));
+    auto v2 = Vertex(Vector2f(4, 5));
+    va[0] = v0;
+    assert(va[0] == v0);
+    va[1] = v1;
+    assert(va[1] == v1);
+    va.append(v2);
+    assert(va[2] == v2);
 
-        assert(texture.loadFromFile("res/TestImage.png"));
-
-        auto dimensions = FloatRect(0,0,texture.getSize().x,texture.getSize().y);
-
-        auto vertexArray = new VertexArray(PrimitiveType.Quads, 0);
-
-        //Creates a vertex array at position (0,0) the width and height of the loaded texture
-        vertexArray.append(Vertex(Vector2f(dimensions.left,dimensions.top), Color.Blue, Vector2f(dimensions.left,dimensions.top)));
-        vertexArray.append(Vertex(Vector2f(dimensions.left,dimensions.height), Color.Blue, Vector2f(dimensions.left,dimensions.height)));
-        vertexArray.append(Vertex(Vector2f(dimensions.width,dimensions.height), Color.Blue, Vector2f(dimensions.width,dimensions.height)));
-        vertexArray.append(Vertex(Vector2f(dimensions.width,dimensions.top), Color.Blue, Vector2f(dimensions.width,dimensions.top)));
-
-        auto renderStates = RenderStates(texture);
-
-        auto renderTexture = new RenderTexture();
-
-        renderTexture.create(100,100);
-
-        renderTexture.clear();
-
-        //draw the VertexArray with the texture we loaded
-        renderTexture.draw(vertexArray, renderStates);
-
-        renderTexture.display();
-
-        writeln();
-    }
+    assert(va.bounds == FloatRect(1, 3, 3, 3));
+    va.clear();
 }

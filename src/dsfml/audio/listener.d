@@ -57,61 +57,75 @@ module dsfml.audio.listener;
 import dsfml.system.vector3;
 
 /**
- * The audio listener is the point in the scene from where all the sounds are
- * heard.
+ * The audio listener is the point in the scene from where all the sounds are heard.
  */
 final abstract class Listener
 {
     @property
     {
-        /**
+       /**
          * The orientation of the listener in the scene.
          *
-         * The orientation defines the 3D axes of the listener (left, up, front)
-         * in the scene. The orientation vector doesn't have to be normalized.
-         *
+         * The direction (also called "at vector") is the vector pointing forward
+         * from the listener's perspective.
+         * Together with the up vector, it defines the 3D orientation of the
+         * listener in the scene.
+         * The direction vector doesn't have to be normalized.
          * The default listener's orientation is (0, 0, -1).
+         *
+         * Params:
+         * direction: New listener's direction
+         *
+         * See_Also:
+         * upVector, position
          */
-        static void direction(Vector3f orientation)
+        static void direction(Vector3f direction)
         {
-            sfListener_setDirection(orientation.x, orientation.y,
-                                    orientation.z);
+            sfListener_setDirection(direction);
         }
 
-        /// ditto
+        /**
+         * Get the current forward vector of the listener in the scene.
+         *
+         * Returns:
+         *    Listener's forward vector (not normalized)
+         */
         static Vector3f direction()
         {
-            Vector3f temp;
-
-            sfListener_getDirection(&temp.x, &temp.y, &temp.z);
-
-            return temp;
+            return sfListener_getDirection();
         }
     }
 
     @property
     {
         /**
-         * The upward vector of the listener in the scene.
+         * Set the upward vector of the listener in the scene.
          *
-         * The upward vector defines the 3D axes of the listener (left, up,
-         * front) in the scene. The upward vector doesn't have to be normalized.
+         * The up vector is the vector that points upward from the listener's
+         * perspective. Together with the direction, it defines the 3D orientation
+         *  of the listener in the scene. The up vector doesn't have to be
+         * normalized. The default listener's up vector is (0, 1, 0). It is usually
+         * not necessary to change it, especially in 2D scenarios.
          *
-         * The default listener's upward vector is (0, 1, 0).
+         * Params:
+         *    upVector    New listener's up vector
+         * See_Also:
+         *    direction, position
          */
-        static void upVector(Vector3f orientation)
+        static void upVector(Vector3f upVector)
         {
-            sfListener_setUpVector(orientation.x, orientation.y, orientation.z);
+            sfListener_setUpVector(upVector);
         }
 
-        /// ditto
+        /**
+         * Get the current upward vector of the listener in the scene.
+         *
+         * Returns:
+         *    Listener's upward vector (not normalized)
+         */
         static Vector3f upVector()
         {
-            Vector3f temp;
-
-            sfListener_getUpVector(&temp.x, &temp.y, &temp.z);
-
-            return temp;
+            return sfListener_getUpVector();
         }
     }
 
@@ -130,7 +144,12 @@ final abstract class Listener
             sfListener_setGlobalVolume(volume);
         }
 
-        /// ditto
+        /**
+         * Get the current value of the global volume.
+         *
+         * Returns:
+         *    Current global volume, in the range [0, 100]
+         */
         static float globalVolume()
         {
             return sfListener_getGlobalVolume();
@@ -143,175 +162,65 @@ final abstract class Listener
          * The position of the listener in the scene.
          *
          * The default listener's position is (0, 0, 0).
+         *
+         * Params:
+         *    position    New listener's position
+         * See_Also:
+         * direction
          */
         static void position(Vector3f pos)
         {
-            sfListener_setPosition(pos.x, pos.y, pos.z);
+            sfListener_setPosition(pos);
         }
 
-        /// ditto
+        /**
+         * Get the current position of the listener in the scene.
+         *
+         * Returns:
+         *    Listener's position
+         */
         static Vector3f position()
         {
-            Vector3f temp;
-
-            sfListener_getPosition(&temp.x, &temp.y, &temp.z);
-
-            return temp;
+            return sfListener_getPosition();
         }
     }
+}
 
-    deprecated("Use the 'direction' property instead.")
-    @property
-    {
-        /**
-         * The orientation of the listener in the scene.
-         *
-         * The orientation defines the 3D axes of the listener (left, up, front)
-         * in the scene. The orientation vector doesn't have to be normalized.
-         *
-         * The default listener's orientation is (0, 0, -1).
-         *
-         * Deprecated: Use the 'direction' property instead.
-         */
-        static void Direction(Vector3f orientation)
-        {
-            sfListener_setDirection(orientation.x, orientation.y,
-                                    orientation.z);
-        }
-
-        /// ditto
-        static Vector3f Direction()
-        {
-            Vector3f temp;
-
-            sfListener_getDirection(&temp.x, &temp.y, &temp.z);
-
-            return temp;
-        }
-    }
-
-    deprecated("Use the 'upVector' property instead.")
-    @property
-    {
-        /**
-         * The upward vector of the listener in the scene.
-         *
-         * The upward vector defines the 3D axes of the listener (left, up,
-         * front) in the scene. The upward vector doesn't have to be normalized.
-         *
-         * The default listener's upward vector is (0, 1, 0).
-         *
-         * Deprecated: Use the 'upVector' property instead.
-         */
-        static void UpVector(Vector3f orientation)
-        {
-            sfListener_setUpVector(orientation.x, orientation.y, orientation.z);
-        }
-
-        /// ditto
-        static Vector3f UpVector()
-        {
-            Vector3f temp;
-
-            sfListener_getUpVector(&temp.x, &temp.y, &temp.z);
-
-            return temp;
-        }
-    }
-
-    deprecated("Use the 'globalVolume' property instead.")
-    @property
-    {
-        /**
-         * The global volume of all the sounds and musics. The volume is a
-         * number between 0 and 100; it is combined with the individual volume
-         * of each sound / music.
-         *
-         * The default value for the volume is 100 (maximum).
-         *
-         * Deprecated: Use the 'globalVolume' property instead.
-         */
-        static void GlobalVolume(float volume)
-        {
-            sfListener_setGlobalVolume(volume);
-        }
-
-        /// ditto
-        static float GlobalVolume()
-        {
-            return sfListener_getGlobalVolume();
-        }
-    }
-
-    deprecated("Use the 'position' property instead.")
-    @property
-    {
-        /**
-         * The position of the listener in the scene.
-         *
-         * The default listener's position is (0, 0, 0).
-         *
-         * Deprecated: Use the 'position' property instead.
-         */
-        static void Position(Vector3f position)
-        {
-            sfListener_setPosition(position.x, position.y, position.z);
-        }
-
-        /// ditto
-        static Vector3f Position()
-        {
-            Vector3f temp;
-
-            sfListener_getPosition(&temp.x, &temp.y, &temp.z);
-
-            return temp;
-        }
-    }
+// CSFML's functions.
+private extern(C)
+{
+    void sfListener_setGlobalVolume(float volume);
+    float sfListener_getGlobalVolume();
+    void sfListener_setPosition(Vector3f position);
+    Vector3f sfListener_getPosition();
+    void sfListener_setDirection(Vector3f direction);
+    Vector3f sfListener_getDirection();
+    void sfListener_setUpVector(Vector3f upVector);
+    Vector3f sfListener_getUpVector();
 }
 
 unittest
 {
-    version (DSFML_Unittest_Audio)
-    {
-        import std.stdio;
+    import std.stdio;
+    writeln("Running Listener unittest...");
 
-        writeln("Unit test for Listener");
+    float volume = 50;
+    Vector3f pos = Vector3f(10, 20, 30);
+    Vector3f dir = Vector3f(10, 10, 10);
+    Vector3f upvec = Vector3f(20, 20, 20);
 
-        float volume = Listener.GlobalVolume;
-        volume -= 10;
-        Listener.GlobalVolume = volume;
+    Listener.globalVolume = volume;
+    assert(Listener.globalVolume == volume);
 
-        Vector3f pos = Listener.Position;
-        pos.x += 10;
-        pos.y -= 10;
-        pos.z *= 3;
-        Listener.Position = pos;
+    Listener.direction = dir;
+    // waiting for pull https://github.com/dlang/dmd/pull/10200
+    //assert(Listener.direction == dir);
 
-        Vector3f dir = Listener.Direction;
-        dir.x += 10;
-        dir.y -= 10;
-        dir.z *= 3;
-        Listener.Direction = dir;
-        writeln("Unit tests pass!");
-        writeln();
-    }
+    Listener.position = pos;
+    // waiting for pull https://github.com/dlang/dmd/pull/10200
+    //assert(Listener.position == pos);
+
+    Listener.upVector = upvec;
+    // waiting for pull https://github.com/dlang/dmd/pull/10200
+    //assert(Listener.upVector == upvec);
 }
-
-private extern (C):
-
-void sfListener_setGlobalVolume(float volume);
-
-float sfListener_getGlobalVolume();
-
-void sfListener_setPosition(float x, float y, float z);
-
-void sfListener_getPosition(float* x, float* y, float* z);
-
-void sfListener_setDirection(float x, float y, float z);
-
-void sfListener_getDirection(float* x, float* y, float* z);
-
-void sfListener_setUpVector(float x, float y, float z);
-
-void sfListener_getUpVector(float* x, float* y, float* z);

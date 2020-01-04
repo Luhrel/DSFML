@@ -158,7 +158,6 @@ import dsfml.system.vector2;
 import dsfml.system.vector3;
 import dsfml.system.err;
 
-
 /**
  * Shader class (vertex and fragment).
  */
@@ -172,34 +171,34 @@ class Shader
         Fragment /// Fragment (pixel) shader.
     }
 
-    package sfShader* sfPtr;
+    private sfShader* m_shader;
 
     /**
-     * Special type/value that can be passed to `setParameter`, and that
-     * represents the texture of the object being drawn.
+     * Special type that can be passed to uniform(), and that represents the
+     * texture of the object being drawn.
      */
-    struct CurrentTextureType {}
-    /// ditto
-    static CurrentTextureType CurrentTexture;
+    struct CurrentTextureType
+    {
+        // Nothing to declare.
+    }
+
+    /**
+     * Represents the texture of the object being drawn.
+     *
+     * See_Also: uniform
+     */
+    static CurrentTextureType currentTexture;
 
     /// Default constructor.
     this()
     {
-        //creates an empty shader
-        sfPtr=sfShader_construct();
-    }
-
-    package this(sfShader* shader)
-    {
-        sfPtr = shader;
+        // Nothing to do.
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfShader_destroy(sfPtr);
+        sfShader_destroy(m_shader);
     }
 
     /**
@@ -216,10 +215,17 @@ class Shader
      * 		type		= Type of shader (vertex geometry, or fragment)
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromMemory, loadFromStream
      */
-    bool loadFromFile(const(char)[] filename, Type type)
+    bool loadFromFile(const(string) filename, Type type)
     {
-        return sfShader_loadTypeFromFile(sfPtr, filename.ptr, filename.length, type);
+        if (type == Type.Vertex)
+            m_shader = sfShader_createFromFile(filename.ptr, null, null);
+        else if (type == Type.Geometry)
+            m_shader = sfShader_createFromFile(null, filename.ptr, null);
+        else
+            m_shader = sfShader_createFromFile(null, null, filename.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -237,11 +243,12 @@ class Shader
      * 		fragmentShaderFilename	= Path of the fragment shader file to load
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromMemory, loadFromStream
      */
-    bool loadFromFile(const(char)[] vertexShaderFilename, const(char)[] fragmentShaderFilename)
+    bool loadFromFile(const(string) vertexShaderFilename, const(string) fragmentShaderFilename)
     {
-        return sfShader_loadVertexAndFragmentFromFile(sfPtr, vertexShaderFilename.ptr, vertexShaderFilename.length,
-                                         fragmentShaderFilename.ptr, fragmentShaderFilename.length);
+        m_shader = sfShader_createFromFile(vertexShaderFilename.ptr, null, fragmentShaderFilename.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -260,12 +267,12 @@ class Shader
      * 		fragmentShaderFilename	= Path of the fragment shader file to load
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromMemory, loadFromStream
      */
-    bool loadFromFile(const(char)[] vertexShaderFilename, const(char)[] geometryShaderFilename, const(char)[] fragmentShaderFilename)
+    bool loadFromFile(const(string) vertexShaderFilename, const(string) geometryShaderFilename, const(string) fragmentShaderFilename)
     {
-        return sfShader_loadAllFromFile(sfPtr, vertexShaderFilename.ptr, vertexShaderFilename.length,
-                                         geometryShaderFilename.ptr, geometryShaderFilename.length,
-                                         fragmentShaderFilename.ptr, fragmentShaderFilename.length);
+        m_shader = sfShader_createFromFile(vertexShaderFilename.ptr, geometryShaderFilename.ptr, fragmentShaderFilename.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -282,10 +289,17 @@ class Shader
      * 		type	= Type of shader (vertex geometry, or fragment)
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromStream
      */
-    bool loadFromMemory(const(char)[] shader, Type type)
+    bool loadFromMemory(const(string) shader, Type type)
     {
-        return sfShader_loadTypeFromMemory(sfPtr, shader.ptr, shader.length, type);
+        if (type == Type.Vertex)
+            m_shader = sfShader_createFromMemory(shader.ptr, null, null);
+        else if (type == Type.Geometry)
+            m_shader = sfShader_createFromMemory(null, shader.ptr, null);
+        else
+            m_shader = sfShader_createFromMemory(null, null, shader.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -303,10 +317,12 @@ class Shader
                          shader
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromStream
      */
-    bool loadFromMemory(const(char)[] vertexShader, const(char)[] fragmentShader)
+    bool loadFromMemory(const(string) vertexShader, const(string) fragmentShader)
     {
-        return sfShader_loadVertexAndFragmentFromMemory(sfPtr, vertexShader.ptr, vertexShader.length, fragmentShader.ptr, fragmentShader.length);
+        m_shader =  sfShader_createFromMemory(vertexShader.ptr, null, fragmentShader.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -325,12 +341,12 @@ class Shader
                          shader
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromStream
      */
-    bool loadFromMemory(const(char)[] vertexShader, const(char)[] geometryShader, const(char)[] fragmentShader)
+    bool loadFromMemory(const(string) vertexShader, const(string) geometryShader, const(string) fragmentShader)
     {
-        return sfShader_loadAllFromMemory(sfPtr, vertexShader.ptr, vertexShader.length,
-                                           geometryShader.ptr, geometryShader.length,
-                                           fragmentShader.ptr, fragmentShader.length);
+        m_shader = sfShader_createFromMemory(vertexShader.ptr, geometryShader.ptr, fragmentShader.ptr);
+        return m_shader != null;
     }
     /**
      * Load the vertex, geometry or fragment shader from a custom stream.
@@ -346,11 +362,17 @@ class Shader
      * 		type	= Type of shader (vertex, geometry or fragment)
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream stream, Type type)
     {
-        return sfShader_loadTypeFromStream(sfPtr, new shaderStream(stream), type);
-
+        if (type == Type.Vertex)
+            m_shader = sfShader_createFromStream(stream.ptr, null, null);
+        else if (type == Type.Geometry)
+            m_shader = sfShader_createFromStream(null, stream.ptr, null);
+        else
+            m_shader = sfShader_createFromStream(null, null, stream.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -367,11 +389,12 @@ class Shader
      * 	fragmentShaderStream = Source stream to read the fragment shader from
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream vertexShaderStream, InputStream fragmentShaderStream)
     {
-        return sfShader_loadVertexAndFragmentFromStream(sfPtr, new shaderStream(vertexShaderStream),
-                                           new shaderStream(fragmentShaderStream));
+        m_shader = sfShader_createFromStream(vertexShaderStream.ptr, null, fragmentShaderStream.ptr);
+        return m_shader != null;
     }
 
     /**
@@ -389,641 +412,179 @@ class Shader
      * 	fragmentShaderStream = Source stream to read the fragment shader from
      *
      * Returns: true if loading succeeded, false if it failed.
+     * See_Also: loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream vertexShaderStream, InputStream geometryShaderStream, InputStream fragmentShaderStream)
     {
-        return sfShader_loadAllFromStream(sfPtr, new shaderStream(vertexShaderStream),
-                                           new shaderStream(geometryShaderStream),
-                                           new shaderStream(fragmentShaderStream));
+        m_shader = sfShader_createFromStream(vertexShaderStream.ptr, geometryShaderStream.ptr, fragmentShaderStream.ptr);
+        return m_shader != null;
     }
 
     /**
-     * Specify value for float uniform.
+     * Specify value for x uniform.
+     *
+     * x parameter can be: float, Vec2, Vec3, Vec4, Color, int, Ivec2, Ivec3,
+     * Ivec4, bool, Bvec2, Bvec3, Bvec4, Mat3*, Mat4*, Texture,
+     * CurrentTextureType
+     *
+     * See original SFML's documentation for more informations.
      *
      * Params:
      * 		name	= Name of the uniform variable in GLSL
-     * 		x		= Value of the float scalar
+     * 		x		= Value of the numeric scalar
      */
-     void setUniform(const(char)[] name, float x)
-     {
-        sfShader_setFloatUniform(sfPtr, name.ptr, name.length, x);
-     }
-
-    ///ditto
-    void opIndexAssign(float x, const(char)[] name)
+    void uniform(T)(const(string) name, T x)
     {
-        setUniform(name, x);
+        if (m_shader is null)
+            return;
+
+        static if(is(T == float))
+            sfShader_setFloatUniform(m_shader, name.ptr, cast(float) x);
+        else static if(is(T == Vec2))
+            sfShader_setVec2Uniform(m_shader, name.ptr, cast(Vec2) x);
+        else static if(is(T == Vec3))
+            sfShader_setVec3Uniform(m_shader, name.ptr, cast(Vec3) x);
+        else static if(is(T == Vec4))
+            sfShader_setVec4Uniform(m_shader, name.ptr, cast(Vec4) x);
+        else static if(is(T == Color))
+            sfShader_setColorUniform(m_shader, name.ptr, cast(Color) x);
+        else static if(is(T == int))
+            sfShader_setIntUniform(m_shader, name.ptr, cast(int) x);
+        else static if(is(T == Ivec2))
+            sfShader_setIvec2Uniform(m_shader, name.ptr, cast(Ivec2) x);
+        else static if(is(T == Ivec3))
+            sfShader_setIvec3Uniform(m_shader, name.ptr, cast(Ivec3) x);
+        else static if(is(T == Ivec4))
+            sfShader_setIvec4Uniform(m_shader, name.ptr, cast(Ivec4) x);
+        else static if(is(T == bool))
+            sfShader_setBoolUniform(m_shader, name.ptr, cast(bool) x);
+        else static if(is(T == Bvec2))
+            sfShader_setBvec2Uniform(m_shader, name.ptr, cast(Bvec2) x);
+        else static if(is(T == Bvec3))
+            sfShader_setBvec3Uniform(m_shader, name.ptr, cast(Bvec3) x);
+        else static if(is(T == Bvec4))
+            sfShader_setBvec4Uniform(m_shader, name.ptr, cast(Bvec4) x);
+        else static if(is(T == Mat3))
+            sfShader_setMat3Uniform(m_shader, name.ptr, &(cast(Mat3) x));
+        else static if(is(T == Mat4))
+            sfShader_setMat4Uniform(m_shader, name.ptr, &(cast(Mat4) x));
+        else static if(is(T == Texture))
+            sfShader_setTextureUniform(m_shader, name.ptr, (cast(Texture) x).ptr);
+        else static if(is(T == CurrentTextureType))
+            sfShader_setCurrentTextureUniform(m_shader, name.ptr);
+        else
+            err.writefln("Template uniform(T)(const(string) name, T x) doesn't support type %s.", T);
     }
 
     /**
-     * Specify value for vec2 uniform.
+     * Specify value for an array uniform.
      *
      * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the vec2 vector
+     * 		name  = Name of the uniform variable in GLSL
+     * 		array = Value of the vector
      */
-    void setUniform(const(char)[] name, ref const(Vec2) vector)
+    void uniformArray(T)(const(string) name, ref T[] array)
     {
-        sfShader_setVec2Uniform(sfPtr, name.ptr, name.length, &vector);
+        if (m_shader is null)
+            return;
+
+        static if(is(T == float))
+            sfShader_setFloatUniformArray(m_shader, name.ptr, &array, array.length);
+        else static if(is(T == Vec2))
+            sfShader_setVec2UniformArray(m_shader, name.ptr, &array, array.length);
+        else static if(is(T == Vec3))
+            sfShader_setVec3UniformArray(m_shader, name.ptr, &array, array.length);
+        else static if(is(T == Vec4))
+            sfShader_setVec4UniformArray(m_shader, name.ptr, &array, array.length);
+        else static if(is(T == Mat3))
+            sfShader_setMat3UniformArray(m_shader, name.ptr, &array, array.length);
+        else static if(is(T == Mat4))
+            sfShader_setMat4UniformArray(m_shader, name.ptr, &array, array.length);
+        else
+            err.writefln("Template uniformArray(T)(const(string) name, ref T[] array) doesn't support type %s.", T);
     }
 
-    ///ditto
-    void opIndexAssign(ref const(Vec2) vector, const(char)[] name)
+    deprecated("Please use uniform(T)(const(string) name, T x) template instead.")
     {
-        setUniform(name, vector);
+        /**
+         * Change a T parameter of the shader.
+         *
+         * Params:
+         * 		name	= The name of the variable to change in the shader.
+         *                    The corresponding parameter in the shader must be
+         *                    a float (float GLSL type).
+         * 		x		= Value to assign
+         */
+        void setParameter(T)(const(string) name, T x)
+        {
+            if (m_shader is null)
+                return;
+
+            static if(is(T == Vector2f))
+                sfShader_setVector2Parameter(m_shader, name.ptr, cast(Vector2f) x);
+            else static if(is(T == Vector3f))
+                sfShader_setVector3Parameter(m_shader, name.ptr, cast(Vector3f) x);
+            else static if(is(T == Color))
+                sfShader_setColorParameter(m_shader, name.ptr, cast(Color) x);
+            else static if(is(T == Transform))
+                sfShader_setTransformParameter(m_shader, name.ptr, (cast(Transform) x).marshal);
+            else static if(is(T == Texture))
+                sfShader_setTextureParameter(m_shader, name.ptr, (cast(Texture) x).ptr);
+            else static if(is(T == CurrentTextureType))
+                sfShader_setCurrentTextureParameter(m_shader, name.ptr);
+            else static if(is(T == float))
+                sfShader_setFloatParameter(m_shader, name.ptr, cast(float) x);
+            else
+                err.writefln("Template setParameter(T)(const(string) name, ref T[] array) doesn't support type %s.", T);
+        }
+/*
+        void setParameter(const(string) name, float x, float y)
+        {
+            sfShader_setFloat2Parameter(m_shader, name.ptr, x, y);
+        }
+
+        void setParameter(const(string) name, float x, float y, float z, float w)
+        {
+            sfShader_setFloat3Parameter(m_shader, name.ptr, x, y, z);
+        }
+
+        void setParameter(const(string) name, float x, float y, float z, float w)
+        {
+            sfShader_setFloat4Parameter(m_shader, name.ptr, x, y, z, w);
+        }
+*/
     }
 
     /**
-     * Specify value for vec3 uniform.
+     * Bind a shader for rendering.sfGlslVec4
+     *
+     * This function is not part of the graphics API, it mustn't be used when
+     * drawing SFML entities. It must be used only if you mix Shader with OpenGL
+     * code.
+     * ---
+     * Shader s1, s2;
+     * //...
+     * Shader.bind(s1);
+     * // draw OpenGL stuff that use s1...
+     * Shader.bind(s2);
+     * // draw OpenGL stuff that use s2...
+     * Shader.bind(null);
+     * // draw OpenGL stuff that use no shader...
+     * ---
      *
      * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the vec3 vector
-     */
-    void setUniform(const(char)[] name, ref const(Vec3) vector)
-    {
-        sfShader_setVec3Uniform(sfPtr, name.ptr, name.length, &vector);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Vec3) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for vec4 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the vec4 vector
-     */
-    void setUniform(const(char)[] name, ref const(Vec4) vector)
-    {
-        sfShader_setVec4Uniform(sfPtr, name.ptr, name.length, &vector);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Vec4) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for int uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		x		= Value of the int scalar
-     */
-     void setUniform(const(char)[] name, int x)
-     {
-        sfShader_setIntUniform(sfPtr, name.ptr, name.length, x);
-     }
-
-    ///ditto
-    void opIndexAssign(int x, const(char)[] name)
-    {
-        setUniform(name, x);
-    }
-
-    /**
-     * Specify value for ivec2 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the ivec2 vector
-     */
-    void setUniform(const(char)[] name, ref const(Ivec2) vector)
-    {
-        sfShader_setIvec2Uniform(sfPtr, name.ptr, name.length, &vector);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Ivec2) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for ivec3 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the ivec3 vector
-     */
-    void setUniform(const(char)[] name, ref const(Ivec3) vector)
-    {
-        sfShader_setIvec3Uniform(sfPtr, name.ptr, name.length, &vector);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Ivec3) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for ivec4 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the ivec4 vector
-     */
-    void setUniform(const(char)[] name, ref const(Ivec4) vector)
-    {
-        sfShader_setIvec4Uniform(sfPtr, name.ptr, name.length, &vector);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Ivec4) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for bool uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		x		= Value of the bool scalar
-     */
-     void setUniform(const(char)[] name, bool x)
-     {
-        sfShader_setBoolUniform(sfPtr, name.ptr, name.length, x);
-     }
-
-     ///ditto
-    void opIndexAssign(bool x, const(char)[] name)
-    {
-        setUniform(name, x);
-    }
-
-    /**
-     * Specify value for bvec2 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the bvec2 vector
-     */
-    void setUniform(const(char)[] name, ref const(Bvec2) vector)
-    {
-        sfShader_setBvec2Uniform(sfPtr, name.ptr, name.length,
-                                   vector.x, vector.y);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Bvec2) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for bvec3 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the bvec3 vector
-     */
-    void setUniform(const(char)[] name, ref const(Bvec3) vector)
-    {
-        sfShader_setBvec3Uniform(sfPtr, name.ptr, name.length, vector.x,
-                                 vector.y, vector.z);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Bvec3) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-
-    /**
-     * Specify value for bvec4 uniform.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		vector	= Value of the bvec4 vector
-     */
-    void setUniform(const(char)[] name, ref const(Bvec4) vector)
-    {
-        sfShader_setBvec4Uniform(sfPtr, name.ptr, name.length, vector.x,
-                                 vector.y, vector.z, vector.w);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Bvec4) vector, const(char)[] name)
-    {
-        setUniform(name, vector);
-    }
-
-    /**
-     * Specify value for mat3 matrix.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		matrix	= Value of the mat3 vector
-     */
-    void setUniform(const(char)[] name, ref const(Mat3) matrix)
-    {
-        sfShader_setMat3Uniform(sfPtr, name.ptr, name.length, &matrix);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Mat3) matrix, const(char)[] name)
-    {
-        setUniform(name, matrix);
-    }
-
-    /**
-     * Specify value for mat4 matrix.
-     *
-     * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		matrix	= Value of the mat4 vector
-     */
-    void setUniform(const(char)[] name, ref const(Mat4) matrix)
-    {
-        sfShader_setMat4Uniform(sfPtr, name.ptr, name.length, &matrix);
-    }
-
-    ///ditto
-    void opIndexAssign(ref const(Mat4) matrix, const(char)[] name)
-    {
-        setUniform(name, matrix);
-    }
-
-    /**
-     * Specify a texture as sampler2D uniform.
-     *
-     * 'name' is the name of the variable to change in the shader. The
-     * corresponding parameter in the shader must be a 2D texture (sampler2D
-     * GLSL type).
-     *
-     * It is important to note that texture must remain alive as long as the
-     * shader uses it, no copy is made internally.
-     *
-     * To use the texture of the object being drawn, which cannot be known in
-     * advance, you can pass the special value CurrentTexture.
-     *
-     * Params:
-     * 		name	= Name of the texture in the shader
-     *		texture	= Texture to assign
-     */
-    void setUniform(const(char)[] name, const(Texture) texture)
-    {
-        sfShader_setTextureUniform(sfPtr, name.ptr, name.length,
-                                   texture?texture.sfPtr:null);
-    }
-
-    ///ditto
-    void opIndexAssign(const(Texture) texture, const(char)[] name)
-    {
-        sfShader_setTextureUniform(sfPtr, name.ptr, name.length,
-                                   texture?texture.sfPtr:null);
-    }
-
-    /**
-     * Specify current texture as sampler2D uniform.
-     *
-     * This overload maps a shader texture variable to the texture of the object
-     * being drawn, which cannot be known in advance. The second argument must
-     * be CurrentTexture. The corresponding parameter in the shader must be a 2D
-     * texture (sampler2D GLSL type).
-     *
-     * Params:
-     * 		name	= Name of the texture in the shader
-     */
-    void setUniform(const(char)[] name, CurrentTextureType)
-    {
-        sfShader_setCurrentTextureUniform(sfPtr, name.ptr, name.length);
-    }
-
-    ///ditto
-    void opIndexAssign(CurrentTextureType, const(char)[] name)
-    {
-        sfShader_setCurrentTextureUniform(sfPtr, name.ptr, name.length);
-    }
-
-    /**
-     * Specify values for float[] array uniform.
-     *
-     * Params:
-     *		name		= Name of the uniform variable in GLSL
-     *		scalarArray = array of float values
-     */
-    void setUniformArray(const(char)[] name, const(float)[] scalarArray)
-    {
-        sfShader_setFloatArrayUniform(sfPtr, name.ptr, name.length,
-                                      scalarArray.ptr, scalarArray.length);
-    }
-
-    ///ditto
-    void opIndexAssign(const(float)[] scalars, const(char)[] name)
-    {
-        setUniformArray(name, scalars);
-    }
-
-    /**
-     * Specify values for vec2[] array uniform.
-     *
-     * Params:
-     *		name		= Name of the uniform variable in GLSL
-     *		vectorArray = array of vec2 values
-     */
-    void setUniformArray(const(char)[] name, const(Vec2)[] vectorArray)
-    {
-        sfShader_setVec2ArrayUniform(sfPtr, name.ptr, name.length,
-                                     vectorArray.ptr, vectorArray.length);
-    }
-
-    ///ditto
-    void opIndexAssign(const(Vec2)[] vectors, const(char)[] name)
-    {
-        setUniformArray(name, vectors);
-    }
-
-    /**
-     * Specify values for vec3[] array uniform.
-     *
-     * Params:
-     *		name		= Name of the uniform variable in GLSL
-     *		vectorArray = array of vec3 values
-     */
-    void setUniformArray(const(char)[] name, const(Vec3)[] vectorArray)
-    {
-        sfShader_setVec3ArrayUniform(sfPtr, name.ptr, name.length,
-                                     vectorArray.ptr, vectorArray.length);
-    }
-
-    ///ditto
-    void opIndexAssign(const(Vec3)[] vectors, const(char)[] name)
-    {
-        setUniformArray(name, vectors);
-    }
-
-    /**
-     * Specify values for vec4[] array uniform.
-     *
-     * Params:
-     *		name		= Name of the uniform variable in GLSL
-     *		vectorArray = array of vec4 values
-     */
-    void setUniformArray(const(char)[] name, const(Vec4)[] vectorArray)
-    {
-        sfShader_setVec4ArrayUniform(sfPtr, name.ptr, name.length,
-                                     vectorArray.ptr, vectorArray.length);
-    }
-
-    ///ditto
-    void opIndexAssign(const(Vec4)[] vectors, const(char)[] name)
-    {
-        setUniformArray(name, vectors);
-    }
-
-    /**
-     * Specify values for mat3[] array uniform.
-     *
-     * Params:
-     *		name		= Name of the uniform variable in GLSL
-     *		matrixArray = array of mat3 values
-     */
-    void setUniformArray(const(char)[] name, const(Mat3)[] matrixArray)
-    {
-        sfShader_setMat3ArrayUniform(sfPtr, name.ptr, name.length,
-                                     matrixArray.ptr, matrixArray.length);
-    }
-
-    ///ditto
-    void opIndexAssign(const(Mat3)[] matrices, const(char)[] name)
-    {
-        setUniformArray(name, matrices);
-    }
-
-    /**
-     * Specify values for mat4[] array uniform.
-     *
-     * Params:
-     *		name		= Name of the uniform variable in GLSL
-     *		matrixArray = array of mat4 values
-     */
-    void setUniformArray(const(char)[] name, const(Mat4)[] matrixArray)
-    {
-        sfShader_setMat4ArrayUniform(sfPtr, name.ptr, name.length,
-                                     matrixArray.ptr, matrixArray.length);
-    }
-
-    ///ditto
-    void opIndexAssign(const(Mat4)[] matrices, const(char)[] name)
-    {
-        setUniformArray(name, matrices);
-    }
-
-    /**
-     * Change a float parameter of the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The corresponding parameter in the shader must be a float (float GLSL type).
-     * 		x		= Value to assign
-     */
-    deprecated("Use setUniform(const(char)[], float) instead.")
-    void setParameter(const(char)[] name, float x)
-    {
-        import dsfml.system.string;
-        sfShader_setFloatParameter(sfPtr, name.ptr, name.length, x);
-    }
-
-    /**
-     * Change a 2-components vector parameter of the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The corresponding parameter in the shader must be a 2x1 vector (vec2 GLSL type).
-     * 		x		= First component of the value to assign
-     * 		y		= Second component of the value to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Vec2)) instead.")
-    void setParameter(const(char)[] name, float x, float y)
-    {
-        import dsfml.system.string;
-        sfShader_setFloat2Parameter(sfPtr, name.ptr, name.length, x, y);
-    }
-
-    /**
-     * Change a 3-components vector parameter of the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The corresponding parameter in the shader must be a 3x1 vector (vec3 GLSL type).
-     * 		x		= First component of the value to assign
-     * 		y		= Second component of the value to assign
-     * 		z		= Third component of the value to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Vec3)) instead.")
-    void setParameter(const(char)[] name, float x, float y, float z)
-    {
-        import dsfml.system.string;
-        sfShader_setFloat3Parameter(sfPtr, name.ptr, name.length, x,y,z);
-    }
-
-    /**
-     * Change a 4-components vector parameter of the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The corresponding parameter in the shader must be a 4x1 vector (vec4 GLSL type).
-     * 		x		= First component of the value to assign
-     * 		y		= Second component of the value to assign
-     * 		z		= Third component of the value to assign
-     * 		w		= Fourth component of the value to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Vec4)) instead.")
-    void setParameter(const(char)[] name, float x, float y, float z, float w)
-    {
-        import dsfml.system.string;
-        sfShader_setFloat4Parameter(sfPtr, name.ptr, name.length, x, y, z, w);
-    }
-
-    /**
-     * Change a 2-components vector parameter of the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The corresponding parameter in the shader must be a 2x1 vector (vec2 GLSL type).
-     * 		vector	= Vector to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Vec2)) instead.")
-    void setParameter(const(char)[] name, Vector2f vector)
-    {
-        import dsfml.system.string;
-        sfShader_setFloat2Parameter(sfPtr, name.ptr, name.length, vector.x, vector.y);
-    }
-
-    /**
-     * Change a 3-components vector parameter of the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader.
-     *                The corresponding parameter in the shader must be a 3x1
-                      vector (vec3 GLSL type)
-     * 		vector	= Vector to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Vec3)) instead.")
-    void setParameter(const(char)[] name, Vector3f vector)
-    {
-        import dsfml.system.string;
-        sfShader_setFloat3Parameter(sfPtr, name.ptr, name.length, vector.x, vector.y, vector.z);
-    }
-
-    /**
-     * Change a color vector parameter of the shader.
-     *
-     * It is important to note that the components of the color are normalized
-     * before being passed to the shader. Therefore, they are converted from
-     * range [0 .. 255] to range [0 .. 1]. For example, a
-     * Color(255, 125, 0, 255) will be transformed to a vec4(1.0, 0.5, 0.0, 1.0)
-     * in the shader.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The
-     *                corresponding parameter in the shader must be a 4x1 vector
-     *                (vec4 GLSL type).
-     * 		color	= Color to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Vec4)) instead.")
-    void setParameter(const(char)[] name, Color color)
-    {
-        import dsfml.system.string;
-        sfShader_setColorParameter(sfPtr, name.ptr, name.length, color.r, color.g, color.b, color.a);
-    }
-
-    ///ditto
-    deprecated("Use shader[\"name\"] = Vec4(color) instead.")
-    void opIndexAssign(Color color, const(char)[] name)
-    {
-        import dsfml.system.string;
-        sfShader_setColorParameter(sfPtr, name.ptr, name.length, color.r, color.g, color.b, color.a);
-    }
-
-    /**
-     * Change a matrix parameter of the shader.
-     *
-     * Params:
-     * 		name		= The name of the variable to change in the shader. The
-     *                    corresponding parameter in the shader must be a 4x4
-                          matrix (mat4 GLSL type)
-     * 		transform	= Transform to assign
-     */
-    deprecated("Use setUniform(const(char)[] , ref const(Mat4)) instead.")
-    void setParameter(const(char)[] name, Transform transform)
-    {
-        import dsfml.system.string;
-        sfShader_setTransformParameter(sfPtr, name.ptr, name.length, transform.m_matrix.ptr);
-    }
-
-    ///ditto
-    deprecated("Use shader[\"name\"] = Mat4(transform) instead.")
-    void opIndexAssign(Transform transform, const(char)[] name)
-    {
-        import dsfml.system.string;
-        sfShader_setTransformParameter(sfPtr, name.ptr, name.length, transform.m_matrix.ptr);
-    }
-
-    /**
-     * Change a texture parameter of the shader.
-     *
-     * It is important to note that the texture parameter must remain alive as
-     * long as the shader uses it - no copoy is made internally.
-     *
-     * To use the texture of the object being draw, which cannot be known in
-     * advance, you can pass the special value Shader.CurrentTexture.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader. The
-     *                corresponding parameter in the shader must be a 2D texture
-     *                (sampler2D GLSL type)
-     * 		texture	= Texture to assign
-     */
-    deprecated("Use setUniform(const(char)[] , const(Texture)) instead.")
-    void setParameter(const(char)[] name, const(Texture) texture)
-    {
-        sfShader_setTextureParameter(sfPtr, name.ptr, name.length, texture?texture.sfPtr:null);
-    }
-
-    /**
-     * Change a texture parameter of the shader.
-     *
-     * This overload maps a shader texture variable to the texture of the object
-     * being drawn, which cannot be known in advance. The second argument must
-     * be Shader.CurrentTexture.
-     *
-     * Params:
-     * 		name	= The name of the variable to change in the shader.
-     *                The corresponding parameter in the shader must be a 2D texture
-     *                (sampler2D GLSL type)
-     *      currentTexture = Dummy variable to denote the texture of the object
-     */
-    deprecated("Use setUniform(const(char)[] , CurrentTextureType) instead.")
-    void setParameter(const(char)[] name, CurrentTextureType currentTexture)
-    {
-        import dsfml.system.string;
-        sfShader_setCurrentTextureParameter(sfPtr, name.ptr, name.length);
-    }
-
-    /**
-     * Bind a shader for rendering.
-     *
-     * This function is not part of the graphics API, it mustn't be used when drawing SFML entities. It must be used only if you mix Shader with OpenGL code.
-     *
-     * Params:
-     * 		shader	= Shader to bind. Can be null to use no shader.
+     * 		shader = Shader to bind. Can be null to use no shader.
      */
     static void bind(Shader shader)
     {
-        (shader is null)?sfShader_bind(null):sfShader_bind(shader.sfPtr);
+        sfShader_bind(shader.ptr);
     }
 
     /**
-     * Tell whether or not the system supports shaders.
+     * Tell whether or not the system supports shaders.sfGlslVec4
      *
      * This function should always be called before using the shader features.
-     * If it returns false, then any attempt to use DSFML Shader will fail.
+     * If it returns false, then any attempt to use Shader will fail.
      *
      * Returns: true if shaders are supported, false otherwise.
      */
@@ -1035,196 +596,121 @@ class Shader
     /**
      * Tell whether or not the system supports geometry shaders.
      *
+     * This function should always be called before using the geometry shader
+     * features. If it returns false, then any attempt to use Shader geometry
+     * shader features will fail.
+     *
+     * This function can only return true if isAvailable() would also return
+     * true, since shaders in general have to be supported in order for geometry
+     * shaders to be supported as well.
+     *
+     * Note: The first call to this function, whether by your code or SFML will
+     * result in a context switch.
+     *
      * Returns: true if geometry shaders are supported, false otherwise.
      */
     static bool isGeometryAvailable()
     {
         return sfShader_isGeometryAvailable();
     }
+
+    /**
+     * Get the underlying OpenGL handle of the shader.
+     *
+     * You shouldn't need to use this function, unless you have very specific
+     * stuff to implement that SFML doesn't support, or implement a temporary
+     * workaround until a bug is fixed.
+     *
+     * Returns: OpenGL handle of the shader or 0 if not yet loaded
+     */
+    uint nativeHandle() const
+    {
+        if (m_shader is null)
+            return 0;
+        return sfShader_getNativeHandle(m_shader);
+    }
+
+    // Retuns the C pointer
+    package sfShader* ptr()
+    {
+        return m_shader;
+    }
+}
+
+package extern(C)
+{
+    struct sfShader;
+}
+
+private extern(C)
+{
+    sfShader* sfShader_createFromFile(const char* vertexShaderFilename, const char* geometryShaderFilename, const char* fragmentShaderFilename);
+    sfShader* sfShader_createFromMemory(const char* vertexShader, const char* geometryShader, const char* fragmentShader);
+    sfShader* sfShader_createFromStream(sfInputStream* vertexShaderStream, sfInputStream* geometryShaderStream, sfInputStream* fragmentShaderStream);
+    void sfShader_destroy(sfShader* shader);
+
+    void sfShader_setFloatUniform(sfShader* shader, const char* name, float x);
+    void sfShader_setVec2Uniform(sfShader* shader, const char* name, Vec2 vector);
+    void sfShader_setVec3Uniform(sfShader* shader, const char* name, Vec3 vector);
+    void sfShader_setVec4Uniform(sfShader* shader, const char* name, Vec4 vector);
+    void sfShader_setColorUniform(sfShader* shader, const char* name, Color color);
+    void sfShader_setIntUniform(sfShader* shader, const char* name, int x);
+    void sfShader_setIvec2Uniform(sfShader* shader, const char* name, Ivec2 vector);
+    void sfShader_setIvec3Uniform(sfShader* shader, const char* name, Ivec3 vector);
+    void sfShader_setIvec4Uniform(sfShader* shader, const char* name, Ivec4 vector);
+    // useless ; SFML has no setUniform with Color parameter
+    //void sfShader_setIntColorUniform(sfShader* shader, const char* name, Color color);
+    void sfShader_setBoolUniform(sfShader* shader, const char* name, bool x);
+    void sfShader_setBvec2Uniform(sfShader* shader, const char* name, Bvec2 vector);
+    void sfShader_setBvec3Uniform(sfShader* shader, const char* name, Bvec3 vector);
+    void sfShader_setBvec4Uniform(sfShader* shader, const char* name, Bvec4 vector);
+    void sfShader_setMat3Uniform(sfShader* shader, const char* name, const Mat3* matrix);
+    void sfShader_setMat4Uniform(sfShader* shader, const char* name, const Mat4* matrix);
+    void sfShader_setTextureUniform(sfShader* shader, const char* name, const sfTexture* texture);
+    void sfShader_setCurrentTextureUniform(sfShader* shader, const char* name);
+
+    void sfShader_setFloatUniformArray(sfShader* shader, const char* name, const float* scalarArray, size_t length);
+    void sfShader_setVec2UniformArray(sfShader* shader, const char* name, const Vec2* vectorArray, size_t length);
+    void sfShader_setVec3UniformArray(sfShader* shader, const char* name, const Vec3* vectorArray, size_t length);
+    void sfShader_setVec4UniformArray(sfShader* shader, const char* name, const Vec4* vectorArray, size_t length);
+    void sfShader_setMat3UniformArray(sfShader* shader, const char* name, const Mat3* matrixArray, size_t length);
+    void sfShader_setMat4UniformArray(sfShader* shader, const char* name, const Mat4* matrixArray, size_t length);
+
+    uint sfShader_getNativeHandle(const sfShader* shader);
+    void sfShader_bind(const sfShader* shader);
+    bool sfShader_isAvailable();
+    bool sfShader_isGeometryAvailable();
+
+    // Deprecated :
+
+    void sfShader_setFloatParameter(sfShader* shader, const char* name, float x);
+    void sfShader_setFloat2Parameter(sfShader* shader, const char* name, float x, float y);
+    void sfShader_setFloat3Parameter(sfShader* shader, const char* name, float x, float y, float z);
+    void sfShader_setFloat4Parameter(sfShader* shader, const char* name, float x, float y, float z, float w);
+    void sfShader_setVector2Parameter(sfShader* shader, const char* name, Vector2f vector);
+    void sfShader_setVector3Parameter(sfShader* shader, const char* name, Vector3f vector);
+    void sfShader_setColorParameter(sfShader* shader, const char* name, Color color);
+    void sfShader_setTransformParameter(sfShader* shader, const char* name, sfTransform transform);
+    void sfShader_setTextureParameter(sfShader* shader, const char* name, const sfTexture* texture);
+    void sfShader_setCurrentTextureParameter(sfShader* shader, const char* name);
 }
 
 unittest
 {
-    //find some examples of interesting shaders and use them here?
+    import std.stdio;
+    import dsfml.graphics.glsl;
+    //writeln("Running Shader unittest...");
+
+    auto shader = new Shader();
+
+    // 10200 ? segfault
+    /*
+    shader.uniform("test", Mat3([0, 0, 0,
+                                 0, 0, 0,
+                                 0, 0, 0]));
+    shader.uniform("test", Mat4([0, 0, 0, 0,
+                                 0, 0, 0, 0,
+                                 0, 0, 0, 0,
+                                 0, 0, 0, 0]));
+    */
 }
-
-private extern(C++) interface shaderInputStream
-{
-    long read(void* data, long size);
-
-    long seek(long position);
-
-    long tell();
-
-    long getSize();
-}
-
-
-private class shaderStream:shaderInputStream
-{
-    private InputStream myStream;
-
-    this(InputStream stream)
-    {
-        myStream = stream;
-    }
-
-    extern(C++)long read(void* data, long size)
-    {
-        return myStream.read(data[0..cast(size_t)size]);
-    }
-
-    extern(C++)long seek(long position)
-    {
-        return myStream.seek(position);
-    }
-
-    extern(C++)long tell()
-    {
-        return myStream.tell();
-    }
-
-    extern(C++)long getSize()
-    {
-        return myStream.getSize();
-    }
-}
-
-package extern(C):
-struct sfShader;
-
-private extern(C):
-
-//Construct a new shader
-sfShader* sfShader_construct();
-
-//Load a single shader type from file
-bool sfShader_loadTypeFromFile(sfShader* shader, const(char)* shaderFilename, size_t shaderFilenameLength, int type);
-
-//Load both the vertex and fragment shaders from files
-bool sfShader_loadVertexAndFragmentFromFile(sfShader* shader, const(char)* vertexFilename, size_t vertexFilenameLength, const(char)* fragmentFilename, size_t fragmentFilenameLength);
-
-//Load the vertex, geometry, and fragment shaders from files
-bool sfShader_loadAllFromFile(sfShader* shader, const(char)* vertexFilename, size_t vertexFilenameLength, const(char)* geometryFilename, size_t geometryFilenameLength, const(char)* fragmentFilename, size_t fragmentFilenameLength);
-
-//Load a single shader type from source code in memory
-bool sfShader_loadTypeFromMemory(sfShader* shader, const(char)* shaderSource, size_t shaderSourceLength, int type);
-
-//Load both the vertex and fragment shaders from source code in memory
-bool sfShader_loadVertexAndFragmentFromMemory(sfShader* shader, const(char)* vertexSource, size_t vertexSourceLength, const(char)* fragmentSource, size_t fragmentSourceLength);
-
-//Load the vertex, geometry, and fragment shaders from source code in memory
-bool sfShader_loadAllFromMemory(sfShader* shader, const(char)* vertexSource, size_t vertexSourceLength, const(char)* geometrySource, size_t geometrySourceLength,const(char)* fragmentSource, size_t fragmentSourceLength);
-
-//Load a single shader type from custom stream
-bool sfShader_loadTypeFromStream(sfShader* shader, shaderInputStream shaderStream, int type);
-
-//Load both the vertex and fragment shaders from custom streams
-bool sfShader_loadVertexAndFragmentFromStream(sfShader* shader, shaderInputStream vertexStream, shaderInputStream fragmentStream);
-
-//Load the vertex, geometry, and fragment shaders from custom streams
-bool sfShader_loadAllFromStream(sfShader* shader, shaderInputStream vertexStream, shaderInputStream geometryStream, shaderInputStream fragmentStream);
-
-//Destroy an existing shader
-void sfShader_destroy(sfShader* shader);
-
-//Specify value for float uniform
-void sfShader_setFloatUniform(sfShader* shader, const char* name, size_t length, float x);
-
-//Specify value for vec2 uniform
-void sfShader_setVec2Uniform(sfShader* shader, const char* name, size_t length, const(Vec2)* vec2);
-
-//Specify value for vec3 uniform
-void sfShader_setVec3Uniform(sfShader* shader, const char* name, size_t length, const(Vec3)* vec3);
-
-//Specify value for vec4 uniform
-void sfShader_setVec4Uniform(sfShader* shader, const char* name, size_t length, const(Vec4)* vec4);
-
-//Specify value for int uniform
-void sfShader_setIntUniform(sfShader* shader, const char* name, size_t length, int x);
-
-//Specify value for ivec2 uniform
-void sfShader_setIvec2Uniform(sfShader* shader, const char* name, size_t length, const(Ivec2)* ivec2);
-
-//Specify value for ivec3 uniform
-void sfShader_setIvec3Uniform(sfShader* shader, const char* name, size_t length, const(Ivec3)* ivec3);
-
-//Specify value for ivec4 uniform
-void sfShader_setIvec4Uniform(sfShader* shader, const char* name, size_t length, const(Ivec4)* ivec4);
-
-//Specify value for bool uniform
-void sfShader_setBoolUniform(sfShader* shader, const char* name, size_t length, bool x);
-
-//Specify value for bvec2 uniform
-void sfShader_setBvec2Uniform(sfShader* shader, const char* name, size_t length, bool x, bool y);
-
-//Specify value for bvec3 uniform
-void sfShader_setBvec3Uniform(sfShader* shader, const char* name, size_t length, bool x, bool y, bool z);
-
-//Specify value for bvec4 uniform
-void sfShader_setBvec4Uniform(sfShader* shader, const char* name, size_t length, bool x, bool y, bool z, bool w);
-
-//Specify value for mat3 matrix.
-void sfShader_setMat3Uniform(sfShader* shader, const char* name, size_t length, const(Mat3)* mat3);
-
-//Specify value for mat4 matrix.
-void sfShader_setMat4Uniform(sfShader* shader, const char* name, size_t length, const(Mat4)* mat4);
-
-//Specify a texture as sampler2D uniform
-void sfShader_setTextureUniform(sfShader* shader, const char* name, size_t length, const(sfTexture)* texture);
-
-//Specify current texture as sampler2D uniform.
-void sfShader_setCurrentTextureUniform(sfShader* shader, const char* name, size_t length);
-
-//Specify values for float[] array uniform.
-void sfShader_setFloatArrayUniform(sfShader* shader, const char* name, size_t nlength, const(float)* array, size_t alength);
-
-//Specify values for vec2[] array uniform.
-void sfShader_setVec2ArrayUniform(sfShader* shader, const char* name, size_t nlength, const(Vec2)*, size_t alength);
-
-//Specify values for vec3[] array uniform.
-void sfShader_setVec3ArrayUniform(sfShader* shader, const char* name, size_t nlength, const(Vec3)*, size_t alength);
-
-//Specify values for vec4[] array uniform.
-void sfShader_setVec4ArrayUniform(sfShader* shader, const char* name, size_t nlength, const(Vec4)*, size_t alength);
-
-//Specify values for mat3[] array uniform.
-void sfShader_setMat3ArrayUniform(sfShader* shader, const char* name, size_t nlength, const(Mat3)*, size_t alength);
-
-//Specify values for mat4[] array uniform.
-void sfShader_setMat4ArrayUniform(sfShader* shader, const char* name, size_t nlength, const(Mat4)*, size_t alength);
-
-//Bind a shader for rendering (activate it)
-void sfShader_bind(const sfShader* shader);
-
-//Tell whether or not the system supports shaders
-bool sfShader_isAvailable();
-
-//Tell whether or not the system supports geometry shaders
-bool sfShader_isGeometryAvailable();
-
-//DEPRECATED
-
-//Change a float parameter of a shader
-void sfShader_setFloatParameter(sfShader* shader, const char* name, size_t length, float x);
-
-//Change a 2-components vector parameter of a shader
-void sfShader_setFloat2Parameter(sfShader* shader, const char* name, size_t length, float x, float y);
-
-//Change a 3-components vector parameter of a shader
-void sfShader_setFloat3Parameter(sfShader* shader, const char* name, size_t length, float x, float y, float z);
-
-//Change a 4-components vector parameter of a shader
-void sfShader_setFloat4Parameter(sfShader* shader, const char* name, size_t length, float x, float y, float z, float w);
-
-//Change a color parameter of a shader
-void sfShader_setColorParameter(sfShader* shader, const char* name, size_t length, ubyte r, ubyte g, ubyte b, ubyte a);
-
-//Change a matrix parameter of a shader
-void sfShader_setTransformParameter(sfShader* shader, const char* name, size_t length, float* transform);
-
-//Change a texture parameter of a shader
-void sfShader_setTextureParameter(sfShader* shader, const char* name, size_t length, const sfTexture* texture);
-
-//Change a texture parameter of a shader
-void sfShader_setCurrentTextureParameter(sfShader* shader, const char* name, size_t length);

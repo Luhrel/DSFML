@@ -127,14 +127,24 @@ import dsfml.window.window;
 
 import dsfml.system.inputstream;
 import dsfml.system.vector2;
-import dsfml.system.err;
+
+import std.string;
 
 /**
  * Image living on the graphics card that can be used for drawing.
  */
 class Texture
 {
-    package sfTexture* sfPtr;
+    private sfTexture* m_texture;
+
+    /// Types of texture coordinates that can be used for rendering.
+    enum CoordinateType
+    {
+        /// Texture coordinates in range [0 .. 1].
+        Normalized,
+        /// Texture coordinates in range [0 .. size].
+        Pixels
+    }
 
     /**
      * Default constructor
@@ -143,25 +153,31 @@ class Texture
      */
     this()
     {
-        sfPtr = sfTexture_construct();
+        // Nothing to do.
     }
 
-    package this(sfTexture* texturePointer)
+    // Copy constructor.
+    package this(const sfTexture* texturePointer)
     {
-        sfPtr = texturePointer;
+        m_texture = sfTexture_copy(texturePointer);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfTexture_destroy( sfPtr);
+        sfTexture_destroy(m_texture);
     }
 
     /**
      * Load the texture from a file on disk.
      *
+     * This function is a shortcut for the following code:
+     * ---
+     * Image image;
+     * image.loadFromFile(filename);
+     * texture.loadFromImage(image, area);
+     * ---
+     *
      * The area argument can be used to load only a sub-rectangle of the whole
      * image. If you want the entire image then leave the default value (which
      * is an empty IntRect). If the area rectangle crosses the bounds of the
@@ -173,19 +189,27 @@ class Texture
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     * 		filename	= Path of the image file to load
-     * 		area		= Area of the image to load
+     *         filename    = Path of the image file to load
+     *         area        = Area of the image to load
      *
      * Returns: true if loading was successful, false otherwise.
+     * See_Also: loadFromMemory, loadFromStream, loadFromImage
      */
-    bool loadFromFile(const(char)[] filename, IntRect area = IntRect() )
+    bool loadFromFile(string filename, ref IntRect area)
     {
-        return sfTexture_loadFromFile(sfPtr, filename.ptr, filename.length,area.left, area.top,area.width, area.height);
+        m_texture = sfTexture_createFromFile(filename.toStringz, &area);
+        return m_texture != null;
     }
 
     /**
      * Load the texture from a file in memory.
      *
+     * This function is a shortcut for the following code:
+     * ---
+     * Image image;
+     * image.loadFromMemory(data);
+     * texture.loadFromImage(image, area);
+     * ---
      * The area argument can be used to load only a sub-rectangle of the whole
      * image. If you want the entire image then leave the default value (which
      * is an empty IntRect). If the area rectangle crosses the bounds of the
@@ -197,19 +221,26 @@ class Texture
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     * 		data	= Image in memory
-     * 		area	= Area of the image to load
+     *         data    = Image in memory
+     *         area    = Area of the image to load
      *
      * Returns: true if loading was successful, false otherwise.
      */
-    bool loadFromMemory(const(void)[] data, IntRect area = IntRect())
+    bool loadFromMemory(const(void)[] data, IntRect* area)
     {
-        return sfTexture_loadFromMemory(sfPtr, data.ptr, data.length,area.left, area.top,area.width, area.height);
+        m_texture = sfTexture_createFromMemory(data.ptr, data.length, area);
+        return m_texture != null;
     }
 
     /**
      * Load the texture from a custom stream.
      *
+     * This function is a shortcut for the following code:
+     * ---
+     * Image image;
+     * image.loadFromStream(stream);
+     * texture.loadFromImage(image, area);
+     * ---
      * The area argument can be used to load only a sub-rectangle of the whole
      * image. If you want the entire image then leave the default value (which
      * is an empty IntRect). If the area rectangle crosses the bounds of the
@@ -221,14 +252,15 @@ class Texture
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     * 		stream	= Source stream to read from
-     * 		area	= Area of the image to load
+     *         stream    = Source stream to read from
+     *         area    = Area of the image to load
      *
      * Returns: true if loading was successful, false otherwise.
      */
-    bool loadFromStream(InputStream stream, IntRect area = IntRect())
+    bool loadFromStream(InputStream stream, ref const IntRect area)
     {
-        return sfTexture_loadFromStream(sfPtr, new textureStream(stream), area.left, area.top,area.width, area.height);
+        m_texture = sfTexture_createFromStream(stream.ptr, &area);
+        return m_texture != null;
     }
 
     /**
@@ -245,14 +277,15 @@ class Texture
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     * 		image	= Image to load into the texture
-     * 		area	= Area of the image to load
+     *         image    = Image to load into the texture
+     *         area    = Area of the image to load
      *
      * Returns: true if loading was successful, false otherwise.
      */
-    bool loadFromImage(Image image, IntRect area = IntRect())
+    bool loadFromImage(Image image, ref const IntRect area)
     {
-        return sfTexture_loadFromImage(sfPtr, image.sfPtr, area.left, area.top,area.width, area.height);
+        m_texture = sfTexture_createFromImage(image.ptr, &area);
+        return m_texture != null;
     }
 
     /**
@@ -264,7 +297,8 @@ class Texture
      *
      * Returns: Maximum size allowed for textures, in pixels.
      */
-    static uint getMaximumSize()
+    @property
+    static uint maximumSize()
     {
         return sfTexture_getMaximumSize();
     }
@@ -274,50 +308,84 @@ class Texture
      *
      * Returns: Size in pixels.
      */
-    Vector2u getSize() const
+    @property
+    Vector2u size() const
     {
-        Vector2u temp;
-        sfTexture_getSize(sfPtr, &temp.x, &temp.y);
-        return temp;
+        if (m_texture is null)
+            return Vector2u(0, 0);
+        return sfTexture_getSize(m_texture);
     }
 
-    /**
-     * Enable or disable the smooth filter.
-     *
-     * When the filter is activated, the texture appears smoother so that pixels
-     * are less noticeable. However if you want the texture to look exactly the
-     * same as its source file, you should leave it disabled. The smooth filter
-     * is disabled by default.
-     *
-     * Params:
-     * 		smooth	= true to enable smoothing, false to disable it
-     */
-    void setSmooth(bool smooth)
+    @property
     {
-        sfTexture_setSmooth(sfPtr, smooth);
+        /**
+         * Enable or disable the smooth filter.
+         *
+         * When the filter is activated, the texture appears smoother so that pixels
+         * are less noticeable. However if you want the texture to look exactly the
+         * same as its source file, you should leave it disabled. The smooth filter
+         * is disabled by default.
+         *
+         * Params:
+         *         enabled    = true to enable smoothing, false to disable it
+         */
+        void smooth(bool enabled)
+        {
+            if (m_texture !is null)
+                sfTexture_setSmooth(m_texture, enabled);
+        }
+
+
+        /**
+         * Tell whether the smooth filter is enabled or not.
+         *
+         * Returns: true if something is enabled, false if it is disabled.
+         */
+        bool smooth() const
+        {
+            if (m_texture is null)
+                return false;
+            return sfTexture_isSmooth(m_texture);
+        }
     }
 
-    /**
-     * Enable or disable repeating.
-     *
-     * Repeating is involved when using texture coordinates outside the texture
-     * rectangle [0, 0, width, height]. In this case, if repeat mode is enabled,
-     * the whole texture will be repeated as many times as needed to reach the
-     * coordinate (for example, if the X texture coordinate is 3 * width, the
-     * texture will be repeated 3 times).
-     *
-     * If repeat mode is disabled, the "extra space" will instead be filled with
-     * border pixels. Warning: on very old graphics cards, white pixels may
-     * appear when the texture is repeated. With such cards, repeat mode can be
-     * used reliably only if the texture has power-of-two dimensions
-     * (such as 256x128). Repeating is disabled by default.
-     *
-     * Params:
-     * 		repeated	= true to repeat the texture, false to disable repeating
-     */
-    void setRepeated(bool repeated)
+    @property
     {
-        sfTexture_setRepeated(sfPtr, repeated);
+        /**
+         * Enable or disable repeating.
+         *
+         * Repeating is involved when using texture coordinates outside the texture
+         * rectangle [0, 0, width, height]. In this case, if repeat mode is enabled,
+         * the whole texture will be repeated as many times as needed to reach the
+         * coordinate (for example, if the X texture coordinate is 3 * width, the
+         * texture will be repeated 3 times).
+         *
+         * If repeat mode is disabled, the "extra space" will instead be filled with
+         * border pixels. Warning: on very old graphics cards, white pixels may
+         * appear when the texture is repeated. With such cards, repeat mode can be
+         * used reliably only if the texture has power-of-two dimensions
+         * (such as 256x128). Repeating is disabled by default.
+         *
+         * Params:
+         *         repeat    = true to repeat the texture, false to disable repeating
+         */
+        void repeated(bool repeat)
+        {
+            if (m_texture !is null)
+                sfTexture_setRepeated(m_texture, repeat);
+        }
+
+        /**
+         * Tell whether the texture is repeated or not.
+         *
+         * Returns: true if repeat mode is enabled, false if it is disabled.
+         */
+        bool repeated() const
+        {
+            if (m_texture is null)
+                return false;
+            return sfTexture_isRepeated(m_texture);
+        }
     }
 
     /**
@@ -327,12 +395,25 @@ class Texture
      * drawing DSFML entities. It must be used only if you mix Texture with
      * OpenGL code.
      *
+     * ---
+     * Texture t1, t2;
+     * ...
+     * Texture::bind(&t1);
+     * // draw OpenGL stuff that use t1...
+     * Texture::bind(&t2);
+     * // draw OpenGL stuff that use t2...
+     * Texture::bind(NULL);
+     * // draw OpenGL stuff that use no texture...
+     * ---
+     *
      * Params:
-     * 		texture	= The texture to bind. Can be null to use no texture
+     *         texture    = The texture to bind. Can be null to use no texture
      */
+    // TODO: CoordinateType arg + desc update
+    // Actually not implemented in CSFML
     static void bind(Texture texture)
     {
-        (texture is null)?sfTexture_bind(null):sfTexture_bind(texture.sfPtr);
+        sfTexture_bind(texture.ptr);
     }
 
     /**
@@ -341,14 +422,15 @@ class Texture
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     * 		width	= Width of the texture
-     * 		height	= Height of the texture
+     *         width    = Width of the texture
+     *         height    = Height of the texture
      *
      * Returns: true if creation was successful, false otherwise.
      */
     bool create(uint width, uint height)
     {
-        return sfTexture_create(sfPtr, width, height);
+        m_texture = sfTexture_create(width, height);
+        return m_texture != null;
     }
 
     /**
@@ -360,62 +442,111 @@ class Texture
      * flipped).
      *
      * Returns: Image containing the texture's pixels.
+     * See_Also: loadFromImage
      */
     Image copyToImage() const
     {
-        return new Image(sfTexture_copyToImage(sfPtr));
+        if (m_texture is null)
+            return null;
+        return new Image(sfTexture_copyToImage(m_texture));
     }
 
     /**
-     * Creates a new texture from the same data (this means copying the entire
-     * set of pixels).
+     * Generate a mipmap using the current texture data.
+     *
+     * Mipmaps are pre-computed chains of optimized textures. Each level of texture
+     * in a mipmap is generated by halving each of the previous level's dimensions.
+     * This is done until the final level has the size of 1x1. The textures
+     * generated in this process may make use of more advanced filters which might
+     * improve the visual quality of textures when they are applied to objects much
+     * smaller than they are. This is known as minification. Because fewer texels
+     * (texture elements) have to be sampled from when heavily minified, usage of
+     * mipmaps can also improve rendering performance in certain scenarios.
+     *
+     * Mipmap generation relies on the necessary OpenGL extension being available.
+     * If it is unavailable or generation fails due to another reason, this function
+     * will return false. Mipmap data is only valid from the time it is generated
+     * until the next time the base level image is modified, at which point this
+     * function will have to be called again to regenerate it.
+     *
+     * Returns: True if mipmap generation was successful, false if unsuccessful
      */
-    @property Texture dup() const
+    bool generateMipmap()
     {
-        return new Texture(sfTexture_copy(sfPtr));
+        if (m_texture is null)
+            return false;
+        return sfTexture_generateMipmap(m_texture);
     }
 
     /**
-     * Tell whether the texture is repeated or not.
+     * Get the underlying OpenGL handle of the texture.
      *
-     * Returns: true if repeat mode is enabled, false if it is disabled.
+     * You shouldn't need to use this function, unless you have very specific stuff
+     * to implement that SFML doesn't support, or implement a temporary workaround
+     * until a bug is fixed.
+     *
+     * Returns: OpenGL handle of the texture or 0 if not yet created
      */
-    bool isRepeated() const
+    @property
+    uint nativeHandle() const
     {
-        return (sfTexture_isRepeated(sfPtr));
+        if (m_texture is null)
+            return 0;
+        return sfTexture_getNativeHandle(m_texture);
+    }
+
+    @property
+    {
+        /**
+         * Tell whether the texture source is converted from sRGB or not.
+         *
+         * Returns: True if the texture source is converted from sRGB, false if not
+         */
+        bool srgb()
+        {
+            if (m_texture is null)
+                return false;
+            return sfTexture_isSrgb(m_texture);
+        }
+
+        /**
+         * Enable or disable conversion from sRGB.
+         *
+         * When providing texture data from an image file or memory, it can either
+         * be stored in a linear color space or an sRGB color space. Most digital
+         * images account for gamma correction already, so they would need to be
+         * "uncorrected" back to linear color space before being processed by the
+         * hardware. The hardware can automatically convert it from the sRGB color
+         * space to a linear color space when it gets sampled. When the rendered
+         * image gets output to the final framebuffer, it gets converted back to
+         * sRGB.
+         *
+         * After enabling or disabling sRGB conversion, make sure to reload the
+         * texture data in order for the setting to take effect.
+         *
+         * This option is only useful in conjunction with an sRGB capable
+         * framebuffer. This can be requested during window creation.
+         *
+         * Params:
+         * sRgb=True to enable sRGB conversion, false to disable it
+         */
+        void srgb(bool sRGB)
+        {
+            if (m_texture !is null)
+                sfTexture_setSrgb(m_texture, sRGB ? 1 : 0);
+        }
     }
 
     /**
-     * Tell whether the smooth filter is enabled or not.
-     *
-     * Returns: true if something is enabled, false if it is disabled.
-     */
-    bool isSmooth() const
-    {
-        return (sfTexture_isSmooth(sfPtr));
-    }
-
-    /**
-     * Update the whole texture from an array of pixels.
-     *
-     * The pixel array is assumed to have the same size as
-     * the area rectangle, and to contain 32-bits RGBA pixels.
-     *
-     * No additional check is performed on the size of the pixel
-     * array, passing invalid arguments will lead to an undefined
-     * behavior.
-     *
-     * This function does nothing if pixels is empty or if the
-     * texture was not previously created.
+     * Swap the contents of this texture with those of another.
      *
      * Params:
-     * 		pixels	= Array of pixels to copy to the texture.
+     * right=Instance to swap with
      */
-    void update(const(ubyte)[] pixels)
+    void swap(Texture right)
     {
-        Vector2u size = getSize();
-
-        sfTexture_updateFromPixels(sfPtr,pixels.ptr,size.x, size.y, 0,0);
+        if (m_texture !is null && right.ptr !is null)
+            sfTexture_swap(m_texture, right.ptr);
     }
 
     /**
@@ -432,36 +563,37 @@ class Texture
      * previously created.
      *
      * Params:
-     * 		pixels	= Array of pixels to copy to the texture.
-     * 		width	= Width of the pixel region contained in pixels
-     * 		height	= Height of the pixel region contained in pixels
-     * 		x		= X offset in the texture where to copy the source pixels
-     * 		y		= Y offset in the texture where to copy the source pixels
+     *         pixels    = Array of pixels to copy to the texture.
+     *         width    = Width of the pixel region contained in pixels
+     *         height    = Height of the pixel region contained in pixels
+     *         x        = X offset in the texture where to copy the source pixels
+     *         y        = Y offset in the texture where to copy the source pixels
      */
-    void update(const(ubyte)[] pixels, uint width, uint height, uint x, uint y)
+    void update(const(ubyte)[] pixels, uint width = size.x,
+        uint height = size.y, uint x = 0, uint y = 0)
     {
-        sfTexture_updateFromPixels(sfPtr,pixels.ptr,width, height, x,y);
+        if (m_texture !is null)
+            sfTexture_updateFromPixels(m_texture, pixels.ptr, width, height, x, y);
     }
 
-    /**
-     * Update the texture from an image.
+    /*
+     * Update a part of this texture from another texture.
      *
-     * Although the source image can be smaller than the texture, this function
-     * is usually used for updating the whole texture. The other overload, which
-     * has (x, y) additional arguments, is more convenient for updating a
-     * sub-area of the texture.
+     * No additional check is performed on the size of the texture, passing an
+     * invalid combination of texture size and offset will lead to an undefined
+     * behavior.
      *
-     * No additional check is performed on the size of the image, passing an
-     * image bigger than the texture will lead to an undefined behaviour.
-     *
-     * This function does nothing if the texture was not previously created.
+     * This function does nothing if either texture was not previously created.
      *
      * Params:
-     * 		image	= Image to copy to the texture.
+     *         texture = Source texture to copy to this texture
+     *         x        = X offset in this texture where to copy the source texture
+     *         y        = Y offset in this texture where to copy the source texture
      */
-    void update(const(Image) image)
+    void update(Texture texture, uint x = 0, uint y = 0)
     {
-        sfTexture_updateFromImage(sfPtr, image.sfPtr, 0, 0);
+        if (m_texture !is null)
+            sfTexture_updateFromTexture(m_texture, texture.ptr, x, y);
     }
 
     /**
@@ -474,36 +606,14 @@ class Texture
      * This function does nothing if the texture was not previously created.
      *
      * Params:
-     * 		image = Image to copy to the texture.
-     *		y     = Y offset in the texture where to copy the source image.
-     *		x     = X offset in the texture where to copy the source image.
+     *         image = Image to copy to the texture.
+     *        y     = Y offset in the texture where to copy the source image.
+     *        x     = X offset in the texture where to copy the source image.
      */
-    void update(const(Image) image, uint x, uint y)
+    void update(Image image, uint x = 0, uint y = 0)
     {
-        sfTexture_updateFromImage(sfPtr, image.sfPtr, x, y);
-    }
-
-    /**
-     * Update the texture from the contents of a window
-     *
-     * Although the source window can be smaller than the texture, this function
-     * is usually used for updating the whole texture. The other overload, which
-     * has (x, y) additional arguments, is more convenient for updating a
-     * sub-area of the texture.
-     *
-     * No additional check is performed on the size of the window, passing a
-     * window bigger than the texture will lead to an undefined behavior.
-     *
-     * This function does nothing if either the texture or the window
-     * was not previously created.
-     *
-     * Params:
-     *		window = Window to copy to the texture
-     */
-    void update(T)(const(T) window)
-        if(is(T == Window) || is(T == RenderWindow))
-    {
-        update(window, 0, 0);
+        if (m_texture !is null)
+            sfTexture_updateFromImage(m_texture, image.ptr, x, y);
     }
 
     /**
@@ -517,242 +627,132 @@ class Texture
      * previously created.
      *
      * Params:
-     *		window = Window to copy to the texture
-     *		x      = X offset in the texture where to copy the source window
-     *		y      = Y offset in the texture where to copy the source window
+     *        window = Window to copy to the texture
+     *        x      = X offset in the texture where to copy the source window
+     *        y      = Y offset in the texture where to copy the source window
      *
      */
-    void update(T)(const(T) window, uint x, uint y)
-        if(is(T == Window) || is(T == RenderWindow))
+    void update(Window window, uint x = 0, uint y = 0)
     {
-        static if(is(T == RenderWindow))
-        {
-            sfTexture_updateFromRenderWindow(sfPtr, T.sfPtr, x, y);
-        }
-        else
-        {
-            sfTexture_updateFromWindow(sfPtr, RenderWindow.windowPointer(T),
-                                        x, y);
-        }
+        if (m_texture !is null)
+            sfTexture_updateFromWindow(m_texture, window.ptr, x, y);
     }
 
-    /**
-     * Update the texture from an image.
-     *
-     * Although the source image can be smaller than the texture, this function
-     * is usually used for updating the whole texture. The other overload, which
-     * has (x, y) additional arguments, is more convenient for updating a
-     * sub-area of the texture.
-     *
-     * No additional check is performed on the size of the image, passing an
-     * image bigger than the texture will lead to an undefined behaviour.
-     *
-     * This function does nothing if the texture was not previously created.
-     *
-     * Params:
-     * 		image	= Image to copy to the texture.
-     *		y     = Y offset in the texture where to copy the source image.
-     *		x     = X offset in the texture where to copy the source image.
-     */
-    deprecated("Use update function.")
-    void updateFromImage(Image image, uint x, uint y)
-    {
-        sfTexture_updateFromImage(sfPtr, image.sfPtr, x, y);
-    }
-
-    /**
-     * Update part of the texture from an array of pixels.
-     *
-     * The size of the pixel array must match the width and height arguments,
-     * and it must contain 32-bits RGBA pixels.
-     *
-     * No additional check is performed on the size of the pixel array or the
-     * bounds of the area to update, passing invalid arguments will lead to an
-     * undefined behaviour.
-     *
-     * This function does nothing if pixels is null or if the texture was not
-     * previously created.
-     *
-     * Params:
-     * 		pixels	= Array of pixels to copy to the texture.
-     * 		width	= Width of the pixel region contained in pixels
-     * 		height	= Height of the pixel region contained in pixels
-     * 		x		= X offset in the texture where to copy the source pixels
-     * 		y		= Y offset in the texture where to copy the source pixels
-     */
-    deprecated("Use update function.")
-    void updateFromPixels(const(ubyte)[] pixels, uint width, uint height, uint x, uint y)
-    {
-        sfTexture_updateFromPixels(sfPtr,pixels.ptr,width, height, x,y);
-    }
-
-    //TODO: Get this working via inheritance?(so custom window classes can do it too)
     /**
      * Update a part of the texture from the contents of a window.
      *
      * No additional check is performed on the size of the window, passing an
      * invalid combination of window size and offset will lead to an undefined
-     * behaviour.
+     * behavior.
      *
      * This function does nothing if either the texture or the window was not
      * previously created.
      *
      * Params:
-     * 		window	= Window to copy to the texture
-     * 		x		= X offset in the texture where to copy the source window
-     * 		y		= Y offset in the texture where to copy the source window
+     *        window = Window to copy to the texture
+     *        x      = X offset in the texture where to copy the source window
+     *        y      = Y offset in the texture where to copy the source window
+     *
      */
-    deprecated("Use update function.")
-    void updateFromWindow(Window window, uint x, uint y)
+    void update(RenderWindow window, uint x = 0, uint y = 0)
     {
-        sfTexture_updateFromWindow(sfPtr, RenderWindow.windowPointer(window), x, y);
+        if (m_texture !is null)
+            sfTexture_updateFromRenderWindow(m_texture, window.ptr, x, y);
     }
 
-    //Is this even safe? RenderWindow inherits from Window, so what happens? Is this bottom used or the top?
     /**
-     * Update a part of the texture from the contents of a window.
-     *
-     * No additional check is performed on the size of the window, passing an
-     * invalid combination of window size and offset will lead to an undefined
-     * behaviour.
-     *
-     * This function does nothing if either the texture or the window was not
-     * previously created.
-     *
-     * Params:
-     * 		window	= Window to copy to the texture
-     * 		x		= X offset in the texture where to copy the source window
-     * 		y		= Y offset in the texture where to copy the source window
+     * Creates a new texture from the same data (this means copying the entire
+     * set of pixels).
      */
-    deprecated("Use update function.")
-    void updateFromWindow(RenderWindow window, uint x, uint y)
+    @property
+    const(Texture) dup() const
     {
-        sfTexture_updateFromRenderWindow(sfPtr, window.sfPtr, x, y);
+        return new Texture(cast(sfTexture*) m_texture);
     }
+
+    // Returns the C pointer.
+    package sfTexture* ptr()
+    {
+        return m_texture;
+    }
+}
+
+package extern(C)
+{
+    struct sfTexture;
+}
+
+private extern(C)
+{
+    sfTexture* sfTexture_create(uint width, uint height);
+    sfTexture* sfTexture_createFromFile(const char* filename, const IntRect* area);
+    sfTexture* sfTexture_createFromMemory(const void* data, size_t sizeInBytes, const IntRect* area);
+    sfTexture* sfTexture_createFromStream(sfInputStream* stream, const IntRect* area);
+    sfTexture* sfTexture_createFromImage(const sfImage* image, const IntRect* area);
+    sfTexture* sfTexture_copy(const sfTexture* texture);
+    void sfTexture_destroy(sfTexture* texture);
+    Vector2u sfTexture_getSize(const sfTexture* texture);
+    sfImage* sfTexture_copyToImage(const sfTexture* texture);
+    void sfTexture_updateFromPixels(sfTexture* texture, const ubyte* pixels, uint width, uint height, uint x, uint y);
+    void sfTexture_updateFromTexture(sfTexture* destination, const sfTexture* texture, uint x, uint y);
+    void sfTexture_updateFromImage(sfTexture* texture, const sfImage* image, uint x, uint y);
+    void sfTexture_updateFromWindow(sfTexture* texture, const sfWindow* window, uint x, uint y);
+    void sfTexture_updateFromRenderWindow(sfTexture* texture, const sfRenderWindow* renderWindow, uint x, uint y);
+    void sfTexture_setSmooth(sfTexture* texture, bool smooth);
+    bool sfTexture_isSmooth(const sfTexture* texture);
+    void sfTexture_setSrgb(sfTexture* texture, byte sRgb);
+    bool sfTexture_isSrgb(const sfTexture* texture);
+    void sfTexture_setRepeated(sfTexture* texture, bool repeated);
+    bool sfTexture_isRepeated(const sfTexture* texture);
+    bool sfTexture_generateMipmap(sfTexture* texture);
+    void sfTexture_swap(sfTexture* left, sfTexture* right);
+    uint sfTexture_getNativeHandle(const sfTexture* texture);
+    void sfTexture_bind(const sfTexture* texture);
+    uint sfTexture_getMaximumSize();
 }
 
 unittest
 {
-    version(DSFML_Unittest_Graphics)
+    import std.stdio;
+    writeln("Running Texture unittest...");
+
+    Texture t = new Texture();
+
+    int width = 20;
+    int height = 20;
+    assert(t.create(width, height));
+    assert(t.size == Vector2u(width, height));
+
+    bool smo = true;
+    t.smooth = smo;
+    assert(t.smooth == smo);
+
+    bool rgb = true;
+    t.srgb = rgb;
+    assert(t.srgb == rgb);
+
+    bool r = true;
+    t.repeated = r;
+    assert(t.repeated == r);
+
+    assert(t.generateMipmap());
+
+    version (DSFML_Unittest_with_interaction)
     {
-        import std.stdio;
-
-        writeln("Unit test for Texture");
-
-        auto texture = new Texture();
-
-        assert(texture.loadFromFile("res/TestImage.png"));
-
-        //do things with the texture
-
-        writeln();
+        int nh = t.nativeHandle();
+        writefln("\tOpenGL native handle: %s", nh);
+        int ms = t.maximumSize();
+        writefln("\tmaximum size supported by the graphic card: %s", ms);
     }
+    Texture t2 = new Texture();
+    t.swap(t2);
+
+    Texture emptyTex = new Texture();
+    // ... or whatever function
+    emptyTex.smooth; // Shouldn't crash
+
+    // TODO: bind()
+    // TODO: update()
+    // TODO: copyToImage
+    // TODO: loadFromX
 }
-
-private extern(C++) interface textureInputStream
-{
-    long read(void* data, long size);
-
-    long seek(long position);
-
-    long tell();
-
-    long getSize();
-}
-
-private class textureStream:textureInputStream
-{
-    private InputStream myStream;
-
-    this(InputStream stream)
-    {
-        myStream = stream;
-    }
-
-    extern(C++)long read(void* data, long size)
-    {
-        return myStream.read(data[0..cast(size_t)size]);
-    }
-
-    extern(C++)long seek(long position)
-    {
-        return myStream.seek(position);
-    }
-
-    extern(C++)long tell()
-    {
-        return myStream.tell();
-    }
-
-    extern(C++)long getSize()
-    {
-        return myStream.getSize();
-    }
-}
-
-package extern(C) struct sfTexture;
-
-private extern(C):
-
-//Construct a new texture
-sfTexture* sfTexture_construct();
-
-//Create a new texture
-bool sfTexture_create(sfTexture* texture, uint width, uint height);
-
-//Create a new texture from a file
-bool sfTexture_loadFromFile(sfTexture* texture, const(char)* filename, size_t length, int left, int top, int width, int height);
-
-//Create a new texture from a file in memory
-bool sfTexture_loadFromMemory(sfTexture* texture, const(void)* data, size_t sizeInBytes, int left, int top, int width, int height);
-
-//Create a new texture from a custom stream
-bool sfTexture_loadFromStream(sfTexture* texture, textureInputStream stream, int left, int top, int width, int height);
-
-//Create a new texture from an image
-bool sfTexture_loadFromImage(sfTexture* texture, const(sfImage)* image, int left, int top, int width, int height);
-
-//Copy an existing texture
-sfTexture* sfTexture_copy(const(sfTexture)* texture);
-
-//Destroy an existing texture
-void sfTexture_destroy(sfTexture* texture);
-
-//Return the size of the texture
-void sfTexture_getSize(const(sfTexture)* texture, uint* x, uint* y);
-
-//Copy a texture's pixels to an image
-sfImage* sfTexture_copyToImage(const sfTexture* texture);
-
-//Update a texture from an array of pixels
-void sfTexture_updateFromPixels(sfTexture* texture, const ubyte* pixels, uint width, uint height, uint x, uint y);
-
-//Update a texture from an image
-void sfTexture_updateFromImage(sfTexture* texture, const sfImage* image, uint x, uint y);
-
-//Update a texture from the contents of a window
-void sfTexture_updateFromWindow(sfTexture* texture, const(void)* window, uint x, uint y);
-
-//Update a texture from the contents of a render-window
-void sfTexture_updateFromRenderWindow(sfTexture* texture, const sfRenderWindow* renderWindow, uint x, uint y);
-
-//Enable or disable the smooth filter on a texture
-void sfTexture_setSmooth(sfTexture* texture, bool smooth);
-
-//Tell whether the smooth filter is enabled or not for a texture
-bool sfTexture_isSmooth(const sfTexture* texture);
-
-//Enable or disable repeating for a texture
-void sfTexture_setRepeated(sfTexture* texture, bool repeated);
-
-//Tell whether a texture is repeated or not
-bool sfTexture_isRepeated(const sfTexture* texture);
-
-//Bind a texture for rendering
-void sfTexture_bind(const sfTexture* texture);
-
-//Get the maximum texture size allowed
-uint sfTexture_getMaximumSize();
-
-//Flush the OpenGL command buffer.
-//void  sfTexture_flush();

@@ -52,7 +52,7 @@
  * {
  *     VideoMode mode = modes[i];
  *     writeln("Mode #", i, ": ",
- * 	           mode.width, "x", mode.height, " - ",
+ *                mode.width, "x", mode.height, " - ",
  *             mode.bitsPerPixel, " bpp");
  * }
  *
@@ -68,133 +68,115 @@ module dsfml.window.videomode;
  */
 struct VideoMode
 {
-	///Video mode width, in pixels.
-	uint width;
+    ///Video mode width, in pixels.
+    uint width;
 
-	///Video mode height, in pixels.
-	uint height;
+    ///Video mode height, in pixels.
+    uint height;
 
-	///Video mode pixel depth, in bits per pixels.
-	uint bitsPerPixel;
+    ///Video mode pixel depth, in bits per pixels.
+    uint bitsPerPixel;
 
-	/**
-	 * Construct the video mode with its attributes.
-	 *
-	 * Params:
-     * 		modeWidth = Width in pixels
-     * 		modeHeight = Height in pixels
-     * 		modeBitsPerPixel = Pixel depths in bits per pixel
-	 */
-	this(uint modeWidth, uint modeHeight, uint modeBitsPerPixel= 32)
-	{
-		width = modeWidth;
-		height = modeHeight;
-		bitsPerPixel = modeBitsPerPixel;
-	}
+    /**
+     * Construct the video mode with its attributes.
+     *
+     * Params:
+     *         modeWidth = Width in pixels
+     *         modeHeight = Height in pixels
+     *         modeBitsPerPixel = Pixel depths in bits per pixel
+     */
+    this(uint modeWidth, uint modeHeight, uint modeBitsPerPixel= 32)
+    {
+        width = modeWidth;
+        height = modeHeight;
+        bitsPerPixel = modeBitsPerPixel;
+    }
 
-	/**
-	 * Get the current desktop video mode.
-	 *
-	 * Returns: Current desktop video mode.
-	 */
-	static VideoMode getDesktopMode()
-	{
-		VideoMode temp;
-		sfVideoMode_getDesktopMode(&temp.width, &temp.height, &temp.bitsPerPixel);
-		return temp;
-	}
+    /**
+     * Get the current desktop video mode.
+     *
+     * Returns: Current desktop video mode.
+     */
+    static VideoMode getDesktopMode()
+    {
+        return sfVideoMode_getDesktopMode();
+    }
 
-	/**
-	 * Retrieve all the video modes supported in fullscreen mode.
-	 *
-	 * When creating a fullscreen window, the video mode is restricted to be
-	 * compatible with what the graphics driver and monitor support. This
-	 * function returns the complete list of all video modes that can be used in
-	 * fullscreen mode. The returned array is sorted from best to worst, so that
-	 * the first element will always give the best mode (higher width, height
-	 * and bits-per-pixel).
-	 *
-	 * Returns: Array containing all the supported fullscreen modes.
-	 */
-	static VideoMode[] getFullscreenModes()
-	{
-		//stores all video modes after the first call
-		static VideoMode[] videoModes;
+    /**
+     * Retrieve all the video modes supported in fullscreen mode.
+     *
+     * When creating a fullscreen window, the video mode is restricted to be
+     * compatible with what the graphics driver and monitor support. This
+     * function returns the complete list of all video modes that can be used in
+     * fullscreen mode. The returned array is sorted from best to worst, so that
+     * the first element will always give the best mode (higher width, height
+     * and bits-per-pixel).
+     *
+     * Returns: Array containing all the supported fullscreen modes.
+     */
+    static VideoMode[] getFullscreenModes()
+    {
+        //stores all video modes after the first call
+        static VideoMode[] videoModes;
 
-		//if getFullscreenModes hasn't been called yet
-		if(videoModes.length == 0)
-		{
-			uint* modes;
-			size_t counts;
+        //if getFullscreenModes hasn't been called yet
+        if(videoModes.length == 0)
+        {
+            size_t counts;
+            const(VideoMode*) modes = sfVideoMode_getFullscreenModes(&counts);
 
-			//returns uints instead of structs due to 64 bit bug
-			modes = sfVideoMode_getFullscreenModes(&counts);
+            videoModes = modes[0 .. counts].dup;
+        }
+        return videoModes;
+    }
 
-			//calculate real length
-			videoModes.length = counts/3;
+    /**
+     * Tell whether or not the video mode is valid.
+     *
+     * The validity of video modes is only relevant when using fullscreen
+     * windows; otherwise any video mode can be used with no restriction.
+     *
+     * Returns: true if the video mode is valid for fullscreen mode.
+     */
+    bool isValid() const
+    {
+        return sfVideoMode_isValid(this);
+    }
 
-			//populate videoModes
-			int videoModeIndex = 0;
-			for(uint i = 0; i < counts; i+=3)
-			{
-				VideoMode temp = VideoMode(modes[i], modes[i+1], modes[i+2]);
-
-				videoModes[videoModeIndex] = temp;
-				++videoModeIndex;
-			}
-		}
-
-		return videoModes;
-	}
-
-	/**
-	 * Tell whether or not the video mode is valid.
-	 *
-	 * The validity of video modes is only relevant when using fullscreen
-	 * windows; otherwise any video mode can be used with no restriction.
-	 *
-	 * Returns: true if the video mode is valid for fullscreen mode.
-	 */
-	bool isValid() const
-	{
-		return sfVideoMode_isValid(width, height, bitsPerPixel);
-	}
-
-	///Returns a string representation of the video mode.
-	string toString() const
-	{
-		import std.conv: text;
-		return "Width: " ~ text(width) ~ " Height: " ~ text(height) ~ " Bits per pixel: " ~ text(bitsPerPixel);
-	}
-}
-
-unittest
-{
-	version(DSFML_Unittest_Window)
-	{
-		import std.stdio;
-
-		writeln("Unit test for VideoMode struct");
-
-		size_t modesCount = VideoMode.getFullscreenModes().length;
-
-		writeln("There are ", modesCount, " full screen modes available.");
-		writeln("Your current desktop video mode is ",VideoMode.getDesktopMode().toString());
-
-		writeln("Confirming all fullscreen modes are valid.");
-		foreach(mode; VideoMode.getFullscreenModes())
-		{
-			assert(mode.isValid());
-		}
-		writeln("All video modes are valid.");
-
-		writeln();
-	}
+    string toString() const
+    {
+        import std.conv: text;
+        return "Width: " ~ text(width) ~ "\tHeight: " ~ text(height) ~
+            "\tBits per pixel: " ~ text(bitsPerPixel);
+    }
 }
 
 private extern(C)
 {
-	void sfVideoMode_getDesktopMode(uint* width, uint* height, uint* bitsPerPixel);
-	uint* sfVideoMode_getFullscreenModes(size_t* Count);
-	bool sfVideoMode_isValid(uint width, uint height, uint bitsPerPixel);
+    VideoMode sfVideoMode_getDesktopMode();
+    const(VideoMode*) sfVideoMode_getFullscreenModes(size_t* count);
+    bool sfVideoMode_isValid(VideoMode mode);
+}
+
+unittest
+{
+    import std.stdio;
+    writeln("Running VideoMode unittest...");
+
+    VideoMode[] modes = VideoMode.getFullscreenModes();
+
+    assert(modes.length != 0);
+
+    //writeln("\tList of Fullscreen modes:");
+    foreach(VideoMode m; modes)
+    {
+        //writeln("\t", m.toString());
+        assert(m.isValid());
+    }
+
+    // Waiting for pull 10200
+    //auto deskm = VideoMode.getDesktopMode();
+    //writeln("DesktopMode:");
+    //writeln(deskm.toString());
+    //assert(deskm.isValid());
 }

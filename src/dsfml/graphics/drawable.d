@@ -91,8 +91,8 @@ interface Drawable
      * Draw the object to a render target.
      *
      * Params:
-     *  		renderTarget =	Render target to draw to
-     *  		renderStates =	Current render states
+     *          renderTarget =    Render target to draw to
+     *          renderStates =    Current render states
      */
     void draw(RenderTarget renderTarget, RenderStates renderStates);
 }

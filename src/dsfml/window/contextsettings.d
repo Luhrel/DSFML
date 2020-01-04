@@ -89,7 +89,18 @@ struct ContextSettings
     /// Level of antialiasing.
     uint antialiasingLevel = 0;
     /// Level of antialiasing.
-    uint majorVersion = 2;
+    uint majorVersion = 1;
     /// Minor number of the context version to create.
-    uint minorVersion = 0;
+    uint minorVersion = 1;
+    /// The attribute flags to create the context with.
+    Attribute attributeFlags = Attribute.Default;
+    /// Whether the context framebuffer is sRGB capable.
+    bool sRgbCapable = false;
+
+    enum Attribute
+    {
+        Default = 0,
+        Core = 1 << 0,
+        Debug = 1 << 2
+    }
 }

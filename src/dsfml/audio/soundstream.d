@@ -97,37 +97,39 @@
  */
 module dsfml.audio.soundstream;
 
-
-import core.thread;
-
-import dsfml.audio.soundsource;
-
 import dsfml.system.vector3;
-import dsfml.system.err;
-
-public import dsfml.system.time;
+import dsfml.system.time;
+import dsfml.audio.soundsource;
 
 /**
  * Abstract base class for streamed audio sources.
  */
 class SoundStream : SoundSource
 {
-    package sfSoundStream* sfPtr;
-    private SoundStreamCallBacks callBacks;
-
-    /// Internal constructor required to set up callbacks.
-    protected this()
+    /// Structure defining a chunk of audio data to stream.
+    struct Chunk
     {
-        callBacks = new SoundStreamCallBacks(this);
-        sfPtr = sfSoundStream_construct(callBacks);
+        short samples; /// Pointer to the audio samples.
+        uint sampleCount; /// Number of samples pointed by Samples.
+    }
+
+    private sfSoundStream* m_soundStream;
+
+    /**
+     * Default constructor.
+     *
+     * This constructor is only meant to be called by derived classes.
+     */
+    // Not putting protected attribute otherwise it'll be null when calling it directly
+    this()
+    {
+        m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback, 0, 0, cast(void*) this);
     }
 
     /// Destructor.
     ~this()
     {
-        import dsfml.system.config;
-        mixin(destructorOutput);
-        sfSoundStream_destroy(sfPtr);
+        sfSoundStream_destroy(m_soundStream);
     }
 
     /**
@@ -140,172 +142,221 @@ class SoundStream : SoundSource
      * only when the stream is stopped.
      *
      * Params:
-     *	channelCount = Number of channels of the stream
-     *	sampleRate   = Sample rate, in samples per second
+     *    channelCount = Number of channels of the stream
+     *    sampleRate   = Sample rate, in samples per second
      */
     protected void initialize(uint channelCount, uint sampleRate)
     {
-        sfSoundStream_initialize(sfPtr, channelCount, sampleRate);
+        m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback,
+            channelCount, sampleRate, cast(void*) this);
     }
 
     @property
     {
         /**
-         * The pitch of the sound.
+         * Set the pitch of the sound.
          *
          * The pitch represents the perceived fundamental frequency of a sound; thus
          * you can make a sound more acute or grave by changing its pitch. A side
          * effect of changing the pitch is to modify the playing speed of the sound
          * as well. The default value for the pitch is 1.
+         *
+         * Params:
+         * pitch=New pitch to apply to the sound
          */
         void pitch(float newPitch)
         {
-            sfSoundStream_setPitch(sfPtr, newPitch);
+            sfSoundStream_setPitch(m_soundStream, newPitch);
         }
 
-        /// ditto
+        /**
+         * Get the pitch of the sound.
+         *
+         * Returns: Pitch of the sound
+         */
         float pitch() const
         {
-            return sfSoundStream_getPitch(sfPtr);
+            return sfSoundStream_getPitch(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * The volume of the sound.
+         * Set the volume of the sound.
          *
-         * The volume is a vlue between 0 (mute) and 100 (full volume). The default
+         * The volume is a value between 0 (mute) and 100 (full volume). The default
          * value for the volume is 100.
+         *
+         * Params:
+         * volume=Volume of the sound
          */
         void volume(float newVolume)
         {
-            sfSoundStream_setVolume(sfPtr, newVolume);
+            sfSoundStream_setVolume(m_soundStream, newVolume);
         }
 
-        /// ditto
+        /**
+         * Get the volume of the sound.
+         *
+         * Returns: Volume of the sound, in the range [0, 100]
+         */
         float volume() const
         {
-            return sfSoundStream_getVolume(sfPtr);
+            return sfSoundStream_getVolume(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * The 3D position of the sound in the audio scene.
+         * Set the 3D position of the sound in the audio scene.
          *
          * Only sounds with one channel (mono sounds) can be spatialized. The
          * default position of a sound is (0, 0, 0).
+         *
+         * Params:
+         * position=Position of the sound in the scene
          */
         void position(Vector3f newPosition)
         {
-            sfSoundStream_setPosition(sfPtr, newPosition.x, newPosition.y, newPosition.z);
+            sfSoundStream_setPosition(m_soundStream, newPosition);
         }
 
-        /// ditto
+        /**
+         * Get the 3D position of the sound in the audio scene.
+         *
+         * Returns: Position of the sound
+         */
         Vector3f position() const
         {
-            Vector3f temp;
-            sfSoundStream_getPosition(sfPtr, &temp.x, &temp.y, &temp.z);
-            return temp;
+            return sfSoundStream_getPosition(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * Whether or not the stream should loop after reaching the end.
+         * Set whether or not the stream should loop after reaching the end.
          *
-         * If set, the stream will restart from the beginning after reaching the end
-         * and so on, until it is stopped or looping is set to false.
+         * If set, the stream will restart from beginning after reaching the end and
+         *  so on, until it is stopped or loop(false) is called. The default
+         * looping state for streams is false.
          *
-         * Default looping state for streams is false.
+         * Params:
+         * loop=True to play in loop, false to play once
          */
-        void isLooping(bool loop)
+        void loop(bool loop)
         {
-            sfSoundStream_setLoop(sfPtr, loop);
+            sfSoundStream_setLoop(m_soundStream, loop);
         }
 
-        /// ditto
-        bool isLooping() const
+        /**
+         * Tell whether or not the stream is in loop mode.
+         *
+         * Returns: True if the stream is looping, false otherwise
+         */
+        bool loop() const
         {
-            return sfSoundStream_getLoop(sfPtr);
+            return sfSoundStream_getLoop(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * The current playing position (from the beginning) of the stream.
+         * Change the current playing position of the stream.
          *
          * The playing position can be changed when the stream is either paused or
-         * playing.
+         * playing. Changing the playing position when the stream is stopped has no
+         * effect, since playing the stream would reset its position.
+         *
+         * Params:
+         * timeOffset=New playing position, from the beginning of the stream
          */
         void playingOffset(Time offset)
         {
-            sfSoundStream_setPlayingOffset(sfPtr, offset.asMicroseconds);
+            sfSoundStream_setPlayingOffset(m_soundStream, offset);
 
         }
 
-        /// ditto
+        /**
+         * Get the current playing position of the stream.
+         *
+         * Returns: Current playing position, from the beginning of the stream
+         */
         Time playingOffset() const
         {
-            return microseconds(sfSoundStream_getPlayingOffset(sfPtr));
+            return sfSoundStream_getPlayingOffset(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * Make the sound's position relative to the listener (true) or absolute
-         * (false).
+         * Make the sound's position relative to the listener or absolute.
          *
          * Making a sound relative to the listener will ensure that it will always
-         * be played the same way regardless the position of the listener.  This can
+         * be played the same way regardless the position of the listener. This can
          * be useful for non-spatialized sounds, sounds that are produced by the
          * listener, or sounds attached to it. The default value is false (position
          * is absolute).
+         *
+         * Params:
+         * relative=True to set the position relative, false to set it absolute
          */
         void relativeToListener(bool relative)
         {
-            sfSoundStream_setRelativeToListener(sfPtr, relative);
+            sfSoundStream_setRelativeToListener(m_soundStream, relative);
         }
 
-        /// ditto
+        /**
+         * Tell whether the sound's position is relative to the listener or is absolute.
+         *
+         * Returns: True if the position is relative, false if it's absolute
+         */
         bool relativeToListener() const
         {
-            return sfSoundStream_isRelativeToListener(sfPtr);
+            return sfSoundStream_isRelativeToListener(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * The minimum distance of the sound.
+         * Set the minimum distance of the sound.
          *
          * The "minimum distance" of a sound is the maximum distance at which it is
          * heard at its maximum volume. Further than the minimum distance, it will
          * start to fade out according to its attenuation factor. A value of 0
          * ("inside the head of the listener") is an invalid value and is forbidden.
          * The default value of the minimum distance is 1.
+         *
+         * Params:
+         * distance=New minimum distance of the sound
+         *
+         * See_Also: attenuation
          */
         void minDistance(float distance)
         {
-            sfSoundStream_setMinDistance(sfPtr, distance);
+            sfSoundStream_setMinDistance(m_soundStream, distance);
         }
 
-        /// ditto
+        /**
+         * Get the minimum distance of the sound.
+         *
+         * Returns: Minimum distance of the sound
+         */
         float minDistance() const
         {
-            return sfSoundStream_getMinDistance(sfPtr);
+            return sfSoundStream_getMinDistance(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * The attenuation factor of the sound.
+         * Set the attenuation factor of the sound.
          *
          * The attenuation is a multiplicative factor which makes the sound more or
          * less loud according to its distance from the listener. An attenuation of
@@ -315,16 +366,26 @@ class SoundStream : SoundSource
          * On the other hand, an attenuation value such as 100 will make the sound
          * fade out very quickly as it gets further from the listener. The default
          * value of the attenuation is 1.
+         *
+         * Params:
+         * attenuation=New attenuation factor of the sound
+         *
+         * See_Also: minDistance
          */
         void attenuation(float newAttenuation)
         {
-            sfSoundStream_setAttenuation(sfPtr, newAttenuation);
+            sfSoundStream_setAttenuation(m_soundStream, newAttenuation);
         }
 
-        /// ditto
+        /**
+         * Get the attenuation factor of the sound.
+         *
+         * Returns: Attenuation factor of the sound
+         * See_Also: minDistance
+         */
         float attenuation() const
         {
-            return sfSoundStream_getAttenuation(sfPtr);
+            return sfSoundStream_getAttenuation(m_soundStream);
         }
     }
 
@@ -332,50 +393,62 @@ class SoundStream : SoundSource
     @property
     {
         /**
-         * The number of channels of the stream.
+         * Return the number of channels of the stream.
          *
          * 1 channel means mono sound, 2 means stereo, etc.
+         *
+         * Returns: Number of channels
          */
         uint channelCount() const
         {
-            return sfSoundStream_getChannelCount(sfPtr);
+            return sfSoundStream_getChannelCount(m_soundStream);
         }
     }
 
     @property
     {
         /**
-         * The stream sample rate of the stream
+         * Get the stream sample rate of the stream
          *
          * The sample rate is the number of audio samples played per second. The
          * higher, the better the quality.
+         *
+         * Returns: Sample rate, in number of samples per second
          */
         uint sampleRate() const
         {
-            return sfSoundStream_getSampleRate(sfPtr);
+            return sfSoundStream_getSampleRate(m_soundStream);
         }
     }
 
     @property
     {
-        /// The current status of the stream (stopped, paused, playing)
+        /**
+         * Get the current status of the stream (stopped, paused, playing)
+         *
+         * Returns: Current status
+         */
         Status status() const
         {
-            return cast(Status)sfSoundStream_getStatus(sfPtr);
+            return cast(Status) sfSoundStream_getStatus(m_soundStream);
         }
     }
 
     /**
      * Start or resume playing the audio stream.
      *
-    * This function starts the stream if it was stopped, resumes it if it was
-    * paused, and restarts it from the beginning if it was already playing. This
-    * function uses its own thread so that it doesn't block the rest of the
-    * program while the stream is played.
+     * This function starts the stream if it was stopped, resumes it if it was
+     * paused, and restarts it from the beginning if it was already playing. This
+     * function uses its own thread so that it doesn't block the rest of the
+     * program while the stream is played.
+     *
+     * See_Also: pause, stop
+     *
+     * Implements SoundSource.
      */
     void play()
     {
-        sfSoundStream_play(sfPtr);
+        sfSoundStream_play(m_soundStream);
     }
 
     /**
@@ -383,10 +456,14 @@ class SoundStream : SoundSource
      *
      * This function pauses the stream if it was playing, otherwise (stream
      * already paused or stopped) it has no effect.
+     *
+     * See_Also: play, stop
+     *
+     * Implements SoundSource.
      */
     void pause()
     {
-        sfSoundStream_pause(sfPtr);
+        sfSoundStream_pause(m_soundStream);
     }
 
     /**
@@ -395,10 +472,14 @@ class SoundStream : SoundSource
      * This function stops the stream if it was playing or paused, and does
      * nothing if it was already stopped. It also resets the playing position
      * (unlike pause()).
+     *
+     * See_Also: play, pause
+     *
+     * Implements SoundSource.
      */
     void stop()
     {
-        sfSoundStream_stop(sfPtr);
+        sfSoundStream_stop(m_soundStream);
     }
 
     /**
@@ -412,9 +493,10 @@ class SoundStream : SoundSource
      * empty; this would stop the stream due to an internal limitation.
      *
      * Params:
-     *	samples = Array of samples to fill
+     *    data = Chunk of data to fill
+     * Returns: True to continue playback, false to stop
      */
-    protected abstract bool onGetData(ref const(short)[] samples);
+    protected abstract bool onGetData(ref Chunk data);
 
     /**
      * Change the current playing position in the stream source.
@@ -423,105 +505,86 @@ class SoundStream : SoundSource
      * seeking into the stream source.
      *
      * Params:
-     *	timeOffset = New playing position, relative to the start of the stream
+     *    timeOffset = New playing position, relative to the start of the stream
      */
     protected abstract void onSeek(Time timeOffset);
+
+    /**
+     * Change the current playing position in the stream source to the beginning of
+     * the loop.
+     *
+     * This function can be overridden by derived classes to allow implementation
+     * of custom loop points. Otherwise, it just calls onSeek(Time.Zero) and
+     * returns 0.
+     *
+     * Returns: The seek position after looping (or -1 if there's no loop)
+     */
+    protected long onLoop()
+    {
+        onSeek(Time.Zero);
+        return 0;
+    }
+
+    /**
+     * This function is called by CSFML.
+     *
+     * CSFML's "sfBool" is a byte of 0 or 1.
+     * Passing a bool to CSFML will simply fail.
+     */
+    private extern(C) static byte onGetDataCallback(Chunk* data, void* userData)
+    {
+        SoundStream ss = cast(SoundStream) userData;
+        return ss.onGetData(*data) ? 1 : 0;
+    }
+
+    /**
+     * This function is called by CSFML.
+     */
+    private extern(C) static void onSeekCallback(Time time, void* userData)
+    {
+        SoundStream ss = cast(SoundStream) userData;
+        ss.onSeek(time);
+    }
 }
 
-private extern(C++)
+// CSFML's functions.
+private extern(C)
 {
-    struct Chunk
-    {
-        const(short)* samples;
-        size_t sampleCount;
-    }
+    // C Callbacks
+    /// Type of the callback used to get a sound stream data
+    alias sfSoundStreamGetDataCallback = byte function(SoundStream.Chunk*, void*);
+    /// Type of the callback used to seek in a sound stream
+    alias sfSoundStreamSeekCallback = void function(Time, void*);
+
+    struct sfSoundStream;
+
+    sfSoundStream* sfSoundStream_create(sfSoundStreamGetDataCallback getData,
+        sfSoundStreamSeekCallback  seek, uint  channelCount, uint  sampleRate,
+        void* userData);
+    void sfSoundStream_destroy(sfSoundStream* soundStream);
+    void sfSoundStream_play(sfSoundStream* soundStream);
+    void sfSoundStream_pause(sfSoundStream* soundStream);
+    void sfSoundStream_stop(sfSoundStream* soundStream);
+    Status sfSoundStream_getStatus(const sfSoundStream* soundStream);
+    uint sfSoundStream_getChannelCount(const sfSoundStream* soundStream);
+    uint sfSoundStream_getSampleRate(const sfSoundStream* soundStream);
+    void sfSoundStream_setPitch(sfSoundStream* soundStream, float pitch);
+    void sfSoundStream_setVolume(sfSoundStream* soundStream, float volume);
+    void sfSoundStream_setPosition(sfSoundStream* soundStream, Vector3f position);
+    void sfSoundStream_setRelativeToListener(sfSoundStream* soundStream, bool relative);
+    void sfSoundStream_setMinDistance(sfSoundStream* soundStream, float distance);
+    void sfSoundStream_setAttenuation(sfSoundStream* soundStream, float attenuation);
+    void sfSoundStream_setPlayingOffset(sfSoundStream* soundStream, Time timeOffset);
+    void sfSoundStream_setLoop(sfSoundStream* soundStream, bool loop);
+    float sfSoundStream_getPitch(const sfSoundStream* soundStream);
+    float sfSoundStream_getVolume(const sfSoundStream* soundStream);
+    Vector3f sfSoundStream_getPosition(const sfSoundStream* soundStream);
+    bool sfSoundStream_isRelativeToListener(const sfSoundStream* soundStream);
+    float sfSoundStream_getMinDistance(const sfSoundStream* soundStream);
+    float sfSoundStream_getAttenuation(const sfSoundStream* soundStream);
+    bool sfSoundStream_getLoop(const sfSoundStream* soundStream);
+    Time sfSoundStream_getPlayingOffset(const sfSoundStream* soundStream);
+
 }
 
-private extern(C++) interface sfmlSoundStreamCallBacks
-{
-public:
-    bool onGetData(Chunk* chunk);
-    void onSeek(long time);
-}
-
-
-class SoundStreamCallBacks: sfmlSoundStreamCallBacks
-{
-    SoundStream m_stream;
-
-    this(SoundStream stream)
-    {
-        m_stream = stream;
-    }
-
-    extern(C++) bool onGetData(Chunk* chunk)
-    {
-        const(short)[] samples;
-
-        auto ret = m_stream.onGetData(samples);
-
-        (*chunk).samples = samples.ptr;
-        (*chunk).sampleCount = samples.length;
-
-        return ret;
-    }
-
-    extern(C++) void onSeek(long time)
-    {
-        m_stream.onSeek(microseconds(time));
-    }
-}
-
-private extern(C):
-
-struct sfSoundStream;
-
-sfSoundStream* sfSoundStream_construct(sfmlSoundStreamCallBacks callBacks);
-
-void sfSoundStream_destroy(sfSoundStream* soundStream);
-
-void sfSoundStream_initialize(sfSoundStream* soundStream, uint channelCount, uint sampleRate);
-
-void sfSoundStream_play(sfSoundStream* soundStream);
-
-void sfSoundStream_pause(sfSoundStream* soundStream);
-
-void sfSoundStream_stop(sfSoundStream* soundStream);
-
-int sfSoundStream_getStatus(const sfSoundStream* soundStream);
-
-uint sfSoundStream_getChannelCount(const sfSoundStream* soundStream);
-
-uint sfSoundStream_getSampleRate(const sfSoundStream* soundStream);
-
-void sfSoundStream_setPitch(sfSoundStream* soundStream, float pitch);
-
-void sfSoundStream_setVolume(sfSoundStream* soundStream, float volume);
-
-void sfSoundStream_setPosition(sfSoundStream* soundStream, float positionX, float positionY, float positionZ);
-
-void sfSoundStream_setRelativeToListener(sfSoundStream* soundStream, bool relative);
-
-void sfSoundStream_setMinDistance(sfSoundStream* soundStream, float distance);
-
-void sfSoundStream_setAttenuation(sfSoundStream* soundStream, float attenuation);
-
-void sfSoundStream_setPlayingOffset(sfSoundStream* soundStream, long timeOffset);
-
-void sfSoundStream_setLoop(sfSoundStream* soundStream, bool loop);
-
-float sfSoundStream_getPitch(const sfSoundStream* soundStream);
-
-float sfSoundStream_getVolume(const sfSoundStream* soundStream);
-
-void sfSoundStream_getPosition(const sfSoundStream* soundStream, float* positionX, float* positionY, float* positionZ);
-
-bool sfSoundStream_isRelativeToListener(const sfSoundStream* soundStream);
-
-float sfSoundStream_getMinDistance(const sfSoundStream* soundStream);
-
-float sfSoundStream_getAttenuation(const sfSoundStream* soundStream);
-
-bool sfSoundStream_getLoop(const sfSoundStream* soundStream);
-
-long sfSoundStream_getPlayingOffset(const sfSoundStream* soundStream);
+// unittests in music.d

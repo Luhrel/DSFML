@@ -51,11 +51,11 @@
  */
 module dsfml.network.socket;
 
-/// Base interface for all the socket types.
+/**
+ * Base interface for all the socket types.
+ */
 interface Socket
 {
-    //TODO: Add methods to this so that they can be overridden by the socket classes?
-
     ///Status codes that may be returned by socket functions.
     enum Status
     {
@@ -63,6 +63,8 @@ interface Socket
         Done,
         /// The socket is not ready to send / receive data yet
         NotReady,
+        /// The socket sent a part of the data.
+        Partial,
         /// The TCP socket has been disconnected
         Disconnected,
         /// An unexpected error happened
@@ -88,12 +90,14 @@ interface Socket
      * Params:
      * blocking = true to set the socket as blocking, false for non-blocking
      */
-    void setBlocking(bool blocking);
+    @property
+    void blocking(bool _blocking);
 
     /**
      * Tell whether the socket is in blocking or non-blocking mode.
      *
      * Returns: true if the socket is blocking, false otherwise.
      */
-    bool isBlocking() const;
+    @property
+    bool blocking() const;
 }

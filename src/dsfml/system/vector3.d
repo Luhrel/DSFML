@@ -65,188 +65,183 @@ import std.traits;
  * Utility template struct for manipulating 3-dimensional vectors.
  */
 struct Vector3(T)
-	if(isNumeric!(T) || is(T == bool))
+    if(isNumeric!(T) || is(T == bool))
 {
-	/// X coordinate of the vector.
-	T x;
+    /// X coordinate of the vector.
+    T x;
 
-	/// Y coordinate of the vector.
-	T y;
+    /// Y coordinate of the vector.
+    T y;
 
-	/// Z coordinate of the vector.
-	T z;
+    /// Z coordinate of the vector.
+    T z;
 
-	/**
-	 * Construct the vector from its coordinates
-	 *
-	 * Params:
-	 * 		X = X coordinate
-	 * 		Y = Y coordinate
-	 * 		Z = Z coordinate
-	 */
-	this(T X,T Y,T Z)
-	{
+    /**
+     * Construct the vector from its coordinates
+     *
+     * Params:
+     *         X = X coordinate
+     *         Y = Y coordinate
+     *         Z = Z coordinate
+     */
+    this(T X,T Y,T Z)
+    {
 
-		x = X;
-		y = Y;
-		z = Z;
+        x = X;
+        y = Y;
+        z = Z;
 
-	}
+    }
 
-	/**
-	 * Construct the vector from another type of vector
-	 *
-	 * Params:
-	 * 	otherVector = Vector to convert.
-	 */
-	this(E)(Vector3!(E) otherVector)
-	{
-		x = cast(T)(otherVector.x);
-		y = cast(T)(otherVector.y);
-		z = cast(T)(otherVector.z);
-	}
+    /**
+     * Construct the vector from another type of vector
+     *
+     * Params:
+     *     otherVector = Vector to convert.
+     */
+    this(E)(Vector3!(E) otherVector)
+    {
+        x = cast(T) otherVector.x;
+        y = cast(T) otherVector.y;
+        z = cast(T) otherVector.z;
+    }
 
-	/// Invert the members of the vector.
-	Vector3!(T) opUnary(string s)() const
-	if(s == "-")
-	{
-		return Vector3!(T)(-x,-y,-z);
-	}
+    /// Invert the members of the vector.
+    Vector3!(T) opUnary(string s)() const
+        if(s == "-")
+    {
+        return Vector3!(T)(-x, -y, -z);
+    }
 
-	/// Add/Subtract between two vector3's.
-	Vector3!(T) opBinary(string op,E)(Vector3!(E) otherVector) const
-	if(isNumeric!(E) && ((op == "+") || (op == "-")))
-	{
-		static if (op == "+")
-		{
-			return Vector3!(T)(cast(T)(x+otherVector.x),cast(T)(y+otherVector.y),cast(T)(z + otherVector.z));
-		}
-		static if(op == "-")
-		{
-			return Vector3!(T)(cast(T)(x-otherVector.x),cast(T)(y-otherVector.y),cast(T)(z - otherVector.z));
-		}
-	}
+    /// Overload of the `+`, `-`, `*` and `/` operators.
+    Vector3!(T) opBinary(string op, E)(Vector3!(E) otherVector) const
+        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    {
+        mixin("T axeX = x" ~ op ~ "otherVector.x;");
+        mixin("T axeY = y" ~ op ~ "otherVector.y;");
+        mixin("T axeZ = z" ~ op ~ "otherVector.z;");
+        return Vector3!(T)(axeX, axeY, axeZ);
+    }
 
-	/// Multiply/Divide a Vector3 with a numaric value.
-	Vector3!(T) opBinary(string op,E)(E num) const
-	if(isNumeric!(E) && ((op == "*") || (op == "/")))
-	{
-		static if (op == "*")
-		{
-			return Vector3!(T)(cast(T)(x*num),cast(T)(y*num),cast(T)(z*num));
-		}
-		static if(op == "/")
-		{
-			return Vector3!(T)(cast(T)(x/num),cast(T)(y/num),cast(T)(z/num));
-		}
-	}
+    /// Overload of the `+` , `-`, `*` and `/` operators.
+    Vector3!(T) opBinary(string op, E)(E num) const
+    if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    {
+        mixin("T axeX = x" ~ op ~ "num;");
+        mixin("T axeY = y" ~ op ~ "num;");
+        mixin("T axeZ = z" ~ op ~ "num;");
+        return Vector3!(T)(axeX, axeY, axeZ);
+    }
 
-	/// Assign Add/Subtract with another vector3.
-	ref Vector3!(T) opOpAssign(string op, E)(Vector3!(E) otherVector)
-	if(isNumeric!(E) && ((op == "+") || (op == "-")))
-	{
-		static if(op == "+")
-		{
-			x += otherVector.x;
-			y += otherVector.y;
-			z += otherVector.z;
-			return this;
-		}
-		static if(op == "-")
-		{
-			x -= otherVector.x;
-			y -= otherVector.y;
-			z -= otherVector.z;
-			return this;
-		}
-	}
+    /// Overload of the `+` , `-`, `*` and `/` operators.
+    Vector3!(T) opBinaryRight(string op, E)(E num) const
+    if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    {
+        mixin("T axeX = num" ~ op ~ "x;");
+        mixin("T axeY = num" ~ op ~ "y;");
+        mixin("T axeZ = num" ~ op ~ "z;");
+        return Vector3!(T)(axeX, axeY, axeZ);
+    }
 
-	// Assign Multiply/Divide a Vector3 with a numaric value.
-	ref Vector3!(T) opOpAssign(string op,E)(E num)
-	if(isNumeric!(E) && ((op == "*") || (op == "/")))
-	{
-		static if(op == "*")
-		{
-			x *= num;
-			y *= num;
-			z *= num;
-			return this;
-		}
-		static if(op == "/")
-		{
-			x /= num;
-			y /= num;
-			z /= num;
-			return this;
-		}
-	}
+    /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
+    ref Vector3!(T) opOpAssign(string op, E)(Vector3!(E) otherVector)
+    if(isNumeric!(E) &&  (op == "+" || op == "-" || op == "*" || op == "/"))
+    {
+        mixin("x " ~ op ~ "= otherVector.x;");
+        mixin("y " ~ op ~ "= otherVector.y;");
+        mixin("z " ~ op ~ "= otherVector.z;");
+        return this;
+    }
 
-	/// Assign the value of another vector whose type can be converted to T.
-	ref Vector3!(T) opAssign(E)(Vector3!(E) otherVector)
-	{
-		x = cast(T)(otherVector.x);
-		y = cast(T)(otherVector.y);
-		z = cast(T)(otherVector.z);
-		return this;
-	}
+    /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
+    ref Vector3!(T) opOpAssign(string op, E)(E num)
+        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    {
+        mixin("x " ~ op ~ "= num;");
+        mixin("y " ~ op ~ "= num;");
+        mixin("z " ~ op ~ "= num;");
+        return this;
+    }
 
-	/// Compare two vectors for equality.
-	bool opEquals(E)(const Vector3!(E) otherVector) const
-	if(isNumeric!(E))
-	{
-		return ((x == otherVector.x) && (y == otherVector.y)
-				&& (z == otherVector.z));
-	}
+    /// Assign the value of another vector whose type can be converted to T.
+    ref Vector3!(T) opAssign(E)(Vector3!(E) otherVector)
+    {
+        x = cast(T) otherVector.x;
+        y = cast(T) otherVector.y;
+        z = cast(T) otherVector.z;
+        return this;
+    }
 
-	/// Output the string representation of the Vector3.
-	string toString() const
-	{
-		import std.conv;
-		return "X: " ~ text(x) ~ " Y: " ~ text(y) ~ " Z: " ~ text(z);
-	}
+    /// Compare two vectors for equality.
+    bool opEquals(E)(const Vector3!(E) otherVector) const
+        if(isNumeric!(E) || is(E == bool))
+    {
+        return x == otherVector.x &&
+               y == otherVector.y &&
+               z == otherVector.z;
+    }
+
+    /// Output the string representation of the Vector3.
+    string toString() const
+    {
+        import std.conv;
+        return "X: " ~ text(x) ~ " Y: " ~ text(y) ~ " Z: " ~ text(z);
+    }
 }
 
 /// Definition of a Vector3 of integers.
-alias Vector3!(int) Vector3i;
+alias Vector3i = Vector3!(int);
 
 /// Definition of a Vector3 of floats.
-alias Vector3!(float) Vector3f;
+alias Vector3f = Vector3!(float);
 
 unittest
 {
-	version(DSFML_Unittest_System)
-	{
-		import std.stdio;
 
-		writeln("Unit test for Vector3");
+    import std.stdio;
 
-		auto floatVector3 = Vector3f(100,100,100);
+    writeln("Running Vector3 unittest...");
 
-		assert((floatVector3/2) == Vector3f(50,50,50));
+    auto floatVector3 = Vector3f(100, 100, 100);
 
-		assert((floatVector3*2) == Vector3f(200,200,200));
+    assert(floatVector3 + 200 == Vector3f(300, 300, 300));
+    assert(floatVector3 - 200 == Vector3f(-100, -100, -100));
+    assert(floatVector3 * 2 == Vector3f(200, 200, 200));
+    assert(floatVector3 / 2 == Vector3f(50, 50, 50));
 
-		assert((floatVector3 + Vector3f(50, 0,100)) == Vector3f(150, 100,200));
+    assert((floatVector3 + Vector3f(50, 0, 100)) == Vector3f(150, 100, 200));
+    assert((floatVector3 - Vector3f(50, 0, 300)) == Vector3f(50, 100, -200));
+    assert((floatVector3 * Vector3f(5, 3, 4)) == Vector3f(500, 300, 400));
+    assert((floatVector3 / Vector3f(5, 2, 100)) == Vector3f(20, 50, 1));
 
-		assert((floatVector3 - Vector3f(50,0,300)) == Vector3f(50,100,-200));
+    floatVector3 += 50;
+    assert(floatVector3 == Vector3f(150, 150, 150));
 
-		floatVector3/=2;
+    floatVector3 -= 30;
+    assert(floatVector3 == Vector3f(120, 120, 120));
 
-		assert(floatVector3 == Vector3f(50,50,50));
+    floatVector3 *= 2;
+    assert(floatVector3 == Vector3f(240, 240, 240));
 
-		floatVector3*=2;
+    floatVector3 /= 2;
+    assert(floatVector3 == Vector3f(120, 120, 120));
 
-		assert(floatVector3 == Vector3f(100,100,100));
 
-		floatVector3+= Vector3f(50,0,100);
+    floatVector3 += Vector3f(50, 0, 100);
+    assert(floatVector3 == Vector3f(170, 120, 220));
 
-		assert(floatVector3 == Vector3f(150,100,200));
+    floatVector3 -= Vector3f(70, 20, 120);
+    assert(floatVector3 == Vector3f(100, 100, 100));
 
-		floatVector3-=Vector3f(50,100,50);
+    floatVector3 *= Vector3f(1.5, 2, 1);
+    assert(floatVector3 == Vector3f(150, 200, 100));
 
-		assert(floatVector3 == Vector3f(100,0,150));
+    floatVector3 /= Vector3f(2, 4, 10);
+    assert(floatVector3 == Vector3f(75, 50, 10));
 
-		writeln("Vector3 tests passed");
-		writeln();
-	}
+    assert(25 + floatVector3 == Vector3f(100, 75, 35));
+    assert(10 - floatVector3 == Vector3f(-65, -40, 0));
+    assert(2 * floatVector3 == Vector3f(150, 100, 20));
+    floatVector3.x = 200;
+    assert(2 / floatVector3 == Vector3f(0.01, 0.04, 0.2));
 }
