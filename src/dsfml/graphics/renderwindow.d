@@ -325,7 +325,7 @@ class RenderWindow : Window, RenderTarget
         {
             if (m_renderWindow is null)
                 return null;
-            return new View(cast(sfView*) sfRenderWindow_getView(m_renderWindow));
+            return new View(sfRenderWindow_getView(m_renderWindow));
         }
     }
 
@@ -343,7 +343,7 @@ class RenderWindow : Window, RenderTarget
     {
         if (m_renderWindow is null)
             return null;
-        return new View(cast(sfView*) sfRenderWindow_getDefaultView(m_renderWindow));
+        return new View(sfRenderWindow_getDefaultView(m_renderWindow));
     }
 
     /**

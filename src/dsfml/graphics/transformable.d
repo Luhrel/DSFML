@@ -145,9 +145,10 @@ class Transformable
         m_transformable = sfTransformable_create();
     }
 
-    package this(sfTransformable* transformablePointer)
+    // Copy constructor.
+    package this(const sfTransformable* transformablePointer)
     {
-        m_transformable = transformablePointer;
+        m_transformable = sfTransformable_copy(transformablePointer);
     }
 
     /// Virtual destructor.
@@ -405,6 +406,13 @@ class Transformable
     void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
+    }
+
+    /// Duplicates this Transformable.
+    @property
+    Transformable dup()
+    {
+        return new Transformable(m_transformable);
     }
 }
 

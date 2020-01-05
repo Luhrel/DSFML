@@ -660,14 +660,11 @@ class Texture
             sfTexture_updateFromRenderWindow(m_texture, window.ptr, x, y);
     }
 
-    /**
-     * Creates a new texture from the same data (this means copying the entire
-     * set of pixels).
-     */
+    /// Duplicates this Texture.
     @property
-    const(Texture) dup() const
+    Texture dup() const
     {
-        return new Texture(cast(sfTexture*) m_texture);
+        return new Texture(m_texture);
     }
 
     // Returns the C pointer.

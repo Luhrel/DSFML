@@ -125,9 +125,10 @@ class View
         this.size = size;
     }
 
-    package this(sfView* view)
+    // Copy constructor.
+    package this(const sfView* viewPointer)
     {
-        m_view = view;
+        m_view = sfView_copy(viewPointer);
     }
 
     /// Destructor.
@@ -395,6 +396,13 @@ class View
     package sfView* ptr()
     {
         return m_view;
+    }
+
+    /// Duplicates this View.
+    @property
+    View dup()
+    {
+        return new View(m_view);
     }
 }
 

@@ -136,7 +136,7 @@ class SocketSelector
     }
 
     // Copy constructor.
-    package this(sfSocketSelector* socketSelectorPointer)
+    package this(const sfSocketSelector* socketSelectorPointer)
     {
         m_socketSelector = sfSocketSelector_copy(socketSelectorPointer);
     }
@@ -302,7 +302,7 @@ class SocketSelector
         return sfSocketSelector_wait(m_socketSelector, timeout);
     }
 
-    // Duplicate a SocketSelector
+    /// Duplicate this SocketSelector.
     @property
     SocketSelector dup()
     {

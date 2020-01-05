@@ -100,21 +100,22 @@ class SoundBuffer
 {
     private sfSoundBuffer* m_soundBuffer = null;
 
-    /// Destructor.
-    ~this()
-    {
-        sfSoundBuffer_destroy(m_soundBuffer);
-    }
-
     /// Default constructor.
     this()
     {
         // Nothing to do.
     }
 
-    package this(sfSoundBuffer* soundBufferPointer)
+    // Copy constructor.
+    package this(const sfSoundBuffer* soundBufferPointer)
     {
-        m_soundBuffer = soundBufferPointer;
+        m_soundBuffer = sfSoundBuffer_copy(soundBufferPointer);
+    }
+
+    /// Destructor.
+    ~this()
+    {
+        sfSoundBuffer_destroy(m_soundBuffer);
     }
 
     /**
@@ -301,6 +302,13 @@ class SoundBuffer
     package sfSoundBuffer* ptr()
     {
         return m_soundBuffer;
+    }
+
+    /// Duplicates this SoundBuffer.
+    @property
+    SoundBuffer dup()
+    {
+        return new SoundBuffer(m_soundBuffer);
     }
 }
 

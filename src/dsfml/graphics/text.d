@@ -142,6 +142,12 @@ class Text : Transformable, Drawable
 
     }
 
+    // Copy constructor.
+    package this(const sfText* textPointer)
+    {
+        m_text = sfText_copy(textPointer);
+    }
+
     /// Destructor.
     ~this()
     {
@@ -756,6 +762,13 @@ class Text : Transformable, Drawable
     package sfText* ptr()
     {
         return m_text;
+    }
+
+    /// Duplicates this Text.
+    @property
+    override Text dup()
+    {
+        return new Text(m_text);
     }
 }
 

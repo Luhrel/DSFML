@@ -145,9 +145,9 @@ class VertexBuffer : Drawable
      * Params:
      *     vertexBufferPointer = C pointer to sfVertexBuffer to assign
      */
-    private this(sfVertexBuffer* vertexBufferPointer)
+    package this(const sfVertexBuffer* vertexBufferPointer)
     {
-        m_vertexBuffer = vertexBufferPointer;
+        m_vertexBuffer = sfVertexBuffer_copy(vertexBufferPointer);
     }
 
     /// Desructor.
@@ -389,6 +389,13 @@ class VertexBuffer : Drawable
     package sfVertexBuffer* ptr()
     {
         return m_vertexBuffer;
+    }
+
+    /// Duplicates this VertexBuffer.
+    @property
+    VertexBuffer dup()
+    {
+        return new VertexBuffer(m_vertexBuffer);
     }
 }
 

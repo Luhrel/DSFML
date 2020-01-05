@@ -136,8 +136,8 @@ class Sprite : Transformable, Drawable
         textureRect = rectangle;
     }
 
-    /// Copy constructor.
-    private this(const sfSprite* spritePointer)
+    // Copy constructor.
+    package this(const sfSprite* spritePointer)
     {
         m_sprite = sfSprite_copy(spritePointer);
     }
@@ -472,7 +472,7 @@ class Sprite : Transformable, Drawable
      */
     Texture texture() const
     {
-        return new Texture(cast(sfTexture*) sfSprite_getTexture(m_sprite));
+        return new Texture(sfSprite_getTexture(m_sprite));
     }
 
     /**
@@ -539,7 +539,7 @@ class Sprite : Transformable, Drawable
      * Returns: A new Sprite object with the same data.
      */
     @property
-    Sprite dup() const
+    override Sprite dup() const
     {
         return new Sprite(m_sprite);
     }

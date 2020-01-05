@@ -271,7 +271,7 @@ class RenderTexture : RenderTarget
          */
         override View view() const
         {
-            return new View(cast(sfView*) sfRenderTexture_getView(m_renderTexture));
+            return new View(sfRenderTexture_getView(m_renderTexture));
         }
     }
 
@@ -308,7 +308,7 @@ class RenderTexture : RenderTarget
     @property
     View defaultView() const
     {
-        return new View(cast(sfView*) sfRenderTexture_getDefaultView(m_renderTexture));
+        return new View(sfRenderTexture_getDefaultView(m_renderTexture));
     }
 
     /**
@@ -339,7 +339,7 @@ class RenderTexture : RenderTarget
      */
     const(Texture) getTexture() const
     {
-        return new Texture(cast(sfTexture*) sfRenderTexture_getTexture(m_renderTexture));
+        return new Texture(sfRenderTexture_getTexture(m_renderTexture));
     }
 
     /**

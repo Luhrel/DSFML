@@ -124,7 +124,7 @@ class RectangleShape : Shape
          */
         override const(Texture) texture() const
         {
-            return new Texture(cast(sfTexture*) sfRectangleShape_getTexture(m_rectangleShape));
+            return new Texture(sfRectangleShape_getTexture(m_rectangleShape));
         }
     }
 
@@ -589,9 +589,9 @@ class RectangleShape : Shape
         sfRectangleShape_move(m_rectangleShape, offset);
     }
 
-    /// Clones this RectangleShape
+    /// Duplicates this RectangleShape.
     @property
-    RectangleShape dup() const
+    override RectangleShape dup() const
     {
         return new RectangleShape(m_rectangleShape);
     }

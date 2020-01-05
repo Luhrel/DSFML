@@ -136,7 +136,7 @@ class Packet
     }
 
     // Copy constructor.
-    package this(sfPacket* packetPointer)
+    package this(const sfPacket* packetPointer)
     {
         m_packet = sfPacket_copy(packetPointer);
     }
@@ -481,6 +481,13 @@ class Packet
     package sfPacket* ptr()
     {
         return m_packet;
+    }
+
+    /// Duplicates this Packet.
+    @property
+    Packet dup()
+    {
+        return new Packet(m_packet);
     }
 }
 

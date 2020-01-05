@@ -84,6 +84,12 @@ class ConvexShape : Shape
         this.pointCount = pointCount;
     }
 
+    // Copy constructor.
+    package this(const sfConvexShape* convexShapePointer)
+    {
+        m_convexShape = sfConvexShape_copy(convexShapePointer);
+    }
+
     /// Virtual destructor.
     ~this()
     {
@@ -646,6 +652,13 @@ class ConvexShape : Shape
     package sfConvexShape* ptr()
     {
         return m_convexShape;
+    }
+
+    /// Duplicates this ConvexShape.
+    @property
+    override ConvexShape dup()
+    {
+        return new ConvexShape(m_convexShape);
     }
 }
 

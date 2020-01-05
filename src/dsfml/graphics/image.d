@@ -403,6 +403,13 @@ class Image
     {
         return m_image;
     }
+
+    /// Duplicates this Image.
+    @property
+    Image dup()
+    {
+        return new Image(m_image);
+    }
 }
 
 package extern(C)

@@ -91,6 +91,12 @@ class Sound : SoundSource
         buffer = theBuffer;
     }
 
+    // Copy constructor.
+    package this(const sfSound* soundPointer)
+    {
+        m_sound = sfSound_copy(soundPointer);
+    }
+
     /// Destructor.
     ~this()
     {
@@ -374,7 +380,7 @@ class Sound : SoundSource
          */
         SoundBuffer buffer()
         {
-            return new SoundBuffer(cast(sfSoundBuffer*) sfSound_getBuffer(m_sound));
+            return new SoundBuffer(sfSound_getBuffer(m_sound));
         }
     }
 
@@ -419,6 +425,13 @@ class Sound : SoundSource
     void stop()
     {
         sfSound_stop(m_sound);
+    }
+
+    /// Duplicates this Sound.
+    @property
+    Sound dup()
+    {
+        return new Sound(m_sound);
     }
 }
 

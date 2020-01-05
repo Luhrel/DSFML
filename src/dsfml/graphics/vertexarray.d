@@ -88,6 +88,12 @@ class VertexArray : Drawable
         resize(vertexCount);
     }
 
+    // Copy constructor.
+    package this(const sfVertexArray* vertexArrayPointer)
+    {
+        m_vertexArray = sfVertexArray_copy(vertexArrayPointer);
+    }
+
     /// Destructor.
     ~this()
     {
@@ -228,6 +234,13 @@ class VertexArray : Drawable
     package sfVertexArray* ptr()
     {
         return m_vertexArray;
+    }
+
+    /// Duplicates this VertexArray.
+    @property
+    VertexArray dup()
+    {
+        return new VertexArray(m_vertexArray);
     }
 }
 

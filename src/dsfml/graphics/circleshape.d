@@ -83,8 +83,8 @@ class CircleShape : Shape
         this.pointCount = pointCount;
     }
 
-    // Constructor used by the dup() property to pass the C pointer.
-    private this(const sfCircleShape* circleShapePointer)
+    // Copy constructor.
+    package this(const sfCircleShape* circleShapePointer)
     {
         m_circleShape = sfCircleShape_copy(circleShapePointer);
     }
@@ -612,9 +612,9 @@ class CircleShape : Shape
         sfCircleShape_move(m_circleShape, offset);
     }
 
-    /// Clones this CircleShape
+    /// Duplicates this CircleShape.
     @property
-    CircleShape dup() const
+    override CircleShape dup() const
     {
         return new CircleShape(m_circleShape);
     }
