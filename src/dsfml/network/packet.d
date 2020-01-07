@@ -221,6 +221,10 @@ class Packet
      * Returns: true if last data extraction from packet was successful.
      */
     bool read(T)(out T value)
+        if (is(T == bool) || is(T == byte) || is(T == ubyte) ||
+            is(T == short) || is(T == ushort) || is(T == int) ||
+            is(T == uint) || is(T == float) || is(T == double) ||
+            is(T == string) || is(T == wstring) || is(T == dstring))
     {
         // Calls this.opCast(bool)().
         bool success = cast(bool) this;
@@ -310,6 +314,10 @@ class Packet
 
     /// Writes a scalar data type or string to the packet.
     void write(T)(T value)
+        if (is(T == bool) || is(T == byte) || is(T == ubyte) ||
+            is(T == short) || is(T == ushort) || is(T == int) ||
+            is(T == uint) || is(T == float) || is(T == double) ||
+            is(T == string) || is(T == wstring) || is(T == dstring))
     {
         static if (is(T == bool))
         {
