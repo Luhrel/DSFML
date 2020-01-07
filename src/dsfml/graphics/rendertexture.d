@@ -411,7 +411,8 @@ class RenderTexture : RenderTarget
      */
     void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
     {
-         sfRenderTexture_drawPrimitives(m_renderTexture, vertices.ptr, vertices.length, type, states.ptr);
+        sfRenderStates sfStates = convertRenderStates(states);
+        sfRenderTexture_drawPrimitives(m_renderTexture, vertices.ptr, vertices.length, type, &sfStates);
     }
 
     /**
@@ -426,7 +427,8 @@ class RenderTexture : RenderTarget
     // TODO: implements firstVertex and vertexCount
     void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t vertexCount, ref RenderStates states)
     {
-        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr, states.ptr);
+        sfRenderStates sfStates = convertRenderStates(states);
+        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr, &sfStates);
     }
 
     /**

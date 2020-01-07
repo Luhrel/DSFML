@@ -5,6 +5,8 @@ import dsfml.graphics.transform;
 import dsfml.graphics.texture;
 import dsfml.graphics.shader;
 
+import std.typecons : Rebindable;
+
 /**
  * Define the states used for drawing to a RenderTarget.
  */
@@ -19,9 +21,6 @@ struct RenderStates
     /// The shader.
     Shader shader = null;
 
-    // Internal C struct copy. Cannot set to a pointer due to the const members.
-    private sfRenderStates m_renderStates;
-
     /**
      * Construct a default set of render states with a custom blend mode.
      *
@@ -31,8 +30,6 @@ struct RenderStates
     this(BlendMode theBlendMode)
     {
         blendMode = theBlendMode;
-
-        m_renderStates = sfRenderStates(blendMode.toc, transform.toc, null, null);
     }
 
     /**
@@ -44,8 +41,6 @@ struct RenderStates
     this(Transform theTransform)
     {
         transform = theTransform;
-
-        m_renderStates = sfRenderStates(blendMode.toc, transform.toc, null, null);
     }
 
     /**
@@ -57,8 +52,6 @@ struct RenderStates
     this(Texture theTexture)
     {
         texture = theTexture;
-
-        m_renderStates = sfRenderStates(blendMode.toc, transform.toc, texture.ptr, null);
     }
 
     /**
@@ -70,8 +63,6 @@ struct RenderStates
     this(Shader theShader)
     {
         shader = theShader;
-
-        m_renderStates = sfRenderStates(blendMode.toc, transform.toc, null, shader.ptr);
     }
 
     /**
@@ -89,15 +80,19 @@ struct RenderStates
         transform = theTransform;
         texture = theTexture;
         shader = theShader;
-
-        m_renderStates = sfRenderStates(blendMode.toc, transform.toc, texture.ptr, shader.ptr);
     }
+}
 
-    // Returns a pointer to the C struct.
-    package sfRenderStates* ptr()
-    {
-        return &m_renderStates;
-    }
+package sfRenderStates convertRenderStates(ref RenderStates states)
+{
+    if (states.texture !is null && states.shader !is null)
+        return sfRenderStates(states.blendMode.toc, states.transform.toc, states.texture.ptr, states.shader.ptr);
+    else if (states.shader is null)
+        return sfRenderStates(states.blendMode.toc, states.transform.toc, states.texture.ptr, null);
+    else if (states.texture is null)
+        return sfRenderStates(states.blendMode.toc, states.transform.toc, null, states.shader.ptr);
+    else
+        return sfRenderStates(states.blendMode.toc, states.transform.toc, null, null);
 }
 
 package extern(C)

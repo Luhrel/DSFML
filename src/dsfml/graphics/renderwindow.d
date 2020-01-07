@@ -684,33 +684,36 @@ class RenderWindow : Window, RenderTarget
     {
         if (m_renderWindow is null)
             return;
+
+        sfRenderStates sfStates = convertRenderStates(states);
+
         if (is(drawable == Sprite))
         {
-            sfRenderWindow_drawSprite(m_renderWindow, (cast(Sprite) drawable).ptr, states.ptr);
+            sfRenderWindow_drawSprite(m_renderWindow, (cast(Sprite) drawable).ptr, &sfStates);
         }
         else if (is(drawable == Text))
         {
-            sfRenderWindow_drawText(m_renderWindow, (cast(Text) drawable).ptr, states.ptr);
+            sfRenderWindow_drawText(m_renderWindow, (cast(Text) drawable).ptr, &sfStates);
         }
         else if (is(drawable == CircleShape))
         {
-            sfRenderWindow_drawCircleShape(m_renderWindow, (cast(CircleShape) drawable).ptr, states.ptr);
+            sfRenderWindow_drawCircleShape(m_renderWindow, (cast(CircleShape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == ConvexShape))
         {
-            sfRenderWindow_drawConvexShape(m_renderWindow, (cast(ConvexShape) drawable).ptr, states.ptr);
+            sfRenderWindow_drawConvexShape(m_renderWindow, (cast(ConvexShape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == RectangleShape))
         {
-            sfRenderWindow_drawRectangleShape(m_renderWindow, (cast(RectangleShape) drawable).ptr, states.ptr);
+            sfRenderWindow_drawRectangleShape(m_renderWindow, (cast(RectangleShape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == Shape))
         {
-            sfRenderWindow_drawShape(m_renderWindow, (cast(Shape) drawable).ptr, states.ptr);
+            sfRenderWindow_drawShape(m_renderWindow, (cast(Shape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == VertexArray))
         {
-            sfRenderWindow_drawVertexArray(m_renderWindow, (cast(VertexArray) drawable).ptr, states.ptr);
+            sfRenderWindow_drawVertexArray(m_renderWindow, (cast(VertexArray) drawable).ptr, &sfStates);
         }
         else
         {
@@ -728,8 +731,12 @@ class RenderWindow : Window, RenderTarget
      */
     void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
     {
+
         if (m_renderWindow !is null)
-            sfRenderWindow_drawPrimitives(m_renderWindow, vertices.ptr, vertices.length, type, states.ptr);
+        {
+            sfRenderStates sfStates = convertRenderStates(states);
+            sfRenderWindow_drawPrimitives(m_renderWindow, vertices.ptr, vertices.length, type, &sfStates);
+        }
     }
 
     /**
@@ -742,7 +749,10 @@ class RenderWindow : Window, RenderTarget
     void draw(VertexBuffer vertexBuffer, ref RenderStates states)
     {
         if (m_renderWindow !is null)
-            sfRenderWindow_drawVertexBuffer(m_renderWindow, vertexBuffer.ptr, states.ptr);
+        {
+            sfRenderStates sfStates = convertRenderStates(states);
+            sfRenderWindow_drawVertexBuffer(m_renderWindow, vertexBuffer.ptr, &sfStates);
+        }
     }
 
     /**
@@ -760,7 +770,10 @@ class RenderWindow : Window, RenderTarget
               size_t vertexCount, ref RenderStates states)
     {
         if (m_renderWindow !is null)
-            sfRenderWindow_drawVertexBuffer(m_renderWindow, vertexBuffer.ptr, states.ptr);
+        {
+            sfRenderStates sfStates = convertRenderStates(states);
+            sfRenderWindow_drawVertexBuffer(m_renderWindow, vertexBuffer.ptr, &sfStates);
+        }
     }
 
     /**
