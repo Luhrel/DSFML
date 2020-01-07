@@ -282,7 +282,7 @@ class Texture
      *
      * Returns: true if loading was successful, false otherwise.
      */
-    bool loadFromImage(Image image, ref const IntRect area)
+    bool loadFromImage(Image image, const IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromImage(image.ptr, &area);
         return m_texture != null;
