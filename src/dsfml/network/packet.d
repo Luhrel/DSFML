@@ -134,6 +134,7 @@ import std.traits;
 import std.range;
 import std.string;
 
+import dsfml.config;
 import dsfml.system.err;
 
 /**
@@ -229,10 +230,6 @@ class Packet
         // Calls this.opCast(bool)().
         bool success = cast(bool) this;
 
-        // TODO: Add a way  modify this var through config.d
-        // No one will exceed this limit, right ?
-        immutable ARRAY_SIZE = 512;
-
         static if (is(T == bool))
         {
             value = sfPacket_readBool(m_packet);
@@ -271,7 +268,9 @@ class Packet
         }
         else static if (is(T == string))
         {
-            char[ARRAY_SIZE] c;
+            // This char array is needed because we need to allocate the memory
+            // before passing the var to the C function.
+            char[PACKET_STR_MAX_SIZE] c;
             sfPacket_readString(m_packet, c.ptr);
             value = fromStringz(c.ptr).to!string;
         }
@@ -282,7 +281,7 @@ class Packet
             {
                 static if (is(T == dstring))
                 {
-                    dchar[ARRAY_SIZE] dc;
+                    dchar[PACKET_STR_MAX_SIZE] dc;
                     sfPacket_readWideString(m_packet, dc.ptr);
                     value = fromStringz(dc.ptr).to!dstring;
                 }
@@ -295,7 +294,7 @@ class Packet
             {
                 static if (is(T == wstring))
                 {
-                    dchar[ARRAY_SIZE] dc;
+                    dchar[PACKET_STR_MAX_SIZE] dc;
                     sfPacket_readWideString(m_packet, dc.ptr);
                     value = fromStringz(dc.ptr).to!dstring;
                 }
@@ -358,6 +357,7 @@ class Packet
         else static if (is(T == string))
         {
             string s = cast(string) value;
+            checkPacketStringSize(s);
             sfPacket_writeString(m_packet, s.toStringz);
         }
         else
@@ -368,6 +368,7 @@ class Packet
                 static if (is(T == dstring))
                 {
                     dstring ds = cast(dstring) value;
+                    checkPacketStringSize(ds);
                     sfPacket_writeWideString(m_packet, ds.ptr);
                 }
             }
@@ -375,8 +376,9 @@ class Packet
             {
                 static if (is(T == wstring))
                 {
-                    wstring ds = cast(wstring) value;
-                    sfPacket_writeWideString(m_packet, ds.ptr);
+                    wstring ws = cast(wstring) value;
+                    checkPacketStringSize(ws);
+                    sfPacket_writeWideString(m_packet, ws.ptr);
                 }
             }
         }
@@ -514,6 +516,17 @@ class Packet
     Packet dup()
     {
         return new Packet(m_packet);
+    }
+}
+
+// Shows a warning if the string exceed the max size for packets.
+private void checkPacketStringSize(T)(T str)
+    if (is(T == string) || is(T == dstring) || is(T == wstring))
+{
+    if (str.length > PACKET_STR_MAX_SIZE)
+    {
+        err.writefln("Warning: the string passed to the packet exceed the size limit of %s characters.",
+            PACKET_STR_MAX_SIZE);
     }
 }
 

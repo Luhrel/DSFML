@@ -28,6 +28,8 @@
 /// A module containing configuration settings.
 module dsfml.config;
 
+import dsfml.system.err;
+
 //Check to confirm compiler is at least v2.067
 static if (__VERSION__ < 2067L)
 {
@@ -42,3 +44,7 @@ enum
 	/// DSFML's minor version number.
 	DSFML_VERSION_MINOR = 5
 }
+
+// Defines the maximum size for a string passed to a packet.
+// No one will exceed this limit, right ?
+package immutable short PACKET_STR_MAX_SIZE = 1024;
