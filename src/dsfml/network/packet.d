@@ -74,6 +74,24 @@
  * - floating point numbers (float, double)
  * - string types (string and wstring)
  *
+ * Like standard streams, it is also possible to define your own overloads of
+ * operators >> and << in order to handle your custom types.
+ * ---
+ * struct MyStruct
+ * {
+ *     float number;
+ *     int integer;
+ *     string str;
+ *
+ *     MyStruct opBinaryRight(string op)(Packet packet)
+ *        if (op == ">>" || op == "<<")
+ *     {
+ *        mixin("packet " ~ op ~ " number " ~ op ~ " integer " ~ op ~ " str;");
+ *        return this;
+ *     }
+ * }
+ * ---
+ *
  * $(PARA Packets also provide an extra feature that allows to apply custom
  * transformations to the data before it is sent, and after it is received. This
  * is typically used to handle automatic compression or encryption of the data.
@@ -626,4 +644,38 @@ unittest
     emptyPacket.onReceiveJunction(randomData);
 
     assert(emptyPacket.data() == null);
+
+    ////////////
+    // Stuck by https://issues.dlang.org/show_bug.cgi?id=8863
+    /+
+    struct MyStruct
+    {
+        float number;
+        int integer;
+        string str;
+
+        MyStruct opBinaryRight(string op)(Packet packet)
+            if (op == ">>" || op == "<<")
+        {
+            if (op == ">>")
+            {
+                packet >> number >> integer >> str;
+            }
+            else if (op == "<<")
+            {
+                packet << number << integer << str;
+            }
+            //mixin("packet " ~ op ~ " number " ~ op ~ " integer " ~ op ~ " str;");
+            return this;
+        }
+    }
+
+    Packet packet = new Packet();
+    MyStruct ms1 = MyStruct(42.124, 123, "hellow");
+    MyStruct ms2;
+
+    packet << ms1;
+    packet >> ms2;
+    assert(ms1 == ms2);
+    +/
 }
