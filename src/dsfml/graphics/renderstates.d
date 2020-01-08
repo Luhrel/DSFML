@@ -86,20 +86,20 @@ struct RenderStates
 package sfRenderStates convertRenderStates(ref RenderStates states)
 {
     if (states.texture !is null && states.shader !is null)
-        return sfRenderStates(states.blendMode.toc, states.transform.toc, states.texture.ptr, states.shader.ptr);
+        return sfRenderStates(states.blendMode, states.transform.toc, states.texture.ptr, states.shader.ptr);
     else if (states.shader is null)
-        return sfRenderStates(states.blendMode.toc, states.transform.toc, states.texture.ptr, null);
+        return sfRenderStates(states.blendMode, states.transform.toc, states.texture.ptr, null);
     else if (states.texture is null)
-        return sfRenderStates(states.blendMode.toc, states.transform.toc, null, states.shader.ptr);
+        return sfRenderStates(states.blendMode, states.transform.toc, null, states.shader.ptr);
     else
-        return sfRenderStates(states.blendMode.toc, states.transform.toc, null, null);
+        return sfRenderStates(states.blendMode, states.transform.toc, null, null);
 }
 
 package extern(C)
 {
     struct sfRenderStates
     {
-        sfBlendMode blendMode; ///< Blending mode
+        BlendMode blendMode; ///< Blending mode
         sfTransform transform; ///< Transform
         const sfTexture* texture; ///< Texture
         const sfShader* shader; ///< Shader
