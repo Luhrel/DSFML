@@ -5,6 +5,8 @@
         "homepage": "https://github.com/Jebbs/DSFML",
         "version":"2.5.0",
         "license": "Zlib",
+        "lflags": ["-L/usr/local/lib/"],
+        "targetPath": "lib",
         "dependencies": {
             "dsfml:audio": "~>2.5",
             "dsfml:graphics": "~>2.5",
@@ -17,6 +19,7 @@
                 {
                         "name": "audio",
                         "targetType": "library",
+                        "targetPath": "lib",
                         "sourcePaths": ["src/dsfml/audio"],
                         "libs": ["csfml-audio"],
                         "dependencies":
@@ -27,6 +30,7 @@
                 {
                         "name": "graphics",
                         "targetType": "library",
+                        "targetPath": "lib",
                         "sourcePaths": ["src/dsfml/graphics"],
                         "libs": ["csfml-graphics"],
                         "dependencies":
@@ -37,6 +41,8 @@
                 },
                 {
                         "name": "window",
+                        "targetType": "library",
+                        "targetPath": "lib",
                         "sourcePaths": ["src/dsfml/window"],
                         "libs": ["csfml-window"],
                         "dependencies":
@@ -47,6 +53,7 @@
                 {
                         "name": "network",
                         "targetType": "library",
+                        "targetPath": "lib",
                         "sourcePaths": ["src/dsfml/network"],
                         "libs": ["csfml-network"],
                         "dependencies":
@@ -57,6 +64,7 @@
                 {
                         "name": "system",
                         "targetType": "library",
+                        "targetPath": "lib",
                         "importPaths": ["src/"],
                         "sourcePaths": ["src/dsfml/system"],
                         "libs": ["csfml-system"]
