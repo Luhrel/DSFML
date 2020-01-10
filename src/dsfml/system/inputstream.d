@@ -132,7 +132,11 @@ abstract class InputStream
      */
     private extern(C) static long readCallback(void* data, long size, void* userData)
     {
-        void[] data_array = data[0..size];
+        version (X86)
+            void[] data_array = data[0 .. cast(uint) size];
+        else
+            void[] data_array = data[0 .. cast(uint) size];
+
         InputStream inputstream = cast(InputStream) userData;
         return inputstream.read(data_array);
     }

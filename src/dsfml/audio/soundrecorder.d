@@ -288,7 +288,7 @@ class SoundRecorder
             availableDevices.length = counts;
 
             //populate availableDevices
-            for(ulong i = 0; i < counts; i++)
+            for(uint i = 0; i < counts; i++)
             {
                 availableDevices[i] = devices[i].to!string;
             }

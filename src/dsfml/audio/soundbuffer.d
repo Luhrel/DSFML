@@ -135,7 +135,13 @@ class SoundBuffer
         {
             ulong sampleCount = sfSoundBuffer_getSampleCount(m_soundBuffer);
             if(sampleCount > 0)
-                return sfSoundBuffer_getSamples(m_soundBuffer)[0 .. sampleCount];
+            {
+                version (X86)
+                    return sfSoundBuffer_getSamples(m_soundBuffer)[0 .. cast(uint) sampleCount];
+                else
+                    return sfSoundBuffer_getSamples(m_soundBuffer)[0 .. sampleCount];
+            }
+
         }
         return null;
     }
