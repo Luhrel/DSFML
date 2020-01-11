@@ -294,9 +294,9 @@ class Packet
             {
                 static if (is(T == wstring))
                 {
-                    dchar[PACKET_STR_MAX_SIZE] dc;
-                    sfPacket_readWideString(m_packet, dc.ptr);
-                    value = fromStringz(dc.ptr).to!dstring;
+                    wchar[PACKET_STR_MAX_SIZE] wc;
+                    sfPacket_readWideString(m_packet, wc.ptr);
+                    value = fromStringz(wc.ptr).to!wstring;
                 }
                 else
                 {

@@ -50,7 +50,7 @@ module dsfml.window.windowhandle;
 version (Windows)
 {
     // In SFML, HWND__ is an alias of Windows' HWND.
-    import std.c.windows.windows;
+    import core.sys.windows.windows;
     alias WindowHandle = HWND*;
 }
 version (OSX)
