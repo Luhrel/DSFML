@@ -1,10 +1,12 @@
 #
 # Travis CI configuration file for DSFML
+# https://config.travis-ci.com/explore
 #
 language: d
-dist: bionic
 git:
   depth: 3
+notifications:
+  email: false
 
 addons:
   apt:
@@ -25,24 +27,31 @@ addons:
       - libvorbis-dev
       - libflac-dev
 
-
-os:
-  - linux
-  - osx
-
-d:
-  - dmd
-  #-gdc
-  - ldc
-
 jobs:
-  exclude:
-    - os: osx
-      d: gdc
+  include:
+    - name: Linux DMD
+      os: linux
+      d: dmd
+      env:
+        - INSTALL_PREFIX="/usr"
 
-before_install:
-  - if [ $TRAVIS_OS_NAME == "linux" ]; then INSTALL_PREFIX=/usr; fi
-  - if [ $TRAVIS_OS_NAME == "osx" ]; then INSTALL_PREFIX=/usr/local; fi
+    - name: Linux LDC
+      os: linux
+      d: ldc
+      env:
+        - INSTALL_PREFIX="/usr"
+
+    - name: MacOS DMD
+      os: osx
+      d: dmd
+      env:
+        - INSTALL_PREFIX="/usr/local"
+
+    - name: MacOS LDC
+      os: osx
+      d: ldc
+      env:
+        - INSTALL_PREFIX="/usr/local"
 
 # Download and install SFML and CSFML
 install:
