@@ -32,38 +32,28 @@ jobs:
     - name: Linux DMD
       os: linux
       d: dmd
-      env:
-        - INSTALL_PREFIX="/usr"
 
     - name: Linux LDC
       os: linux
       d: ldc
-      env:
-        - INSTALL_PREFIX="/usr"
 
     - name: MacOS DMD
       os: osx
       d: dmd
-      env:
-        - INSTALL_PREFIX="/usr/local"
 
     - name: MacOS LDC
       os: osx
       d: ldc
-      env:
-        - INSTALL_PREFIX="/usr/local"
 
 # Download and install SFML and CSFML
 install:
   - git submodule update --init --recursive
   - cd SFML
-  - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX .
+  - cmake .
   - make
-  - sudo make install
   - cd ../CSFML
-  - cmake -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX .
+  - env CMAKE_PREFIX_PATH="../SFML" cmake .
   - make
-  - sudo make install
   - cd ..
 
 script:
