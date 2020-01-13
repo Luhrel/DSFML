@@ -117,7 +117,7 @@ struct Transform
     @property
     Transform inverse() const
     {
-        return Transform(sfTransform_getInverse(&m_transform).matrix);
+        return Transform(sfTransform_getInverse(&m_transform));
     }
 
     /**
@@ -465,13 +465,6 @@ struct Transform
         return transformPoint(vector);
     }
 
-// No need because m_transform isn't a pointer.
-/*
-    bool opEquals(Transform rhs)
-    {
-        return sfTransform_equal(&this.m_transform, &rhs.m_transform);
-    }
-*/
     @property
     static const(Transform) identity()
     {
@@ -483,12 +476,10 @@ struct Transform
     string toString()
     {
         import std.conv;
-        const float[] mx = matrix;
-        if (mx.length != 16)
-            return null;
-        return text(mx[0]) ~ ", " ~ text(mx[1]) ~ ", " ~ text(mx[4]) ~ "\n" ~
-               text(mx[5]) ~ ", " ~ text(mx[6]) ~ ", " ~ text(mx[8]) ~ "\n" ~
-               text(mx[13]) ~ ", " ~ text(mx[14]) ~ ", " ~ text(mx[15]);
+        const float[9] mx = m_transform.matrix;
+        return text(mx[0]) ~ ", " ~ text(mx[1]) ~ ", " ~ text(mx[2]) ~ "\n" ~
+               text(mx[3]) ~ ", " ~ text(mx[4]) ~ ", " ~ text(mx[5]) ~ "\n" ~
+               text(mx[6]) ~ ", " ~ text(mx[7]) ~ ", " ~ text(mx[8]);
     }
 
     // Returns the C struct.
