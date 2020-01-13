@@ -5,7 +5,8 @@
         "homepage": "https://github.com/Jebbs/DSFML",
         "version":"2.5.0",
         "license": "Zlib",
-        "lflags": ["-LCSFML/lib", "-LSFML/lib", "-rpath=CSFML/lib", "-rpath=SFML/lib"],
+        "lflags-posix": ["-LCSFML/lib", "-LSFML/lib", "-rpath=CSFML/lib", "-rpath=SFML/lib"],
+        "lflags-windows": ["/LIBPATH:CSFML/lib/msvc", "/LIBPATH:CSFML/lib/gcc", "/LIBPATH:CSFML/lib", "/LIBPATH:SFML/lib"],
         "targetPath": "lib",
         "dependencies": {
             "dsfml:audio": "~>2.5",
