@@ -428,9 +428,12 @@ struct Transform
      * Returns: New combined transform.
      */
     Transform opBinary(string op)(Transform rhs)
-        if(op == "*")
+        if(op == "*" || op == "/")
     {
-        return this.combine(rhs);
+        static if (op == "*")
+            return this.combine(rhs);
+        else static if (op == "/")
+            return this * rhs.inverse();
     }
 
     /**
@@ -444,9 +447,12 @@ struct Transform
      * Returns: The combined transform.
      */
     ref Transform opOpAssign(string op)(Transform rhs)
-        if(op == "*")
+        if(op == "*" || op == "/")
     {
-        return this.combine(rhs);
+        static if (op == "*")
+            return this.combine(rhs);
+        else static if (op == "/")
+            return this * rhs.inverse();
     }
 
     /**
