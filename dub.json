@@ -15,6 +15,15 @@
             "dsfml:network": "~>2.5",
             "dsfml:system": "~>2.5"
         },
+        "configurations":
+        [
+            {
+                "name": "docs",
+                "buildOptions": ["syntaxOnly"],
+                "dflags": ["-Dddocs", "-op"],
+                "sourceFiles": ["docs/local.ddoc"]
+            }
+        ],
         "subPackages":
         [
                 {
