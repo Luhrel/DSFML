@@ -33,8 +33,6 @@ module dsfml.network;
 
 public
 {
-    import dsfml.system;
-
     import dsfml.network.ftp;
     import dsfml.network.http;
     import dsfml.network.ipaddress;

@@ -31,16 +31,16 @@ module dsfml.window;
 
 public
 {
-    import dsfml.system;
-
+    import dsfml.window.clipboard;
     import dsfml.window.context;
     import dsfml.window.contextsettings;
+    import dsfml.window.cursor;
     import dsfml.window.event;
     import dsfml.window.joystick;
     import dsfml.window.keyboard;
     import dsfml.window.mouse;
-    import dsfml.window.touch;
     import dsfml.window.sensor;
+    import dsfml.window.touch;
     import dsfml.window.videomode;
     import dsfml.window.window;
     import dsfml.window.windowhandle;

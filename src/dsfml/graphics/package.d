@@ -30,8 +30,6 @@ module dsfml.graphics;
 
 public
 {
-    import dsfml.window;
-
     import dsfml.graphics.blendmode;
     import dsfml.graphics.circleshape;
     import dsfml.graphics.color;
