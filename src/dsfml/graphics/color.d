@@ -64,7 +64,7 @@
  */
 module dsfml.graphics.color;
 
-import std.algorithm;
+import std.algorithm.comparison : min, max;
 import std.traits;
 
 /**
