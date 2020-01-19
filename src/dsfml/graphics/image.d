@@ -204,10 +204,6 @@ class Image
         return m_image != null;
     }
 
-    // pixelPtr is remplaced by pixelArray, which converts directly the pointer
-    // to an array
-    alias pixelPtr = pixelArray;
-
     /**
      * Get the read-only array of pixels that make up the image.
      *

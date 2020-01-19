@@ -258,9 +258,9 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromStream, loadFromSamples
      */
-    bool loadFromMemory(const(void*) data)
+    bool loadFromMemory(const(void)[] data)
     {
-        m_soundBuffer = sfSoundBuffer_createFromMemory(data, data.sizeof);
+        m_soundBuffer = sfSoundBuffer_createFromMemory(data.ptr, data.length);
         return m_soundBuffer != null;
     }
 

@@ -464,7 +464,7 @@ private extern(C)
     const(sfSoundBuffer)* sfSound_getBuffer(const sfSound* sound);
     void sfSound_setLoop(sfSound* sound, bool loop);
     bool sfSound_getLoop(const sfSound* sound);
-    Status sfSound_getStatus(const sfSound* sound);
+    SoundSource.Status sfSound_getStatus(const sfSound* sound);
     void sfSound_setPitch(sfSound* sound, float pitch);
     void sfSound_setVolume(sfSound* sound, float volume);
     void sfSound_setPosition(sfSound* sound, Vector3f position);

@@ -100,6 +100,8 @@ final abstract class Sensor
         Count
     }
 
+    alias Type this;
+
     /**
      * Check if a sensor is available on the underlying platform.
      *

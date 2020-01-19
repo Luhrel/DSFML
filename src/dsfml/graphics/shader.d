@@ -166,6 +166,8 @@ class Shader
         Fragment /// Fragment (pixel) shader.
     }
 
+    alias Type this;
+
     private sfShader* m_shader;
 
     /**

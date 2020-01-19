@@ -146,6 +146,8 @@ class Texture
         Pixels
     }
 
+    alias CoordinateType this;
+
     /**
      * Default constructor
      *

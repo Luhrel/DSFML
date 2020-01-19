@@ -577,7 +577,7 @@ private extern(C)
     void sfSoundStream_play(sfSoundStream* soundStream);
     void sfSoundStream_pause(sfSoundStream* soundStream);
     void sfSoundStream_stop(sfSoundStream* soundStream);
-    Status sfSoundStream_getStatus(const sfSoundStream* soundStream);
+    SoundSource.Status sfSoundStream_getStatus(const sfSoundStream* soundStream);
     uint sfSoundStream_getChannelCount(const sfSoundStream* soundStream);
     uint sfSoundStream_getSampleRate(const sfSoundStream* soundStream);
     void sfSoundStream_setPitch(sfSoundStream* soundStream, float pitch);

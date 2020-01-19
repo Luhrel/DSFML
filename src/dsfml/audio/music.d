@@ -150,9 +150,9 @@ class Music : SoundStream
      * See_Also:
      *      openFromFile, openFromStream
      */
-    void openFromMemory(const(void*) data)
+    void openFromMemory(const(void)[] data)
     {
-        m_music = sfMusic_createFromMemory(data, data.sizeof);
+        m_music = sfMusic_createFromMemory(data.ptr, data.length);
     }
 
     /**
@@ -611,7 +611,7 @@ private extern(C)
     void sfMusic_stop(sfMusic* music);
     uint sfMusic_getChannelCount(const sfMusic* music);
     uint sfMusic_getSampleRate(const sfMusic* music);
-    Status sfMusic_getStatus(const sfMusic* music);
+    SoundSource.Status sfMusic_getStatus(const sfMusic* music);
     Time sfMusic_getPlayingOffset(const sfMusic* music);
     void sfMusic_setPitch(sfMusic* music, float pitch);
     void sfMusic_setVolume(sfMusic* music, float volume);

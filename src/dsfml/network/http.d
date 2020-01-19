@@ -183,6 +183,8 @@ class Http
             Delete
         }
 
+        alias Method this;
+
         private sfHttpRequest* m_httpRequest;
 
         /**
@@ -330,6 +332,8 @@ class Http
             InvalidResponse = 1000,
             ConnectionFailed = 1001
         }
+
+        alias Status this;
 
         private sfHttpResponse* m_httpResponse;
 

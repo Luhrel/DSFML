@@ -123,6 +123,8 @@ final abstract class Joystick
         PovY
     }
 
+    alias Axis this;
+
     /**
      * Return the number of buttons supported by a joystick.
      *

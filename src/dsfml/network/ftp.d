@@ -113,6 +113,7 @@ class Ftp
         /// Text mode using EBCDIC encoding.
         Ebcdic,
     }
+
     // That way we can do Ftp.Ascii (like in SFML).
     alias TransferMode this;
 
@@ -679,6 +680,8 @@ class Ftp
             ConnectionClosed = 1002,
             InvalidFile = 1003,
         }
+
+        alias Status this;
 
         private sfFtpResponse* m_response;
 

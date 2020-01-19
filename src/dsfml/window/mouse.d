@@ -91,13 +91,17 @@ final abstract class Mouse
 
     }
 
+    alias Button this;
+    // TODO: Multiple alias this not supported
+    //alias Wheel this;
+
     /// Mouse wheels.
     enum Wheel
     {
         /// Vertically oriented mouse wheel
-        VerticalWheel,
+        Vertical,
         /// Horizontally oriented mouse wheel
-        HorizontalWheel
+        Horizontal
     }
 
     /**

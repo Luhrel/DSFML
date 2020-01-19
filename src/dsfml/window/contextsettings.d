@@ -102,4 +102,6 @@ struct ContextSettings
         Core = 1 << 0,
         Debug = 1 << 2
     }
+
+    alias Attribute this;
 }

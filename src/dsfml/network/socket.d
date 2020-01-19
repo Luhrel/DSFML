@@ -71,6 +71,8 @@ interface Socket
         Error
     }
 
+    alias Status this;
+
     /// Special value that tells the system to pick any available port.
     enum AnyPort = 0;
 

@@ -179,6 +179,8 @@ class Cursor
         NotAllowed              /// Action not allowed cursor
     }
 
+    alias Type this;
+
     // Retuns the C pointer
     package(dsfml) sfCursor* ptr()
     {

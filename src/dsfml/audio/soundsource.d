@@ -40,22 +40,23 @@ module dsfml.audio.soundsource;
 
 import dsfml.system.vector3;
 
-/// Enumeration of the sound source states.
-enum Status
-{
-    /// Sound is not playing.
-    Stopped,
-    /// Sound is paused.
-    Paused,
-    /// Sound is playing.
-    Playing
-}
-
 /**
  * Interface defining a sound's properties.
  */
 interface SoundSource
 {
+    /// Enumeration of the sound source states.
+    enum Status
+    {
+        /// Sound is not playing.
+        Stopped,
+        /// Sound is paused.
+        Paused,
+        /// Sound is playing.
+        Playing
+    }
+
+    alias Status this;
 
     @property
     {

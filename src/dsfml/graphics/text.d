@@ -107,6 +107,8 @@ class Text : Transformable, Drawable
         StrikeThrough = 1 << 3
     }
 
+    alias Style this;
+
     private sfText* m_text;
 
     /**
@@ -807,8 +809,6 @@ package extern(C)
 
 private extern(C)
 {
-    //enum sfTextStyle;
-
     sfText* sfText_create();
     sfText* sfText_copy(const sfText* text);
     void sfText_destroy(sfText* text);
