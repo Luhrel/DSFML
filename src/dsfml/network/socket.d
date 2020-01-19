@@ -39,7 +39,7 @@
  *
  * In non-blocking mode, all the socket functions will return immediately. If
  * the socket is not ready to complete the requested operation, the function
- * simply returns the proper status code (Socket.Status.NotReady).
+ * simply returns the proper status code (`Socket.NotReady`).
  *
  * The default mode, which is blocking, is the one that is generally used, in
  * combination with threads or selectors. The non-blocking mode is rather used
@@ -47,7 +47,7 @@
  * often enough, and cannot afford blocking this loop.
  *
  * See_Also:
- * $(TCPLISTENER_LINK), $(TCPSOCKET_LINK), $(UDPSOCKET_LINK)
+ *      $(TCPLISTENER_LINK), $(TCPSOCKET_LINK), $(UDPSOCKET_LINK)
  */
 module dsfml.network.socket;
 
@@ -56,7 +56,7 @@ module dsfml.network.socket;
  */
 interface Socket
 {
-    ///Status codes that may be returned by socket functions.
+    /// Status codes that may be returned by socket functions.
     enum Status
     {
         /// The socket has sent / received the data
@@ -88,7 +88,7 @@ interface Socket
      * By default, all sockets are blocking.
      *
      * Params:
-     * blocking = true to set the socket as blocking, false for non-blocking
+     *      _blocking = true to set the socket as blocking, false for non-blocking
      */
     @property
     void blocking(bool _blocking);
@@ -96,7 +96,8 @@ interface Socket
     /**
      * Tell whether the socket is in blocking or non-blocking mode.
      *
-     * Returns: true if the socket is blocking, false otherwise.
+     * Returns:
+     *      true if the socket is blocking, false otherwise.
      */
     @property
     bool blocking() const;

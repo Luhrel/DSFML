@@ -29,15 +29,15 @@
  * The audio listener defines the global properties of the audio environment, it
  * defines where and how sounds and musics are heard.
  *
- * If $(VIEW_LINK) is the eyes of the user, then
- * $(U Listener) is his ears (by the way, they are often linked together – same
+ * If $(VIEW_LINK) is the eyes of the user, then `Listener` is his ears (by the
+ * way, they are often linked together – same
  * position, orientation, etc.).
  *
- * $(U Listener) is a simple interface, which allows to setup the listener in
+ * `Listener` is a simple interface, which allows to setup the listener in
  * the 3D audio environment (position and direction), and to adjust the global
  * volume.
  *
- * Because the listener is unique in the scene, $(U Listener) only contains
+ * Because the listener is unique in the scene, `Listener` only contains
  * static functions and doesn't have to be instanciated.
  *
  * Example:
@@ -74,21 +74,21 @@ final abstract class Listener
          * The default listener's orientation is (0, 0, -1).
          *
          * Params:
-         * direction: New listener's direction
+         *      _direction = New listener's direction
          *
          * See_Also:
-         * upVector, position
+         *      upVector, position
          */
-        static void direction(Vector3f direction)
+        static void direction(Vector3f _direction)
         {
-            sfListener_setDirection(direction);
+            sfListener_setDirection(_direction);
         }
 
         /**
          * Get the current forward vector of the listener in the scene.
          *
          * Returns:
-         *    Listener's forward vector (not normalized)
+         *      Listener's forward vector (not normalized)
          */
         static Vector3f direction()
         {
@@ -108,20 +108,21 @@ final abstract class Listener
          * not necessary to change it, especially in 2D scenarios.
          *
          * Params:
-         *    upVector    New listener's up vector
+         *      _upVector = New listener's up vector
+         *
          * See_Also:
-         *    direction, position
+         *      direction, position
          */
-        static void upVector(Vector3f upVector)
+        static void upVector(Vector3f _upVector)
         {
-            sfListener_setUpVector(upVector);
+            sfListener_setUpVector(_upVector);
         }
 
         /**
          * Get the current upward vector of the listener in the scene.
          *
          * Returns:
-         *    Listener's upward vector (not normalized)
+         *      Listener's upward vector (not normalized)
          */
         static Vector3f upVector()
         {
@@ -134,10 +135,13 @@ final abstract class Listener
         /**
          * The global volume of all the sounds and musics.
          *
-         * The volume is a number between 0 and 100; it is combined with the
+         * The volume is a number between 0 and 100 ; it is combined with the
          * individual volume of each sound / music.
          *
          * The default value for the volume is 100 (maximum).
+         *
+         * Params:
+         *      volume = New global volume, in the range [0, 100]
          */
         static void globalVolume(float volume)
         {
@@ -148,7 +152,7 @@ final abstract class Listener
          * Get the current value of the global volume.
          *
          * Returns:
-         *    Current global volume, in the range [0, 100]
+         *      Current global volume, in the range [0, 100]
          */
         static float globalVolume()
         {
@@ -164,20 +168,21 @@ final abstract class Listener
          * The default listener's position is (0, 0, 0).
          *
          * Params:
-         *    position    New listener's position
+         *      _position = New listener's position
+         *
          * See_Also:
-         * direction
+         *      direction
          */
-        static void position(Vector3f pos)
+        static void position(Vector3f _position)
         {
-            sfListener_setPosition(pos);
+            sfListener_setPosition(_position);
         }
 
         /**
          * Get the current position of the listener in the scene.
          *
          * Returns:
-         *    Listener's position
+         *      Listener's position
          */
         static Vector3f position()
         {

@@ -43,13 +43,13 @@
  * operation, and it requires to store all the individual components of the
  * final transform.
  *
- * That's exactly what $(U Transformable) and $(U NormalTransformable) were
- * written for: they hides these variables and the composed transform behind an
- * easy to use interface. You can set or get any of the individual components
- * without worrying about the others. It also provides the composed transform
- * (as a $(TRANSFORM_LINK)), and keeps it up-to-date.
+ * That's exactly what `Transformable` was written for: they hides these
+ * variables and the composed transform behind an easy to use interface.
+ * You can set or get any of the individual components without worrying about
+ * the others. It also provides the composed transform (as a $(TRANSFORM_LINK)),
+ * and keeps it up-to-date.
  *
- * In addition to the position, rotation and scale, $(U Transformable) provides
+ * In addition to the position, rotation and scale, `Transformable` provides
  * an "origin" component, which represents the local origin of the three other
  * components. Let's take an example with a 10x10 pixels sprite. By default, the
  * sprite is positioned/rotated/scaled relatively to its top-left corner,
@@ -58,13 +58,13 @@
  * instead. And if we set the origin to (10, 10), it will be transformed around
  * its bottom-right corner.
  *
- * To keep $(U Transformable) and $(U NormalTransformable) simple, there's only
- * one origin for all the components. You cannot position the sprite relatively
- * to its top-left corner while rotating it around its center, for example. To
- * do such things, use $(TRANSFORM_LINK) directly.
+ * To keep `Transformable` simple, there's only one origin for all the
+ * components. You cannot position the sprite relatively to its top-left corner
+ * while rotating it around its center, for example. To do such things, use
+ * $(TRANSFORM_LINK) directly.
  *
- * $(U Transformable) is meant to be used as a base for other classes. It is
- * often combined with $(DRAWABLE_LINK) -- that's what DSFML's sprites, texts
+ * `Transformable` is meant to be used as a base for other classes. It is
+ * often combined with $(DRAWABLE_LINK) - that's what DSFML's sprites, texts
  * and shapes do.
  * ---
  * class MyEntity : Transformable, Drawable
@@ -85,9 +85,9 @@
  * window.draw(entity);
  * ---
  *
- * $(PARA If you don't want to use the API directly (because you don't need all
+ * If you don't want to use the API directly (because you don't need all
  * the functions, or you have different naming conventions for example), you can
- * have a $(U TransformableMember) as a member variable.)
+ * have a `TransformableMember` as a member variable.
  * ---
  * class MyEntity
  * {
@@ -107,25 +107,24 @@
  *         target.draw(..., states);
  *     }
  *
- * private TransformableMember myTransform;
+ *     private TransformableMember myTransform;
  * }
  * ---
  *
- * $(PARA A note on coordinates and undistorted rendering:
+ * A note on coordinates and undistorted rendering:
  * By default, DSFML (or more exactly, OpenGL) may interpolate drawable objects
  * such as sprites or texts when rendering. While this allows transitions like
  * slow movements or rotations to appear smoothly, it can lead to unwanted
  * results in some cases, for example blurred or distorted objects. In order to
  * render a $(DRAWABLE_LINK) object pixel-perfectly, make sure the involved
  * coordinates allow a 1:1 mapping of pixels in the window to texels (pixels in
- * the texture). More specifically, this means:)
- * $(UL
- * $(LI The object's position, origin and scale have no fractional part)
- * $(LI The object's and the view's rotation are a multiple of 90 degrees)
- * $(LI The view's center and size have no fractional part))
+ * the texture). More specifically, this means:
+ * - The object's position, origin and scale have no fractional part
+ * - The object's and the view's rotation are a multiple of 90 degrees
+ * - The view's center and size have no fractional part
  *
  * See_Also:
- * $(TRANSFORM_LINK)
+ *      $(TRANSFORM_LINK)
  */
 module dsfml.graphics.transformable;
 
@@ -170,11 +169,11 @@ class Transformable
          * transformable object is (0, 0).
          *
          * Params:
-         *     origin = New origin
+         *      _origin = New origin
          */
-        void origin(Vector2f newOrigin)
+        void origin(Vector2f _origin)
         {
-            sfTransformable_setOrigin(m_transformable, newOrigin);
+            sfTransformable_setOrigin(m_transformable, _origin);
         }
 
         /**
@@ -187,8 +186,8 @@ class Transformable
          * transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new origin
-         *     y = Y coordinate of the new origin
+         *      x = X coordinate of the new origin
+         *      y = Y coordinate of the new origin
          */
         void origin(float x, float y)
         {
@@ -198,7 +197,8 @@ class Transformable
         /**
          * Get the local origin of the object
          *
-         * Returns: Current origin
+         * Returns:
+         *      Current origin
          */
         Vector2f origin() const
         {
@@ -211,30 +211,34 @@ class Transformable
         /**
          * Set the position of the object
          *
-         * This function completely overwrites the previous position. See the move
+         * This function completely overwrites the previous position. See the `move`
          * function to apply an offset based on the previous position instead. The
          * default position of a transformable object is (0, 0).
          *
          * Params:
-         *     position = New position
-         * See_Also: move
+         *      _position = New position
+         *
+         * See_Also:
+         *      move
          */
-        void position(Vector2f newPosition)
+        void position(Vector2f _position)
         {
-            sfTransformable_setPosition(m_transformable, newPosition);
+            sfTransformable_setPosition(m_transformable, _position);
         }
 
         /**
          * Set the position of the object
          *
-         * This function completely overwrites the previous position. See the move
+         * This function completely overwrites the previous position. See the `move`
          * function to apply an offset based on the previous position instead. The
          * default position of a transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new position
-         *     y = Y coordinate of the new position
-         * See_Also: move
+         *      x = X coordinate of the new position
+         *      y = Y coordinate of the new position
+         *
+         * See_Also:
+         *      move
          */
         void position(float x, float y)
         {
@@ -244,7 +248,8 @@ class Transformable
         /**
          * Get the position of the object
          *
-         * Returns: Current position
+         * Returns:
+         *      Current position
          */
         Vector2f position() const
         {
@@ -256,14 +261,14 @@ class Transformable
      * Rotate the object.
      *
      * This function adds to the current rotation of the object, unlike the
-     * rotation property which overwrites it. Thus, it is equivalent to the
+     * `rotation` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * object.rotation(object.rotation() + angle);
      * ---
      *
      * Params:
-     *     angle = Angle of rotation, in degrees
+     *      angle = Angle of rotation, in degrees
      */
     void rotate(float angle)
     {
@@ -275,13 +280,15 @@ class Transformable
         /**
          * Set the orientation of the object
          *
-         * This function completely overwrites the previous rotation. See the rotate
+         * This function completely overwrites the previous rotation. See the `rotate`
          * function to add an angle based on the previous rotation instead. The
          * default rotation of a transformable object is 0.
          *
          * Params:
-         *     angle = New rotation, in degrees
-         * See_Also: rotate
+         *      angle = New rotation, in degrees
+         *
+         * See_Also:
+         *      rotate
          */
         void rotation(float angle)
         {
@@ -293,8 +300,11 @@ class Transformable
          *
          * The rotation is always in the range [0, 360].
          *
-         * Returns: Current rotation, in degrees
-         * See_Also: rotate
+         * Returns:
+         *      Current rotation, in degrees
+         *
+         * See_Also:
+         *      rotate
          */
         float rotation() const
         {
@@ -307,28 +317,28 @@ class Transformable
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The default
          * scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factors = New scale factors
+         *      factors = New scale factors
          */
-        void scale(Vector2f newScale)
+        void scale(Vector2f factors)
         {
-            sfTransformable_setScale(m_transformable, newScale);
+            sfTransformable_setScale(m_transformable, factors);
         }
 
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The
          * default scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factorX = New horizontal scale factor
-         *     factorY = New vertical scale factor
+         *      factorX = New horizontal scale factor
+         *      factorY = New vertical scale factor
          */
         void scale(float factorX, float factorY)
         {
@@ -338,7 +348,8 @@ class Transformable
         /**
          * Get the current scale of the object
          *
-         * Returns: Current scale factors
+         * Returns:
+         *      Current scale factors
          */
         Vector2f scale() const
         {
@@ -349,8 +360,11 @@ class Transformable
     /**
      * Get the combined transform of the object
      *
-     * Returns: Transform combining the position/rotation/scale/origin of the object
-     * See_Also: inverseTransform
+     * Returns:
+     *      Transform combining the position/rotation/scale/origin of the object
+     *
+     * See_Also:
+     *      inverseTransform
      */
     const(Transform) transform()
     {
@@ -360,8 +374,11 @@ class Transformable
     /**
      * get the inverse of the combined transform of the object
      *
-     * Returns: Inverse of the combined transformations applied to the object
-     * See_Also: transform
+     * Returns:
+     *      Inverse of the combined transformations applied to the object
+     *
+     * See_Also:
+     *      transform
      */
     const(Transform) inverseTransform()
     {
@@ -372,15 +389,17 @@ class Transformable
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it. Thus, it is equivalent to the
+     * `position` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * object.position(object.position() + offset);
      * ---
      *
      * Params:
-     *     offset = The offset
-     * See_Also: position
+     *      offset = The offset
+     *
+     * See_Also:
+     *      position
      */
     void move(Vector2f offset)
     {
@@ -391,7 +410,7 @@ class Transformable
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it. Thus, it is equivalent to the
+     * `position` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * Vector2f pos = object.position();
@@ -399,9 +418,11 @@ class Transformable
      * ---
      *
      * Params:
-     *     offsetX = X offset
-     *     offsetY = Y offset
-     * See_Also: position
+     *      offsetX = X offset
+     *      offsetY = Y offset
+     *
+     * See_Also:
+     *      position
      */
     void move(float offsetX, float offsetY)
     {

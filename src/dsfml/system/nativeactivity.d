@@ -40,11 +40,12 @@ version (Android)
          * very specific details, that SFML doesn't support, or to use a
          * workaround for a known issue.
          *
-         * Returns: Pointer to Android native activity structure
+         * Returns:
+         *      Pointer to Android native activity structure
          *
          * Platform Limitation:
          * This is only available on Android and to use it, you'll have to
-         * specifically import dsfml.system.nativeactivity in your code.
+         * specifically import `dsfml.system.nativeactivity` in your code.
          */
         ANativeActivity* getNativeActivity();
     }

@@ -26,19 +26,19 @@
  */
 
  /**
- * VertexBuffer is a simple wrapper around a dynamic buffer of vertices and a
+ * `VertexBuffer` is a simple wrapper around a dynamic buffer of vertices and a
  * primitives type.
  *
- * Unlike VertexArray, the vertex data is stored in graphics memory.
+ * Unlike $(VERTEXARRAY_LINK), the vertex data is stored in graphics memory.
  *
  * In situations where a large amount of vertex data would have to be
  * transferred from system memory to graphics memory every frame, using
  * VertexBuffer can help. By using a VertexBuffer, data that has not been
  * changed between frames does not have to be re-transferred from system to
- * graphics memory as would be the case with VertexArray. If data transfer is a
- * bottleneck, this can lead to performance gains.
+ * graphics memory as would be the case with $(VERTEXARRAY_LINK). If data
+ * transfer is a bottleneck, this can lead to performance gains.
  *
- * Using VertexBuffer, the user also has the ability to only modify a portion of
+ * Using `VertexBuffer`, the user also has the ability to only modify a portion of
  * the buffer in graphics memory. This way, a large buffer can be allocated at
  * the start of the application and only the applicable portions of it need to
  * be updated during the course of the application. This allows the user to take
@@ -75,7 +75,9 @@
  * //...
  * window.draw(triangles);
  * ---
- * See_Also: Vertex, VertexArray
+ *
+ * See_Also:
+ *      $(VERTEX_LINK), $(VERTEXARRAY_LINK)
  */
 module dsfml.graphics.vertexbuffer;
 
@@ -131,8 +133,8 @@ class VertexBuffer : Drawable
      * Creates an empty vertex buffer and sets its primitive type to type and usage to usage.
      *
      * Params:
-     *     type  = Type of primitive
-     *     usage = Usage specifier
+     *      type  = Type of primitive
+     *      usage = Usage specifier
      */
     this(PrimitiveType type = PrimitiveType.Points, Usage usage = Usage.Stream)
     {
@@ -143,7 +145,7 @@ class VertexBuffer : Drawable
      * Copy constructor.
      *
      * Params:
-     *     vertexBufferPointer = C pointer to sfVertexBuffer to assign
+     *      vertexBufferPointer = C pointer to sfVertexBuffer to assign
      */
     package this(const sfVertexBuffer* vertexBufferPointer)
     {
@@ -160,7 +162,7 @@ class VertexBuffer : Drawable
      * Bind a vertex buffer for rendering.
      *
      * This function is not part of the graphics API, it mustn't be used when
-     * drawing SFML entities. It must be used only if you mix VertexBuffer with
+     * drawing SFML entities. It must be used only if you mix `VertexBuffer` with
      * OpenGL code.
      * ---
      * VertexBuffer vb1, vb2;
@@ -169,13 +171,14 @@ class VertexBuffer : Drawable
      * // draw OpenGL stuff that use vb1...
      * VertexBuffer.bind(vb2);
      * // draw OpenGL stuff that use vb2...
-     * VertexBuffer.bind(NULL);
+     * VertexBuffer.bind(null);
      * // draw OpenGL stuff that use no vertex buffer...
+     * ---
      *
      * Params:
-     *     vertexBuffer = Pointer to the vertex buffer to bind, can be null to use no vertex buffer
+     *      vertexBuffer = Pointer to the vertex buffer to bind, can be null to use no vertex buffer
      */
-    static void bind(VertexBuffer vertexBuffer)
+    static void bind(ref VertexBuffer vertexBuffer)
     {
         sfVertexBuffer_bind(vertexBuffer.ptr);
     }
@@ -192,8 +195,10 @@ class VertexBuffer : Drawable
      * should be allocated again.
      *
      * Params:
-     *     vertexCount = Number of vertices worth of memory to allocate
-     * Returns: True if creation was successful
+     *      vertexCount = Number of vertices worth of memory to allocate
+     *
+     * Returns:
+     *      true if creation was successful
      */
     bool create(uint vertexCount)
     {
@@ -208,7 +213,8 @@ class VertexBuffer : Drawable
      * stuff to implement that SFML doesn't support, or implement a temporary
      * workaround until a bug is fixed.
      *
-     * Returns: OpenGL handle of the vertex buffer or 0 if not yet created
+     * Returns:
+     *      OpenGL handle of the vertex buffer or 0 if not yet created
      */
     @property
     uint nativeHandle() const
@@ -219,7 +225,8 @@ class VertexBuffer : Drawable
     /**
      * Get the type of primitives drawn by the vertex buffer.
      *
-     * Returns: Primitive type
+     * Returns:
+     *      Primitive type
      */
     @property
     PrimitiveType primitiveType() const
@@ -233,10 +240,10 @@ class VertexBuffer : Drawable
      * This function defines how the vertices must be interpreted when it's time
      * to draw them.
      *
-     * The default primitive type is sf::Points.
+     * The default primitive type is `PrimitiveType.Points`.
      *
      * Params:
-     *     type = Type of primitive
+     *      type = Type of primitive
      */
     @property
     void primitiveType(PrimitiveType type)
@@ -247,7 +254,8 @@ class VertexBuffer : Drawable
     /**
      * Get the usage specifier of this vertex buffer.
      *
-     * Returns: Usage specifier
+     * Returns:
+     *      Usage specifier
      */
     @property
     Usage usage() const
@@ -258,25 +266,28 @@ class VertexBuffer : Drawable
     /**
      * Set the usage specifier of this vertex buffer.
      *
-     * This function provides a hint about how this vertex buffer is going to be used in terms of data update frequency.
+     * This function provides a hint about how this vertex buffer is going to be
+     * used in terms of data update frequency.
      *
-     * After changing the usage specifier, the vertex buffer has to be updated with new data for the usage specifier to take effect.
+     * After changing the usage specifier, the vertex buffer has to be updated
+     * with new data for the usage specifier to take effect.
      *
-     * The default primitive type is sf::VertexBuffer::Stream.
+     * The default primitive type is `VertexBuffer.Stream`.
      *
      * Params:
-     *     usage = Usage specifier
+     *      _usage = Usage specifier
      */
     @property
-    void usage(Usage newUsage)
+    void usage(Usage _usage)
     {
-        sfVertexBuffer_setUsage(m_vertexBuffer, newUsage);
+        sfVertexBuffer_setUsage(m_vertexBuffer, _usage);
     }
 
     /**
      * Return the vertex count.
      *
-     * Returns: Number of vertices in the vertex buffer
+     * Returns:
+     *      Number of vertices in the vertex buffer
      */
     @property
     size_t vertexCount() const
@@ -288,10 +299,11 @@ class VertexBuffer : Drawable
      * Tell whether or not the system supports vertex buffers.
      *
      * This function should always be called before using the vertex buffer
-     * features. If it returns false, then any attempt to use VertexBuffer will
+     * features. If it returns false, then any attempt to use `VertexBuffer` will
      * fail.
      *
-     * Returns: True if vertex buffers are supported, false otherwise
+     * Returns:
+     *      true if vertex buffers are supported, false otherwise
      */
     static bool isAvailable()
     {
@@ -302,7 +314,7 @@ class VertexBuffer : Drawable
      * Swap the contents of this vertex buffer with those of another.
      *
      * Params:
-     *     right = Instance to swap with
+     *      right = Instance to swap with
      */
     void swap(VertexBuffer right)
     {
@@ -321,8 +333,10 @@ class VertexBuffer : Drawable
      * previously created.
      *
      * Params:
-     *     vertices = Array of vertices to copy to the buffer
-     * Returns: True if the update was successful
+     *      vertices = Array of vertices to copy to the buffer
+     *
+     * Returns:
+     *      true if the update was successful
      */
     bool update(Vertex[] vertices)
     {
@@ -335,26 +349,28 @@ class VertexBuffer : Drawable
      * offset is specified as the number of vertices to skip from the beginning
      * of the buffer.
      *
-     * If offset is 0 and vertexCount is equal to the size of the currently
+     * If offset is 0 and `vertexCount` is equal to the size of the currently
      * created buffer, its whole contents are replaced.
      *
-     * If offset is 0 and vertexCount is greater than the size of the currently
+     * If offset is 0 and `vertexCount` is greater than the size of the currently
      * created buffer, a new buffer is created containing the vertex data.
      *
-     * If offset is 0 and vertexCount is less than the size of the currently
+     * If offset is 0 and `vertexCount` is less than the size of the currently
      * created buffer, only the corresponding region is updated.
      *
-     * If offset is not 0 and offset + vertexCount is greater than the size of
+     * If offset is not 0 and `offset + vertexCount` is greater than the size of
      * the currently created buffer, the update fails.
      *
      * No additional check is performed on the size of the vertex array, passing
      * invalid arguments will lead to undefined behavior.
      *
      * Params:
-     *     vertices    = Array of vertices to copy to the buffer
-     *     vertexCount = Number of vertices to copy
-     *     offset      = Offset in the buffer to copy to
-     * Returns: True if the update was successful
+     *      vertices    = Array of vertices to copy to the buffer
+     *      vertexCount = Number of vertices to copy
+     *      offset      = Offset in the buffer to copy to
+     *
+     * Returns:
+     *      true if the update was successful
      */
     bool update(Vertex[] vertices, uint vertexCount, uint offset)
     {
@@ -365,8 +381,10 @@ class VertexBuffer : Drawable
      * Copy the contents of another buffer into this buffer.
      *
      * Params:
-     *     vertexBuffer = Vertex buffer whose contents to copy into this vertex buffer
-     * Returns: True if the copy was successful
+     *      vertexBuffer = Vertex buffer whose contents to copy into this vertex buffer
+     *
+     * Returns:
+     *      true if the copy was successful
      */
     bool update(VertexBuffer vertexBuffer)
     {
@@ -377,8 +395,8 @@ class VertexBuffer : Drawable
      * Draw the vertex buffer to a render target
      *
      * Params:
-     *     target = Render target to draw to
-     *     states = Current render states
+     *      target = Render target to draw to
+     *      states = Current render states
      */
     void draw(RenderTarget target, RenderStates states)
     {

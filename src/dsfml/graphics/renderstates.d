@@ -25,61 +25,61 @@ struct RenderStates
      * Construct a default set of render states with a custom blend mode.
      *
      * Params:
-     *     theBlendMode = Blend mode to use
+     *      blendMode = Blend mode to use
      */
-    this(BlendMode theBlendMode)
+    this(BlendMode blendMode)
     {
-        blendMode = theBlendMode;
+        this.blendMode = blendMode;
     }
 
     /**
      * Construct a default set of render states with a custom transform.
      *
      * Params:
-     *     theTransform = Transform to use
+     *      transform = Transform to use
      */
-    this(Transform theTransform)
+    this(Transform transform)
     {
-        transform = theTransform;
+        this.transform = transform;
     }
 
     /**
      * Construct a default set of render states with a custom texture
      *
      * Params:
-     *     theTexture = Texture to use
+     *      texture = Texture to use
      */
-    this(Texture theTexture)
+    this(Texture texture)
     {
-        texture = theTexture;
+        this.texture = texture;
     }
 
     /**
      * Construct a default set of render states with a custom shader
      *
      * Params:
-     * theShader = Shader to use
+     *      shader = Shader to use
      */
-    this(Shader theShader)
+    this(Shader shader)
     {
-        shader = theShader;
+        this.shader = shader;
     }
 
     /**
      * Construct a set of render states with all its attributes
      *
      * Params:
-     *     theBlendMode = Blend mode to use
-     *     theTransform = Transform to use
-     *     theTexture   = Texture to use
-     *     theShader    = Shader to use
+     *      blendMode = Blend mode to use
+     *      transform = Transform to use
+     *      texture   = Texture to use
+     *      shader    = Shader to use
      */
-    this(BlendMode theBlendMode, Transform theTransform, Texture theTexture, Shader theShader)
+    this(BlendMode blendMode, Transform transform, Texture texture, Shader shader)
     {
-        blendMode = theBlendMode;
-        transform = theTransform;
-        texture = theTexture;
-        shader = theShader;
+        this.blendMode = blendMode;
+        this.transform = transform;
+        this.texture = texture;
+        this.shader = shader;
     }
 }
 
@@ -99,9 +99,9 @@ package extern(C)
 {
     struct sfRenderStates
     {
-        BlendMode blendMode; ///< Blending mode
-        sfTransform transform; ///< Transform
-        const sfTexture* texture; ///< Texture
-        const sfShader* shader; ///< Shader
+        BlendMode blendMode;      // Blending mode
+        sfTransform transform;    // Transform
+        const sfTexture* texture; // Texture
+        const sfShader* shader;   // Shader
     }
 }

@@ -29,12 +29,12 @@
  * If you need to make OpenGL calls without having an active window (like in a
  * thread), you can use an instance of this class to get a valid context.
  *
- * Having a valid context is necessary for $(I every) OpenGL call.
+ * Having a valid context is necessary for *every* OpenGL call.
  *
  * Note that a context is only active in its current thread, if you create a new
  * thread it will have no valid context by default.
  *
- * To use a $(U Context) instance, just construct it and let it live as long as you
+ * To use a `Context` instance, just construct it and let it live as long as you
  * need a valid context. No explicit activation is needed, all it has to do is
  * to exist. Its destructor will take care of deactivating and freeing all the
  * attached resources.
@@ -87,14 +87,15 @@ class Context
      * Activate or deactivate explicitely the context.
      *
      * Params:
-     *     active = true to activate, false to deactivate
+     *      _active = true to activate, false to deactivate
      *
-     * Returns: true on success, false on failure.
+     * Returns:
+     *      true on success, false on failure.
      */
     @property
-    void active(bool active)
+    void active(bool _active)
     {
-        sfContext_setActive(m_context, active);
+        sfContext_setActive(m_context, _active);
     }
 
     /**
@@ -104,7 +105,8 @@ class Context
      * constructor; they are indeed adjusted if the original settings are not
      * directly supported by the system.
      *
-     * Returns: Structure containing the settings
+     * Returns:
+     *      Structure containing the settings
      */
     @property
     ContextSettings settings()
@@ -116,9 +118,11 @@ class Context
      *
      * Get the currently active context's ID.
      *
-     * The context ID is used to identify contexts when managing unshareable OpenGL resources.
+     * The context ID is used to identify contexts when managing unshareable
+     * OpenGL resources.
      *
-     * Returns: The active context's ID or 0 if no context is currently active
+     * Returns:
+     *      The active context's ID or 0 if no context is currently active
      */
     static ulong activeContextId()
     {
@@ -129,9 +133,10 @@ class Context
      * Get the address of an OpenGL function.
      *
      * Params:
-     *     name = Name of the function to get the address of
+     *      name = Name of the function to get the address of
      *
-     * Returns: Address of the OpenGL function, 0 on failure
+     * Returns:
+     *      Address of the OpenGL function, 0 on failure
      */
     // TODO: Not yet implemented in CSFML
     @disable
@@ -145,9 +150,10 @@ class Context
      * Check whether a given OpenGL extension is available.
      *
      * Params:
-     *     name = Name of the extension to check for
+     *      name = Name of the extension to check for
      *
-     * Returns: True if available, false if unavailable
+     * Returns:
+     *      true if available, false if unavailable
      */
     // TODO: Not yet implemented in CSFML
     @disable

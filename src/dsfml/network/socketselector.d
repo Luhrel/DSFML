@@ -33,23 +33,20 @@
  * selectors, a single thread can handle all the sockets.
  *
  * All types of sockets can be used in a selector:
- * $(UL
- * $(LI $(TCPLISTENER_LINK))
- * $(LI $(TCPSOCKET_LINK))
- * $(LI $(UDPSOCKET_LINK)))
+ * - $(TCPLISTENER_LINK)
+ * - $(TCPSOCKET_LINK)
+ * - $(UDPSOCKET_LINK)
  *
- * $(PARA
  * A selector doesn't store its own copies of the sockets, it simply keeps a
  * reference to the original sockets that you pass to the "add" function.
  * Therefore, you can't use the selector as a socket container, you must store
  * them outside and make sure that they are alive as long as they are used in
  * the selector (i.e., they cannot be collected by the GC).
  *
- * Using a selector is simple:)
- * $(UL
- * $(LI populate the selector with all the sockets that you want to observe)
- * $(LI make it wait until there is data available on any of the sockets)
- * $(LI test each socket to find out which ones are ready))
+ * Using a selector is simple:
+ * - populate the selector with all the sockets that you want to observe
+ * - make it wait until there is data available on any of the sockets
+ * - test each socket to find out which ones are ready
  *
  * Example:
  * ---
@@ -112,7 +109,7 @@
  * ---
  *
  * See_Also:
- * $(SOCKET_LINK)
+ *      $(SOCKET_LINK)
  */
 module dsfml.network.socketselector;
 
@@ -155,8 +152,10 @@ class SocketSelector
      * This function does nothing if the socket is not valid.
      *
      * Params:
-     * 	listener = Reference to the listener to add
-     * See_Also: remove, clear
+     *      listener = Reference to the listener to add
+     *
+     * See_Also:
+     *      remove, clear
      */
     void add(TcpListener listener)
     {
@@ -171,8 +170,10 @@ class SocketSelector
      * This function does nothing if the socket is not valid.
      *
      * Params:
-     *  socket = Reference to the socket to add
-     * See_Also: remove, clear
+     *      socket = Reference to the socket to add
+     *
+     * See_Also:
+     *      remove, clear
      */
     void add(TcpSocket socket)
     {
@@ -187,8 +188,10 @@ class SocketSelector
      * This function does nothing if the socket is not valid.
      *
      * Params:
-     * 	socket = Reference to the socket to add
-     * See_Also: remove, clear
+     *      socket = Reference to the socket to add
+     *
+     * See_Also:
+     *      remove, clear
      */
     void add(UdpSocket socket)
     {
@@ -201,7 +204,8 @@ class SocketSelector
      * This function doesn't destroy any instance, it simply removes all the
      * references that the selector has to external sockets.
      *
-     * See_Also: add, remove
+     * See_Also:
+     *      add, remove
      */
     void clear()
     {
@@ -218,12 +222,14 @@ class SocketSelector
      * is ready to accept a new connection.
      *
      * Params:
-     *     socket = Socket to test
-     * Returns: True if the socket is ready to read, false otherwise.
+     *      socket = Socket to test
+     *
+     * Returns:
+     *      true if the socket is ready to read, false otherwise.
      */
-    bool isReady(TcpListener listener) const
+    bool isReady(TcpListener socket) const
     {
-        return sfSocketSelector_isTcpListenerReady(m_socketSelector, listener.ptr);
+        return sfSocketSelector_isTcpListenerReady(m_socketSelector, socket.ptr);
     }
 
     /// ditto
@@ -245,8 +251,10 @@ class SocketSelector
      * that the selector has to it.
      *
      * Params:
-     *  socket = Reference to the socket to remove
-     * See_Also: add, clear
+     *      socket = Reference to the socket to remove
+     *
+     * See_Also:
+     *      add, clear
      */
     void remove(TcpListener socket)
     {
@@ -260,8 +268,10 @@ class SocketSelector
      * that the selector has to it.
      *
      * Params:
-     *  socket = Reference to the socket to remove
-     * See_Also: add, clear
+     *      socket = Reference to the socket to remove
+     *
+     * See_Also:
+     *      add, clear
      */
     void remove(TcpSocket socket)
     {
@@ -275,8 +285,10 @@ class SocketSelector
      * that the selector has to it.
      *
      * Params:
-     *  socket = Reference to the socket to remove
-     * See_Also: add, clear
+     *      socket = Reference to the socket to remove
+     *
+     * See_Also:
+     *      add, clear
      */
     void remove(UdpSocket socket)
     {
@@ -291,18 +303,21 @@ class SocketSelector
      * isReady function. If you use a timeout and no socket is ready before the
      * timeout is over, the function returns false.
      *
-     * Parameters
-     * 		timeout = Maximum time to wait, (use Time.Zero for infinity)
+     * Params:
+     *      timeout = Maximum time to wait, (use `Time.Zero` for infinity)
      *
-     * Returns: true if there are sockets ready, false otherwise.
-     * See_Also: isReady
+     * Returns:
+     *      true if there are sockets ready, false otherwise.
+     *
+     * See_Also:
+     *      isReady
      */
     bool wait(Time timeout = Time.Zero)
     {
         return sfSocketSelector_wait(m_socketSelector, timeout);
     }
 
-    /// Duplicate this SocketSelector.
+    /// Duplicates this SocketSelector.
     @property
     SocketSelector dup()
     {

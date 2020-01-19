@@ -26,19 +26,19 @@
  */
 
 /**
- * $(U RenderWindow) is the main class of the Graphics package. It defines an OS
+ * `RenderWindow` is the main class of the Graphics package. It defines an OS
  * window that can be painted using the other classes of the graphics module.
  *
- * $(U RenderWindow) is derived from $(WINDOW_LINK), thus it inherits all its
+ * `RenderWindow` is derived from $(WINDOW_LINK), thus it inherits all its
  * features : events, window management, OpenGL rendering, etc. See the
  * documentation of $(WINDOW_LINK) for a more complete description of all these
  * features, as well as code examples.
  *
- * On top of that, $(U RenderWindow) adds more features related to 2D drawing
+ * On top of that, `RenderWindow` adds more features related to 2D drawing
  * with the graphics module (see its base class $(RENDERTARGET_LINK) for more
  * details).
  *
- * Here is a typical rendering and event loop with a $(U RenderWindow):
+ * Here is a typical rendering and event loop with a `RenderWindow`:
  * ---
  * // Declare and create a new render-window
  * auto window = new RenderWindow(VideoMode(800, 600), "DSFML window");
@@ -71,9 +71,9 @@
  * }
  * ---
  *
- * $(PARA Like $(WINDOW_LINK), $(U RenderWindow) is still able to render direct
+ * Like $(WINDOW_LINK), `RenderWindow` is still able to render direct
  * OpenGL stuff. It is even possible to mix together OpenGL calls and regular
- * DSFML drawing commands.)
+ * DSFML drawing commands.
  * ---
  * // Create the render window
  * auto window = new RenderWindow(VideoMode(800, 600), "DSFML OpenGL");
@@ -115,7 +115,7 @@
  * ---
  *
  * See_Also:
- * $(WINDOW_LINK), $(RENDERTARGET_LINK), $(RENDERTEXTURE_LINK), $(VIEW_LINK)
+ *      $(WINDOW_LINK), $(RENDERTARGET_LINK), $(RENDERTEXTURE_LINK), $(VIEW_LINK)
  */
 module dsfml.graphics.renderwindow;
 
@@ -182,11 +182,11 @@ class RenderWindow : Window, RenderTarget
      * module.
      *
      * Params:
-     * mode     = Video mode to use (defines the width, height and depth of the
-     *               rendering area of the window)
-     * title    = Title of the window
-     * style    = Window style, a bitwise OR combination of Style enumerators
-     * settings = Additional settings for the underlying OpenGL context
+     *      mode     = Video mode to use (defines the width, height and depth of the
+     *                 rendering area of the window)
+     *      title    = Title of the window
+     *      style    = Window style, a bitwise OR combination of Style enumerators
+     *      settings = Additional settings for the underlying OpenGL context
      */
     // TODO: Should settings be a ref ?
     this(VideoMode mode, const(dstring) title, Style style = Style.DefaultStyle,
@@ -208,8 +208,8 @@ class RenderWindow : Window, RenderTarget
      * module.
      *
      * Params:
-     * handle   = Platform-specific handle of the control
-     * settings = Additional settings for the underlying OpenGL context
+     *      handle   = Platform-specific handle of the control
+     *      settings = Additional settings for the underlying OpenGL context
      */
     // TODO: Should settings be a ref ?
     this(WindowHandle handle, ContextSettings settings = ContextSettings.init)
@@ -238,18 +238,19 @@ class RenderWindow : Window, RenderTarget
          * window/control).
          *
          * Params:
-         *         position    =    New position, in pixels
+         *      _position = New position, in pixels
          */
-        override void position(Vector2i newPosition)
+        override void position(Vector2i _position)
         {
             if (m_renderWindow !is null)
-                sfRenderWindow_setPosition(m_renderWindow, newPosition);
+                sfRenderWindow_setPosition(m_renderWindow, _position);
         }
 
         /**
          * Get the position of the window.
          *
-         * Returns: Position of the window, in pixels
+         * Returns:
+         *      Position of the window, in pixels
          */
         override Vector2i position() const
         {
@@ -265,13 +266,13 @@ class RenderWindow : Window, RenderTarget
          * Change the size of the rendering region of the window.
          *
          * Params:
-         *         size    =    New size, in pixels
+         *      _size = New size, in pixels
          */
-        override void size(Vector2u newSize)
+        override void size(Vector2u _size)
         {
             if (m_renderWindow !is null)
             {
-                sfRenderWindow_setSize(m_renderWindow, newSize);
+                sfRenderWindow_setSize(m_renderWindow, _size);
                 onResize();
             }
         }
@@ -281,7 +282,8 @@ class RenderWindow : Window, RenderTarget
          *
          * The size doesn't include the titlebar and borders of the window.
          *
-         * Returns: Size in pixels
+         * Returns:
+         *      Size in pixels
          */
         override Vector2u size() const
         {
@@ -303,23 +305,28 @@ class RenderWindow : Window, RenderTarget
          * The render target keeps its own copy of the view object, so it is not
          * necessary to keep the original one alive after calling this function.
          * To restore the original view of the target, you can pass the result
-         * of `getDefaultView()` to this function.
+         * of `defaultView()` to this function.
          *
          * Params:
-         *         view = New view to use
-         * See_Also: defaultView
+         *      _view = New view to use
+         *
+         * See_Also:
+         *      defaultView
          */
-        void view(View newView)
+        void view(View _view)
         {
             if (m_renderWindow !is null)
-                sfRenderWindow_setView(m_renderWindow, newView.ptr);
+                sfRenderWindow_setView(m_renderWindow, _view.ptr);
         }
 
         /**
          * Get the view currently in use in the render target.
          *
-         * Returns: The view object that is currently used
-         * See_Also: defaultView
+         * Returns:
+         *      The view object that is currently used
+         *
+         * See_Also:
+         *      defaultView
          */
         View view() const
         {
@@ -335,8 +342,11 @@ class RenderWindow : Window, RenderTarget
      * The default view has the initial size of the render target, and never
      * changes after the target has been created.
      *
-     * Returns: The default view of the render target.
-     * See_Also: view
+     * Returns:
+     *      The default view of the render target.
+     *
+     * See_Also:
+     *      view
      */
     @property
     View defaultView() const
@@ -353,7 +363,8 @@ class RenderWindow : Window, RenderTarget
      * constructor or the `create()` function, if one or more settings were not
      * supported. In this case, DSFML chose the closest match.
      *
-     * Returns: Structure containing the OpenGL context settings
+     * Returns:
+     *      Structure containing the OpenGL context settings
      */
     @property
     override ContextSettings settings() const
@@ -366,13 +377,14 @@ class RenderWindow : Window, RenderTarget
     /**
      * Get the OS-specific handle of the window.
      *
-     * The type of the returned handle is WindowHandle, which is a typedef to
+     * The type of the returned handle is `WindowHandle`, which is a typedef to
      * the handle type defined by the OS. You shouldn't need to use this
      * function, unless you have very specific stuff to implement that SFML
      * doesn't support, or implement a temporary workaround until a bug is
      * fixed.
      *
-     * Returns: System handle of the window
+     * Returns:
+     *      System handle of the window
      */
     @property
     override WindowHandle systemHandle() const
@@ -390,14 +402,14 @@ class RenderWindow : Window, RenderTarget
      * pixels rectangle that the viewport actually covers in the target.
      *
      * Params:
-     * view=The view for which we want to compute the viewport
+     *      view = The view for which we want to compute the viewport
      */
     @property
-    IntRect viewport(View theView) const
+    IntRect viewport(View view) const
     {
         if (m_renderWindow is null)
             return IntRect(0, 0, 0, 0);
-        return sfRenderWindow_getViewport(m_renderWindow, theView.ptr);
+        return sfRenderWindow_getViewport(m_renderWindow, view.ptr);
     }
 
     /**
@@ -410,16 +422,17 @@ class RenderWindow : Window, RenderTarget
      * deactivated.
      *
      * Params:
-     *         active    = true to activate, false to deactivate
+     *      _active = true to activate, false to deactivate
      *
-     * Returns: true if operation was successful, false otherwise
+     * Returns:
+     *      true if operation was successful, false otherwise
      */
     @property
-    override bool active(bool active = true)
+    override bool active(bool _active = true)
     {
         if (m_renderWindow is null)
             return false;
-        return sfRenderWindow_setActive(m_renderWindow, active);
+        return sfRenderWindow_setActive(m_renderWindow, _active);
     }
 
     /**
@@ -435,7 +448,7 @@ class RenderWindow : Window, RenderTarget
      * FPS when requesting 60).
      *
      * Params:
-     * limit = Framerate limit, in frames per seconds (use 0 to disable limit)
+     *      limit = Framerate limit, in frames per seconds (use 0 to disable limit)
      */
     @property
     override void framerateLimit(uint limit)
@@ -452,10 +465,12 @@ class RenderWindow : Window, RenderTarget
      * The OS default icon is used by default.
      *
      * Params:
-     *         width    = Icon's width, in pixels
-     *         height    = Icon's height, in pixels
-     *         pixels    = Icon pixel array to load from
-     * See_Also: title
+     *      width  = Icon's width, in pixels
+     *      height = Icon's height, in pixels
+     *      pixels = Icon pixel array to load from
+     *
+     * See_Also:
+     *      title
      */
     override void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
@@ -472,7 +487,7 @@ class RenderWindow : Window, RenderTarget
      * The threshold value is 0.1 by default.
      *
      * Params:
-     *         threshold    = New threshold, in the range [0, 100]
+     *      threshold = New threshold, in the range [0, 100]
      */
     @property
     override void joystickThreshold(float threshold)
@@ -484,14 +499,14 @@ class RenderWindow : Window, RenderTarget
     /**
      * Enable or disable automatic key-repeat.
      *
-     * If key repeat is enabled, you will receive repeated KeyPressed events
+     * If key repeat is enabled, you will receive repeated `KeyPressed` events
      * while keeping a key pressed. If it is disabled, you will only get a
      * single event when the key is pressed.
      *
      * Key repeat is enabled by default.
      *
      * Params:
-     *         enabled    = true to enable, false to disable
+     *      enabled = true to enable, false to disable
      */
     @property
     override void keyRepeatEnabled(bool enabled)
@@ -506,7 +521,7 @@ class RenderWindow : Window, RenderTarget
      * The mouse cursor is visible by default.
      *
      * Params:
-     *         visible    = true show the mouse cursor, false to hide it
+     *      visible = true show the mouse cursor, false to hide it
      */
     @property
     override void mouseCursorVisible(bool visible)
@@ -515,18 +530,18 @@ class RenderWindow : Window, RenderTarget
             sfRenderWindow_setMouseCursorVisible(m_renderWindow, visible);
     }
 
-    //Cannot use templates here as template member functions cannot be virtual.
+    //TODO: Cannot use templates here as template member functions cannot be virtual.
     /**
      * Change the title of the window
      *
      * Params:
-     *         newTitle = New title
+     *      _title = New title
      */
     @property
-    override void title(const dstring newTitle)
+    override void title(const dstring _title)
     {
         if (m_renderWindow !is null)
-            sfRenderWindow_setUnicodeTitle(m_renderWindow, representation(newTitle).ptr);
+            sfRenderWindow_setUnicodeTitle(m_renderWindow, representation(_title).ptr);
     }
 
     /**
@@ -540,7 +555,7 @@ class RenderWindow : Window, RenderTarget
      * Vertical synchronization is disabled by default.
      *
      * Params:
-     *         enabled    = true to enable v-sync, false to deactivate it
+     *      enabled = true to enable v-sync, false to deactivate it
      */
     @property
     override void verticalSyncEnabled(bool enabled)
@@ -555,13 +570,13 @@ class RenderWindow : Window, RenderTarget
      * The window is shown by default.
      *
      * Params:
-     *         visible    = true to show the window, false to hide it
+     *      _visible = true to show the window, false to hide it
      */
     @property
-    override void visible(bool visible_)
+    override void visible(bool _visible)
     {
         if (m_renderWindow !is null)
-            sfRenderWindow_setVisible(m_renderWindow, visible_);
+            sfRenderWindow_setVisible(m_renderWindow, _visible);
     }
 
     /**
@@ -571,7 +586,7 @@ class RenderWindow : Window, RenderTarget
      * contents of the target.
      *
      * Params:
-     *         color    = Fill color to use to clear the render target
+     *      color = Fill color to use to clear the render target
      */
     void clear(Color color = Color.Black)
     {
@@ -597,17 +612,17 @@ class RenderWindow : Window, RenderTarget
      * Create (or recreate) the window.
      *
      * If the window was already created, it closes it first. If style contains
-     * Window.Style.Fullscreen, then mode must be a valid video mode.
+     * `Window.Style.Fullscreen`, then mode must be a valid video mode.
      *
      * The fourth parameter is an optional structure specifying advanced OpenGL
      * context settings such as antialiasing, depth-buffer bits, etc.
      *
      * Params:
-     * mode     = Video mode to use (defines the width, height and depth of the
-     * rendering area of the window)
-     * title    = Title of the window
-     * style    = Window style, a bitwise OR combination of Style enumerators
-     * settings = Additional settings for the underlying OpenGL context
+     *      mode     = Video mode to use (defines the width, height and depth of the
+     *                 rendering area of the window)
+     *      title    = Title of the window
+     *      style    = Window style, a bitwise OR combination of Style enumerators
+     *      settings = Additional settings for the underlying OpenGL context
      */
     override void create(VideoMode mode, const dstring title, Style style = Style.DefaultStyle,
         ContextSettings settings = ContextSettings.init)
@@ -627,8 +642,8 @@ class RenderWindow : Window, RenderTarget
      * context settings such as antialiasing, depth-buffer bits, etc.
      *
      * Params:
-     * handle   = Platform-specific handle of the control
-     * settings = Additional settings for the underlying OpenGL context
+     *      handle   = Platform-specific handle of the control
+     *      settings = Additional settings for the underlying OpenGL context
      */
     // TODO: Should settings be a ref ?
     override void create(WindowHandle handle, ContextSettings settings = ContextSettings.init)
@@ -641,17 +656,18 @@ class RenderWindow : Window, RenderTarget
      * Copy the current contents of the window to an image
      *
      * Deprecated:
-     * Use a $(TEXTURE_LINK Texture) and its `Texture.update()` function and
-     * copy its contents into an $(IMAGE_LINK Image) instead.
+     * Use a $(TEXTURE_LINK) and its `Texture.update()` function and
+     * copy its contents into an $(IMAGE_LINK) instead.
      *
      * This is a slow operation, whose main purpose is to make screenshots of
      * the application. If you want to update an image with the contents of the
      * window and then use it for drawing, you should rather use a
-     * $(TEXTURE_LINK Texture) and its `update()` function. You can also draw
-     * things directly to a texture with the $(RENDERTEXTURE_LINK RenderTexture)
+     * $(TEXTURE_LINK) and its `update()` function. You can also draw
+     * things directly to a texture with the $(RENDERTEXTURE_LINK)
      * class.
      *
-     * Returns: An Image containing the captured contents.
+     * Returns:
+     *      An Image containing the captured contents.
      */
     deprecated("Use a Texture, its update function, and copy its contents into an Image instead.")
     Image capture()
@@ -677,8 +693,8 @@ class RenderWindow : Window, RenderTarget
      * Draw a drawable object to the render target.
      *
      * Params:
-     *         drawable    = Object to draw
-     *         states      = Render states to use for drawing
+     *      drawable = Object to draw
+     *      states   = Render states to use for drawing
      */
     void draw(Drawable drawable, ref RenderStates states)
     {
@@ -725,13 +741,12 @@ class RenderWindow : Window, RenderTarget
      * Draw primitives defined by an array of vertices.
      *
      * Params:
-     *         vertices    = Array of vertices to draw
-     *         type        = Type of primitives to draw
-     *         states      = Render states to use for drawing
+     *      vertices = Array of vertices to draw
+     *      type     = Type of primitives to draw
+     *      states   = Render states to use for drawing
      */
     void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
     {
-
         if (m_renderWindow !is null)
         {
             sfRenderStates sfStates = convertRenderStates(states);
@@ -743,8 +758,8 @@ class RenderWindow : Window, RenderTarget
      * Draw primitives defined by a vertex buffer.
      *
      * Params:
-     *     vertexBuffer = Vertex buffer
-     *     states       = Render states to use for drawing
+     *      vertexBuffer = Vertex buffer
+     *      states       = Render states to use for drawing
      */
     void draw(VertexBuffer vertexBuffer, ref RenderStates states)
     {
@@ -759,10 +774,10 @@ class RenderWindow : Window, RenderTarget
      * Draw primitives defined by a vertex buffer.
      *
      * Params:
-     *     vertexBuffer = Vertex buffer
-     *     firstVertex  = Index of the first vertex to render
-     *     vertexCount  = Number of vertices to render
-     *     states       = Render states to use for drawing
+     *      vertexBuffer = Vertex buffer
+     *      firstVertex  = Index of the first vertex to render
+     *      vertexCount  = Number of vertices to render
+     *      states       = Render states to use for drawing
      */
     // TODO: Not yet implemented in CSFML
     @disable
@@ -780,10 +795,11 @@ class RenderWindow : Window, RenderTarget
      * Tell whether or not the window is open.
      *
      * This function returns whether or not the window exists. Note that a
-     * hidden window (`setVisible(false)`) is open (therefore this function would
+     * hidden window (`visible(false)`) is open (therefore this function would
      * return true).
      *
-     * Returns: true if the window is open, false if it has been closed
+     * Returns:
+     *      true if the window is open, false if it has been closed
      */
     override bool isOpen() const
     {
@@ -798,7 +814,8 @@ class RenderWindow : Window, RenderTarget
      * See the description of pushGLStates to get a detailed description of
      * these functions.
      *
-     * See_Also: pushGLStates
+     * See_Also:
+     *      pushGLStates
      */
     void popGLStates()
     {
@@ -811,9 +828,8 @@ class RenderWindow : Window, RenderTarget
      *
      * This function can be used when you mix SFML drawing and direct OpenGL
      * rendering. Combined with PopGLStates, it ensures that:
-     * $(UL
-     * $(LI DSFML's internal states are not messed up by your OpenGL code)
-     * $(LI your OpenGL states are not modified by a call to an SFML function))
+     * - DSFML's internal states are not messed up by your OpenGL code
+     * - your OpenGL states are not modified by a call to an SFML function
      *
      * More specifically, it must be used around code that calls Draw functions.
      * Example:
@@ -825,6 +841,7 @@ class RenderWindow : Window, RenderTarget
      * window.popGLStates();
      * // OpenGL code here...
      * ---
+     *
      * Note that this function is quite expensive: it saves all the possible
      * OpenGL states and matrices, even the ones you don't care about.Therefore
      * it should be used wisely. It is provided for convenience, but the best
@@ -832,7 +849,8 @@ class RenderWindow : Window, RenderTarget
      * you know which states have really changed, and need to be saved and
      * restored). Take a look at the `resetGLStates` function if you do so.
      *
-     * See_Also: popGLStates
+     * See_Also:
+     *      popGLStates
      */
     void pushGLStates()
     {
@@ -880,11 +898,13 @@ class RenderWindow : Window, RenderTarget
      * }
      * ---
      * Params:
-     *         event    = Event to be returned
+     *      event = Event to be returned
      *
-     * Returns: true if an event was returned, or false if the event queue was
-     * empty.
-     * See_Also: waitEvent
+     * Returns:
+     *      true if an event was returned, or false if the event queue was empty.
+     *
+     * See_Also:
+     *      waitEvent
      */
     override bool pollEvent(ref Event event)
     {
@@ -911,10 +931,13 @@ class RenderWindow : Window, RenderTarget
      * ---
      *
      * Params:
-     *         event    = Event to be returned
+     *      event = Event to be returned
      *
-     * Returns: false if any error occurred.
-     * See_Also: pollEvent
+     * Returns:
+     *      false if any error occurred.
+     *
+     * See_Also:
+     *      pollEvent
      */
     override bool waitEvent(ref Event event)
     {
@@ -929,8 +952,11 @@ class RenderWindow : Window, RenderTarget
      * At any given time, only one window may have the input focus to receive input
      * events such as keystrokes or most mouse events.
      *
-     * Returns: True if window has focus, false otherwise
-     * See_Also: requestFocus
+     * Returns:
+     *      true if window has focus, false otherwise
+     *
+     * See_Also:
+     *      requestFocus
      */
     override bool hasFocus() const
     {
@@ -946,9 +972,10 @@ class RenderWindow : Window, RenderTarget
      * events such as keystrokes or mouse events. If a window requests focus, it
      * only hints to the operating system, that it would like to be focused. The
      * operating system is free to deny the request. This is not to be confused with
-     * setActive().
+     * `active()`.
      *
-     * See_Also: hasFocus
+     * See_Also:
+     *      hasFocus
      */
     override void requestFocus()
     {
@@ -960,17 +987,20 @@ class RenderWindow : Window, RenderTarget
      * Convert a point from world coordinates to target coordinates, using the
      * current view.
      *
-     * This function is an overload of the mapCoordsToPixel function that implicitly
+     * This function is an overload of the `mapCoordsToPixel` function that implicitly
      * uses the current view. It is equivalent to:
      * ---
      * target.mapCoordsToPixel(point, target.view);
      * ---
      *
      * Params:
-     * point=Point to convert
+     *      point = Point to convert
      *
-     * Returns: The converted point, in target coordinates (pixels)
-     * See_Also: mapPixelToCoords
+     * Returns:
+     *      The converted point, in target coordinates (pixels)
+     *
+     * See_Also:
+     *      mapPixelToCoords
      */
     Vector2i mapCoordsToPixel(Vector2f point) inout
     {
@@ -996,11 +1026,14 @@ class RenderWindow : Window, RenderTarget
      * function if you want to use the current view of the render target.
      *
      * Params:
-     * point=Point to convert
-     * view=The view to use for converting the point
+     *      point = Point to convert
+     *      view  = The view to use for converting the point
      *
-     * Returns: The converted point, in target coordinates (pixels)
-     * See_Also: mapPixelToCoords
+     * Returns:
+     *      The converted point, in target coordinates (pixels)
+     *
+     * See_Also:
+     *      mapPixelToCoords
      */
     Vector2i mapCoordsToPixel(Vector2f point, View view) inout
     {
@@ -1013,17 +1046,20 @@ class RenderWindow : Window, RenderTarget
      * Convert a point from target coordinates to world coordinates, using the
      * current view.
      *
-     * This function is an overload of the mapPixelToCoords function that
+     * This function is an overload of the `mapPixelToCoords` function that
      * implicitly uses the current view. It is equivalent to:
      * ---
      * target.mapPixelToCoords(point, target.view);
      * ---
      *
      * Params:
-     * point=Pixel to convert
+     *      point = Pixel to convert
      *
-     * Returns: The converted point, in "world" coordinates
-     * See_Also: mapCoordsToPixel
+     * Returns:
+     *      The converted point, in "world" coordinates
+     *
+     * See_Also:
+     *      mapCoordsToPixel
      */
     Vector2f mapPixelToCoords(Vector2i point) inout
     {
@@ -1052,17 +1088,20 @@ class RenderWindow : Window, RenderTarget
      * the function if you want to use the current view of the render target.
      *
      * Params:
-     * point=Pixel to convert
-     * view=The view to use for converting the point
+     *      point = Pixel to convert
+     *      view  = The view to use for converting the point
      *
-     * Returns: The converted point, in "world" units
-     * See_Also: mapCoordsToPixel
+     * Returns:
+     *      The converted point, in "world" units
+     *
+     * See_Also:
+     *      mapCoordsToPixel
      */
-    Vector2f mapPixelToCoords(Vector2i point, View theView) inout
+    Vector2f mapPixelToCoords(Vector2i point, View view) inout
     {
         if (m_renderWindow is null)
             return Vector2f(0, 0);
-        return sfRenderWindow_mapPixelToCoords(m_renderWindow, point, theView.ptr);
+        return sfRenderWindow_mapPixelToCoords(m_renderWindow, point, view.ptr);
     }
 
     /**
@@ -1088,13 +1127,15 @@ class RenderWindow : Window, RenderTarget
      *
      * Upon window creation, the arrow cursor is used by default.
      *
-     * Warning:
+     * **Warning:**
      * The cursor must not be destroyed while in use by the window.
-     * Features related to Cursor are not supported on iOS and Android.
+     * Features related to `Cursor` are not supported on iOS and Android.
      *
      * Params:
-     *         cursor    =    Native system cursor type to display
-     * See_Also: Cursor.loadFromSystem, Cursor.loadFromPixels
+     *      cursor = Native system cursor type to display
+     *
+     * See_Also:
+     *      Cursor.loadFromSystem, Cursor.loadFromPixels
      */
     @property
     override void mouseCursor(Cursor cursor)
@@ -1111,7 +1152,7 @@ class RenderWindow : Window, RenderTarget
      * the window has focus.
      *
      * Params:
-     *         grabbed    =    True to enable, false to disable
+     *      grabbed = true to enable, false to disable
      */
     @property
     override void mouseCursorGrabbeb(bool grabbed)

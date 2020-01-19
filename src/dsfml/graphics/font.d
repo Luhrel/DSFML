@@ -31,29 +31,27 @@
  * supports the most common types of fonts. See the `loadFromFile` function for
  * the complete list of supported formats.
  *
- * Once it is loaded, a $(U Font) instance provides three types of information
+ * Once it is loaded, a `Font` instance provides three types of information
  * about the font:
- * $(UL
- * $(LI Global metrics, such as the line spacing)
- * $(LI Per-glyph metrics, such as bounding box or kerning)
- * $(LI Pixel representation of glyphs))
+ * - Global metrics, such as the line spacing
+ * - Per-glyph metrics, such as bounding box or kerning
+ * - Pixel representation of glyphs
  *
- * $(PARA
  * Fonts alone are not very useful: they hold the font data but cannot make
  * anything useful of it. To do so you need to use the $(TEXT_LINK) class, which
  * is able to properly output text with several options such as character size,
  * style, color, position, rotation, etc.
  * This separation allows more flexibility and better performances: indeed a
- & $(U Font) is a heavy resource, and any operation on it is slow (often too
+ * `Font` is a heavy resource, and any operation on it is slow (often too
  * slow for real-time applications). On the other side, a $(TEXT_LINK) is a
  * lightweight object which can combine the glyphs data and metrics of a
- * $(U Font) to display any text on a render target.
+ * `Font` to display any text on a render target.
  * Note that it is also possible to bind several $(TEXT_LINK) instances to the
- * same $(U Font).
+ * same `Font`.
  *
  * It is important to note that the $(TEXT_LINK) instance doesn't copy the font
- * that it uses, it only keeps a reference to it. Thus, a $(U Font) must not be
- * destructed while it is used by a $(TEXT_LINK).)
+ * that it uses, it only keeps a reference to it. Thus, a `Font` must not be
+ * destructed while it is used by a $(TEXT_LINK).
  *
  * Example:
  * ---
@@ -79,7 +77,7 @@
  * text2.setStyle(Text.Style.Italic);
  * ---
  *
- * $(PARA Apart from loading font files, and passing them to instances of
+ * Apart from loading font files, and passing them to instances of
  * $(TEXT_LINK), you should normally not have to deal directly with this class.
  * However, it may be useful to access the font metrics or rasterized glyphs for
  * advanced usage.
@@ -88,10 +86,10 @@
  * requested sizes will be available to use. This needs to be taken into
  * consideration when using $(TEXT_LINK).
  * If you need to display text of a certain size, make sure the corresponding
- * bitmap font that supports that size is used.)
+ * bitmap font that supports that size is used.
  *
  * See_Also:
- * $(TEXT_LINK)
+ *      $(TEXT_LINK)
  */
 module dsfml.graphics.font;
 
@@ -148,16 +146,19 @@ class Font
      * nothing about the standard fonts installed on the user's system, thus you
      * can't load them directly.
      *
-     * Warning:
+     * **Warning:**
      * DSFML cannot preload all the font data in this function, so the file has
      * to remain accessible until the Font object loads a new font or is
      * destroyed.
      *
      * Params:
-     * 		filename	= Path of the font file to load
+     *      filename = Path of the font file to load
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromMemory, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromMemory, loadFromStream
      */
     bool loadFromFile(const(string) filename)
     {
@@ -176,10 +177,13 @@ class Font
      * font or is destroyed.
      *
      * Params:
-     * 		data	= data holding the font file
+     *      data = data holding the font file
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(void)[] data)
     {
@@ -197,14 +201,16 @@ class Font
      * of stream have to remain valid as long as the font is used.
      *
      * Params:
-     * 		stream	= Source stream to read from
+     *      stream = Source stream to read from
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream stream)
     {
-        //m_stream = new fontStream(stream);
         m_font = sfFont_createFromStream(stream.ptr);
         return m_font != null;
     }
@@ -212,7 +218,8 @@ class Font
     /**
      * Get the font information.
      *
-     * Returns: A structure that holds the font information
+     * Returns:
+     *      A structure that holds the font information
      */
     @property
     const(Info) info() const
@@ -232,12 +239,13 @@ class Font
      * distorted rendering
      *
      * Params:
-     * 		codePoint		 = Unicode code point of the character ot get
-     * 		characterSize	 = Reference character size
-     * 		bold			 = Retrieve the bold version or the regular one?
+     *      codePoint        = Unicode code point of the character ot get
+     * 		characterSize    = Reference character size
+     * 		bold             = Retrieve the bold version or the regular one?
      *      outlineThickness = Thickness of outline (when != 0 the glyph will not be filled)
      *
-     * Returns: The glyph corresponding to codePoint and characterSize.
+     * Returns:
+     *      The glyph corresponding to codePoint and characterSize.
      */
     Glyph glyph(dchar codePoint, uint characterSize, bool bold, float outlineThickness = 0) const
     {
@@ -256,11 +264,12 @@ class Font
      * though.
      *
      * Params:
-     * 		first			= Unicode code point of the first character
-     * 		second			= Unicode code point of the second character
-     * 		characterSize	= Reference character size
+     *      first         = Unicode code point of the first character
+     *      second        = Unicode code point of the second character
+     *      characterSize = Reference character size
      *
-     * Returns: Kerning value for first and second, in pixels.
+     * Returns:
+     *      Kerning value for first and second, in pixels.
      */
     float kerning(dchar first, dchar second, uint characterSize) const
     {
@@ -272,13 +281,14 @@ class Font
     /**
      * Get the line spacing.
      *
-     * Line spacing is the vertical offset to apply between two consecutive lines of
-     * text.
+     * Line spacing is the vertical offset to apply between two consecutive lines
+     * of text.
      *
      * Params:
-     * 		characterSize	= Reference character size
+     *      characterSize = Reference character size
      *
-     * Returns: Line spacing, in pixels.
+     * Returns:
+     *      Line spacing, in pixels.
      */
     float lineSpacing(uint characterSize) const
     {
@@ -294,10 +304,13 @@ class Font
      * and the underline.
      *
      * Params:
-     * 		characterSize	= Reference character size
+     *      characterSize = Reference character size
      *
-     * Returns: Underline position, in pixels.
-     * See_Also: getUnderlineThickness
+     * Returns:
+     *      Underline position, in pixels.
+     *
+     * See_Also:
+     *      getUnderlineThickness
      */
     float getUnderlinePosition(uint characterSize) const
     {
@@ -312,10 +325,13 @@ class Font
      * Underline thickness is the vertical size of the underline.
      *
      * Params:
-     * 		characterSize	= Reference character size
+     *      characterSize = Reference character size
      *
-     * Returns: Underline thickness, in pixels.
-     * See_Also: getUnderlinePosition
+     * Returns:
+     *      Underline thickness, in pixels.
+     *
+     * See_Also:
+     *      getUnderlinePosition
      */
     float getUnderlineThickness(uint characterSize) const
     {
@@ -332,9 +348,10 @@ class Font
      * Text.
      *
      * Params:
-     * 		characterSize	= Reference character size
+     *      characterSize = Reference character size
      *
-     * Returns: Texture containing the glyphs of the requested size.
+     * Returns:
+     *      Texture containing the glyphs of the requested size.
      */
     const(Texture) texture(uint characterSize)
     {
@@ -346,7 +363,8 @@ class Font
     /**
      * Performs a deep copy on the font.
      *
-     * Returns: The duplicated font.
+     * Returns:
+     *      The duplicated font.
      */
     @property
     Font dup() const

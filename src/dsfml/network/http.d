@@ -26,33 +26,30 @@
  */
 
 /**
- * The Http class is a very simple HTTP client that allows you to communicate
+ * The `Http` class is a very simple HTTP client that allows you to communicate
  * with a web server. You can retrieve web pages, send data to an interactive
  * resource, download a remote file, etc. The HTTPS protocol is not supported.
  *
  * The HTTP client is split into 3 classes:
- * $(UL
- * $(LI Http.Request)
- * $(LI Http.Response)
- * $(LI Http))
+ * - `Http.Request`
+ * - `Http.Response`
+ * - `Http`
  *
- * $(PARA Http.Request builds the request that will be sent to the server. A
- * request is made of:)
- * $(UL
- * $(LI a method (what you want to do))
- * $(LI a target URI (usually the name of the web page or file))
- * $(LI one or more header fields (options that you can pass to the server))
- * $(LI an optional body (for POST requests)))
+ * `Http.Request` builds the request that will be sent to the server. A
+ * request is made of:
+ * - a method (what you want to do)
+ * - a target URI (usually the name of the web page or file)
+ * - one or more header fields (options that you can pass to the server)
+ * - an optional body (for POST requests)
  *
- * $(PARA Http.Response parses the response from the web server and provides
- * getters to read them. The response contains:)
- * $(UL
- * $(LI a status code)
- * $(LI header fields (that may be answers to the ones that you requested))
- * $(LI a body, which contains the contents of the requested resource))
+ * `Http.Response` parses the response from the web server and provides
+ * getters to read them. The response contains:
+ * - a status code
+ * - header fields (that may be answers to the ones that you requested)
+ * - a body, which contains the contents of the requested resource
  *
- * $(PARA $(U Http) provides a simple function, `sendRequest`, to send a
- * Http.Request and return the corresponding Http.Response from the server.)
+ * `Http` provides a simple function, `sendRequest`, to send a
+ * `Http.Request` and return the corresponding `Http.Response` from the server.
  *
  * Example:
  * ---
@@ -110,8 +107,8 @@ class Http
      * standard one, or use an unknown protocol.
      *
      * Params:
-     * 		host = Web server to connect to
-     * 		port = Port to use for connection
+     * 	    host = Web server to connect to
+     * 	    port = Port to use for connection
      */
     this(const string host, ushort port = 0)
     {
@@ -136,8 +133,8 @@ class Http
      * unknown protocol.
      *
      * Params:
-     * 		host = Web server to connect to
-     * 		port = Port to use for connection
+     * 	    host = Web server to connect to
+     * 	    port = Port to use for connection
      */
     void setHost(const string host, ushort port = 0)
     {
@@ -149,16 +146,18 @@ class Http
      *
      * You must have a valid host before sending a request (see setHost). Any
      * missing mandatory header field in the request will be added with an
-     * appropriate value. Warning: this function waits for the server's response
+     * appropriate value. **Warning:** this function waits for the server's response
      * and may not return instantly; use a thread if you don't want to block
      * your application, or use a timeout to limit the time to wait. A value of
      * Time.Zero means that the client will use the system defaut timeout
      * (which is usually pretty long).
      *
      * Params:
-     * 		request = Request to send
-     * 		timeout = Maximum time to wait
-     * Returns: Server's response.
+     * 	    request = Request to send
+     * 	    timeout = Maximum time to wait
+     *
+     * Returns:
+     *      Server's response.
      */
     Response sendRequest(Request request, Time timeout = Time.Zero)
     {
@@ -193,9 +192,9 @@ class Http
          * an empty body.
          *
          * Params:
-         * 	uri    = Target URI
-         * 	method = Method to use for the request
-         * 	body   = Content of the request's body
+         *      uri    = Target URI
+         * 	    method = Method to use for the request
+         * 	    body   = Content of the request's body
          */
         this(const string uri = "/", Method method = Method.Get,
             const string body = "")
@@ -220,7 +219,7 @@ class Http
          * default.
          *
          * Params:
-         * 		requestBody = Content of the body
+         * 	    requestBody = Content of the body
          */
         void body(const string requestBody)
         {
@@ -236,8 +235,8 @@ class Http
          * sending the request).
          *
          * Params:
-         * 	field = Name of the field to set
-         * 	value = Value of the field
+         * 	    field = Name of the field to set
+         *      value = Value of the field
          */
         void field(const string field, const string value)
         {
@@ -250,8 +249,8 @@ class Http
          * The HTTP version is 1.0 by default.
          *
          * Params:
-         * 	major = Major HTTP version number
-         * 	minor = Minor HTTP version number
+         * 	    major = Major HTTP version number
+         * 	    minor = Minor HTTP version number
          */
         void httpVersion(uint major, uint minor)
         {
@@ -262,10 +261,10 @@ class Http
          * Set the request method.
          *
          * See the Method enumeration for a complete list of all the availale
-         * methods. The method is Http.Request.Method.Get by default.
+         * methods. The method is `Http.Request.Get` by default.
          *
-         * Params
-         * 	method = Method to use for the request
+         * Params:
+         * 	    method = Method to use for the request
          */
         void method(Method method)
         {
@@ -278,8 +277,8 @@ class Http
          * The URI is the resource (usually a web page or a file) that you want
          * to get or post. The URI is "/" (the root page) by default.
          *
-         * Params
-         * 	uri = URI to request, relative to the host
+         * Params:
+         * 	    uri = URI to request, relative to the host
          */
         void uri(const string uri)
         {
@@ -349,7 +348,8 @@ class Http
          * - nothing (for HEAD requests)
          * - an error message (in case of an error)
          *
-         * Returns: The response body.
+         * Returns:
+         *      The response body.
          */
         string body() const
         {
@@ -363,9 +363,10 @@ class Http
          * string is returned. This function uses case-insensitive comparisons.
          *
          * Params:
-         * 	field = Name of the field to get
+         * 	    field = Name of the field to get
          *
-         * Returns: Value of the field, or empty string if not found.
+         * Returns:
+         *      Value of the field, or empty string if not found.
          */
         string field(const string field) const
         {
@@ -376,8 +377,11 @@ class Http
         /**
          * Get the major HTTP version number of the response.
          *
-         * Returns: Major HTTP version number.
-         * See_Also: minorHttpVersion
+         * Returns:
+         *      Major HTTP version number.
+         *
+         * See_Also:
+         *      minorHttpVersion
          */
         uint majorHttpVersion() const
         {
@@ -387,8 +391,11 @@ class Http
         /**
          * Get the minor HTTP version number of the response.
          *
-         * Returns: Minor HTTP version number.
-         * See_Also: majorHttpVersion
+         * Returns:
+         *      Minor HTTP version number.
+         *
+         * See_Also:
+         *      majorHttpVersion
          */
         uint minorHttpVersion() const
         {
@@ -402,7 +409,8 @@ class Http
          * receiving a response, it defines whether it is a success, a failure
          * or anything else (see the Status enumeration).
          *
-         * Returns: Status code of the response.
+         * Returns:
+         *      Status code of the response.
          */
         Status status() const
         {

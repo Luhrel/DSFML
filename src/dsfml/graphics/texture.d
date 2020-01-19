@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U Texture) stores pixels that can be drawn, with a sprite for example. A
+ * `Texture` stores pixels that can be drawn, with a sprite for example. A
  * texture lives in the graphics card memory, therefore it is very fast to draw
  * a texture to a render target, or copy a render target to a texture (the
  * graphics card can access both directly).
@@ -36,7 +36,7 @@
  * first and then upload them to the texture in a single operation (see
  * `Texture.update`).
  *
- * $(U Texture) makes it easy to convert from/to Image, but keep in mind that
+ * `Texture` makes it easy to convert from/to Image, but keep in mind that
  * these calls require transfers between the graphics card and the central
  * memory, therefore they are slow operations.
  *
@@ -53,7 +53,7 @@
  * pixel-perfect collisions), it is recommended to store the collision
  * information separately, for example in an array of booleans.
  *
- * Like $(IMAGE_LINK), $(U Texture) can handle a unique internal representation
+ * Like $(IMAGE_LINK), `Texture` can handle a unique internal representation
  * of pixels, which is RGBA 32 bits. This means that a pixel must be composed of
  * 8 bits red, green, blue and alpha channels – just like a $(COLOR_LINK).
  *
@@ -105,9 +105,9 @@
  *
  * ---
  *
- * $(PARA Like $(SHADER_LINK) that can be used as a raw OpenGL shader,
- * $(U Texture) can also be used directly as a raw texture for custom OpenGL
- * geometry.)
+ * Like $(SHADER_LINK) that can be used as a raw OpenGL shader,
+ * `Texture` can also be used directly as a raw texture for custom OpenGL
+ * geometry.
  * ---
  * Texture.bind(texture);
  * ... render OpenGL geometry ...
@@ -115,7 +115,7 @@
  * ---
  *
  * See_Also:
- * $(SPRITE_LINK), $(IMAGE_LINK), $(RENDERTEXTURE_LINK)
+ *      $(SPRITE_LINK), $(IMAGE_LINK), $(RENDERTEXTURE_LINK)
  */
 module dsfml.graphics.texture;
 
@@ -184,16 +184,19 @@ class Texture
      * image, it is adjusted to fit the image size.
      *
      * The maximum size for a texture depends on the graphics driver and can be
-     * retrieved with the getMaximumSize function.
+     * retrieved with the `maximumSize` function.
      *
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     *         filename    = Path of the image file to load
-     *         area        = Area of the image to load
+     *      filename = Path of the image file to load
+     *      area     = Area of the image to load
      *
-     * Returns: true if loading was successful, false otherwise.
-     * See_Also: loadFromMemory, loadFromStream, loadFromImage
+     * Returns:
+     *      true if loading was successful, false otherwise.
+     *
+     * See_Also:
+     *      loadFromMemory, loadFromStream, loadFromImage
      */
     bool loadFromFile(string filename, ref IntRect area)
     {
@@ -216,15 +219,16 @@ class Texture
      * image, it is adjusted to fit the image size.
      *
      * The maximum size for a texture depends on the graphics driver and can be
-     * retrieved with the getMaximumSize function.
+     * retrieved with the `maximumSize` function.
      *
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     *         data    = Image in memory
-     *         area    = Area of the image to load
+     *      data = Image in memory
+     *      area = Area of the image to load
      *
-     * Returns: true if loading was successful, false otherwise.
+     * Returns:
+     *      true if loading was successful, false otherwise.
      */
     bool loadFromMemory(const(void)[] data, IntRect* area)
     {
@@ -247,15 +251,16 @@ class Texture
      * image, it is adjusted to fit the image size.
      *
      * The maximum size for a texture depends on the graphics driver and can be
-     * retrieved with the getMaximumSize function.
+     * retrieved with the `maximumSize` function.
      *
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     *         stream    = Source stream to read from
-     *         area    = Area of the image to load
+     *      stream = Source stream to read from
+     *      area   = Area of the image to load
      *
-     * Returns: true if loading was successful, false otherwise.
+     * Returns:
+     *      true if loading was successful, false otherwise.
      */
     bool loadFromStream(InputStream stream, ref const IntRect area)
     {
@@ -272,15 +277,16 @@ class Texture
      * image, it is adjusted to fit the image size.
      *
      * The maximum size for a texture depends on the graphics driver and can be
-     * retrieved with the getMaximumSize function.
+     * retrieved with the `maximumSize` function.
      *
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     *         image    = Image to load into the texture
-     *         area    = Area of the image to load
+     *      image = Image to load into the texture
+     *      area  = Area of the image to load
      *
-     * Returns: true if loading was successful, false otherwise.
+     * Returns:
+     *      true if loading was successful, false otherwise.
      */
     bool loadFromImage(Image image, const IntRect area = IntRect.init)
     {
@@ -295,7 +301,8 @@ class Texture
      * value of 512 pixels for low-end graphics card, and up to 8192 pixels or
      * more for newer hardware.
      *
-     * Returns: Maximum size allowed for textures, in pixels.
+     * Returns:
+     *      Maximum size allowed for textures, in pixels.
      */
     @property
     static uint maximumSize()
@@ -306,7 +313,8 @@ class Texture
     /**
      * Return the size of the texture.
      *
-     * Returns: Size in pixels.
+     * Returns:
+     *      Size in pixels.
      */
     @property
     Vector2u size() const
@@ -327,19 +335,20 @@ class Texture
          * is disabled by default.
          *
          * Params:
-         *         enabled    = true to enable smoothing, false to disable it
+         *      _smooth = true to enable smoothing, false to disable it
          */
-        void smooth(bool enabled)
+        void smooth(bool _smooth)
         {
             if (m_texture !is null)
-                sfTexture_setSmooth(m_texture, enabled);
+                sfTexture_setSmooth(m_texture, _smooth);
         }
 
 
         /**
          * Tell whether the smooth filter is enabled or not.
          *
-         * Returns: true if something is enabled, false if it is disabled.
+         * Returns:
+         *      true if something is enabled, false if it is disabled.
          */
         bool smooth() const
         {
@@ -361,24 +370,25 @@ class Texture
          * texture will be repeated 3 times).
          *
          * If repeat mode is disabled, the "extra space" will instead be filled with
-         * border pixels. Warning: on very old graphics cards, white pixels may
+         * border pixels. **Warning:** on very old graphics cards, white pixels may
          * appear when the texture is repeated. With such cards, repeat mode can be
          * used reliably only if the texture has power-of-two dimensions
          * (such as 256x128). Repeating is disabled by default.
          *
          * Params:
-         *         repeat    = true to repeat the texture, false to disable repeating
+         *      _repeated = true to repeat the texture, false to disable repeating
          */
-        void repeated(bool repeat)
+        void repeated(bool _repeated)
         {
             if (m_texture !is null)
-                sfTexture_setRepeated(m_texture, repeat);
+                sfTexture_setRepeated(m_texture, _repeated);
         }
 
         /**
          * Tell whether the texture is repeated or not.
          *
-         * Returns: true if repeat mode is enabled, false if it is disabled.
+         * Returns:
+         *      true if repeat mode is enabled, false if it is disabled.
          */
         bool repeated() const
         {
@@ -398,20 +408,20 @@ class Texture
      * ---
      * Texture t1, t2;
      * ...
-     * Texture::bind(&t1);
+     * Texture.bind(t1);
      * // draw OpenGL stuff that use t1...
-     * Texture::bind(&t2);
+     * Texture.bind(t2);
      * // draw OpenGL stuff that use t2...
-     * Texture::bind(NULL);
+     * Texture.bind(null);
      * // draw OpenGL stuff that use no texture...
      * ---
      *
      * Params:
-     *         texture    = The texture to bind. Can be null to use no texture
+     *      texture = The texture to bind. Can be null to use no texture
      */
     // TODO: CoordinateType arg + desc update
     // Actually not implemented in CSFML
-    static void bind(Texture texture)
+    static void bind(ref Texture texture)
     {
         sfTexture_bind(texture.ptr);
     }
@@ -422,10 +432,11 @@ class Texture
      * If this function fails, the texture is left unchanged.
      *
      * Params:
-     *         width    = Width of the texture
-     *         height    = Height of the texture
+     *      width  = Width of the texture
+     *      height = Height of the texture
      *
-     * Returns: true if creation was successful, false otherwise.
+     * Returns:
+     *      true if creation was successful, false otherwise.
      */
     bool create(uint width, uint height)
     {
@@ -441,8 +452,11 @@ class Texture
      * applying transformations to pixels if necessary (texture may be padded or
      * flipped).
      *
-     * Returns: Image containing the texture's pixels.
-     * See_Also: loadFromImage
+     * Returns:
+     *      Image containing the texture's pixels.
+     *
+     * See_Also:
+     *      loadFromImage
      */
     Image copyToImage() const
     {
@@ -469,7 +483,8 @@ class Texture
      * until the next time the base level image is modified, at which point this
      * function will have to be called again to regenerate it.
      *
-     * Returns: True if mipmap generation was successful, false if unsuccessful
+     * Returns:
+     *      true if mipmap generation was successful, false if unsuccessful
      */
     bool generateMipmap()
     {
@@ -485,7 +500,8 @@ class Texture
      * to implement that SFML doesn't support, or implement a temporary workaround
      * until a bug is fixed.
      *
-     * Returns: OpenGL handle of the texture or 0 if not yet created
+     * Returns:
+     *      OpenGL handle of the texture or 0 if not yet created
      */
     @property
     uint nativeHandle() const
@@ -500,7 +516,8 @@ class Texture
         /**
          * Tell whether the texture source is converted from sRGB or not.
          *
-         * Returns: True if the texture source is converted from sRGB, false if not
+         * Returns:
+         *      true if the texture source is converted from sRGB, false if not
          */
         bool srgb()
         {
@@ -528,7 +545,7 @@ class Texture
          * framebuffer. This can be requested during window creation.
          *
          * Params:
-         * sRgb=True to enable sRGB conversion, false to disable it
+         *      sRGB = true to enable sRGB conversion, false to disable it
          */
         void srgb(bool sRGB)
         {
@@ -541,7 +558,7 @@ class Texture
      * Swap the contents of this texture with those of another.
      *
      * Params:
-     * right=Instance to swap with
+     *      right = Instance to swap with
      */
     void swap(Texture right)
     {
@@ -563,11 +580,11 @@ class Texture
      * previously created.
      *
      * Params:
-     *         pixels    = Array of pixels to copy to the texture.
-     *         width    = Width of the pixel region contained in pixels
-     *         height    = Height of the pixel region contained in pixels
-     *         x        = X offset in the texture where to copy the source pixels
-     *         y        = Y offset in the texture where to copy the source pixels
+     *      pixels = Array of pixels to copy to the texture.
+     *      width  = Width of the pixel region contained in pixels
+     *      height = Height of the pixel region contained in pixels
+     *      x      = X offset in the texture where to copy the source pixels
+     *      y      = Y offset in the texture where to copy the source pixels
      */
     void update(const(ubyte)[] pixels, uint width = size.x,
         uint height = size.y, uint x = 0, uint y = 0)
@@ -586,9 +603,9 @@ class Texture
      * This function does nothing if either texture was not previously created.
      *
      * Params:
-     *         texture = Source texture to copy to this texture
-     *         x        = X offset in this texture where to copy the source texture
-     *         y        = Y offset in this texture where to copy the source texture
+     *      texture = Source texture to copy to this texture
+     *      x       = X offset in this texture where to copy the source texture
+     *      y       = Y offset in this texture where to copy the source texture
      */
     void update(Texture texture, uint x = 0, uint y = 0)
     {
@@ -606,9 +623,9 @@ class Texture
      * This function does nothing if the texture was not previously created.
      *
      * Params:
-     *         image = Image to copy to the texture.
-     *        y     = Y offset in the texture where to copy the source image.
-     *        x     = X offset in the texture where to copy the source image.
+     *      image = Image to copy to the texture.
+     *      y     = Y offset in the texture where to copy the source image.
+     *      x     = X offset in the texture where to copy the source image.
      */
     void update(Image image, uint x = 0, uint y = 0)
     {
@@ -627,9 +644,9 @@ class Texture
      * previously created.
      *
      * Params:
-     *        window = Window to copy to the texture
-     *        x      = X offset in the texture where to copy the source window
-     *        y      = Y offset in the texture where to copy the source window
+     *       window = Window to copy to the texture
+     *       x      = X offset in the texture where to copy the source window
+     *       y      = Y offset in the texture where to copy the source window
      *
      */
     void update(Window window, uint x = 0, uint y = 0)
@@ -649,9 +666,9 @@ class Texture
      * previously created.
      *
      * Params:
-     *        window = Window to copy to the texture
-     *        x      = X offset in the texture where to copy the source window
-     *        y      = Y offset in the texture where to copy the source window
+     *      window = Window to copy to the texture
+     *      x      = X offset in the texture where to copy the source window
+     *      y      = Y offset in the texture where to copy the source window
      *
      */
     void update(RenderWindow window, uint x = 0, uint y = 0)

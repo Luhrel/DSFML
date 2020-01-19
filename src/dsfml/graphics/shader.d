@@ -31,13 +31,11 @@
  * rendered entities.
  *
  * There are three kinds of shaders:
- * $(UL
- * $(LI Vertex shaders, that process vertices)
- * $(LI Geometry shaders, that process primitives)
- * $(LI Fragment (pixel) shaders, that process pixels))
+ * - Vertex shaders, that process vertices
+ * - Geometry shaders, that process primitives
+ * - Fragment (pixel) shaders, that process pixels
  *
- * $(PARA
- * A $(U Shader) can be composed of either a vertex shader alone, a geometry
+ * A `Shader` can be composed of either a vertex shader alone, a geometry
  * shader alone, a fragment shader alone, or any combination of them. (see the
  * variants of the load functions).
  *
@@ -46,22 +44,20 @@
  * shaders for DSFML.
  *
  * Like any D/C/C++ program, a GLSL shader has its own variables called uniforms
- * that you can set from your D application. $(U Shader) handles different types
- * of uniforms:)
- * $(UL
- * $(LI scalars: float, int, bool)
- * $(LI vectors (2, 3 or 4 components))
- * $(LI matrices (3x3 or 4x4))
- * $(LI samplers (textures)))
+ * that you can set from your D application. `Shader` handles different types
+ * of uniforms:
+ * - scalars: float, int, bool
+ * - vectors (2, 3 or 4 components)
+ * - matrices (3x3 or 4x4)
+ * - samplers (textures)
  *
- * $(PARA Some DSFML-specific types can be converted:)
-*  $(UL
- * $(LI $(COLOR_LINK) as a 4D vector (`vec4`))
- * $(LI $(TRANSFORM_LINK) as matrices (`mat3` or `mat4`)))
+ * Some DSFML-specific types can be converted:
+ * - $(COLOR_LINK) as a 4D vector (`vec4`)
+ * - $(TRANSFORM_LINK) as matrices (`mat3` or `mat4`)
  *
- * $(PARA Every uniform variable in a shader can be set through one of the
- * `setUniform()` or `setUniformArray()` overloads. For example, if you have a
- * shader with the following uniforms:)
+ * Every uniform variable in a shader can be set through one of the
+ * `uniform()` or `uniformArray()` overloads. For example, if you have a
+ * shader with the following uniforms:
  * ---
  * uniform float offset;
  * uniform vec3 point;
@@ -71,22 +67,22 @@
  * uniform sampler2D current;
  * ---
  *
- * $(PARA You can set their values from D code as follows, using the types
- * defined in the `dsfml.graphics.glsl` module:)
+ * You can set their values from D code as follows, using the types
+ * defined in the `dsfml.graphics.glsl` module:
  * ---
- * shader.setUniform("offset", 2.f);
- * shader.setUniform("point", Vector3f(0.5f, 0.8f, 0.3f));
- * shader.setUniform("color", Vec4(color));
- * shader.setUniform("matrix", Mat4(transform));
- * shader.setUniform("overlay", texture);
- * shader.setUniform("current", Shader.CurrentTexture);
+ * shader.uniform("offset", 2.f);
+ * shader.uniform("point", Vector3f(0.5f, 0.8f, 0.3f));
+ * shader.uniform("color", Vec4(color));
+ * shader.uniform("matrix", Mat4(transform));
+ * shader.uniform("overlay", texture);
+ * shader.uniform("current", Shader.CurrentTexture);
  * ---
  *
- * $(PARA The old `setParameter()` overloads are deprecated and will be removed
- * in a future version. You should use their `setUniform()` equivalents instead.
+ * The old `setParameter()` overloads are deprecated and will be removed
+ * in a future version. You should use their `uniform()` equivalents instead.
  *
  * It is also worth noting that DSFML supports index overloads for
- * setting uniforms:)
+ * setting uniforms:
  * ---
  * shader["offset"] = 2.f;
  * shader["point"] = Vector3f(0.5f, 0.8f, 0.3f);
@@ -96,19 +92,19 @@
  * shader["current"] = Shader.CurrentTexture;
  * ---
  *
- * $(PARA The special `Shader.CurrentTexture` argument maps the given
+ * The special `Shader.CurrentTexture` argument maps the given
  * `sampler2D` uniform to the current texture of the object being drawn (which
  * cannot be known in advance).
  *
  * To apply a shader to a drawable, you must pass it as part of an additional
- * parameter to the `Window.draw()` function:)
+ * parameter to the `Window.draw()` function:
  * ---
  * RenderStates states;
  * states.shader = shader;
  * window.draw(sprite, states);
  * ---
  *
- * $(PARA In the code above we pass a reference to the shader, because it may be
+ * In the code above we pass a reference to the shader, because it may be
  * null (which means "no shader").
  *
  * Shaders can be used on any drawable, but some combinations are not
@@ -122,21 +118,20 @@
  * expected result.
  *
  * Shaders can also be used to apply global post-effects to the current contents
- * of the target. This can be done in two different ways:)
- * $(UL
- * $(LI draw everything to a $(RENDERTEXTURE_LINK), then draw it to the main
- *        target using the shader)
- * $(LI draw everything directly to the main target, then use `Texture.update`
- *        to copy its contents to a texture and draw it to the main target using
- *        the shader))
+ * of the target. This can be done in two different ways:
+ * - draw everything to a $(RENDERTEXTURE_LINK), then draw it to the main
+ *   target using the shader
+ * - draw everything directly to the main target, then use `Texture.update`
+ *   to copy its contents to a texture and draw it to the main target using
+ *   the shader
  *
- * $(PARA The first technique is more optimized because it doesn't involve
+ * The first technique is more optimized because it doesn't involve
  * retrieving the target's pixels to system memory, but the second one doesn't
  * impact the rendering process and can be easily inserted anywhere without
  * impacting all the code.
  *
- * Like $(TEXTURE_LINK) that can be used as a raw OpenGL texture, $(U Shader)
- * can also be used directly as a raw shader for custom OpenGL geometry.)
+ * Like $(TEXTURE_LINK) that can be used as a raw OpenGL texture, `Shader`
+ * can also be used directly as a raw shader for custom OpenGL geometry.
  * ---
  * Shader.bind(shader);
  * ... render OpenGL geometry ...
@@ -144,7 +139,7 @@
  * ---
  *
  * See_Also:
- * $(GLSL_LINK)
+ *      $(GLSL_LINK)
  */
 module dsfml.graphics.shader;
 
@@ -185,7 +180,8 @@ class Shader
     /**
      * Represents the texture of the object being drawn.
      *
-     * See_Also: uniform
+     * See_Also:
+     *      uniform
      */
     static CurrentTextureType currentTexture;
 
@@ -211,11 +207,14 @@ class Shader
      * documentation for it before writing your own shaders.
      *
      * Params:
-     * 		filename	= Path of the vertex, geometry, or fragment shader file to load
-     * 		type		= Type of shader (vertex geometry, or fragment)
+     *      filename = Path of the vertex, geometry, or fragment shader file to load
+     * 		type     = Type of shader (vertex geometry, or fragment)
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromMemory, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromMemory, loadFromStream
      */
     bool loadFromFile(const(string) filename, Type type)
     {
@@ -239,11 +238,14 @@ class Shader
      * your own shaders.
      *
      * Params:
-     * 		vertexShaderFilename	= Path of the vertex shader file to load
-     * 		fragmentShaderFilename	= Path of the fragment shader file to load
+     *      vertexShaderFilename   = Path of the vertex shader file to load
+     * 		fragmentShaderFilename = Path of the fragment shader file to load
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromMemory, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromMemory, loadFromStream
      */
     bool loadFromFile(const(string) vertexShaderFilename, const(string) fragmentShaderFilename)
     {
@@ -262,9 +264,9 @@ class Shader
      * your own shaders.
      *
      * Params:
-     * 		vertexShaderFilename	= Path of the vertex shader file to load
-     * 		geometryShaderFilename	= Path of the geometry shader file to load
-     * 		fragmentShaderFilename	= Path of the fragment shader file to load
+     *      vertexShaderFilename   = Path of the vertex shader file to load
+     * 		geometryShaderFilename = Path of the geometry shader file to load
+     * 		fragmentShaderFilename = Path of the fragment shader file to load
      *
      * Returns: true if loading succeeded, false if it failed.
      * See_Also: loadFromMemory, loadFromStream
@@ -285,11 +287,14 @@ class Shader
      * your own shaders.
      *
      * Params:
-     * 		shader	= String containing the source code of the shader
-     * 		type	= Type of shader (vertex geometry, or fragment)
+     * 		shader = String containing the source code of the shader
+     * 		type   = Type of shader (vertex geometry, or fragment)
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(string) shader, Type type)
     {
@@ -312,12 +317,15 @@ class Shader
      * a good documentation for it before writing your own shaders.
      *
      * Params:
-     * 	vertexShader   = String containing the source code of the vertex shader
-     * 	fragmentShader = String containing the source code of the fragment
-                         shader
+     *      vertexShader   = String containing the source code of the vertex shader
+     *      fragmentShader = String containing the source code of the fragment
+     *                       shader
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(string) vertexShader, const(string) fragmentShader)
     {
@@ -335,13 +343,16 @@ class Shader
      * a good documentation for it before writing your own shaders.
      *
      * Params:
-     * 	vertexShader   = String containing the source code of the vertex shader
-     * 	geometryShader = String containing the source code of the geometry shader
-     * 	fragmentShader = String containing the source code of the fragment
-                         shader
+     *      vertexShader   = String containing the source code of the vertex shader
+     *      geometryShader = String containing the source code of the geometry shader
+     *      fragmentShader = String containing the source code of the fragment
+     *                       shader
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(string) vertexShader, const(string) geometryShader, const(string) fragmentShader)
     {
@@ -358,11 +369,14 @@ class Shader
      * your own shaders.
      *
      * Params:
-     * 		stream	= Source stream to read from
-     * 		type	= Type of shader (vertex, geometry or fragment)
+     *      stream = Source stream to read from
+     * 		type   = Type of shader (vertex, geometry or fragment)
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream stream, Type type)
     {
@@ -385,11 +399,14 @@ class Shader
      * your own shaders.
      *
      * Params:
-     * 	vertexShaderStream	 = Source stream to read the vertex shader from
-     * 	fragmentShaderStream = Source stream to read the fragment shader from
+     *      vertexShaderStream	 = Source stream to read the vertex shader from
+     *      fragmentShaderStream = Source stream to read the fragment shader from
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream vertexShaderStream, InputStream fragmentShaderStream)
     {
@@ -407,12 +424,15 @@ class Shader
      * your own shaders.
      *
      * Params:
-     * 	vertexShaderStream	 = Source stream to read the vertex shader from
-     *  geometryShaderStream = Source stream to read the geometry shader from
-     * 	fragmentShaderStream = Source stream to read the fragment shader from
+     *      vertexShaderStream   = Source stream to read the vertex shader from
+     *      geometryShaderStream = Source stream to read the geometry shader from
+     * 	    fragmentShaderStream = Source stream to read the fragment shader from
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream vertexShaderStream, InputStream geometryShaderStream, InputStream fragmentShaderStream)
     {
@@ -423,15 +443,15 @@ class Shader
     /**
      * Specify value for x uniform.
      *
-     * x parameter can be: float, Vec2, Vec3, Vec4, Color, int, Ivec2, Ivec3,
-     * Ivec4, bool, Bvec2, Bvec3, Bvec4, Mat3*, Mat4*, Texture,
-     * CurrentTextureType
+     * `x` parameter can be: `float`, `Vec2`, `Vec3`, `Vec4`, `Color`, `int`,
+     * `Ivec2`, `Ivec3`, `Ivec4`, `bool`, `Bvec2`, `Bvec3`, `Bvec4`, `Mat3*`,
+     * `Mat4*`, `Texture`, `CurrentTextureType`
      *
      * See original SFML's documentation for more informations.
      *
      * Params:
-     * 		name	= Name of the uniform variable in GLSL
-     * 		x		= Value of the numeric scalar
+     *      name = Name of the uniform variable in GLSL
+     *      x    = Value of the numeric scalar
      */
     void uniform(T)(const(string) name, T x)
     {
@@ -480,8 +500,8 @@ class Shader
      * Specify value for an array uniform.
      *
      * Params:
-     * 		name  = Name of the uniform variable in GLSL
-     * 		array = Value of the vector
+     *      name  = Name of the uniform variable in GLSL
+     * 	    array = Value of the vector
      */
     void uniformArray(T)(const(string) name, ref T[] array)
     {
@@ -510,10 +530,10 @@ class Shader
          * Change a T parameter of the shader.
          *
          * Params:
-         * 		name	= The name of the variable to change in the shader.
-         *                    The corresponding parameter in the shader must be
-         *                    a float (float GLSL type).
-         * 		x		= Value to assign
+         *      name	= The name of the variable to change in the shader.
+         *                The corresponding parameter in the shader must be
+         *                a float (float GLSL type).
+         *      x		= Value to assign
          */
         void setParameter(T)(const(string) name, T x)
         {
@@ -573,7 +593,7 @@ class Shader
      * ---
      *
      * Params:
-     * 		shader = Shader to bind. Can be null to use no shader.
+     *      shader = Shader to bind. Can be null to use no shader.
      */
     static void bind(Shader shader)
     {
@@ -586,7 +606,8 @@ class Shader
      * This function should always be called before using the shader features.
      * If it returns false, then any attempt to use Shader will fail.
      *
-     * Returns: true if shaders are supported, false otherwise.
+     * Returns:
+     *      true if shaders are supported, false otherwise.
      */
     static bool isAvailable()
     {
@@ -607,7 +628,8 @@ class Shader
      * Note: The first call to this function, whether by your code or SFML will
      * result in a context switch.
      *
-     * Returns: true if geometry shaders are supported, false otherwise.
+     * Returns:
+     *      true if geometry shaders are supported, false otherwise.
      */
     static bool isGeometryAvailable()
     {
@@ -621,7 +643,8 @@ class Shader
      * stuff to implement that SFML doesn't support, or implement a temporary
      * workaround until a bug is fixed.
      *
-     * Returns: OpenGL handle of the shader or 0 if not yet loaded
+     * Returns:
+     *      OpenGL handle of the shader or 0 if not yet loaded
      */
     uint nativeHandle() const
     {

@@ -26,18 +26,18 @@
  */
 
 /**
- * $(U Image) is an abstraction to manipulate images as bidimensional arrays of
+ * `Image` is an abstraction to manipulate images as bidimensional arrays of
  * pixels. The class provides functions to load, read, write and save pixels, as
  * well as many other useful functions.
  *
- * $(U Image) can handle a unique internal representation of pixels, which is
+ * `Image` can handle a unique internal representation of pixels, which is
  * RGBA 32 bits. This means that a pixel must be composed of 8 bits red, green,
  * blue and alpha channels – just like a $(COLOR_LINK). All the functions that
  * return an array of pixels follow this rule, and all parameters that you pass
- * to $(U Image) functions (such as `loadFromPixels`) must use this
+ * to `Image` functions (such as `loadFromPixels`) must use this
  * representation as well.
  *
- * An $(U Image) can be copied, but it is a heavy resource and if possible you
+ * An `Image` can be copied, but it is a heavy resource and if possible you
  * should always use `const` references to pass or return them to avoid useless
  * copies.
  *
@@ -66,7 +66,7 @@
  * ---
  *
  * See_Also:
- * $(TEXTURE_LINK)
+ *      $(TEXTURE_LINK)
  */
 module dsfml.graphics.image;
 
@@ -111,9 +111,9 @@ class Image
      * Create the image and fill it with a unique color.
      *
      * Params:
-     *         width    = Width of the image
-     *         height    = Height of the image
-     *         color    = Fill color
+     *      width  = Width of the image
+     *      height = Height of the image
+     *      color  = Fill color
      *
      */
     void create(uint width, uint height, Color color = Color.init)
@@ -129,10 +129,9 @@ class Image
      * is null, an empty image is created.
      *
      * Params:
-     *         width    = Width of the image
-     *         height    = Height of the image
-     *         pixels    = Array of pixels to copy to the image
-     *
+     *      width  = Width of the image
+     *      height = Height of the image
+     *      pixels = Array of pixels to copy to the image
      */
     void create(uint width, uint height, const(ubyte)[] pixels)
     {
@@ -147,10 +146,13 @@ class Image
      * this function fails, the image is left unchanged.
      *
      * Params:
-     *         filename = Path of the image file to load
+     *      filename = Path of the image file to load
      *
-     * Returns: true if loading succeeded, false if it failed
-     * See_Also: loadFromMemory, loadFromStream, saveToFile
+     * Returns:
+     *      true if loading succeeded, false if it failed
+     *
+     * See_Also:
+     *      loadFromMemory, loadFromStream, saveToFile
      */
     bool loadFromFile(string filename)
     {
@@ -166,10 +168,13 @@ class Image
      * this function fails, the image is left unchanged.
      *
      * Params:
-     *         data    = Data file in memory to load
+     *      data = Data file in memory to load
      *
-     * Returns: true if loading succeeded, false if it failed
-     * See_Also: loadFromFile, loadFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed
+     *
+     * See_Also:
+     *      loadFromFile, loadFromStream
      */
     bool loadFromMemory(const(void)[] data)
     {
@@ -185,10 +190,13 @@ class Image
      * this function fails, the image is left unchanged.
      *
      * Params:
-     *         stream    = Source stream to read from
+     *      stream = Source stream to read from
      *
-     * Returns: true if loading succeeded, false if it failed
-     * See_Also: loadFromFile, loadFromMemory
+     * Returns:
+     *      true if loading succeeded, false if it failed
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory
      */
     bool loadFromStream(InputStream stream)
     {
@@ -207,10 +215,12 @@ class Image
      * integers components. The size of the array is:
      * `width * height * 4 (size().x * size().y * 4)`.
      *
-     * Warning: the returned slice may become invalid if you modify the image,
-     * so you should never store it for too long.
+     * **Warning:**
+     * the returned slice may become invalid if you modify the image, so you
+     * should never store it for too long.
      *
-     * Returns: Read-only array of pixels that make up the image.
+     * Returns:
+     *      Read-only array of pixels that make up the image.
      */
     const(ubyte[]) pixelArray() const
     {
@@ -224,7 +234,8 @@ class Image
     /**
      * Return the size (width and height) of the image.
      *
-     * Returns: Size of the image, in pixels.
+     * Returns:
+     *      Size of the image, in pixels.
      */
     @property
     Vector2u size() const
@@ -239,10 +250,11 @@ class Image
      * out-of-range values will result in an undefined behaviour.
      *
      * Params:
-     *         x    = X coordinate of the pixel to get
-     *         y    = Y coordinate of the pixel to get
+     *      x = X coordinate of the pixel to get
+     *      y = Y coordinate of the pixel to get
      *
-     * Returns: Color of the pixel at coordinates (x, y)
+     * Returns:
+     *      Color of the pixel at coordinates (x, y)
      */
     Color pixel(uint x, uint y) const
     {
@@ -256,9 +268,9 @@ class Image
      * out-of-range values will result in an undefined behaviour.
      *
      * Params:
-     *         x        = X coordinate of pixel to change
-     *         y        = Y coordinate of pixel to change
-     *         color    = New color of the pixel
+     *      x     = X coordinate of pixel to change
+     *      y     = Y coordinate of pixel to change
+     *      color = New color of the pixel
      */
     void pixel(uint x, uint y, Color color)
     {
@@ -269,7 +281,7 @@ class Image
      * Overload of the slice operator (set).
      * This function simply call `pixel(x, y, color)`.
      *
-     * example:
+     * Example:
      * ---
      * image[2, 3] = Color.Red;
      * ---
@@ -282,7 +294,7 @@ class Image
     /**
      * Overload of the slice operator (set with operator).
      *
-     * example:
+     * Example:
      * ---
      * image[2, 3] += Color.Green;
      * ---
@@ -296,7 +308,7 @@ class Image
     /**
      * Overload of the slice operator (set with operator).
      *
-     * example:
+     * Example:
      * ---
      * image[2, 3] += 50;
      * ---
@@ -311,7 +323,7 @@ class Image
      * Overload of the slice operator (get).
      * This function simply call `pixel(x, y)`.
      *
-     * example:
+     * Example:
      * ---
      * Color pixelX2Y3 = convex[2, 3];
      * ---
@@ -334,11 +346,11 @@ class Image
      * the pixels are copied unchanged with their alpha value.
      *
      * Params:
-     *     source     = Source image to copy
-     *     destX      = X coordinate of the destination position
-     *     destY      = Y coordinate of the destination position
-     *     sourceRect = Sub-rectangle of the source image to copy
-     *     applyAlpha = Should the copy take the source transparency into account?
+     *      source     = Source image to copy
+     *      destX      = X coordinate of the destination position
+     *      destY      = Y coordinate of the destination position
+     *      sourceRect = Sub-rectangle of the source image to copy
+     *      applyAlpha = Should the copy take the source transparency into account?
      */
     void copy(Image source, uint destX, uint destY, IntRect sourceRect = IntRect.init, bool applyAlpha = false)
     {
@@ -352,19 +364,12 @@ class Image
      * color to alpha (0 by default) so that they become transparent.
      *
      * Params:
-     *         color = Color to make transparent
-     *         alpha = Alpha value to assign to transparent pixels
+     *      color = Color to make transparent
+     *      alpha = Alpha value to assign to transparent pixels
      */
     void createMaskFromColor(Color color, ubyte alpha = 0)
     {
         sfImage_createMaskFromColor(m_image, color, alpha);
-    }
-
-    /// Create a copy of the Image.
-    @property
-    Image dup() const
-    {
-        return new Image(m_image);
     }
 
     /// Flip the image horizontally (left <-> right)
@@ -388,10 +393,13 @@ class Image
      * empty.
      *
      * Params:
-     *         filename    = Path of the file to save
+     *      filename = Path of the file to save
      *
-     * Returns: true if saving was successful
-     * See_Also: create, loadFromFile, loadFromMemory
+     * Returns:
+     *      true if saving was successful
+     *
+     * See_Also:
+     *      create, loadFromFile, loadFromMemory
      */
     bool saveToFile(string filename) const
     {
@@ -406,7 +414,7 @@ class Image
 
     /// Duplicates this Image.
     @property
-    Image dup()
+    Image dup() const
     {
         return new Image(m_image);
     }

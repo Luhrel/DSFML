@@ -27,13 +27,14 @@
  */
 
 /**
- * $(U IpAddress) is a utility structure for manipulating network addresses. It
+ * `IpAddress` is a utility structure for manipulating network addresses. It
  * provides a set a implicit constructors and conversion functions to easily
  * build or transform an IP address from/to various representations.
  *
  *
- * Note that $(U IpAddress) currently doesn't support IPv6 nor other types of
+ * Note that `IpAddress` currently doesn't support IPv6 nor other types of
  * network addresses.
+ *
  * Example:
  * ---
  * // an invalid address
@@ -98,7 +99,7 @@ struct IpAddress
      * network name (ex: "localhost").
      *
      * Params:
-     * 		address = IP address or network name.
+     * 	    address = IP address or network name.
      */
     this(const(string) address)
     {
@@ -115,10 +116,10 @@ struct IpAddress
      * get the address components.
      *
      * Params:
-     * 		byte0 = First byte of the address.
-     * 		byte1 = Second byte of the address.
-     * 		byte2 = Third byte of the address.
-     * 		byte3 = Fourth byte of the address.
+     * 	    byte0 = First byte of the address.
+     * 	    byte1 = Second byte of the address.
+     * 	    byte2 = Third byte of the address.
+     * 	    byte3 = Fourth byte of the address.
      */
     this(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3)
     {
@@ -134,8 +135,10 @@ struct IpAddress
      * `IpAddress.toInteger()`.
      *
      * Params:
-     * 	address = 4 bytes of the address packed into a 32-bits integer
-     * See_Also: toInteger
+     * 	    address = 4 bytes of the address packed into a 32-bits integer
+     *
+     * See_Also:
+     *      toInteger
      */
     this(uint address)
     {
@@ -155,10 +158,13 @@ struct IpAddress
      * The returned number is the internal representation of the address, and
      * should be used for optimization purposes only (like sending the address
      * through a socket). The integer produced by this function can then be
-     * converted back to an $(U IpAddress) with the proper constructor.
+     * converted back to an `IpAddress` with the proper constructor.
      *
-     * Returns: 32-bits unsigned integer representation of the address.
-     * See_Also: toString
+     * Returns:
+     *      32-bits unsigned integer representation of the address.
+     *
+     * See_Also:
+     *      toString
      */
     uint toInteger() const
     {
@@ -174,8 +180,11 @@ struct IpAddress
      * This string is built using an internal buffer. If you need to store the
      * string, make a copy.
      *
-     * Returns: String representation of the address
-     * See_Also: toInteger
+     * Returns:
+     *      String representation of the address
+     *
+     * See_Also:
+     *      toInteger
      */
     const(string) toString() const @trusted
     {
@@ -195,11 +204,14 @@ struct IpAddress
      *
      * The local address is the address of the computer from the LAN point of
      * view, i.e. something like 192.168.1.56. It is meaningful only for
-     * communications over the local network. Unlike `getPublicAddress`, this
+     * communications over the local network. Unlike `publicAddress`, this
      * function is fast and may be used safely anywhere.
      *
-     * Returns: Local IP address of the computer.
-     * See_Also: publicAddress
+     * Returns:
+     *      Local IP address of the computer.
+     *
+     * See_Also:
+     *      publicAddress
      */
     static IpAddress localAddress()
     {
@@ -223,10 +235,13 @@ struct IpAddress
      * deactivated by default.
      *
      * Params:
-     * 	timeout = Maximum time to wait
+     * 	    timeout = Maximum time to wait
      *
-     * Returns: Public IP address of the computer.
-     * See_Also: localAddress
+     * Returns:
+     *      Public IP address of the computer.
+     *
+     * See_Also:
+     *      localAddress
      */
     static IpAddress publicAddress(Time timeout = Time.Zero)
     {
@@ -267,7 +282,10 @@ struct IpAddress
     }
 }
 
-//these have the same implementation, but use different names for readability
+/*
+ * `htonl` and `ntohle` have the same implementation, but use different names
+ * for readability
+ */
 private uint htonl(uint host) nothrow @nogc @safe
 {
     version(LittleEndian)

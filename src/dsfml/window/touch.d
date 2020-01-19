@@ -26,28 +26,29 @@
  */
 
 /**
- * Touch provides an interface to the state of the touches.
+ * `Touch` provides an interface to the state of the touches.
  *
  * It only contains static functions, so it's not meant to be instantiated.
  *
  * This class allows users to query the touches state at any time and directly,
- * without having to deal with a window and its events. Compared to the TouchBegan,
- * TouchMoved and TouchEnded events, sf::Touch can retrieve the state of the touches
- * at any time (you don't need to store and update a boolean on your side in order
- * to know if a touch is down), and you always get the real state of the touches,
- * even if they happen when your window is out of focus and no event is triggered.
+ * without having to deal with a window and its events. Compared to the
+ * `TouchBegan`, `TouchMoved` and `TouchEnded` events, `Touch` can retrieve the
+ * state of the touches at any time (you don't need to store and update a
+ * boolean on your side in order to know if a touch is down), and you always get
+ * the real state of the touches, even if they happen when your window is out of
+ * focus and no event is triggered.
  *
- * The getPosition function can be used to retrieve the current position of a touch.
- * There are two versions: one that operates in global coordinates (relative to the
- * desktop) and one that operates in window coordinates (relative to a specific
- * window).
+ * The `getPosition` function can be used to retrieve the current position of a
+ * touch. There are two versions: one that operates in global coordinates
+ * (relative to the desktop) and one that operates in window coordinates
+ * (relative to a specific window).
  *
- * Touches are identified by an index (the "finger"), so that in multi-touch events,
- * individual touches can be tracked correctly. As long as a finger touches the
- * screen, it will keep the same index even if other fingers start or stop touching
- * the screen in the meantime. As a consequence, active touch indices may not always
- * be sequential (i.e. touch number 0 may be released while touch number 1 is still
- * down).
+ * Touches are identified by an index (the "finger"), so that in multi-touch
+ * events, individual touches can be tracked correctly. As long as a finger
+ * touches the screen, it will keep the same index even if other fingers start
+ * or stop touching the screen in the meantime. As a consequence, active touch
+ * indices may not always be sequential (i.e. touch number 0 may be released
+ * while touch number 1 is still down).
  *
  * Usage example:
  * ---
@@ -60,7 +61,9 @@
  * // get position of touch 1 relative to a window
  * Vector2i relativePos = Touch.getPosition(1, window);
  * ---
- * See_Also: Joystick, Keyboard, Mouse
+ *
+ * See_Also:
+ *      $(JOYSTICK_LINK), $(KEYBOARD_LINK), $(MOUSE_LINK)
  */
 module dsfml.window.touch;
 
@@ -76,12 +79,14 @@ final abstract class Touch
     /**
      * Get the current position of a touch in desktop coordinates.
      *
-     * This function returns the current touch position in global (desktop) coordinates.
+     * This function returns the current touch position in global (desktop)
+     * coordinates.
      *
      * Params:
-     * finger=Finger index
+     *      finger = Finger index
      *
-     * Returns: Current position of finger, or undefined if it's not down
+     * Returns:
+     *      Current position of finger, or undefined if it's not down
      */
     static Vector2i getPosition(uint finger)
     {
@@ -91,13 +96,15 @@ final abstract class Touch
     /**
      * Get the current position of a touch in window coordinates.
      *
-     * This function returns the current touch position relative to the given window.
+     * This function returns the current touch position relative to the given
+     * window.
      *
      * Params:
-     * finger=Finger index
-     * relativeTo=Reference window
+     *      finger     = Finger index
+     *      relativeTo = Reference window
      *
-     * Returns: Current position of finger, or undefined if it's not down
+     * Returns:
+     *      Current position of finger, or undefined if it's not down
      */
     static Vector2i getPosition(uint finger, Window relativeTo)
     {
@@ -107,13 +114,15 @@ final abstract class Touch
     /**
      * Get the current position of a touch in window coordinates.
      *
-     * This function returns the current touch position relative to the given window.
+     * This function returns the current touch position relative to the given
+     * window.
      *
      * Params:
-     * finger=Finger index
-     * relativeTo=Reference window
+     *      finger     = Finger index
+     *      relativeTo = Reference window
      *
-     * Returns: Current position of finger, or undefined if it's not down
+     * Returns:
+     *      Current position of finger, or undefined if it's not down
      */
     static Vector2i getPosition(uint finger, RenderWindow relativeTo)
     {
@@ -124,9 +133,10 @@ final abstract class Touch
      * Check if a touch event is currently down.
      *
      * Params:
-     * finger=Finger index
+     *      finger = Finger index
      *
-     * Returns: True if finger is currently touching the screen, false otherwise
+     * Returns:
+     *      true if finger is currently touching the screen, false otherwise
      */
     static bool isDown(uint finger)
     {

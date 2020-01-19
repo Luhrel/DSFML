@@ -26,11 +26,11 @@
  */
 
 /**
- * $(U RenderTarget) defines the common behaviour of all the 2D render targets
+ * `RenderTarget` defines the common behaviour of all the 2D render targets
  * usable in the graphics module. It makes it possible to draw 2D entities like
  * sprites, shapes, text without using any OpenGL command directly.
  *
- * A $(U RenderTarget) is also able to use views which are a kind of 2D cameras.
+ * A `RenderTarget` is also able to use views which are a kind of 2D cameras.
  * With views you can globally scroll, rotate or zoom everything that is drawn,
  * without having to transform every single entity.
  *
@@ -40,7 +40,7 @@
  * calling the `pushGLStates`/`popGLStates` functions.
  *
  * See_Also:
- * $(RENDERWINDOW_LINK), $(RENDERTEXTURE_LINK), $(VIEW_LINK)
+ *      $(RENDERWINDOW_LINK), $(RENDERTEXTURE_LINK), $(VIEW_LINK)
  */
 module dsfml.graphics.rendertarget;
 
@@ -77,8 +77,10 @@ interface RenderTarget
      * active context (if any).
      *
      * Params:
-     *     active = True to activate, false to deactivate
-     * Returns: True if operation was successful, false otherwise
+     *      active = true to activate, false to deactivate
+     *
+     * Returns:
+     *      true if operation was successful, false otherwise
      */
     @property
     bool active(bool active = true);
@@ -93,7 +95,7 @@ interface RenderTarget
      * The render target keeps its own copy of the view object, so it is not
      * necessary to keep the original one alive after calling this function.
      * To restore the original view of the target, you can pass the result
-     * of `getDefaultView()` to this function.
+     * of `defaultView()` to this function.
      */
     @property
     void view(View newView);
@@ -101,8 +103,11 @@ interface RenderTarget
     /**
      * Get the view currently in use in the render target.
      *
-     * Returns: The view object that is currently used
-     * See_Also: defaultView
+     * Returns:
+     *      The view object that is currently used
+     *
+     * See_Also:
+     *      defaultView
      */
     @property
     View view() const;
@@ -113,8 +118,11 @@ interface RenderTarget
      * The default view has the initial size of the render target, and never
      * changes after the target has been created.
      *
-     * Returns: The default view of the render target.
-     * See_Also: view
+     * Returns:
+     *      The default view of the render target.
+     *
+     * See_Also:
+     *      view
      */
     @property
     View defaultView() const;
@@ -122,7 +130,8 @@ interface RenderTarget
     /**
      * Return the size of the rendering region of the target.
      *
-     * Returns: Size in pixels.
+     * Returns:
+     *      Size in pixels.
      */
     @property
     Vector2u size() const;
@@ -136,9 +145,10 @@ interface RenderTarget
      * target.
      *
      * Params:
-     *         view    = The view for which we want to compute the viewport
+     *      view = The view for which we want to compute the viewport
      *
-     * Returns: Viewport rectangle, expressed in pixels.
+     * Returns:
+     *      Viewport rectangle, expressed in pixels.
      */
     @property
     IntRect viewport(View view) const;
@@ -150,7 +160,7 @@ interface RenderTarget
      * contents of the target.
      *
      * Params:
-     *         color    = Fill color to use to clear the render target
+     *      color = Fill color to use to clear the render target
      */
     void clear(Color color = Color.Black);
 
@@ -158,8 +168,8 @@ interface RenderTarget
      * Draw a drawable object to the render target.
      *
      * Params:
-     *         drawable    = Object to draw
-     *         states        = Render states to use for drawing
+     *      drawable = Object to draw
+     *      states   = Render states to use for drawing
      */
     void draw(Drawable drawable, ref RenderStates states);
 
@@ -167,9 +177,9 @@ interface RenderTarget
      * Draw primitives defined by an array of vertices.
      *
      * Params:
-     *         vertices    = Array of vertices to draw
-     *         type        = Type of primitives to draw
-     *         states        = Render states to use for drawing
+     *      vertices = Array of vertices to draw
+     *      type     = Type of primitives to draw
+     *      states   = Render states to use for drawing
      */
     void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states);
 
@@ -177,8 +187,8 @@ interface RenderTarget
      * Draw primitives defined by a vertex buffer.
      *
      * Params:
-     *     vertexBuffer = Vertex buffer
-     *     states       = Render states to use for drawing
+     *      vertexBuffer = Vertex buffer
+     *      states       = Render states to use for drawing
      */
     void draw(VertexBuffer vertexBuffer, ref RenderStates states);
 
@@ -186,22 +196,22 @@ interface RenderTarget
      * Draw primitives defined by a vertex buffer.
      *
      * Params:
-     *     vertexBuffer = Vertex buffer
-     *     firstVertex  = Index of the first vertex to render
-     *     vertexCount  = Number of vertices to render
-     *     states       = Render states to use for drawing
+     *      vertexBuffer = Vertex buffer
+     *      firstVertex  = Index of the first vertex to render
+     *      vertexCount  = Number of vertices to render
+     *      states       = Render states to use for drawing
      */
     void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t	vertexCount, ref RenderStates states);
 
     /**
-     * Convert a point fom target coordinates to world coordinates, using the
+     * Convert a point from target coordinates to world coordinates, using the
      * current view.
      *
-     * This function is an overload of the mapPixelToCoords function that
+     * This function is an overload of the `mapPixelToCoords` function that
      * implicitely uses the current view.
      *
      * Params:
-     *         point    = Pixel to convert
+     *      point = Pixel to convert
      *
      * Returns: The converted point, in "world" coordinates.
      */
@@ -227,24 +237,26 @@ interface RenderTarget
      * of the function if you want to use the current view of the render-target.
      *
      * Params:
-     *         point    = Pixel to convert
-     *         theView    = The view to use for converting the point
+     *      point = Pixel to convert
+     *      view  = The view to use for converting the point
      *
-     * Returns: The converted point, in "world" coordinates.
+     * Returns:
+     *      The converted point, in "world" coordinates.
      */
-    Vector2f mapPixelToCoords(Vector2i point, View theView) inout;
+    Vector2f mapPixelToCoords(Vector2i point, View view) inout;
 
     /**
      * Convert a point from target coordinates to world coordinates, using the
      * curtheView.view.
      *
-     * This function is an overload of the mapPixelToCoords function that
+     * This function is an overload of the `mapCoordsToPixel` function that
      * implicitely uses the current view.
      *
      * Params:
-     *         point    = Point to convert
+     *      point = Point to convert
      *
-     * Returns: The converted point, in "world" coordinates.
+     * Returns:
+     *      The converted point, in "world" coordinates.
      */
     Vector2i mapCoordsToPixel(Vector2f point) inout;
 
@@ -265,12 +277,13 @@ interface RenderTarget
      * of the function if you want to use the current view of the render-target.
      *
      * Params:
-     *         point    = Point to convert
-     *         theView    = The view to use for converting the point
+     *      point = Point to convert
+     *      view  = The view to use for converting the point
      *
-     * Returns: The converted point, in target coordinates (pixels).
+     * Returns:
+     *      The converted point, in target coordinates (pixels).
      */
-    Vector2i mapCoordsToPixel(Vector2f point, View theView) inout;
+    Vector2i mapCoordsToPixel(Vector2f point, View view) inout;
 
     /**
      * Restore the previously saved OpenGL render states and matrices.
@@ -284,12 +297,11 @@ interface RenderTarget
      * Save the current OpenGL render states and matrices.
      *
      * This function can be used when you mix SFML drawing and direct OpenGL
-     * rendering. Combined with PopGLStates, it ensures that:
-     * $(UL
-     * $(LI DSFML's internal states are not messed up by your OpenGL code)
-     * $(LI your OpenGL states are not modified by a call to an SFML function))
+     * rendering. Combined with `popGLStates`, it ensures that:
+     * - DSFML's internal states are not messed up by your OpenGL code
+     * - your OpenGL states are not modified by a call to an SFML function
      *
-     * $(PARA More specifically, it must be used around the code that calls
+     * More specifically, it must be used around the code that calls
      * `draw` functions.
      *
      * Note that this function is quite expensive: it saves all the possible
@@ -297,7 +309,7 @@ interface RenderTarget
      * it should be used wisely. It is provided for convenience, but the best
      * results will be achieved if you handle OpenGL states yourself (because
      * you know which states have really changed, and need to be saved and
-     * restored). Take a look at the `resetGLStates` function if you do so.)
+     * restored). Take a look at the `resetGLStates` function if you do so.
      */
     void pushGLStates();
 

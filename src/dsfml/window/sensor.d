@@ -26,27 +26,27 @@
  */
 
 /**
- * $(U Sensor) provides an interface to the state of the various sensors that a
+ * `Sensor` provides an interface to the state of the various sensors that a
  * device provides. It only contains static functions, so it's not meant to be
  * instantiated.
  *
  * This class allows users to query the sensors values at any time and directly,
  * without having to deal with a window and its events. Compared to the
- * SensorChanged event, Sensor can retrieve the state of a sensor at any time
- * (you don't need to store and update its current value on your side).
+ * `SensorChanged` event, `Sensor` can retrieve the state of a sensor at any
+ * time (you don't need to store and update its current value on your side).
  *
  * Depending on the OS and hardware of the device (phone, tablet, ...), some
  * sensor types may not be available. You should always check the availability
  * of a sensor before trying to read it, with the `Sensor.isAvailable` function.
  *
  * You may wonder why some sensor types look so similar, for example
- * Accelerometer and Gravity / UserAcceleration. The first one is the raw
+ * `Accelerometer` and `Gravity` / `UserAcceleration`. The first one is the raw
  * measurement of the acceleration, and takes into account both the earth
  * gravity and the user movement. The others are more precise: they provide
  * these components separately, which is usually more useful. In fact they are
  * not direct sensors, they are computed internally based on the raw
- * acceleration and other sensors. This is exactly the same for Gyroscope vs
- * Orientation.
+ * acceleration and other sensors. This is exactly the same for `Gyroscope` vs
+ * `Orientation`.
  *
  * Because sensors consume a non-negligible amount of current, they are all
  * disabled by default. You must call `Sensor.setEnabled` for each sensor in
@@ -101,44 +101,46 @@ final abstract class Sensor
     }
 
     /**
-    * Check if a sensor is available on the underlying platform.
-    *
-    * Params:
-    *    sensor = Sensor to check
-    *
-    * Returns: true if the sensor is available, false otherwise.
-    */
+     * Check if a sensor is available on the underlying platform.
+     *
+     * Params:
+     *      sensor = Sensor to check
+     *
+     * Returns:
+     *      true if the sensor is available, false otherwise.
+     */
     static bool isAvailable(Type sensor)
     {
         return sfSensor_isAvailable(sensor);
     }
 
     /**
-    * Enable or disable a sensor.
-    *
-    * All sensors are disabled by default, to avoid consuming too much battery
-    * power. Once a sensor is enabled, it starts sending events of the
-    * corresponding type.
-    *
-    * This function does nothing if the sensor is unavailable.
-    *
-    * Params:
-    *   sensor = Sensor to enable
-    *   enabled = true to enable, false to disable
-    */
+     * Enable or disable a sensor.
+     *
+     * All sensors are disabled by default, to avoid consuming too much battery
+     * power. Once a sensor is enabled, it starts sending events of the
+     * corresponding type.
+     *
+     * This function does nothing if the sensor is unavailable.
+     *
+     * Params:
+     *      sensor  = Sensor to enable
+     *      enabled = true to enable, false to disable
+     */
     static void setEnabled(Type sensor, bool enabled)
     {
         sfSensor_setEnabled(sensor, enabled);
     }
 
     /**
-    * Get the current sensor value.
-    *
-    * Params:
-    *   sensor = Sensor to read
-    *
-    * Returns: The current sensor value.
-    */
+     * Get the current sensor value.
+     *
+     * Params:
+     *      sensor = Sensor to read
+     *
+     * Returns:
+     *      The current sensor value.
+     */
     static Vector3f getValue(Type sensor)
     {
         return sfSensor_getValue(sensor);

@@ -26,34 +26,35 @@
  */
 
 /**
- * $(U Sprite) is a drawable class that allows to easily display a texture (or a
+ * `Sprite` is a drawable class that allows to easily display a texture (or a
  * part of it) on a render target.
  *
- * It inherits all the functions from $(TRANSFORMABLE_LINK): position, rotation,
- * scale, origin. It also adds sprite-specific properties such as the texture to
- * use, the part of it to display, and some convenience functions to change the
- * overall color of the sprite, or to get its bounding rectangle.
+ * It inherits all the functions from $(TRANSFORMABLE_LINK): `position`,
+ * `rotation`, `scale`, `origin`. It also adds sprite-specific properties such
+ * as the texture to use, the part of it to display, and some convenience
+ * functions to change the overall color of the sprite, or to get its bounding
+ * rectangle.
  *
- * $(U Sprite) works in combination with the $(TEXTURE_LINK) class, which loads
+ * `Sprite` works in combination with the $(TEXTURE_LINK) class, which loads
  * and provides the pixel data of a given texture.
  *
- * The separation of $(U Sprite) and $(TEXTURE_LINK) allows more flexibility and
+ * The separation of `Sprite` and $(TEXTURE_LINK) allows more flexibility and
  * better performances: indeed a $(TEXTURE_LINK) is a heavy resource, and any
  * operation on it is slow (often too slow for real-time applications). On the
- * other side, a $(U Sprite) is a lightweight object which can use the pixel
+ * other side, a `Sprite` is a lightweight object which can use the pixel
  * data of a $(TEXTURE_LINK) and draw it with its own
  * transformation/color/blending attributes.
  *
- * It is important to note that the $(U Sprite) instance doesn't copy the
+ * It is important to note that the `Sprite` instance doesn't copy the
  * texture that it uses, it only keeps a reference to it. Thus, a
- * $(TEXTURE_LINK) must not be destroyed while it is used by a $(U Sprite)
+ * $(TEXTURE_LINK) must not be destroyed while it is used by a `Sprite`
  * (i.e. never write a function that uses a local Texture instance for creating
  * a sprite).
  *
  * See also the note on coordinates and undistorted rendering in
  * $(TRANSFORMABLE_LINK).
  *
- * example:
+ * Example:
  * ---
  * // Declare and load a texture
  * auto texture = new Texture();
@@ -61,7 +62,7 @@
  *
  * // Create a sprite
  * auto sprite = new Sprite();
- * sprite.setTexture(texture);
+ * sprite.texture(texture);
  * sprite.textureRect = IntRect(10, 10, 50, 30);
  * sprite.color = Color(255, 255, 255, 200);
  * sprite.position = Vector2f(100, 25);
@@ -71,7 +72,7 @@
  * ---
  *
  * See_Also:
- * $(TEXTURE_LINK), $(TRANSFORMABLE_LINK)
+ *      $(TEXTURE_LINK), $(TRANSFORMABLE_LINK)
  */
 module dsfml.graphics.sprite;
 
@@ -112,8 +113,10 @@ class Sprite : Transformable, Drawable
      * Construct the sprite from a source texture
      *
      * Params:
-     * texture = Source texture
-     * See_Also: texture
+     *      texture = Source texture
+     *
+     * See_Also:
+     *      texture
      */
     this(Texture texture)
     {
@@ -125,10 +128,11 @@ class Sprite : Transformable, Drawable
      * Construct the sprite from a sub-rectangle of a source texture.
      *
      * Params:
-     *     texture   = Source texture
-     *     rectangle = Sub-rectangle of the texture to assign to the sprite
+     *      texture   = Source texture
+     *      rectangle = Sub-rectangle of the texture to assign to the sprite
      *
-     * See_Also: texture, textureRect
+     * See_Also:
+     *      texture, textureRect
      */
     this(Texture texture, IntRect rectangle)
     {
@@ -160,8 +164,8 @@ class Sprite : Transformable, Drawable
          * origin of a transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new origin
-         *     y = Y coordinate of the new origin
+         *      x = X coordinate of the new origin
+         *      y = Y coordinate of the new origin
          */
         override void origin(float x, float y)
         {
@@ -178,17 +182,18 @@ class Sprite : Transformable, Drawable
          * origin of a transformable object is (0, 0).
          *
          * Params:
-         *     origin = New origin
+         *      _origin = New origin
          */
-        override void origin(Vector2f newOrigin)
+        override void origin(Vector2f _origin)
         {
-            sfSprite_setOrigin(m_sprite, newOrigin);
+            sfSprite_setOrigin(m_sprite, _origin);
         }
 
         /**
          * Get the local origin of the object
          *
-         * Returns: Current origin
+         * Returns:
+         *      Current origin
          */
         override Vector2f origin() const
         {
@@ -202,13 +207,15 @@ class Sprite : Transformable, Drawable
          * Set the position of the object
          *
          * This function completely overwrites the previous position. See the
-         * move function to apply an offset based on the previous position
+         * `move` function to apply an offset based on the previous position
          * instead. The default position of a transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new position
-         *     y = Y coordinate of the new position
-         * See_Also: move
+         *      x = X coordinate of the new position
+         *      y = Y coordinate of the new position
+         *
+         * See_Also:
+         *      move
          */
         override void position(float x, float y)
         {
@@ -219,22 +226,25 @@ class Sprite : Transformable, Drawable
          * Set the position of the object
          *
          * This function completely overwrites the previous position. See the
-         * move function to apply an offset based on the previous position
+         * `move` function to apply an offset based on the previous position
          * instead. The default position of a transformable object is (0, 0).
          *
          * Params:
-         *     position = New position
-         * See_Also: move
+         *     _position = New position
+         *
+         * See_Also:
+         *      move
          */
-        override void position(Vector2f newPosition)
+        override void position(Vector2f _position)
         {
-            sfSprite_setPosition(m_sprite, newPosition);
+            sfSprite_setPosition(m_sprite, _position);
         }
 
         /**
          * Get the position of the object
          *
-         * Returns: Current position
+         * Returns:
+         *      Current position
          */
         override Vector2f position() const
         {
@@ -246,13 +256,14 @@ class Sprite : Transformable, Drawable
      * Rotate the object.
      *
      * This function adds to the current rotation of the object, unlike the
-     * rotation property which overwrites it. Thus, it is equivalent to the
+     * `rotation` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * object.setRotation(object.getRotation() + angle);
+     * ---
      *
      * Params:
-     *     angle = Angle of rotation, in degrees
+     *      angle = Angle of rotation, in degrees
      */
     override void rotate(float angle)
     {
@@ -265,12 +276,14 @@ class Sprite : Transformable, Drawable
          * Set the orientation of the object
          *
          * This function completely overwrites the previous rotation. See the
-         * rotate function to add an angle based on the previous rotation
+         * `rotate` function to add an angle based on the previous rotation
          * instead. The default rotation of a transformable object is 0.
          *
          * Params:
-         *     angle	New rotation, in degrees
-         * See_Also: rotate
+         *      angle = New rotation, in degrees
+         *
+         * See_Also:
+         *      rotate
          */
         override void rotation(float angle)
         {
@@ -282,7 +295,8 @@ class Sprite : Transformable, Drawable
          *
          * The rotation is always in the range [0, 360].
          *
-         * Returns: Current rotation, in degrees
+         * Returns:
+         *      Current rotation, in degrees
          */
         override float rotation() const
         {
@@ -295,28 +309,28 @@ class Sprite : Transformable, Drawable
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The
          * default scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factorX = New horizontal scale factor
-         *     factorY = New vertical scale factor
+         *      factorX = New horizontal scale factor
+         *      factorY = New vertical scale factor
          */
-        override void scale(float x, float y)
+        override void scale(float factorX, float factorY)
         {
-            scale(Vector2f(x, y));
+            scale(Vector2f(factorX, factorY));
         }
 
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The
          * default scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factors = New scale factors
+         *      factors = New scale factors
          */
         override void scale(Vector2f factors)
         {
@@ -326,7 +340,8 @@ class Sprite : Transformable, Drawable
         /**
          * Get the current scale of the object
          *
-         * Returns: Current scale factors
+         * Returns:
+         *      Current scale factors
          */
         override Vector2f scale() const
         {
@@ -344,8 +359,10 @@ class Sprite : Transformable, Drawable
          * the entire texture.
          *
          * Params:
-         *     rectangle = Rectangle defining the region of the texture to display
-         * See_Also: setTexture
+         *      rectangle = Rectangle defining the region of the texture to display
+         *
+         * See_Also:
+         *      texture
          */
         void textureRect(IntRect rectangle)
         {
@@ -354,7 +371,8 @@ class Sprite : Transformable, Drawable
         /**
          * Get the sub-rectangle of the texture displayed by the sprite.
          *
-         * Returns: Texture rectangle of the sprite
+         * Returns:
+         *      Texture rectangle of the sprite
          */
         IntRect textureRect() const
         {
@@ -372,17 +390,18 @@ class Sprite : Transformable, Drawable
          * default, the sprite's color is opaque white.
          *
          * Params:
-         *     color = New color of the sprite
+         *      _color = New color of the sprite
          */
-        void color(Color newColor)
+        void color(Color _color)
         {
-            sfSprite_setColor(m_sprite, newColor);
+            sfSprite_setColor(m_sprite, _color);
         }
 
         /**
          * Get the global color of the sprite.
          *
-         * Returns: Global color of the sprite
+         * Returns:
+         *      Global color of the sprite
          */
         Color color() const
         {
@@ -395,7 +414,7 @@ class Sprite : Transformable, Drawable
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it. Thus, it is equivalent to the
+     * `position` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * Vector2f pos = object.position();
@@ -403,9 +422,11 @@ class Sprite : Transformable, Drawable
      * ---
      *
      * Params:
-     *     offsetX = X offset
-     *     offsetY = Y offset
-     * See_Also: position
+     *      offsetX = X offset
+     *      offsetY = Y offset
+     *
+     * See_Also:
+     *      position
      */
     override void move(float offsetX, float offsetY)
     {
@@ -416,15 +437,17 @@ class Sprite : Transformable, Drawable
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it. Thus, it is equivalent to the
+     * `position` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * object.setPosition(object.position() + offset);
      * ---
      *
      * Params:
-     *     offset = Offset
-     * See_Also: position
+     *      offset = Offset
+     *
+     * See_Also:
+     *      position
      */
     override void move(Vector2f offset)
     {
@@ -439,7 +462,8 @@ class Sprite : Transformable, Drawable
      * that are applied to the entity. In other words, this function returns the
      * bounds of the sprite in the global 2D world's coordinate system.
      *
-     * Returns: Global bounding rectangle of the entity.
+     * Returns:
+     *      Global bounding rectangle of the entity.
      */
     FloatRect globalBounds() const
     {
@@ -454,7 +478,8 @@ class Sprite : Transformable, Drawable
      * applied to the entity. In other words, this function returns the bounds
      * of the entity in the entity's coordinate system.
      *
-     * Returns: Local bounding rectangle of the entity.
+     * Returns:
+     *      Local bounding rectangle of the entity.
      */
     FloatRect localBounds() const
     {
@@ -464,11 +489,12 @@ class Sprite : Transformable, Drawable
     /**
      * Get the source texture of the sprite.
      *
-     * If the sprite has no source texture, a NULL pointer is returned. The
+     * If the sprite has no source texture, a null pointer is returned. The
      * returned pointer is const, which means that you can't modify the texture
      * when you retrieve it with this function.
      *
-     * Returns: The sprite's texture.
+     * Returns:
+     *      The sprite's texture.
      */
     Texture texture() const
     {
@@ -489,10 +515,11 @@ class Sprite : Transformable, Drawable
      * the texture rect is left unchanged.
      *
      * Params:
-     * 	texture	  = New texture
-     * 	rectReset = Should the texture rect be reset to the size of the new
-     *              texture?
-     * See_Also: texture, textureRect
+     *      texture	  = New texture
+     *      rectReset = Should the texture rect be reset to the size of the new
+     *                  texture?
+     * See_Also:
+     *      texture, textureRect
      */
     void texture(Texture texture, bool rectReset = false)
     {
@@ -502,7 +529,8 @@ class Sprite : Transformable, Drawable
     /**
      * Get the combined transform of the object
      *
-     * Returns: Transform combining the position/rotation/scale/origin of the object
+     * Returns:
+     *      Transform combining the position/rotation/scale/origin of the object
      */
     override const(Transform) transform() const
     {
@@ -512,9 +540,11 @@ class Sprite : Transformable, Drawable
     /**
      * Get the inverse of the combined transform of the object
      *
-     * Returns: Inverse of the combined transformations applied to the object
+     * Returns:
+     *      Inverse of the combined transformations applied to the object
      *
-     * See_Also: transform
+     * See_Also:
+     *      transform
      */
     override const(Transform) inverseTransform() const
     {
@@ -525,8 +555,8 @@ class Sprite : Transformable, Drawable
      * Draw the sprite to a render target.
      *
      * Params:
-     * 		renderTarget	= Target to draw to
-     * 		renderStates	= Current render states
+     *      renderTarget = Target to draw to
+     * 	    renderStates = Current render states
      */
     override void draw(RenderTarget renderTarget, RenderStates renderStates)
     {
@@ -536,7 +566,8 @@ class Sprite : Transformable, Drawable
     /**
      * Create a new Sprite with the same data.
      *
-     * Returns: A new Sprite object with the same data.
+     * Returns:
+     *      A new Sprite object with the same data.
      */
     @property
     override Sprite dup() const
@@ -544,6 +575,7 @@ class Sprite : Transformable, Drawable
         return new Sprite(m_sprite);
     }
 
+    // Returns the C pointer.
     package sfSprite* ptr()
     {
         return m_sprite;

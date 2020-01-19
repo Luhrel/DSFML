@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U Mutex) stands for "MUTual EXclusion". A mutex is a synchronization
+ * `Mutex` stands for "MUTual EXclusion". A mutex is a synchronization
  * object, used when multiple threads are involved.
  *
  * When you want to protect a part of the code from being accessed
@@ -59,7 +59,7 @@
  * }
  * ---
  *
- * $(PARA Be very careful with mutexes. A bad usage can lead to bad problems,
+ * Be very careful with mutexes. A bad usage can lead to bad problems,
  * like deadlocks (two threads are waiting for each other and the application is
  * globally stuck).
  *
@@ -73,11 +73,11 @@
  * However, you must call `unlock()` exactly as many times as you called
  * `lock()`. If you don't, the mutex won't be released.
  *
- * Note that the $(U Mutex) class is added for convenience, and is nothing more
- * than a simnple wrapper around the existing core.sync.mutex.Mutex class.)
+ * Note that the `Mutex` class is added for convenience, and is nothing more
+ * than a simnple wrapper around the existing `core.sync.mutex.Mutex` class.
  *
  * See_Also:
- * $(LOCK_LINK)
+ *      $(LOCK_LINK)
  */
 module dsfml.system.mutex;
 

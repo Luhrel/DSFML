@@ -26,7 +26,7 @@
  */
 
 /**
- * A $(U Transform) specifies how to translate, rotate, scale, shear, project,
+ * A `Transform` specifies how to translate, rotate, scale, shear, project,
  * whatever things. In mathematical terms, it defines how to transform a
  * coordinate system into another.
  *
@@ -57,7 +57,7 @@
  * ---
  *
  * See_Also:
- * $(TRANSFORMABLE_LINK), $(RENDERSTATES_LINK)
+ *      $(TRANSFORMABLE_LINK), $(RENDERSTATES_LINK)
  */
 module dsfml.graphics.transform;
 
@@ -75,15 +75,15 @@ struct Transform
      * Construct a transform from a 3x3 matrix.
      *
      * Params:
-     *         a00    = Element (0, 0) of the matrix
-     *         a01    = Element (0, 1) of the matrix
-     *         a02    = Element (0, 2) of the matrix
-     *         a10    = Element (1, 0) of the matrix
-     *         a11    = Element (1, 1) of the matrix
-     *         a12    = Element (1, 2) of the matrix
-     *         a20    = Element (2, 0) of the matrix
-     *         a21    = Element (2, 1) of the matrix
-     *         a22    = Element (2, 2) of the matrix
+     *      a00 = Element (0, 0) of the matrix
+     *      a01 = Element (0, 1) of the matrix
+     *      a02 = Element (0, 2) of the matrix
+     *      a10 = Element (1, 0) of the matrix
+     *      a11 = Element (1, 1) of the matrix
+     *      a12 = Element (1, 2) of the matrix
+     *      a20 = Element (2, 0) of the matrix
+     *      a21 = Element (2, 1) of the matrix
+     *      a22 = Element (2, 2) of the matrix
      */
     this(float a00, float a01, float a02,
          float a10, float a11, float a12,
@@ -112,7 +112,8 @@ struct Transform
      *
      * If the inverse cannot be computed, an identity transform is returned.
      *
-     * Returns: A new transform which is the inverse of self.
+     * Returns:
+     *      A new transform which is the inverse of self.
      */
     @property
     Transform inverse() const
@@ -133,7 +134,8 @@ struct Transform
      * glLoadMatrixf(&transform.getMatrix());
      * ---
      *
-     * Returns: A 4x4 matrix.
+     * Returns:
+     *      A 4x4 matrix.
      */
     @property
     const(float)[] matrix() const
@@ -150,9 +152,10 @@ struct Transform
      * transform. Mathematically, it is equivalent to a matrix multiplication.
      *
      * Params:
-     *         otherTransform    = Transform to combine with this one
+     *      other = Transform to combine with this one
      *
-     * Returns: Reference to this.
+     * Returns:
+     *      Reference to this.
      */
     ref Transform combine(Transform other)
     {
@@ -164,10 +167,11 @@ struct Transform
      * Transform a 2D point.
      *
      * Params:
-     *     x = X coordinate of the point to transform
-     *     y = Y coordinate of the point to transform
+     *      x = X coordinate of the point to transform
+     *      y = Y coordinate of the point to transform
      *
-     * Returns: Transformed point.
+     * Returns:
+     *      Transformed point.
      */
     Vector2f transformPoint(float x, float y) const
     {
@@ -178,9 +182,10 @@ struct Transform
      * Transform a 2D point.
      *
      * Params:
-     *        point     = Point to transform
+     *      point = Point to transform
      *
-     * Returns: Transformed point.
+     * Returns:
+     *      Transformed point.
      */
     Vector2f transformPoint(Vector2f point) const
     {
@@ -196,9 +201,10 @@ struct Transform
      * transformed rectangle is returned.
      *
      * Params:
-     *         rectangle    = Rectangle to transform
+     *      rectangle = Rectangle to transform
      *
-     * Returns: Transformed rectangle.
+     * Returns:
+     *      Transformed rectangle.
      */
     FloatRect transformRect(const(FloatRect) rectangle) const
     {
@@ -215,10 +221,13 @@ struct Transform
      * ---
      *
      * Params:
-     *         offset    = Translation offset to apply
+     *      offset = Translation offset to apply
      *
-     * Returns: this
-     * See_Also: rotate, scale
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      rotate, scale
      */
     ref Transform translate(Vector2f offset)
     {
@@ -235,11 +244,14 @@ struct Transform
      * ---
      *
      * Params:
-     *         x    = Offset to apply on X axis
-     *        y    = Offset to apply on Y axis
+     *      x = Offset to apply on X axis
+     *      y = Offset to apply on Y axis
      *
-     * Returns: this
-     * See_Also: rotate, scale
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      rotate, scale
      */
     ref Transform translate(float x, float y)
     {
@@ -256,10 +268,13 @@ struct Transform
      * transform.rotate(90).translate(50, 20);
      * ---
      * Params:
-     *         angle    = Rotation angle, in degrees
+     *      angle = Rotation angle, in degrees
      *
-     * Returns: this
-     * See_Also: translate, scale
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      translate, scale
      */
     ref Transform rotate(float angle)
     {
@@ -273,7 +288,7 @@ struct Transform
      * The center of rotation is provided for convenience as a second argument,
      * so that you can build rotations around arbitrary points more easily (and
      * efficiently) than the usual
-     * translate(-center).rotate(angle).translate(center).
+     * `translate(-center).rotate(angle).translate(center)`.
      *
      * This function returns a reference to this, so that calls can be chained.
      * ---
@@ -282,12 +297,15 @@ struct Transform
      * ---
      *
      * Params:
-     *         angle    = Rotation angle, in degrees
-     *         centerX    = X coordinate of the center of rotation
-     *        centerY = Y coordinate of the center of rotation
+     *      angle   = Rotation angle, in degrees
+     *      centerX = X coordinate of the center of rotation
+     *      centerY = Y coordinate of the center of rotation
      *
-     * Returns: this
-     * See_Also: translate, scale
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      translate, scale
      */
     ref Transform rotate(float angle, float centerX, float centerY)
     {
@@ -301,7 +319,7 @@ struct Transform
      * The center of rotation is provided for convenience as a second argument,
      * so that you can build rotations around arbitrary points more easily (and
      * efficiently) than the usual
-     * translate(-center).rotate(angle).translate(center).
+     * `translate(-center).rotate(angle).translate(center)`.
      *
      * This function returns a reference to this, so that calls can be chained.
      * ---
@@ -310,11 +328,14 @@ struct Transform
      * ---
      *
      * Params:
-     *         angle    = Rotation angle, in degrees
-     *         center    = Center of rotation
+     *      angle  = Rotation angle, in degrees
+     *      center = Center of rotation
      *
-     * Returns: this
-     * See_Also: translate, scale
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      translate, scale
      */
     ref Transform rotate(float angle, Vector2f center)
     {
@@ -331,11 +352,14 @@ struct Transform
      * ---
      *
      * Params:
-     *         scaleX    = Scaling factor on the X-axis.
-     *         scaleY    = Scaling factor on the Y-axis.
+     *      scaleX = Scaling factor on the X-axis.
+     *      scaleY = Scaling factor on the Y-axis.
      *
-     * Returns: this
-     * See_Also: translate, rotate
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      translate, rotate
      */
     ref Transform scale(float scaleX, float scaleY)
     {
@@ -353,10 +377,13 @@ struct Transform
      * ---
      *
      * Params:
-     *         factors    = Scaling factors
+     *      factors = Scaling factors
      *
-     * Returns: this
-     * See_Also: translate, rotate
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      translate, rotate
      */
     ref Transform scale(Vector2f factors)
     {
@@ -369,7 +396,7 @@ struct Transform
      * The center of scaling is provided for convenience as a second argument,
      * so that you can build scaling around arbitrary points more easily
      * (and efficiently) than the usual
-     * translate(-center).scale(factors).translate(center).
+     * `translate(-center).scale(factors).translate(center)`.
      *
      * This function returns a reference to this, so that calls can be chained.
      * ---
@@ -378,13 +405,16 @@ struct Transform
      * ---
      *
      * Params:
-     *         scaleX    = Scaling factor on the X-axis
-     *         scaleY    = Scaling factor on the Y-axis
-     *         centerX    = X coordinate of the center of scaling
-     *         centerY    = Y coordinate of the center of scaling
+     *      scaleX  = Scaling factor on the X-axis
+     *      scaleY  = Scaling factor on the Y-axis
+     *      centerX = X coordinate of the center of scaling
+     *      centerY = Y coordinate of the center of scaling
      *
-     * Returns: this
-     * See_Also: translate, rotate
+     * Returns:
+     *      Reference to this
+     *
+     * See_Also:
+     *      translate, rotate
      */
     ref Transform scale(float scaleX, float scaleY, float centerX, float centerY)
     {
@@ -398,15 +428,16 @@ struct Transform
      * The center of scaling is provided for convenience as a second argument,
      * so that you can build scaling around arbitrary points more easily
      * (and efficiently) than the usual
-     * translate(-center).scale(factors).translate(center).
+     * `translate(-center).scale(factors).translate(center)`.
      *
      * This function returns a reference to this, so that calls can be chained.
      *
      * Params:
-     *         factors    = Scaling factors
-     *         center    = Center of scaling
+     *      factors = Scaling factors
+     *      center  = Center of scaling
      *
-     * Returns: this
+     * Returns:
+     *      Reference to this
      */
     ref Transform scale(Vector2f factors, Vector2f center)
     {
@@ -414,18 +445,24 @@ struct Transform
     }
 
     /**
-     * Overload of binary operator `*` to combine two transforms.
+     * Overload of binary operator `*` and `/` to combine two transforms.
      *
-     * This call is equivalent to:
+     * For rhe `*` operator, this call is equivalent to:
      * ---
      * Transform combined = transform;
      * combined.combine(rhs);
      * ---
      *
-     * Params:
-     * rhs = the second transform to be combined with the first
+     * For the `/` operator, this call is equivalent to:
+     * ---
+     * transform.combine(rhs).inverse();
+     * ---
      *
-     * Returns: New combined transform.
+     * Params:
+     *      rhs = the second transform to be combined with the first
+     *
+     * Returns:
+     *      New combined transform.
      */
     Transform opBinary(string op)(Transform rhs)
         if(op == "*" || op == "/")
@@ -442,9 +479,10 @@ struct Transform
      * This call is equivalent to calling `transform.combine(rhs)`.
      *
      * Params:
-     * rhs = the second transform to be combined with the first
+     *      rhs = the second transform to be combined with the first
      *
-     * Returns: The combined transform.
+     * Returns:
+     *      The combined transform.
      */
     ref Transform opOpAssign(string op)(Transform rhs)
         if(op == "*" || op == "/")
@@ -456,14 +494,15 @@ struct Transform
     }
 
     /**
-    * Overload of binary operator * to transform a point
+    * Overload of binary operator `*` to transform a point
     *
     * This call is equivalent to calling `transform.transformPoint(vector)`.
     *
     * Params:
-    * vector = the point to transform
+    *       vector = the point to transform
     *
-    * Returns: New transformed point.
+    * Returns:
+    *       New transformed point.
     */
     Vextor2f opBinary(string op)(Vector2f vector)
         if(op == "*")
@@ -471,7 +510,7 @@ struct Transform
         return transformPoint(vector);
     }
 
-    @property
+    /// The identity transform (does nothing).
     static const(Transform) identity()
     {
         return Transform([1, 0, 0,

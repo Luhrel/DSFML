@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U Shape) is a drawable class that allows to define and display a custom
+ * `Shape` is a drawable class that allows to define and display a custom
  * convex shape on a render target.
  *
  * It's only an abstract base, it needs to be specialized for concrete types of
@@ -34,28 +34,25 @@
  *
  * In addition to the attributes provided by the specialized shape classes, a
  * shape always has the following attributes:
- * $(UL
- * $(LI a texture)
- * $(LI a texture rectangle)
- * $(LI a fill color)
- * $(LI an outline color)
- * $(LI an outline thickness))
+ * - a texture
+ * - a texture rectangle
+ * - a fill color
+ * - an outline color
+ * - an outline thickness
  *
- * $(PARA Each feature is optional, and can be disabled easily:)
- * $(UL
- * $(LI the texture can be null)
- * $(LI the fill/outline colors can be Color.Transparent)
- * $(LI the outline thickness can be zero))
+ * Each feature is optional, and can be disabled easily:
+ * - the texture can be null
+ * - the fill/outline colors can be Color.Transparent
+ * - the outline thickness can be zero
  *
- * $(PARA You can write your own derived shape class, there are only two
- * abstract functions to override:)
- * $(UL
- * $(LI `getPointCount` must return the number of points of the shape)
- * $(LI `getPoint` must return the points of the shape))
+ * You can write your own derived shape class, there are only two
+ * abstract functions to override:
+ * - `pointCount` must return the number of points of the shape
+ * - `getPoint` must return the points of the shape
  *
  * See_Also:
- * $(RECTANGLESHAPE_LINK), $(CIRCLESHAPE_LINK), $(CONVEXSHAPE_LINK),
- * $(TRANSFORMABLE_LINK)
+ *      $(RECTANGLESHAPE_LINK), $(CIRCLESHAPE_LINK), $(CONVEXSHAPE_LINK),
+ *      $(TRANSFORMABLE_LINK)
  */
 module dsfml.graphics.shape;
 
@@ -98,30 +95,31 @@ class Shape : Transformable, Drawable
          * shape uses it. Indeed, the shape doesn't store its own copy of the
          * texture, but rather keeps a pointer to the one that you passed to this
          * function. If the source texture is destroyed and the shape tries to use
-         * it, the behaviour is undefined. texture can be NULL to disable texturing.
+         * it, the behaviour is undefined. texture can be null to disable texturing.
          *
          * If resetRect is true, the TextureRect property of the shape is
          * automatically adjusted to the size of the new texture. If it is false,
          * the texture rect is left unchanged.
          *
          * Params:
-         *     texture   = New texture
-         *     resetRect = Should the texture rect be reset to the size of the new
-         *              texture?
+         *      _texture   = New texture
+         *      resetRect = Should the texture rect be reset to the size of the new
+         *                  texture?
          */
-        void texture(Texture newTexture, bool resetRect = false)
+        void texture(Texture _texture, bool resetRect = false)
         {
-            sfShape_setTexture(m_shape, newTexture.ptr, resetRect);
+            sfShape_setTexture(m_shape, _texture.ptr, resetRect);
         }
 
         /**
          * Get the source texture of the shape.
          *
-         * If the shape has no source texture, a NULL pointer is returned. The
+         * If the shape has no source texture, a null pointer is returned. The
          * returned pointer is const, which means that you can't modify the texture
          * when you retrieve it with this function.
          *
-         * Returns: The shape's texture.
+         * Returns:
+         *      The shape's texture.
          */
         const(Texture) texture() const
         {
@@ -134,11 +132,15 @@ class Shape : Transformable, Drawable
         /**
          * Set the sub-rectangle of the texture that the shape will display.
          *
-         * The texture rect is useful when you don't want to display the whole texture, but rather a part of it. By default, the texture rect covers the entire texture.
+         * The texture rect is useful when you don't want to display the whole
+         * texture, but rather a part of it. By default, the texture rect covers
+         * the entire texture.
          *
          * Params:
-         *     rect = Rectangle defining the region of the texture to display
-         * See_Also: texture
+         *      rect = Rectangle defining the region of the texture to display
+         *
+         * See_Also:
+         *      texture
          */
         void textureRect(IntRect rect)
         {
@@ -148,7 +150,8 @@ class Shape : Transformable, Drawable
         /**
          * Get the sub-rectangle of the texture displayed by the shape.
          *
-         * Returns: Texture rectangle of the shape
+         * Returns:
+         *      Texture rectangle of the shape
          */
         IntRect textureRect() const
         {
@@ -168,8 +171,10 @@ class Shape : Transformable, Drawable
          * white.
          *
          * Params:
-         *     color = New color of the shape
-         * See_Also: outlineColor
+         *      color = New color of the shape
+         *
+         * See_Also:
+         *      outlineColor
          */
         void fillColor(Color color)
         {
@@ -179,7 +184,8 @@ class Shape : Transformable, Drawable
         /**
          * Get the fill color of the shape.
          *
-         * Returns: Fill color of the shape
+         * Returns:
+         *      Fill color of the shape
          */
         Color fillColor() const
         {
@@ -195,8 +201,10 @@ class Shape : Transformable, Drawable
          * By default, the shape's outline color is opaque white.
          *
          * Params:
-         *     color = New outline color of the shape
-         * See_Also: fillColor
+         *      color = New outline color of the shape
+         *
+         * See_Also:
+         *      fillColor
          */
         void outlineColor(Color color)
         {
@@ -206,8 +214,11 @@ class Shape : Transformable, Drawable
         /**
          * Get the outline color of the shape.
          *
-         * Returns: Outline color of the shape
-         * See_Also: fillColor
+         * Returns:
+         *      Outline color of the shape
+         *
+         * See_Also:
+         *      fillColor
          */
         Color outlineColor() const
         {
@@ -225,7 +236,7 @@ class Shape : Transformable, Drawable
          * By default, the outline thickness is 0.
          *
          * Params:
-         *     thickness = New outline thickness
+         *      thickness = New outline thickness
          */
         void outlineThickness(float thickness)
         {
@@ -235,7 +246,8 @@ class Shape : Transformable, Drawable
         /**
          * Get the outline thickness of the shape.
          *
-         * Returns: Outline thickness of the shape
+         * Returns:
+         *      Outline thickness of the shape
          */
         float outlineThickness() const
         {
@@ -255,8 +267,8 @@ class Shape : Transformable, Drawable
          * transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new origin
-         *     y = Y coordinate of the new origin
+         *      x = X coordinate of the new origin
+         *      y = Y coordinate of the new origin
          */
         override void origin(float x, float y)
         {
@@ -273,17 +285,18 @@ class Shape : Transformable, Drawable
          * transformable object is (0, 0).
          *
          * Params:
-         *     origin = New origin
+         *      _origin = New origin
          */
-        override void origin(Vector2f newOrigin)
+        override void origin(Vector2f _origin)
         {
-            sfShape_setOrigin(m_shape, newOrigin);
+            sfShape_setOrigin(m_shape, _origin);
         }
 
         /**
          * Get the local origin of the object
          *
-         * Returns: Current origin
+         * Returns:
+         *      Current origin
          */
         override Vector2f origin() const
         {
@@ -296,8 +309,11 @@ class Shape : Transformable, Drawable
         /**
          * Get the total number of points of the shape.
          *
-         * Returns: Number of points of the shape
-         * See_Also: getPoint
+         * Returns:
+         *      Number of points of the shape
+         *
+         * See_Also:
+         *      getPoint
          */
         abstract size_t pointCount() const;
     }
@@ -307,14 +323,16 @@ class Shape : Transformable, Drawable
         /**
          * Set the position of the object
          *
-         * This function completely overwrites the previous position. See the move
+         * This function completely overwrites the previous position. See the `move`
          * function to apply an offset based on the previous position instead. The
          * default position of a transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new position
-         *     y = Y coordinate of the new position
-         * See_Also: move
+         *      x = X coordinate of the new position
+         *      y = Y coordinate of the new position
+         *
+         * See_Also:
+         *      move
          */
         override void position(float x, float y)
         {
@@ -324,23 +342,26 @@ class Shape : Transformable, Drawable
         /**
          * Set the position of the object
          *
-         * This function completely overwrites the previous position. See the move
+         * This function completely overwrites the previous position. See the `move`
          * function to apply an offset based on the previous position instead. The
          * default position of a transformable object is (0, 0).
          *
          * Params:
-         *     position = New position
-         * See_Also: move
+         *      _position = New position
+         *
+         * See_Also:
+         *      move
          */
-        override void position(Vector2f newPosition)
+        override void position(Vector2f _position)
         {
-            sfShape_setPosition(m_shape, newPosition);
+            sfShape_setPosition(m_shape, _position);
         }
 
         /**
          * Get the position of the object
          *
-         * Returns: Current position
+         * Returns:
+         *      Current position
          */
         override Vector2f position() const
         {
@@ -351,14 +372,14 @@ class Shape : Transformable, Drawable
     /**
      * Rotate the object.
      *
-     * This function adds to the current rotation of the object, unlike the rotation
+     * This function adds to the current rotation of the object, unlike the `rotation`
      * property which overwrites it. Thus, it is equivalent to the following code:
      * ---
      * object.setRotation(object.rotation() + angle);
      * ---
      *
      * Params:
-     *     angle = Angle of rotation, in degrees
+     *      angle = Angle of rotation, in degrees
      */
     override void rotate(float angle)
     {
@@ -370,13 +391,15 @@ class Shape : Transformable, Drawable
         /**
          * Set the orientation of the object
          *
-         * This function completely overwrites the previous rotation. See the rotate
+         * This function completely overwrites the previous rotation. See the `rotate`
          * function to add an angle based on the previous rotation instead. The
          * default rotation of a transformable object is 0.
          *
          * Params:
-         *     angle = New rotation, in degrees
-         * See_Also: rotate
+         *      angle = New rotation, in degrees
+         *
+         * See_Also:
+         *      rotate
          */
         override void rotation(float angle)
         {
@@ -388,7 +411,8 @@ class Shape : Transformable, Drawable
          *
          * The rotation is always in the range [0, 360].
          *
-         * Returns: Current rotation, in degrees
+         * Returns:
+         *      Current rotation, in degrees
          */
         override float rotation() const
         {
@@ -401,13 +425,13 @@ class Shape : Transformable, Drawable
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The default
          * scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factorX = New horizontal scale factor
-         *     factorY = New vertical scale factor
+         *      factorX = New horizontal scale factor
+         *      factorY = New vertical scale factor
          */
         override void scale(float factorX, float factorY)
         {
@@ -417,12 +441,12 @@ class Shape : Transformable, Drawable
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The default
          * scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factors = New scale factors
+         *      factors = New scale factors
          */
         override void scale(Vector2f factors)
         {
@@ -432,7 +456,8 @@ class Shape : Transformable, Drawable
         /**
          * Get the current scale of the object
          *
-         * Returns: Current scale factors
+         * Returns:
+         *      Current scale factors
          */
         override Vector2f scale() const
         {
@@ -453,7 +478,8 @@ class Shape : Transformable, Drawable
      * possibly more). This allows for a fast approximation of the bounds as a first
      * check; you may want to use more precise checks on top of that.
      *
-     * Returns: Global bounding rectangle of the entity
+     * Returns:
+     *      Global bounding rectangle of the entity
      */
     @property
     FloatRect globalBounds() const
@@ -469,7 +495,8 @@ class Shape : Transformable, Drawable
      * applied to the entity. In other words, this function returns the bounds
      * of the entity in the entity's coordinate system.
      *
-     * Returns: Local bounding rectangle of the entity.
+     * Returns:
+     *      Local bounding rectangle of the entity.
      */
     @property
     FloatRect localBounds() const
@@ -485,10 +512,13 @@ class Shape : Transformable, Drawable
      * undefined if index is out of the valid range.
      *
      * Params:
-     *     index = Index of the point to get, in range [0 .. pointCount() - 1]
+     *      index = Index of the point to get, in range [0 .. pointCount() - 1]
      *
-     * Returns: Index-th point of the shape.
-     * See_Also: pointCount
+     * Returns:
+     *      Index-th point of the shape.
+     *
+     * See_Also:
+     *      pointCount
      */
     abstract Vector2f getPoint(size_t index = 0) const;
 
@@ -496,8 +526,8 @@ class Shape : Transformable, Drawable
      * Draw the shape to a render target.
      *
      * Params:
-     *         renderTarget    = Target to draw to
-     *         renderStates    = Current render states
+     *      renderTarget = Target to draw to
+     *      renderStates = Current render states
      */
     override void draw(RenderTarget renderTarget, RenderStates renderStates = RenderStates.init)
     {
@@ -507,7 +537,8 @@ class Shape : Transformable, Drawable
     /**
      * Get the inverse of the combined transform of the object
      *
-     * Returns: Inverse of the combined transformations applied to the object
+     * Returns:
+     *      Inverse of the combined transformations applied to the object
      */
     override Transform inverseTransform() const
     {
@@ -517,8 +548,11 @@ class Shape : Transformable, Drawable
     /**
      * Get the combined transform of the object
      *
-     * Returns: Transform combining the position/rotation/scale/origin of the object
-     * See_Also: inverseTransform
+     * Returns:
+     *      Transform combining the position/rotation/scale/origin of the object
+     *
+     * See_Also:
+     *      inverseTransform
      */
     override Transform transform()
     {
@@ -528,7 +562,7 @@ class Shape : Transformable, Drawable
     /**
      * Move the object by a given offset.
      *
-     * This function adds to the current position of the object, unlike the position
+     * This function adds to the current position of the object, unlike the `position`
      * property which overwrites it. Thus, it is equivalent to the following code:
      * ---
      * Vector2f pos = object.position();
@@ -536,9 +570,11 @@ class Shape : Transformable, Drawable
      * ---
      *
      * Params:
-     *     offsetX = X offset
-     *     offsetY = Y offset
-     * See_Also: position
+     *      offsetX = X offset
+     *      offsetY = Y offset
+     *
+     * See_Also:
+     *      position
      */
     override void move(float offsetX, float offsetY)
     {
@@ -548,14 +584,14 @@ class Shape : Transformable, Drawable
     /**
      * Move the object by a given offset.
      *
-     * This function adds to the current position of the object, unlike the position
+     * This function adds to the current position of the object, unlike the `position`
      * property which overwrites it. Thus, it is equivalent to the following code:
      * ---
-     * object.position(object.getPosition() + offset);
+     * object.position(object.position() + offset);
      * ---
      *
      * Params:
-     *     offset = Offset
+     *      offset = Offset
      */
     override void move(Vector2f offset)
     {
@@ -566,7 +602,7 @@ class Shape : Transformable, Drawable
      * Recompute the internal geometry of the shape.
      *
      * This function must be called by the derived class everytime the shape's
-     * points change (i.e. the result of either getPointCount or getPoint is
+     * points change (i.e. the result of either `pointCount` or `getPoint` is
      * different).
      */
     protected void update()
@@ -576,9 +612,9 @@ class Shape : Transformable, Drawable
 
     /**
      * Overload of the slice operator (get).
-     * This function simply call `point(index)`.
+     * This function simply call `getPoint(index)`.
      *
-     * example:
+     * Example:
      * ---
      * Vector2f p2 = shape[2];
      * ---

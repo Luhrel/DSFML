@@ -26,7 +26,7 @@
  */
 
 /**
- * Vector3 is a simple structure that defines a mathematical vector with three
+ * `Vector3` is a simple structure that defines a mathematical vector with three
  * coordinates (x, y and z). It can be used to represent anything that has three
  * dimensions: a size, a point, a velocity, etc.
  *
@@ -34,11 +34,10 @@
  * that supports arithmetic operations (+, -, /, *) and comparisons (==, !=),
  * for example int or float.
  *
-* You generally don't have to care about the templated form (Vector2!(T)),
+ * You generally don't have to care about the templated form (`Vector2!(T)`),
  * the most common specializations have special aliases:
- * $(UL
- * $(LI Vector3!(float) is Vector2f)
- * $(LI Vector3!(int) is Vector2i))
+ * - `Vector3!(float)` is `Vector2f`
+ * - `Vector3!(int)` is `Vector2i`
  *
  * Example:
  * ---
@@ -55,7 +54,7 @@
  * ---
  *
  * See_Also:
- * $(VECTOR2_LINK)
+ *      $(VECTOR2_LINK)
  */
 module dsfml.system.vector3;
 
@@ -80,16 +79,16 @@ struct Vector3(T)
      * Construct the vector from its coordinates
      *
      * Params:
-     *         X = X coordinate
-     *         Y = Y coordinate
-     *         Z = Z coordinate
+     *      x = X coordinate
+     *      y = Y coordinate
+     *      z = Z coordinate
      */
-    this(T X,T Y,T Z)
+    this(T x,T y,T z)
     {
 
-        x = X;
-        y = Y;
-        z = Z;
+        this.x = x;
+        this.y = y;
+        this.z = z;
 
     }
 
@@ -97,7 +96,7 @@ struct Vector3(T)
      * Construct the vector from another type of vector
      *
      * Params:
-     *     otherVector = Vector to convert.
+     *      otherVector = Vector to convert.
      */
     this(E)(Vector3!(E) otherVector)
     {

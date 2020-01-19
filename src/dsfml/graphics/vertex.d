@@ -43,7 +43,7 @@
  * Example:
  * ---
  * // define a 100x100 square, red, with a 10x10 texture mapped on it
- * sf::Vertex vertices[] =
+ * Vertex[] vertices =
  * [
  *     Vertex(Vector2f(  0,   0), Color.Red, Vector2f( 0,  0)),
  *     Vertex(Vector2f(  0, 100), Color.Red, Vector2f( 0, 10)),
@@ -55,12 +55,12 @@
  * window.draw(vertices, 4, PrimitiveType.Quads);
  * ---
  *
- * $(PARA $(B Note): although texture coordinates are supposed to be an integer
+ * **Note:** although texture coordinates are supposed to be an integer
  * amount of pixels, their type is float because of some buggy graphics drivers
- * that are not able to process integer coordinates correctly.)
+ * that are not able to process integer coordinates correctly.
  *
  * See_Also:
- * $(VERTEXARRAY_LINK)
+ *      $(VERTEXARRAY_LINK)
  */
 module dsfml.graphics.vertex;
 
@@ -85,11 +85,11 @@ struct Vertex
      * The vertex color is white and texture coordinates are (0, 0).
      *
      * Params:
-     * thePosition = Vertex position
+     *      position = Vertex position
      */
-    this(Vector2f thePosition)
+    this(Vector2f position)
     {
-        position = thePosition;
+        this.position = position;
     }
 
     /**
@@ -98,13 +98,13 @@ struct Vertex
      * The texture coordinates are (0, 0).
      *
      * Params:
-     *  thePosition = Vertex position
-     *  theColor    = Vertex color
+     *      position = Vertex position
+     *      color    = Vertex color
      */
-    this(Vector2f thePosition, Color theColor)
+    this(Vector2f position, Color color)
     {
-        position = thePosition;
-        color = theColor;
+        this.position = position;
+        this.color = color;
     }
 
     /**
@@ -113,28 +113,28 @@ struct Vertex
      * The vertex color is white.
      *
      * Params:
-     *  thePosition  = Vertex position
-     *  theTexCoords = Vertex texture coordinates
+     *      position  = Vertex position
+     *      texCoords = Vertex texture coordinates
      */
-    this(Vector2f thePosition, Vector2f theTexCoords)
+    this(Vector2f position, Vector2f texCoords)
     {
-        position = thePosition;
-        texCoords = theTexCoords;
+        this.position = position;
+        this.texCoords = texCoords;
     }
 
     /**
      * Construct the vertex from its position, color and texture coordinates
      *
      * Params:
-     *  thePosition  = Vertex position
-     *  theColor     = Vertex color
-     *  theTexCoords = Vertex texture coordinates
+     *      position  = Vertex position
+     *      color     = Vertex color
+     *      texCoords = Vertex texture coordinates
      */
-    this(Vector2f thePosition, Color theColor, Vector2f theTexCoords)
+    this(Vector2f position, Color color, Vector2f texCoords)
     {
-        position = thePosition;
-        color = theColor;
-        texCoords = theTexCoords;
+        this.position = position;
+        this.color = color;
+        this.texCoords = texCoords;
     }
 }
 

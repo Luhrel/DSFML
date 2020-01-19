@@ -25,7 +25,7 @@
  * DSFML is based on SFML (Copyright Laurent Gomila)
  */
 /**
- * Clipboard provides an interface for getting and setting the contents of the
+ * `Clipboard` provides an interface for getting and setting the contents of the
  * system clipboard.
  *
  * It is important to note that due to limitations on some operating systems,
@@ -54,7 +54,8 @@
  * }
  * ---
  *
- * See_Also: Event
+ * See_Also:
+ *      $(EVENT_LINK)
  */
 module dsfml.window.clipboard;
 
@@ -73,7 +74,8 @@ struct Clipboard
      * This function returns the content of the clipboard as a string. If the
      * clipboard does not contain string it returns an empty string.
      *
-     * Returns: Clipboard contents as a string
+     * Returns:
+     *      Clipboard contents as a string
      */
     @property
     static const(dstring) str()
@@ -90,13 +92,13 @@ struct Clipboard
      *
      * This function sets the content of the clipboard as a string.
      *
-     * Warning:
+     * **Warning:**
      * Due to limitations on some operating systems, setting the clipboard contents
      * is only guaranteed to work if there is currently an open window for which
      * events are being handled.
      *
      * Params:
-     *         text    = String containing the data to be sent to the clipboard
+     *      text = String containing the data to be sent to the clipboard
      */
     @property
     static void str(dstring text)

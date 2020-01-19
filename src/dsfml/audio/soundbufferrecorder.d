@@ -26,11 +26,11 @@
  */
 
 /**
- * $(U SoundBufferRecorder) allows to access a recorded sound through a
+ * `SoundBufferRecorder` allows to access a recorded sound through a
  * $(SOUNDBUFFER_LINK), so that it can be played, saved to a file, etc.
  *
  * It has the same simple interface as its base class (`start()`, `stop()`) and
- * adds a function to retrieve the recorded sound buffer (`getBuffer()`).
+ * adds a function to retrieve the recorded sound buffer (`buffer()`).
  *
  * As usual, don't forget to call the `isAvailable()` function before using this
  * class (see $(SOUNDRECORDER_LINK) for more details about this).
@@ -46,7 +46,7 @@
  *     recorder.stop();
  *
  *     // Get the buffer containing the captured audio data
- *     auto buffer = recorder.getBuffer();
+ *     auto buffer = recorder.buffer();
  *
  *     // Save it to a file (for example...)
  *     buffer.saveToFile("my_record.ogg");
@@ -54,7 +54,7 @@
  * ---
  *
  * See_Also:
- * $(SOUNDRECORDER_LINK)
+ *      $(SOUNDRECORDER_LINK)
  */
 module dsfml.audio.soundbufferrecorder;
 
@@ -87,7 +87,8 @@ class SoundBufferRecorder : SoundRecorder
      * provides a read-only access to the internal sound buffer, but it can be
      * copied if you need to make any modification to it.
      *
-     * Returns: Read-only access to the sound buffer.
+     * Returns:
+     *      Read-only access to the sound buffer.
      */
     @property const(SoundBuffer) buffer()
     {
@@ -99,7 +100,8 @@ class SoundBufferRecorder : SoundRecorder
         /**
          * Start capturing audio data.
          *
-         * Returns: true to start the capture, or false to abort it.
+         * Returns:
+         *      true to start the capture, or false to abort it.
          */
         override bool onStart()
         {
@@ -112,9 +114,10 @@ class SoundBufferRecorder : SoundRecorder
          * Process a new chunk of recorded samples.
          *
          * Params:
-         *    samples =    Array of the new chunk of recorded samples
+         *      samples = Array of the new chunk of recorded samples
          *
-         * Returns: true to continue the capture, or false to stop it.
+         * Returns:
+         *      true to continue the capture, or false to stop it.
          */
         override bool onProcessSamples(const(short)[] samples)
         {

@@ -27,15 +27,14 @@
 
 /**
  * Packets provide a safe and easy way to serialize data, in order to send it
- * over the network using sockets (sf::TcpSocket, sf::UdpSocket).
+ * over the network using sockets (`TcpSocket`, `UdpSocket`).
  *
  * Packets solve 2 fundamental problems that arise when transferring data over
  * the network:
- * $(UL
- * $(LI data is interpreted correctly according to the endianness)
- * $(LI the bounds of the packet are preserved (one send == one receive)))
+ * - data is interpreted correctly according to the endianness
+ * - the bounds of the packet are preserved (one send == one receive)
  *
- * $(PARA The $(U Packet) class provides both input and output modes.)
+ * The `Packet` class provides both input and output modes.
  *
  * Example:
  * ---
@@ -92,11 +91,11 @@
  * }
  * ---
  *
- * $(PARA Packets also provide an extra feature that allows to apply custom
+ * Packets also provide an extra feature that allows to apply custom
  * transformations to the data before it is sent, and after it is received. This
  * is typically used to handle automatic compression or encryption of the data.
  * This is achieved by inheriting from sf::Packet, and overriding the onSend and
- * onReceive functions.)
+ * onReceive functions.
  *
  * Example:
  * ---
@@ -123,7 +122,7 @@
  * ---
  *
  * See_Also:
- * $(TCPSOCKET_LINK), $(UDPSOCKET_LINK)
+ *      $(TCPSOCKET_LINK), $(UDPSOCKET_LINK)
  */
 module dsfml.network.packet;
 
@@ -169,7 +168,8 @@ class Packet
     /**
      * Get a slice of the data contained in the packet.
      *
-     * Returns: Slice containing the data.
+     * Returns:
+     *      Slice containing the data.
      */
     const(void)[] data() const
     {
@@ -181,8 +181,10 @@ class Packet
      * Append data to the end of the packet.
      *
      * Params:
-     *	data = Pointer to the sequence of bytes to append.
-     * See_Also: clear
+     *      data = Pointer to the sequence of bytes to append.
+     *
+     * See_Also:
+     *      clear
      */
     void append(const(void)[] data)
     {
@@ -193,7 +195,9 @@ class Packet
      * Clear the packet.
      *
      * After calling Clear, the packet is empty.
-     * See_Also: append
+     *
+     * See_Also:
+     *      append
      */
     void clear()
     {
@@ -206,8 +210,11 @@ class Packet
      * This function is useful to know if there is some data left to be read,
      * without actually reading it.
      *
-     * Returns: true if all data was read, false otherwise.
-     * See_Also: opCast
+     * Returns:
+     *      true if all data was read, false otherwise.
+     *
+     * See_Also:
+     *      opCast
      */
     bool endOfPacket() const
     {
@@ -219,7 +226,8 @@ class Packet
      *
      * The value in the packet at the current read position is set to value.
      *
-     * Returns: true if last data extraction from packet was successful.
+     * Returns:
+     *      true if last data extraction from packet was successful.
      */
     bool read(T)(out T value)
         if (is(T == bool) || is(T == byte) || is(T == ubyte) ||
@@ -394,7 +402,8 @@ class Packet
      * the number of bytes to send. The default implementation provides the
      * packet's data without transforming it.
      *
-     * Returns:  Array of bytes to send.
+     * Returns:
+     *      Array of bytes to send.
      */
     protected const(void)[] onSend()
     {
@@ -413,8 +422,10 @@ class Packet
      * packet directly without transforming the data.
      *
      * Params:
-     * 		data = Array of the received bytes
-     * See_Also: onSend
+     *      data = Array of the received bytes
+     *
+     * See_Also:
+     *      onSend
      */
     protected void onReceive(const(void)[] data)
     {
@@ -422,9 +433,9 @@ class Packet
     }
 
     /**
-     * Overloads the >> operator.
+     * Overloads the `>>` operator.
      *
-     * This function simply calls read().
+     * This function simply calls `read()`.
      */
     Packet opBinary(string op, T)(out T value)
         if (op == ">>")
@@ -434,9 +445,9 @@ class Packet
     }
 
     /**
-     * Overloads the << operator.
+     * Overloads the `<<` operator.
      *
-     * This function simply calls write().
+     * This function simply calls `write()`.
      */
     Packet opBinary(string op, T)(T value)
         if (op == "<<")
@@ -496,12 +507,15 @@ class Packet
      * Don't focus on the return type, it's equivalent to bool but it disallows
      * unwanted implicit conversions to integer or pointer types.
      *
-     * Returns: True if last data extraction from packet was successful
-     * See_Also: endOfPacket
+     * Returns:
+     *      true if last data extraction from packet was successful
+     *
+     * See_Also:
+     *      endOfPacket
      */
     bool opCast(T : bool)()
     {
-        // sfPacket_canRead calls the BoolType operator of sf::Packet
+        // sfPacket_canRead calls the BoolType operator of SFML's sf::Packet
         return sfPacket_canRead(m_packet);
     }
 

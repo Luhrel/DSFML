@@ -34,13 +34,13 @@
  * of the valid video modes allowed by the OS (which are defined by what the
  * monitor and the graphics card support), otherwise your window creation will
  *
- * $(U VideoMode) provides a static function for retrieving the list of all the
+ * `VideoMode` provides a static function for retrieving the list of all the
  * video modes supported by the system: `getFullscreenModes()`.
  *
  * A custom video mode can also be checked directly for fullscreen compatibility
  * with its `isValid()` function.
  *
- * Additionnally, $(U VideoMode) provides a static function to get the mode
+ * Additionnally, `VideoMode` provides a static function to get the mode
  * currently used by the desktop: `getDesktopMode()`. This allows to build
  * windows with the same size or pixel depth as the current resolution.
  *
@@ -51,8 +51,7 @@
  * for (size_t i = 0; i < modes.length; ++i)
  * {
  *     VideoMode mode = modes[i];
- *     writeln("Mode #", i, ": ",
- *                mode.width, "x", mode.height, " - ",
+ *     writeln("Mode #", i, ": ", mode.width, "x", mode.height, " - ",
  *             mode.bitsPerPixel, " bpp");
  * }
  *
@@ -68,22 +67,22 @@ module dsfml.window.videomode;
  */
 struct VideoMode
 {
-    ///Video mode width, in pixels.
+    /// Video mode width, in pixels.
     uint width;
 
-    ///Video mode height, in pixels.
+    /// Video mode height, in pixels.
     uint height;
 
-    ///Video mode pixel depth, in bits per pixels.
+    /// Video mode pixel depth, in bits per pixels.
     uint bitsPerPixel;
 
     /**
      * Construct the video mode with its attributes.
      *
      * Params:
-     *         modeWidth = Width in pixels
-     *         modeHeight = Height in pixels
-     *         modeBitsPerPixel = Pixel depths in bits per pixel
+     *      modeWidth        = Width in pixels
+     *      modeHeight       = Height in pixels
+     *      modeBitsPerPixel = Pixel depths in bits per pixel
      */
     this(uint modeWidth, uint modeHeight, uint modeBitsPerPixel= 32)
     {
@@ -95,7 +94,8 @@ struct VideoMode
     /**
      * Get the current desktop video mode.
      *
-     * Returns: Current desktop video mode.
+     * Returns:
+     *      Current desktop video mode.
      */
     static VideoMode getDesktopMode()
     {
@@ -112,14 +112,15 @@ struct VideoMode
      * the first element will always give the best mode (higher width, height
      * and bits-per-pixel).
      *
-     * Returns: Array containing all the supported fullscreen modes.
+     * Returns:
+     *      Array containing all the supported fullscreen modes.
      */
     static VideoMode[] getFullscreenModes()
     {
-        //stores all video modes after the first call
+        // stores all video modes after the first call
         static VideoMode[] videoModes;
 
-        //if getFullscreenModes hasn't been called yet
+        // if getFullscreenModes hasn't been called yet
         if(videoModes.length == 0)
         {
             size_t counts;
@@ -136,7 +137,8 @@ struct VideoMode
      * The validity of video modes is only relevant when using fullscreen
      * windows; otherwise any video mode can be used with no restriction.
      *
-     * Returns: true if the video mode is valid for fullscreen mode.
+     * Returns:
+     *      true if the video mode is valid for fullscreen mode.
      */
     bool isValid() const
     {

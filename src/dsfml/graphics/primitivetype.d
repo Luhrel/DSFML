@@ -29,7 +29,7 @@
 module dsfml.graphics.primitivetype;
 
 /**
- * Types of primitives that a $(VERTEXARRAY_LINK VertexArray) can render.
+ * Types of primitives that a $(VERTEXARRAY_LINK) can render.
  *
  * Points and lines have no area, therefore their thickness will always be 1
  * pixel, regarldess the current transform and view.

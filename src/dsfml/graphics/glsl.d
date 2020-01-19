@@ -81,12 +81,12 @@ alias Bvec3 = Vector3!(bool);
  * ---
  */
 alias Vec4 = Vector4!(float);
+
 /**
- * 4D int vector ( ivec4 in GLSL)
+ * 4D int vector (ivec4 in GLSL)
  *
- * 4D int vectors can be converted from sf::Color instances. Each color channel
+ * 4D int vectors can be converted from `Color` instances. Each color channel
  * remains unchanged inside the integer interval [0, 255].
- * $(LI test)
  * ---
  * Ivec4 zeroVector;
  * auto vector = Ivec4(1, 2, 3, 4);
@@ -114,7 +114,7 @@ alias Bvec4 = Vector4!(bool);
  * auto matrix = Mat3(array);
  * ---
  *
- * $(PARA Mat4 can also be converted from a $(TRANSFORM_LINK Transform).)
+ * Mat4 can also be converted from a $(TRANSFORM_LINK).
  * ---
  * Transform transform;
  * auto matrix = Mat3(transform);
@@ -142,7 +142,7 @@ struct Mat3
  * auto matrix = Mat4(array);
  * ---
  *
- * $(PARA Mat4 can also be converted from a $(TRANSFORM_LINK Transform).)
+ * Mat4 can also be converted from a $(TRANSFORM_LINK).
  * ---
  * Transform transform;
  * auto matrix = Mat4(transform);
@@ -172,10 +172,10 @@ struct Vector4(T)
      * Construct from 4 vector components
      *
      * Params:
-     * X = Component of the 4D vector
-     * Y = Component of the 4D vector
-     * Z = Component of the 4D vector
-     * W = Component of the 4D vector
+     *      X = Component of the 4D vector
+     *      Y = Component of the 4D vector
+     *      Z = Component of the 4D vector
+     *       W = Component of the 4D vector
      */
     this(T X, T Y, T Z, T W)
     {
@@ -189,7 +189,7 @@ struct Vector4(T)
      * Conversion constructor
      *
      * Params:
-     * other = 4D vector of different type
+     *      other = 4D vector of different type
      */
     this(U)(Vector!(U) other)
     {
@@ -206,7 +206,7 @@ struct Vector4(T)
      * ints.
      *
      * Params:
-     * source = The Color instance to create the vector from
+     *      source = The Color instance to create the vector from
      */
     this(Color source)
     {
@@ -219,10 +219,10 @@ struct Vector4(T)
         }
         else static if(is(T == int))
         {
-            x = cast(T)source.r;
-            y = cast(T)source.g;
-            z = cast(T)source.b;
-            w = cast(T)source.a;
+            x = cast(T) source.r;
+            y = cast(T) source.g;
+            z = cast(T) source.b;
+            w = cast(T) source.a;
         }
     }
 }

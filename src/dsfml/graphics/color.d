@@ -26,28 +26,27 @@
  */
 
 /**
- * $(U Color) is a simple color structure composed of 4 components:
- * $(UL
- * $(LI Red)
- * $(LI Green)
- * $(LI Blue)
- * $(LI Alpha (opacity)))
+ * `Color` is a simple color structure composed of 4 components:
+ * - Red
+ * - Green
+ * - Blue
+ * - Alpha (opacity)
  *
  * Each component is a public member, an unsigned integer in the range [0, 255].
  * Thus, colors can be constructed and manipulated very easily:
  *
  * ---
  * auto color = Color(255, 0, 0); // red
- * color.r = 0;                // make it black
- * color.b = 128;              // make it dark blue
+ * color.r = 0;                   // make it black
+ * color.b = 128;                 // make it dark blue
  * ---
  *
- * $(PARA The fourth component of colors, named "alpha", represents the opacity
+ * The fourth component of colors, named "alpha", represents the opacity
  * of the color. A color with an alpha value of 255 will be fully opaque, while
  * an alpha value of 0 will make a color fully transparent, whatever the value
  * of the other components is.
  *
- * The most common colors are already defined as static variables:)
+ * The most common colors are already defined as static variables:
  * ---
  * auto black       = Color.Black;
  * auto white       = Color.White;
@@ -60,8 +59,8 @@
  * auto transparent = Color.Transparent;
  * ---
  *
- * $(PARA Colors can also be added and modulated (multiplied) using the
- * overloaded operators `+` and `*`.)
+ * Colors can also be added and modulated (multiplied) using the
+ * overloaded operators `+` and `*`.
  */
 module dsfml.graphics.color;
 
@@ -86,10 +85,10 @@ struct Color
      * Construct the color from its 4 RGBA components.
      *
      * Params:
-     *     red   = Red component (in the range [0, 255])
-     *     green = Green component (in the range [0, 255])
-     *     blue  = Blue component (in the range [0, 255])
-     *     alpha = Alpha (opacity) component (in the range [0, 255])
+     *      red   = Red component (in the range [0, 255])
+     *      green = Green component (in the range [0, 255])
+     *      blue  = Blue component (in the range [0, 255])
+     *      alpha = Alpha (opacity) component (in the range [0, 255])
      */
     this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255)
     {
@@ -103,7 +102,7 @@ struct Color
      * Construct the color from 32-bit unsigned integer.
      *
      * Params:
-     *     color = Number containing the RGBA components (in that order)
+     *      color = Number containing the RGBA components (in that order)
      */
     this(uint color)
     {
@@ -135,7 +134,8 @@ struct Color
     /**
      * Retrieve the color as a 32-bit unsigned integer.
      *
-     * Returns: Color represented as a 32-bit unsigned integer
+     * Returns:
+     *      Color represented as a 32-bit unsigned integer
      */
     uint toInteger() const
     {
@@ -153,19 +153,19 @@ struct Color
      * Overload of the `+`, `-`, `*` and `/` operators.
      *
      * This operator returns the component-wise sum, subtraction, or
-     * multiplication (also called"modulation") of two colors.
+     * multiplication (also called "modulation") of two colors.
      *
      * For addition and subtraction, components that exceed 255 are clamped to
      * 255 and those below 0 are clamped to 0. For multiplication, are divided
      * by 255 so that the result is still in the range [0, 255].
      *
      * Params:
-     * otherColor = The Color to be added to/subtracted from/multiplied by/divided by
-     *              this one
+     *      otherColor = The Color to be added to/subtracted from/multiplied
+     *                   by/divided by this one
      *
      * Returns:
-     * The addition, subtraction, or multiplication between this Color and the
-     * other.
+     *      The addition, subtraction, or multiplication between this Color and
+     *      the other.
      */
     Color opBinary(string op)(Color otherColor) const
         if(op == "+" || op == "-" || op == "*" || op == "/")
@@ -186,10 +186,10 @@ struct Color
      * clamped to 0.
      *
      * Params:
-     * num = the scalar to add/substract/multiply/divide to the Color.
+     *      num = the scalar to add/substract/multiply/divide to the Color.
      *
      * Returns:
-     * The multiplication or division of this Color by the scalar.
+     *      The multiplication or division of this Color by the scalar.
      */
     Color opBinary(string op, E)(E num) const
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
@@ -212,12 +212,12 @@ struct Color
      * by 255 so that the result is still in the range [0, 255].
      *
      * Params:
-     * otherColor = The Color to be added to/subtracted from/multiplied by/divided by
-     *              this one
+     *      otherColor = The Color to be added to/subtracted from/multiplied
+     *                   by/divided by this one
      *
      * Returns:
-     * A reference to this color after performing the addition, subtraction, or
-     * multiplication.
+     *      A reference to this color after performing the addition, subtraction,
+     *      or multiplication.
      */
     ref Color opOpAssign(string op)(Color otherColor)
         if(op == "+" || op == "-" || op == "*" || op == "/")
@@ -238,11 +238,11 @@ struct Color
      * clamped to 0.
      *
      * Params:
-     * num = the scalar to add/substract/multiply/divide to the Color.
+     *      num = the scalar to add/substract/multiply/divide to the Color.
      *
      * Returns:
-     * A reference to this color after performing the multiplication or
-     * division.
+     *      A reference to this color after performing the multiplication or
+     *      division.
      */
     ref Color opOpAssign(string op, E)(E num)
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
@@ -260,13 +260,17 @@ struct Color
      * This operator compares two colors and check if they are equal.
      *
      * Params:
-     * otherColor = the Color to be compared with
+     *      otherColor = the Color to be compared with
      *
-     * Returns: true if colors are equal, false if they are different.
+     * Returns:
+     *      true if colors are equal, false if they are different.
      */
     bool opEquals(Color otherColor) const
     {
-        return ((r == otherColor.r) && (g == otherColor.g) && (b == otherColor.b) && (a == otherColor.a));
+        return r == otherColor.r &&
+               g == otherColor.g &&
+               b == otherColor.b &&
+               a == otherColor.a;
     }
 
     /**
@@ -279,8 +283,10 @@ struct Color
      * ---
      *
      * Params:
-     *     i = Number to assure
-     * Returns: The number as a ubyte [0 .. 255]
+     *      i = Number to assure
+     *
+     * Returns:
+     *      The number as a ubyte [0 .. 255]
      */
     private ubyte assure(int i) const
     {
@@ -291,8 +297,6 @@ struct Color
     {
         return assure(cast(int) d);
     }
-
-
 }
 
 private extern(C)

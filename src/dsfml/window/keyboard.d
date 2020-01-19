@@ -26,13 +26,13 @@
  */
 
 /**
- * $(U Keyboard) provides an interface to the state of the keyboard. It only
+ * `Keyboard` provides an interface to the state of the keyboard. It only
  * contains static functions (a single keyboard is assumed), so it's not meant
  * to be instanciated.
  *
  * This class allows users to query the keyboard state at any time and directly,
  * without having to deal with a window and its events. Compared to the
- * `KeyPressed` and `KeyReleased` events, $(U Keyboard) can retrieve the state
+ * `KeyPressed` and `KeyReleased` events, `Keyboard` can retrieve the state
  * of a key at any time (you don't need to store and update a boolean on your
  * side in order to know if a key is pressed or released), and you always get
  * the real state of the keyboard, even if keys are pressed or released when
@@ -55,7 +55,7 @@
  * ---
  *
  * See_Also:
- * $(JOYSTICK_LINK), $(MOUSE_LINK), $(TOUCH_LINK)
+ *      $(JOYSTICK_LINK), $(MOUSE_LINK), $(TOUCH_LINK)
  */
 module dsfml.window.keyboard;
 
@@ -289,9 +289,10 @@ final abstract class Keyboard
      * Check if a key is pressed.
      *
      * Params:
-     *         key = Key to check
+     *      key = Key to check
      *
-     * Returns: true if the key is pressed, false otherwise.
+     * Returns:
+     *      true if the key is pressed, false otherwise.
      */
     static bool isKeyPressed(Key key)
     {
@@ -301,14 +302,15 @@ final abstract class Keyboard
     /*
      * Show or hide the virtual keyboard.
      *
-     * Warning: the virtual keyboard is not supported on all systems. It will
-     * typically be implemented on mobile OSes (Android, iOS) but not on desktop
-     * OSes (Windows, Linux, ...).
+     * **Warning:**
+     * the virtual keyboard is not supported on all systems. It will typically
+     * be implemented on mobile OSes (Android, iOS) but not on desktop OSes
+     * (Windows, Linux, ...).
      *
      * If the virtual keyboard is not available, this function does nothing.
      *
      * Params:
-     * visible=True to show, false to hide
+     *      visible = true to show, false to hide
      */
     static void setVirtualKeyboardVisible(bool visible)
     {
@@ -322,7 +324,7 @@ private extern(C)
     void sfKeyboard_setVirtualKeyboardVisible(byte visible);
 }
 
-//known bugs:
+//TODO known bugs:
 //cannot press two keys at once for this unit test
 unittest
 {

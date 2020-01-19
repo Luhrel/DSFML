@@ -32,7 +32,7 @@
  * MB when they are uncompressed: by streaming it instead of loading it
  * entirely, you avoid saturating the memory and have almost no loading delay.
  *
- * Apart from that, a $(U Music) has almost the same features as the
+ * Apart from that, a `Music` has almost the same features as the
  * $(SOUNDBUFFER_LINK)/$(SOUND_LINK) pair: you can play/pause/stop it, request
  * its parameters (channels, sample rate), change the way it is played (pitch,
  * volume, 3D position, ...), etc.
@@ -69,7 +69,7 @@
  * ---
  *
  * See_Also:
- * $(SOUND_LINK), $(SOUNDSTREAM_LINK)
+ *      $(SOUND_LINK), $(SOUNDSTREAM_LINK)
  */
 module dsfml.audio.music;
 
@@ -81,7 +81,6 @@ import dsfml.audio.soundstream;
 
 import std.string;
 
-// TODO: Check compatibility with sfTimeSpan
 /// Structure defining a time range using the template type.
 struct Span(T)
 {
@@ -108,19 +107,22 @@ class Music : SoundStream
     /**
      * Open a music from an audio file.
      *
-     * This function doesn't start playing the music (call play() to do so). See the
-     * documentation of InputSoundFile for the list of supported formats.
+     * This function doesn't start playing the music (call `play()` to do so).
+     * See the documentation of InputSoundFile for the list of supported formats.
      *
-     * Warning
+     * **Warning:**
      * Since the music is not loaded at once but rather streamed continuously, the
      * file must remain accessible until the Music object loads a new music or is
      * destroyed.
      *
-     * Params
-     * filename=Path of the music file to open
+     * Params:
+     *      filename = Path of the music file to open
      *
-     * Returns: True if loading succeeded, false if it failed
-     * See_Also: openFromMemory, openFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed
+     *
+     * See_Also:
+     *      openFromMemory, openFromStream
      */
     void openFromFile(string filename)
     {
@@ -130,20 +132,23 @@ class Music : SoundStream
     /**
      * Open a music from an audio file in memory.
      *
-     * This function doesn't start playing the music (call play() to do so). See the
-     * documentation of InputSoundFile for the list of supported formats.
+     * This function doesn't start playing the music (call `play()` to do so).
+     * See the documentation of InputSoundFile for the list of supported formats.
      *
-     * Warning
+     * **Warning:**
      * Since the music is not loaded at once but rather streamed continuously, the
      * data buffer must remain accessible until the Music object loads a new music
      * or is destroyed. That is, you can't deallocate the buffer right after calling
      * this function.
      *
      * Params:
-     * data=Pointer to the file data in memory
+     *      data = Pointer to the file data in memory
      *
-     * Returns: True if loading succeeded, false if it failed
-     * See_Also: openFromFile, openFromStream
+     * Returns:
+     *      true if loading succeeded, false if it failed
+     *
+     * See_Also:
+     *      openFromFile, openFromStream
      */
     void openFromMemory(const(void*) data)
     {
@@ -153,18 +158,19 @@ class Music : SoundStream
     /**
      * Open a music from an audio file in a custom stream.
      *
-     * This function doesn't start playing the music (call play() to do so). See the
-     * documentation of InputSoundFile for the list of supported formats.
+     * This function doesn't start playing the music (call `play()` to do so).
+     * See the documentation of InputSoundFile for the list of supported formats.
      *
-     * Warning
+     * **Warning:**
      * Since the music is not loaded at once but rather streamed continuously, the
-     * stream must remain accessible until the sf::Music object loads a new music or
+     * stream must remain accessible until the `Music` object loads a new music or
      * is destroyed.
      *
      * Params:
-     * stream=Source stream to read from
+     *      stream = Source stream to read from
      *
-     * Returns: True if loading succeeded, false if it failed
+     * Returns:
+     *      true if loading succeeded, false if it failed
      */
     void openFromStream(InputStream stream)
     {
@@ -182,17 +188,18 @@ class Music : SoundStream
          * as well. The default value for the pitch is 1.
          *
          * Params:
-         * pitch=New pitch to apply to the sound
+         *      _pitch = New pitch to apply to the sound
          */
-        override void pitch(float newPitch)
+        override void pitch(float _pitch)
         {
-            sfMusic_setPitch(m_music, newPitch);
+            sfMusic_setPitch(m_music, _pitch);
         }
 
         /**
          * Get the pitch of the sound.
          *
-         * Returns: Pitch of the sound
+         * Returns:
+         *      Pitch of the sound
          */
         override float pitch() const
         {
@@ -209,17 +216,18 @@ class Music : SoundStream
          * value for the volume is 100.
          *
          * Params:
-         * volume=Volume of the sound
+         *      _volume = Volume of the sound
          */
-        override void volume(float newVolume)
+        override void volume(float _volume)
         {
-            sfMusic_setVolume(m_music, newVolume);
+            sfMusic_setVolume(m_music, _volume);
         }
 
         /**
          * Get the volume of the sound.
          *
-         * Returns: Volume of the sound, in the range [0, 100]
+         * Returns:
+         *      Volume of the sound, in the range [0, 100]
          */
         override float volume() const
         {
@@ -236,17 +244,18 @@ class Music : SoundStream
          * default position of a sound is (0, 0, 0).
          *
          * Params:
-         * position=Position of the sound in the scene
+         *      _position = Position of the sound in the scene
          */
-        override void position(Vector3f newPosition)
+        override void position(Vector3f _position)
         {
-            sfMusic_setPosition(m_music, newPosition);
+            sfMusic_setPosition(m_music, _position);
         }
 
         /**
          * Get the 3D position of the sound in the audio scene.
          *
-         * Returns: Position of the sound
+         * Returns:
+         *      Position of the sound
          */
         override Vector3f position() const
         {
@@ -259,22 +268,23 @@ class Music : SoundStream
         /**
          * Set whether or not the stream should loop after reaching the end.
          *
-         * If set, the stream will restart from beginning after reaching the end and
-         *  so on, until it is stopped or loop(false) is called. The default
-         * looping state for streams is false.
+         * If set, the stream will restart from beginning after reaching the end
+         * and so on, until it is stopped or `loop(false)` is called.
+         * The default looping state for streams is false.
          *
          * Params:
-         * loop=True to play in loop, false to play once
+         *      _loop = true to play in loop, false to play once
          */
-        override void loop(bool loop)
+        override void loop(bool _loop)
         {
-            sfMusic_setLoop(m_music, loop);
+            sfMusic_setLoop(m_music, _loop);
         }
 
         /**
          * Tell whether or not the stream is in loop mode.
          *
-         * Returns: True if the stream is looping, false otherwise
+         * Returns:
+         *      true if the stream is looping, false otherwise
          */
         override bool loop() const
         {
@@ -292,7 +302,7 @@ class Music : SoundStream
          * effect, since playing the stream would reset its position.
          *
          * Params:
-         * timeOffset=New playing position, from the beginning of the stream
+         *      offset = New playing position, from the beginning of the stream
          */
         override void playingOffset(Time offset)
         {
@@ -303,7 +313,8 @@ class Music : SoundStream
         /**
          * Get the current playing position of the stream.
          *
-         * Returns: Current playing position, from the beginning of the stream
+         * Returns:
+         *      Current playing position, from the beginning of the stream
          */
         override Time playingOffset() const
         {
@@ -323,7 +334,7 @@ class Music : SoundStream
          * is absolute).
          *
          * Params:
-         * relative=True to set the position relative, false to set it absolute
+         *      relative = true to set the position relative, false to set it absolute
          */
         override void relativeToListener(bool relative)
         {
@@ -333,7 +344,8 @@ class Music : SoundStream
         /**
          * Tell whether the sound's position is relative to the listener or is absolute.
          *
-         * Returns: True if the position is relative, false if it's absolute
+         * Returns:
+         *      true if the position is relative, false if it's absolute
          */
         override bool relativeToListener() const
         {
@@ -353,9 +365,10 @@ class Music : SoundStream
          * The default value of the minimum distance is 1.
          *
          * Params:
-         * distance=New minimum distance of the sound
+         *      distance = New minimum distance of the sound
          *
-         * See_Also: attenuation
+         * See_Also:
+         *      attenuation
          */
         override void minDistance(float distance)
         {
@@ -365,7 +378,8 @@ class Music : SoundStream
         /**
          * Get the minimum distance of the sound.
          *
-         * Returns: Minimum distance of the sound
+         * Returns:
+         *      Minimum distance of the sound
          */
         override float minDistance() const
         {
@@ -388,19 +402,21 @@ class Music : SoundStream
          * value of the attenuation is 1.
          *
          * Params:
-         * attenuation=New attenuation factor of the sound
+         *      _attenuation = New attenuation factor of the sound
          *
-         * See_Also: minDistance
+         * See_Also:
+         *      minDistance
          */
-        override void attenuation(float newAttenuation)
+        override void attenuation(float _attenuation)
         {
-            sfMusic_setAttenuation(m_music, newAttenuation);
+            sfMusic_setAttenuation(m_music, _attenuation);
         }
 
         /**
          * Get the attenuation factor of the sound.
          *
-         * Returns: Attenuation factor of the sound
+         * Returns:
+         *      Attenuation factor of the sound
          */
         override float attenuation() const
         {
@@ -416,7 +432,8 @@ class Music : SoundStream
          *
          * 1 channel means mono sound, 2 means stereo, etc.
          *
-         * Returns: Number of channels
+         * Returns:
+         *      Number of channels
          */
         override uint channelCount() const
         {
@@ -432,7 +449,8 @@ class Music : SoundStream
          * The sample rate is the number of audio samples played per second. The
          * higher, the better the quality.
          *
-         * Returns: Sample rate, in number of samples per second
+         * Returns:
+         *      Sample rate, in number of samples per second
          */
         override uint sampleRate() const
         {
@@ -459,7 +477,7 @@ class Music : SoundStream
          * Get the total duration of the music.
          *
          * Returns:
-         * Music duration
+         *      Music duration
          */
         Time duration()
         {
@@ -474,21 +492,22 @@ class Music : SoundStream
          *
          * Loop points allow one to specify a pair of positions such that, when the
          * music is enabled for looping, it will seamlessly seek to the beginning
-         * whenever it encounters the end. Valid ranges for timePoints.offset and
-         * timePoints.length are [0, Dur) and (0, Dur-offset] respectively, where
-         * Dur is the value returned by getDuration(). Note that the EOF
+         * whenever it encounters the end. Valid ranges for `timePoints.offset` and
+         * `timePoints.length` are [0, Dur] and [0, Dur-offset] respectively, where
+         * Dur is the value returned by `duration()`. Note that the EOF
          * "loop point" from the end to the beginning of the stream is still
          * honored, in case the caller seeks to a point after the end of the loop
          * range. This function can be safely called at any point after a stream is
          * opened, and will be applied to a playing sound without affecting the
          * current playing offset.
          *
-         * Warning
-         * Setting the loop points while the stream's status is Paused will set its
-         * status to Stopped. The playing offset will be unaffected.
+         * **Warning:**
+         * Setting the loop points while the stream's status is Paused will set
+         * its status to Stopped. The playing offset will be unaffected.
          *
          * Params:
-         *     timePoints = The definition of the loop. Can be any time points within the sound's length
+         *      timePoints = The definition of the loop.
+         *          Can be any time points within the sound's length
          */
         void loopPoints(TimeSpan timePoints)
         {
@@ -498,19 +517,18 @@ class Music : SoundStream
         /**
          * Get the positions of the of the sound's looping sequence.
          *
-         * Returns:
-         * Loop Time position class.
-         * ---
-         * Warning:
-         * Since loopPoints(TimeSpan timePoints) performs some adjustments on the
+         * **Warning:**
+         * Since `loopPoints(TimeSpan timePoints)` performs some adjustments on the
          * provided values and rounds them to internal samples, a call to
-         * loopPoints() is not guaranteed to return the same times passed into a
-         * previous call to loopPoints(TimeSpan timePoints).
+         * `loopPoints()` is not guaranteed to return the same times passed into a
+         * previous call to `loopPoints(TimeSpan timePoints)`.
          *
          * However, it is guaranteed to return times that will map to the valid
-         * internal samples of this Music if they are later passed to
-         * loopPoints(TimeSpan timePoints).
-         * ---
+         * internal samples of this `Music` if they are later passed to
+         * `loopPoints(TimeSpan timePoints)`.
+         *
+         * Returns:
+         *       Loop Time position class.
          */
         TimeSpan loopPoints()
         {
@@ -526,7 +544,8 @@ class Music : SoundStream
      * function uses its own thread so that it doesn't block the rest of the
      * program while the stream is played.
      *
-     * See_Also: pause, stop
+     * See_Also:
+     *      pause, stop
      */
     override void play()
     {
@@ -539,7 +558,8 @@ class Music : SoundStream
      * This function pauses the stream if it was playing, otherwise (stream
      * already paused or stopped) it has no effect.
      *
-     * See_Also: play, stop
+     * See_Also:
+     *      play, stop
      */
     override void pause()
     {
@@ -551,9 +571,10 @@ class Music : SoundStream
      *
      * This function stops the stream if it was playing or paused, and does
      * nothing if it was already stopped. It also resets the playing position
-     * (unlike pause()).
+     * (unlike `pause()`).
      *
-     * See_Also: play, pause
+     * See_Also:
+     *      play, pause
      */
     override void stop()
     {

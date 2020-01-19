@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U Drawable) is a very simple base interface that allows objects of derived
+ * `Drawable` is a very simple base interface that allows objects of derived
  * classes to be drawn to a RenderTarget.
  *
  * All you have to do in your derived class is to override the draw virtual
@@ -75,7 +75,7 @@
  * ---
  *
  * See_Also:
- * $(RENDERTARGET_LINK)
+ *      $(RENDERTARGET_LINK)
  */
 module dsfml.graphics.drawable;
 
@@ -91,8 +91,8 @@ interface Drawable
      * Draw the object to a render target.
      *
      * Params:
-     *          renderTarget =    Render target to draw to
-     *          renderStates =    Current render states
+     *      renderTarget = Render target to draw to
+     *      renderStates = Current render states
      */
     void draw(RenderTarget renderTarget, RenderStates renderStates);
 }

@@ -26,19 +26,19 @@
  */
 
 /**
- * $(U Lock) is a RAII wrapper for DSFML's Mutex.
+ * `Lock` is a RAII wrapper for DSFML's Mutex.
  *
  * By unlocking it in its destructor, it ensures that the mutex will always be
  * released when the current scope (most likely a function) ends. This is even
  * more important when an exception or an early return statement can interrupt
  * the execution flow of the function.
  *
- * For maximum robustness, $(U Lock) should always be used to lock/unlock a
+ * For maximum robustness, `Lock` should always be used to lock/unlock a
  * mutex.
  *
  * Note that this structure is provided for convenience when porting projects
  * from SFML to DSFML. The same effect can be achieved with scope guards and
- * Mutex.
+ * $(MUTEX_LINK).
  *
  * Example:
  * ---
@@ -57,11 +57,11 @@
  * } // mutex is unlocked
  * ---
  *
- * $(PARA Because the mutex is not explicitly unlocked in the code, it may
+ * Because the mutex is not explicitly unlocked in the code, it may
  * remain locked longer than needed. If the region of the code that needs to be
  * protected by the mutex is not the entire function, a good practice is to
  * create a smaller, inner scope so that the lock is limited to this part of the
- * code.)
+ * code.
  *
  * Example:
  * ---
@@ -79,12 +79,12 @@
  * }
  * ---
  *
- * $(PARA Having a mutex locked longer than required is a bad practice which can
+ * Having a mutex locked longer than required is a bad practice which can
  * lead to bad performances. Don't forget that when a mutex is locked, other
- * threads may be waiting doing nothing until it is released.)
+ * threads may be waiting doing nothing until it is released.
  *
  * See_Also:
- * $(MUTEX_LINK)
+ *      $(MUTEX_LINK)
  */
 module dsfml.system.lock;
 
@@ -103,7 +103,7 @@ struct Lock
 	 * The mutex passed to Lock is automatically locked.
 	 *
 	 * Params:
-	 *   	mutex =	Mutex to lock
+	 *     mutex = Mutex to lock
 	 */
 	this(Mutex mutex)
 	{

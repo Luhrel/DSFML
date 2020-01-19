@@ -33,8 +33,8 @@
 * `loadFromFile` and `loadFromMemory` functions, which read data from
 * conventional sources. However, if you have data coming from a different source
 * (over a network, embedded, encrypted, compressed, etc) you can derive your own
-* class from $(U InputStream) and load DSFML resources with their
-* `loadFromStream` function.
+* class from `InputStream` and load DSFML resources with their `loadFromStream`
+* function.
 *
 * Usage example:
 * ---
@@ -97,33 +97,37 @@ abstract class InputStream
      * Read data from the stream.
      *
      * Params:
-      *     data =    Buffer where to copy the read data
-      *             and sized to the amount of bytes to be read
-      *
-      * Returns: The number of bytes actually read, or -1 on error.
+     *      data = Buffer where to copy the read data and sized to the amount of
+     *             bytes to be read
+     *
+     * Returns:
+     *      The number of bytes actually read, or -1 on error.
      */
     long read(void[] data);
 
     /**
      * Change the current reading position.
      * Params:
-     *         position = The position to seek to, from the beginning
+     *      position = The position to seek to, from the beginning
      *
-     * Returns: The position actually sought to, or -1 on error.
+     * Returns:
+     *      The position actually sought to, or -1 on error.
      */
     long seek(long position);
 
     /**
      * Get the current reading position in the stream.
      *
-     * Returns: The current position, or -1 on error.
+     * Returns:
+     *      The current position, or -1 on error.
      */
     long tell();
 
     /**
      * Return the size of the stream.
      *
-     * Returns: Total number of bytes available in the stream, or -1 on error.
+     * Returns:
+     *      Total number of bytes available in the stream, or -1 on error.
      */
     long size();
 

@@ -26,25 +26,22 @@
  */
 
 /**
- * Sound is the class used to play sounds.
+ * `Sound` is the class used to play sounds.
  *
  * It provides:
- * $(UL
- * $(LI Control (play, pause, stop))
- * $(LI Ability to modify output parameters in real-time (pitch, volume, ...))
- * $(LI 3D spatial features (position, attenuation, ...)))
+ * - Control (play, pause, stop)
+ * - Ability to modify output parameters in real-time (pitch, volume, ...)
+ * - 3D spatial features (position, attenuation, ...)
  *
- * $(PARA
- * Sound is perfect for playing short sounds that can fit in memory and require
+ * `Sound` is perfect for playing short sounds that can fit in memory and require
  * no latency, like foot steps or gun shots. For longer sounds, like background
  * musics or long speeches, rather see Music (which is based on streaming).
  *
  * In order to work, a sound must be given a buffer of audio data to play. Audio
  * data (samples) is stored in SoundBuffer, and attached to a sound with the
- * setBuffer() function. The buffer object attached to a sound must remain alive
+ * `buffer()` property. The buffer object attached to a sound must remain alive
  * as long as the sound uses it. Note that multiple sounds can use the same
  * sound buffer at the same time.
- *)
  *
  * Example:
  * ---
@@ -52,12 +49,12 @@
  * buffer.loadFromFile("sound.wav");
  *
  * auto sound = new Sound();
- * sound.setBuffer(buffer);
+ * sound.buffer(buffer);
  * sound.play();
  * ---
  *
  * See_Also:
- * $(SOUNDBUFFER_LINK), $(MUSIC_LINK)
+ *      $(SOUNDBUFFER_LINK), $(MUSIC_LINK)
  */
 module dsfml.audio.sound;
 
@@ -83,12 +80,12 @@ class Sound : SoundSource
      * Construct the sound with a buffer.
      *
      * Params:
-     *    buffer = Sound buffer containing the audio data to play with the sound
+     *      soundBuffer = Sound buffer containing the audio data to play with the sound
      */
-    this(SoundBuffer theBuffer)
+    this(SoundBuffer soundBuffer)
     {
         this();
-        buffer = theBuffer;
+        buffer = soundBuffer;
     }
 
     // Copy constructor.
@@ -108,24 +105,24 @@ class Sound : SoundSource
         /**
          * Whether or not the sound should loop after reaching the end.
          *
-         * If set, the sound will restart from beginning after reaching the end and
-         * so on, until it is stopped or setLoop(false) is called.
+         * If set, the sound will restart from beginning after reaching the end
+         * and so on, until it is stopped or `loop(false)` is called.
          *
          * The default looping state for sound is false.
          *
          * Params:
-         * loop=True to play in loop, false to play once
+         *      _loop = true to play in loop, false to play once
          */
-        void loop(bool loop)
+        void loop(bool _loop)
         {
-            sfSound_setLoop(m_sound, loop);
+            sfSound_setLoop(m_sound, _loop);
         }
 
         /**
          * Tell whether or not the sound is in loop mode.
          *
-         * Returns
-         * True if the sound is looping, false otherwise
+         * Returns:
+         *      true if the sound is looping, false otherwise
          */
         bool loop() const
         {
@@ -143,7 +140,7 @@ class Sound : SoundSource
          * effect, since playing the sound will reset its position.
          *
          * Params:
-         * timeOffset=New playing position, from the beginning of the sound
+         *      offset = New playing position, from the beginning of the sound
          */
         void playingOffset(Time offset)
         {
@@ -153,7 +150,8 @@ class Sound : SoundSource
         /**
          * Get the current playing position of the sound.
          *
-         * Returns: Current playing position, from the beginning of the sound
+         * Returns:
+         *      Current playing position, from the beginning of the sound
          */
         Time playingOffset() const
         {
@@ -166,7 +164,8 @@ class Sound : SoundSource
         /**
          * Get the current status of the sound (stopped, paused, playing).
          *
-         * Returns: Current status of the sound
+         * Returns:
+         *      Current status of the sound
          */
         Status status() const
         {
@@ -174,7 +173,6 @@ class Sound : SoundSource
         }
     }
 
-    //from SoundSource
     @property
     {
         /**
@@ -184,18 +182,20 @@ class Sound : SoundSource
          * you can make a sound more acute or grave by changing its pitch. A side
          * effect of changing the pitch is to modify the playing speed of the sound
          * as well. The default value for the pitch is 1.
+         *
          * Params:
-         * pitch=New pitch to apply to the sound
+         *      _pitch = New pitch to apply to the sound
          */
-        void pitch(float newPitch)
+        void pitch(float _pitch)
         {
-            sfSound_setPitch(m_sound, newPitch);
+            sfSound_setPitch(m_sound, _pitch);
         }
 
         /**
          * Get the pitch of the sound.
          *
-         * Returns: Pitch of the sound
+         * Returns:
+         *      Pitch of the sound
          */
         float pitch() const
         {
@@ -212,11 +212,11 @@ class Sound : SoundSource
          * default value for the volume is 100.
          *
          * Params:
-         * volume=Volume of the sound
+         *      _volume = Volume of the sound
          */
-        void volume(float newVolume)
+        void volume(float _volume)
         {
-            sfSound_setVolume(m_sound, newVolume);
+            sfSound_setVolume(m_sound, _volume);
         }
 
         /**
@@ -239,17 +239,18 @@ class Sound : SoundSource
          * default position of a sound is (0, 0, 0).
          *
          * Params:
-         * position=Position of the sound in the scene
+         *      _position = Position of the sound in the scene
          */
-        void position(Vector3f position)
+        void position(Vector3f _position)
         {
-            sfSound_setPosition(m_sound, position);
+            sfSound_setPosition(m_sound, _position);
         }
 
         /**
          * Get the 3D position of the sound in the audio scene.
          *
-         * Returns: Position of the sound
+         * Returns:
+         *      Position of the sound
          */
         Vector3f position() const
         {
@@ -263,13 +264,13 @@ class Sound : SoundSource
          * Make the sound's position relative to the listener or absolute.
          *
          * Making a sound relative to the listener will ensure that it will always
-         * be played the same way regardless the position of the listener.  This can
+         * be played the same way regardless the position of the listener. This can
          * be useful for non-spatialized sounds, sounds that are produced by the
          * listener, or sounds attached to it. The default value is false
          * (position is absolute).
          *
          * Params:
-         * relative=True to set the position relative, false to set it absolute
+         *      relative=True to set the position relative, false to set it absolute
          */
         void relativeToListener(bool relative)
         {
@@ -279,8 +280,8 @@ class Sound : SoundSource
         /**
          * Tell whether the sound's position is relative to the listener or is absolute.
          *
-         * Returns: True if the position is relative, false if it's absolute
-
+         * Returns:
+         *      true if the position is relative, false if it's absolute
          */
         bool relativeToListener() const
         {
@@ -300,8 +301,10 @@ class Sound : SoundSource
          * The default value of the minimum distance is 1.
          *
          * Params:
-         * distance=New minimum distance of the sound
-         * See_Also: attenuation
+         *      distance = New minimum distance of the sound
+         *
+         * See_Also:
+         *      attenuation
          */
         void minDistance(float distance)
         {
@@ -311,9 +314,11 @@ class Sound : SoundSource
         /**
          * Get the minimum distance of the sound.
          *
-         * Returns
-         * Minimum distance of the sound
-         * See_Also: attenuation
+         * Returns:
+         *      Minimum distance of the sound
+         *
+         * See_Also:
+         *      attenuation
          */
         float minDistance() const
         {
@@ -336,19 +341,24 @@ class Sound : SoundSource
          * value of the attenuation is 1.
          *
          * Params:
-         * attenuation=New attenuation factor of the sound
-         * See_Also: minDistance
+         *      _attenuation = New attenuation factor of the sound
+         *
+         * See_Also:
+         *      minDistance
          */
-        void attenuation(float newAttenuation)
+        void attenuation(float _attenuation)
         {
-            sfSound_setAttenuation(m_sound, newAttenuation);
+            sfSound_setAttenuation(m_sound, _attenuation);
         }
 
         /**
          * Get the attenuation factor of the sound.
          *
-         * Returns: Attenuation factor of the sound
-         * See_Also: minDistance
+         * Returns:
+         *      Attenuation factor of the sound
+         *
+         * See_Also:
+         *      minDistance
          */
         float attenuation() const
         {
@@ -366,17 +376,18 @@ class Sound : SoundSource
          * sound.
          *
          * Params:
-         *         buffer=Sound buffer to attach to the sound
+         *      _buffer = Sound buffer to attach to the sound
          */
-        void buffer(SoundBuffer newBuffer)
+        void buffer(SoundBuffer _buffer)
         {
-            sfSound_setBuffer(m_sound, newBuffer.ptr);
+            sfSound_setBuffer(m_sound, _buffer.ptr);
         }
 
         /**
          * Get the audio buffer attached to the sound.
          *
-         * Returns: Sound buffer attached to the sound (can be NULL)
+         * Returns:
+         *      Sound buffer attached to the sound (can be null)
          */
         SoundBuffer buffer()
         {
@@ -390,7 +401,8 @@ class Sound : SoundSource
      * This function pauses the sound if it was playing, otherwise
      * (sound already paused or stopped) it has no effect.
      *
-     * See_Also: play, pause
+     * See_Also:
+     *      play, pause
      */
     void pause()
     {
@@ -406,7 +418,8 @@ class Sound : SoundSource
      * This function uses its own thread so that it doesn't block the rest of
      * the program while the sound is played.
      *
-     * See_Also: pause, stop
+     * See_Also:
+     *      pause, stop
      */
     void play()
     {
@@ -420,7 +433,8 @@ class Sound : SoundSource
      * nothing if it was already stopped. It also resets the playing position
      * (unlike `pause()`).
      *
-     * See_Also: play, pause
+     * See_Also:
+     *      play, pause
      */
     void stop()
     {

@@ -30,17 +30,15 @@
  * launch a new thread, the execution is split and both the new thread and the
  * caller run in parallel.
  *
- * To use a $(U Thread), you construct it directly with the function to execute
- * as the entry point of the thread. $(U Thread) has multiple template
+ * To use a `Thread`, you construct it directly with the function to execute
+ * as the entry point of the thread. `Thread` has multiple template
  * constructors, which means that you can use several types of entry points:
- * $(UL
- * $(LI functions with no arguments)
- * $(LI delegates with no arguments))
+ * - functions with no arguments
+ * - delegates with no arguments
  *
- * $(PARA
- * The thread ends when its function is terminated. If the owner $(U Thread)
+ * The thread ends when its function is terminated. If the owner `Thread`
  * instance is destroyed before the thread is finished, the destructor will wait
- * (see `wait()`).)
+ * (see `wait()`).
  *
  * Example:
  * ---
@@ -82,8 +80,8 @@ class Thread
      * Construct the thread from a function with no argument
      *
      * Params:
-     *         fn  = The function to use as the entry point of the thread
-     *         sz  = The size of the stack
+     *      fn = The function to use as the entry point of the thread
+     *      sz = The size of the stack
      */
     this(void function() fn, size_t sz = 0)
     {
@@ -94,8 +92,8 @@ class Thread
      * Construct the thread from a delegate with no argument
      *
      * Params:
-     *         dg  = The delegate to use as the entry point of the thread
-     *         sz  = The size of the stack
+     *      dg = The delegate to use as the entry point of the thread
+     *      sz = The size of the stack
      */
     this(void delegate() dg, size_t sz = 0)
     {

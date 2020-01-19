@@ -26,13 +26,13 @@
  */
 
 /**
- * By default, $(U err) outputs to the same location as `stderr`, which is the
+ * By default, `err` outputs to the same location as `stderr`, which is the
  * console if there's one available.
  *
- * It is a standard std.stdio.File instance, so it supports all the functions as
+ * It is a standard `std.stdio.File` instance, so it supports all the functions as
  * defined by this structure (write, writeln, open, lock, etc.)
  *
- * $(U err) can be redirected to write to another output, independantly of
+ * `err` can be redirected to write to another output, independantly of
  * `stderr`, by using the `open` function. Note that unlike SFML's `err()`,
  * DSFML's `err` cannot be redirected to 'nothing' at this time.
  *

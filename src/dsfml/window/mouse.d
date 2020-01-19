@@ -26,19 +26,23 @@
  */
 
 /**
- * $(U Mouse) provides an interface to the state of the mouse. It only contains
+ * `Mouse` provides an interface to the state of the mouse. It only contains
  * static functions (a single mouse is assumed), so it's not meant to be
  * instanciated.
  *
- * This class allows users to query the mouse state at any time and directly, without having to deal with
- * a window and its events. Compared to the MouseMoved, MouseButtonPressed and MouseButtonReleased events,
- * Mouse can retrieve the state of the cursor and the buttons at any time (you don't need to store and update
- * a boolean on your side in order to know if a button is pressed or released), and you always get the real
- * state of the mouse, even if it is moved, pressed or released when your window is out of focus and no event is triggered.
+ * This class allows users to query the mouse state at any time and directly,
+ * without having to deal with a window and its events. Compared to the
+ * `MouseMoved`, `MouseButtonPressed` and `MouseButtonReleased` events, `Mouse`
+ * can retrieve the state of the cursor and the buttons at any time (you don't
+ * need to store and update a boolean on your side in order to know if a button
+ * is pressed or released), and you always get the real state of the mouse, even
+ * if it is moved, pressed or released when your window is out of focus and no
+ * event is triggered.
  *
- * The setPosition and getPosition functions can be used to change or retrieve the current position of the
- * mouse pointer. There are two versions: one that operates in global coordinates (relative to the desktop)
- * and one that operates in window coordinates (relative to a specific window).
+ * The `setPosition` and `getPosition` functions can be used to change or
+ * retrieve the current position of the mouse pointer. There are two versions:
+ * one that operates in global coordinates (relative to the desktop) and one
+ * that operates in window coordinates (relative to a specific window).
  *
  * Example:
  * ---
@@ -55,7 +59,7 @@
  * ---
  *
  * See_Also:
- * $(JOYSTICK_LINK), $(KEYBOARD_LINK), $(TOUCH_LINK)
+ *      $(JOYSTICK_LINK), $(KEYBOARD_LINK), $(TOUCH_LINK)
  */
 module dsfml.window.mouse;
 
@@ -103,7 +107,7 @@ final abstract class Mouse
      * desktop.
      *
      * Params:
-     *         position = New position of the mouse
+     *      position = New position of the mouse
      */
     static void setPosition(Vector2i position)
     {
@@ -113,11 +117,12 @@ final abstract class Mouse
     /**
      * Set the current position of the mouse in window coordinates.
      *
-     * This function sets the current position of the mouse cursor, relative to the given window.
+     * This function sets the current position of the mouse cursor, relative to
+     * the given window.
      *
      * Params:
-     *         position   = New position of the mouse
-     *         relativeTo = Reference window
+     *      position   = New position of the mouse
+     *      relativeTo = Reference window
      */
     static void setPosition(Vector2i position, Window relativeTo)
     {
@@ -127,11 +132,12 @@ final abstract class Mouse
     /**
      * Set the current position of the mouse in window coordinates.
      *
-     * This function sets the current position of the mouse cursor, relative to the given window.
+     * This function sets the current position of the mouse cursor, relative to
+     * the given window.
      *
      * Params:
-     *         position   = New position of the mouse
-     *         relativeTo = Reference window
+     *      position   = New position of the mouse
+     *      relativeTo = Reference window
      */
     static void setPosition(Vector2i position, RenderWindow relativeTo)
     {
@@ -145,7 +151,8 @@ final abstract class Mouse
      * This function returns the global position of the mouse cursor on the
      * desktop.
      *
-     * Returns: Current position of the mouse.
+     * Returns:
+     *      Current position of the mouse.
      */
     static Vector2i getPosition()
     {
@@ -159,9 +166,10 @@ final abstract class Mouse
      * to the given window.
      *
      * Params:
-     *     relativeTo = Reference window
+     *      relativeTo = Reference window
      *
-     * Returns: Current position of the mouse.
+     * Returns:
+     *      Current position of the mouse.
      */
     static Vector2i getPosition(Window relativeTo)
     {
@@ -175,9 +183,10 @@ final abstract class Mouse
      * to the given window.
      *
      * Params:
-     *     relativeTo = Reference window
+     *      relativeTo = Reference window
      *
-     * Returns: Current position of the mouse.
+     * Returns:
+     *      Current position of the mouse.
      */
     static Vector2i getPosition(RenderWindow relativeTo)
     {
@@ -188,9 +197,10 @@ final abstract class Mouse
      * Check if a mouse button is pressed.
      *
      * Params:
-     *         button = Button to check
+     *      button = Button to check
      *
-     * Returns: true if the button is pressed, false otherwise.
+     * Returns:
+     *      true if the button is pressed, false otherwise.
      */
     static bool isButtonPressed(Button button)
     {

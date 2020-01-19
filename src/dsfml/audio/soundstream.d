@@ -35,23 +35,21 @@
  * audio musics that would eat hundreds of MB in memory) or files that would
  * take a lot of time to be received (sounds played over the network).
  *
- * $(U SoundStream) is a base class that doesn't care about the stream source,
+ * `SoundStream` is a base class that doesn't care about the stream source,
  * which is left to the derived class. SFML provides a built-in specialization
  * for big files (see $(MUSIC_LINK)). No network stream source is provided, but
  * you can write your own by combining this class with the network module.
  *
  * A derived class has to override two virtual functions:
- * $(UL
- * $(LI `onGetData` fills a new chunk of audio data to be played)
- * $(LI `onSeek` changes the current playing position in the source))
+ * - `onGetData` fills a new chunk of audio data to be played
+ * - `onSeek` changes the current playing position in the source
  *
- * $(PARA
- * It is important to note that each $(U SoundStream) is played in its own
+ * It is important to note that each `SoundStream` is played in its own
  * separate thread, so that the streaming loop doesn't block the rest of the
  * program. In particular, the `onGetData` and `onSeek` virtual functions may
  * sometimes be called from this separate thread. It is important to keep this
  * in mind, because you may have to take care of synchronization issues if you
- * share data between threads.)
+ * share data between threads.
  *
  * Example:
  * ---
@@ -93,7 +91,7 @@
  * ---
  *
  * See_Also:
- * $(MUSIC_LINK)
+ *      $(MUSIC_LINK)
  */
 module dsfml.audio.soundstream;
 
@@ -120,7 +118,6 @@ class SoundStream : SoundSource
      *
      * This constructor is only meant to be called by derived classes.
      */
-    // Not putting protected attribute otherwise it'll be null when calling it directly
     this()
     {
         m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback, 0, 0, cast(void*) this);
@@ -142,8 +139,8 @@ class SoundStream : SoundSource
      * only when the stream is stopped.
      *
      * Params:
-     *    channelCount = Number of channels of the stream
-     *    sampleRate   = Sample rate, in samples per second
+     *      channelCount = Number of channels of the stream
+     *      sampleRate   = Sample rate, in samples per second
      */
     protected void initialize(uint channelCount, uint sampleRate)
     {
@@ -162,17 +159,18 @@ class SoundStream : SoundSource
          * as well. The default value for the pitch is 1.
          *
          * Params:
-         * pitch=New pitch to apply to the sound
+         *      _pitch = New pitch to apply to the sound
          */
-        void pitch(float newPitch)
+        void pitch(float _pitch)
         {
-            sfSoundStream_setPitch(m_soundStream, newPitch);
+            sfSoundStream_setPitch(m_soundStream, _pitch);
         }
 
         /**
          * Get the pitch of the sound.
          *
-         * Returns: Pitch of the sound
+         * Returns:
+         *      Pitch of the sound
          */
         float pitch() const
         {
@@ -189,17 +187,18 @@ class SoundStream : SoundSource
          * value for the volume is 100.
          *
          * Params:
-         * volume=Volume of the sound
+         *      _volume = Volume of the sound
          */
-        void volume(float newVolume)
+        void volume(float _volume)
         {
-            sfSoundStream_setVolume(m_soundStream, newVolume);
+            sfSoundStream_setVolume(m_soundStream, _volume);
         }
 
         /**
          * Get the volume of the sound.
          *
-         * Returns: Volume of the sound, in the range [0, 100]
+         * Returns:
+         *      Volume of the sound, in the range [0, 100]
          */
         float volume() const
         {
@@ -216,17 +215,18 @@ class SoundStream : SoundSource
          * default position of a sound is (0, 0, 0).
          *
          * Params:
-         * position=Position of the sound in the scene
+         *      _position = Position of the sound in the scene
          */
-        void position(Vector3f newPosition)
+        void position(Vector3f _position)
         {
-            sfSoundStream_setPosition(m_soundStream, newPosition);
+            sfSoundStream_setPosition(m_soundStream, _position);
         }
 
         /**
          * Get the 3D position of the sound in the audio scene.
          *
-         * Returns: Position of the sound
+         * Returns:
+         *      Position of the sound
          */
         Vector3f position() const
         {
@@ -240,21 +240,22 @@ class SoundStream : SoundSource
          * Set whether or not the stream should loop after reaching the end.
          *
          * If set, the stream will restart from beginning after reaching the end and
-         *  so on, until it is stopped or loop(false) is called. The default
+         *  so on, until it is stopped or `loop(false)` is called. The default
          * looping state for streams is false.
          *
          * Params:
-         * loop=True to play in loop, false to play once
+         *      _loop = true to play in loop, false to play once
          */
-        void loop(bool loop)
+        void loop(bool _loop)
         {
-            sfSoundStream_setLoop(m_soundStream, loop);
+            sfSoundStream_setLoop(m_soundStream, _loop);
         }
 
         /**
          * Tell whether or not the stream is in loop mode.
          *
-         * Returns: True if the stream is looping, false otherwise
+         * Returns:
+         *      true if the stream is looping, false otherwise
          */
         bool loop() const
         {
@@ -272,7 +273,7 @@ class SoundStream : SoundSource
          * effect, since playing the stream would reset its position.
          *
          * Params:
-         * timeOffset=New playing position, from the beginning of the stream
+         *      offset = New playing position, from the beginning of the stream
          */
         void playingOffset(Time offset)
         {
@@ -283,7 +284,8 @@ class SoundStream : SoundSource
         /**
          * Get the current playing position of the stream.
          *
-         * Returns: Current playing position, from the beginning of the stream
+         * Returns:
+         *      Current playing position, from the beginning of the stream
          */
         Time playingOffset() const
         {
@@ -303,7 +305,7 @@ class SoundStream : SoundSource
          * is absolute).
          *
          * Params:
-         * relative=True to set the position relative, false to set it absolute
+         *      relative = true to set the position relative, false to set it absolute
          */
         void relativeToListener(bool relative)
         {
@@ -313,7 +315,8 @@ class SoundStream : SoundSource
         /**
          * Tell whether the sound's position is relative to the listener or is absolute.
          *
-         * Returns: True if the position is relative, false if it's absolute
+         * Returns:
+         *      true if the position is relative, false if it's absolute
          */
         bool relativeToListener() const
         {
@@ -333,9 +336,10 @@ class SoundStream : SoundSource
          * The default value of the minimum distance is 1.
          *
          * Params:
-         * distance=New minimum distance of the sound
+         *      distance = New minimum distance of the sound
          *
-         * See_Also: attenuation
+         * See_Also:
+         *      attenuation
          */
         void minDistance(float distance)
         {
@@ -345,7 +349,8 @@ class SoundStream : SoundSource
         /**
          * Get the minimum distance of the sound.
          *
-         * Returns: Minimum distance of the sound
+         * Returns:
+         *      Minimum distance of the sound
          */
         float minDistance() const
         {
@@ -368,20 +373,24 @@ class SoundStream : SoundSource
          * value of the attenuation is 1.
          *
          * Params:
-         * attenuation=New attenuation factor of the sound
+         *      _attenuation = New attenuation factor of the sound
          *
-         * See_Also: minDistance
+         * See_Also:
+         *      minDistance
          */
-        void attenuation(float newAttenuation)
+        void attenuation(float _attenuation)
         {
-            sfSoundStream_setAttenuation(m_soundStream, newAttenuation);
+            sfSoundStream_setAttenuation(m_soundStream, _attenuation);
         }
 
         /**
          * Get the attenuation factor of the sound.
          *
-         * Returns: Attenuation factor of the sound
-         * See_Also: minDistance
+         * Returns:
+         *      Attenuation factor of the sound
+         *
+         * See_Also:
+         *      minDistance
          */
         float attenuation() const
         {
@@ -397,7 +406,8 @@ class SoundStream : SoundSource
          *
          * 1 channel means mono sound, 2 means stereo, etc.
          *
-         * Returns: Number of channels
+         * Returns:
+         *      Number of channels
          */
         uint channelCount() const
         {
@@ -413,7 +423,8 @@ class SoundStream : SoundSource
          * The sample rate is the number of audio samples played per second. The
          * higher, the better the quality.
          *
-         * Returns: Sample rate, in number of samples per second
+         * Returns:
+         *      Sample rate, in number of samples per second
          */
         uint sampleRate() const
         {
@@ -426,7 +437,8 @@ class SoundStream : SoundSource
         /**
          * Get the current status of the stream (stopped, paused, playing)
          *
-         * Returns: Current status
+         * Returns:
+         *      Current status
          */
         Status status() const
         {
@@ -442,9 +454,8 @@ class SoundStream : SoundSource
      * function uses its own thread so that it doesn't block the rest of the
      * program while the stream is played.
      *
-     * See_Also: pause, stop
-     *
-     * Implements SoundSource.
+     * See_Also:
+     *      pause, stop
      */
     void play()
     {
@@ -457,9 +468,8 @@ class SoundStream : SoundSource
      * This function pauses the stream if it was playing, otherwise (stream
      * already paused or stopped) it has no effect.
      *
-     * See_Also: play, stop
-     *
-     * Implements SoundSource.
+     * See_Also:
+     *      play, stop
      */
     void pause()
     {
@@ -471,11 +481,10 @@ class SoundStream : SoundSource
      *
      * This function stops the stream if it was playing or paused, and does
      * nothing if it was already stopped. It also resets the playing position
-     * (unlike pause()).
+     * (unlike `pause()`).
      *
-     * See_Also: play, pause
-     *
-     * Implements SoundSource.
+     * See_Also:
+     *      play, pause
      */
     void stop()
     {
@@ -493,8 +502,10 @@ class SoundStream : SoundSource
      * empty; this would stop the stream due to an internal limitation.
      *
      * Params:
-     *    data = Chunk of data to fill
-     * Returns: True to continue playback, false to stop
+     *      data = Chunk of data to fill
+     *
+     * Returns:
+     *      true to continue playback, false to stop
      */
     protected abstract bool onGetData(ref Chunk data);
 
@@ -514,10 +525,11 @@ class SoundStream : SoundSource
      * the loop.
      *
      * This function can be overridden by derived classes to allow implementation
-     * of custom loop points. Otherwise, it just calls onSeek(Time.Zero) and
+     * of custom loop points. Otherwise, it just calls `onSeek(Time.Zero)` and
      * returns 0.
      *
-     * Returns: The seek position after looping (or -1 if there's no loop)
+     * Returns:
+     *      The seek position after looping (or -1 if there's no loop)
      */
     protected long onLoop()
     {

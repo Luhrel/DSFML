@@ -28,14 +28,13 @@
 /**
  * A glyph is the visual representation of a character.
  *
- * The $(U Glyph) structure provides the information needed to handle the glyph:
- * $(UL
- * $(LI its coordinates in the font's texture)
- * $(LI its bounding rectangle)
- * $(LI the offset to apply to get the starting position of the next glyph))
+ * The `Glyph` structure provides the information needed to handle the glyph:
+ * - its coordinates in the font's texture
+ * - its bounding rectangle
+ * - the offset to apply to get the starting position of the next glyph
  *
  * See_Also:
- * $(FONT_LINK)
+ *      $(FONT_LINK)
  */
 module dsfml.graphics.glyph;
 

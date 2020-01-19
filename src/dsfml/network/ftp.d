@@ -26,21 +26,19 @@
  */
 
 /**
- * The $(U Ftp) class is a very simple FTP client that allows you to communicate with
+ * The `Ftp` class is a very simple FTP client that allows you to communicate with
  * an FTP server. The FTP protocol allows you to manipulate a remote file system
  * (list files, upload, download, create, remove, ...).
  *
  * Using the FTP client consists of 4 parts:
- * $(UL
- * $(LI Connecting to the FTP server)
- * $(LI Logging in (either as a registered user or anonymously))
- * $(LI Sending commands to the server)
- * $(LI Disconnecting (this part can be done implicitly by the destructor)))
+ * - Connecting to the FTP server
+ * - Logging in (either as a registered user or anonymously)
+ * - Sending commands to the server
+ * - Disconnecting (this part can be done implicitly by the destructor)
  *
- * $(PARA
  * Every command returns a FTP response, which contains the status code as well
  * as a message from the server. Some commands such as `getWorkingDirectory()`
- * and `getDirectoryListing()` return additional data, and use a class derived
+ * and `directoryListing()` return additional data, and use a class derived
  * from `Ftp.Response` to provide this data. The most often used commands are
  * directly provided as member functions, but it is also possible to use
  * specific commands with the `sendCommand()` function.
@@ -50,7 +48,7 @@
  *
  * All commands, especially upload and download, may take some time to complete.
  * This is important to know if you don't want to block your application while
- * the server is completing the task.)
+ * the server is completing the task.
  *
  * Example:
  * ---
@@ -139,8 +137,11 @@ class Ftp
      * The working directory is the root path for subsequent operations
      * involving directories and/or filenames.
      *
-     * Returns: Server response to the request.
-     * See_Also: directoryListing, changeDirectory, parentDirectory
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      directoryListing, changeDirectory, parentDirectory
      */
     @property
     DirectoryResponse workingDirectory()
@@ -156,10 +157,13 @@ class Ftp
      * to the current working directory.
      *
      * Params:
-     * directory = Directory to list
+     *      directory = Directory to list
      *
-     * Returns: Server response to the request.
-     * See_Also: workingDirectory, changeDirectory, parentDirectory
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      workingDirectory, changeDirectory, parentDirectory
      */
     ListingResponse directoryListing(const string directory = "")
     {
@@ -173,10 +177,13 @@ class Ftp
      * The new directory must be relative to the current one.
      *
      * Params:
-     * directory = New working directory
+     *      directory = New working directory
      *
-     * Returns: Server response to the request.
-     * See_Also: workingDirectory, directoryListing, parentDirectory
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      workingDirectory, directoryListing, parentDirectory
      */
     Response changeDirectory(const string directory)
     {
@@ -197,12 +204,15 @@ class Ftp
      * usually pretty long).
      *
      * Params:
-     * 		address = Address of the FTP server to connect to
-     * 		port    = Port used for the connection
-     * 		timeout = Maximum time to wait
+     *      address = Address of the FTP server to connect to
+     * 	    port    = Port used for the connection
+     * 	    timeout = Maximum time to wait
      *
-     * Returns: Server response to the request.
-     * See_Also: disconnect
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      disconnect
      */
     Response connect(IpAddress address, ushort port = 21, Time timeout = Time.Zero)
     {
@@ -223,12 +233,15 @@ class Ftp
      * usually pretty long).
      *
      * Params:
-     * 		address = Name or ddress of the FTP server to connect to
-     * 		port    = Port used for the connection
-     * 		timeout = Maximum time to wait
+     * 	    address = Name or ddress of the FTP server to connect to
+     * 	    port    = Port used for the connection
+     * 	    timeout = Maximum time to wait
      *
-     * Returns: Server response to the request.
-     * See_Also: disconnect
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      disconnect
      */
     Response connect(const string address, ushort port = 21, Time timeout = Time.Zero)
     {
@@ -244,10 +257,13 @@ class Ftp
      * permanently!
      *
      * Params:
-     * 		name = Name of the directory to remove
+     * 	    name = Name of the directory to remove
      *
-     * Returns: Server response to the request.
-     * See_Also: createDirectory
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      createDirectory
      */
     Response deleteDirectory(const string name)
     {
@@ -263,8 +279,11 @@ class Ftp
      * Params:
      *      name = Name of the file to remove
      *
-     * Returns: Server response to the request.
-     * See_Also: renameFile
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      renameFile
      */
     Response deleteFile(const string name)
     {
@@ -274,8 +293,11 @@ class Ftp
     /**
      * Close the connection with the server.
      *
-     * Returns: Server response to the request.
-     * See_Also: connect
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      connect
      */
     Response disconnect()
     {
@@ -290,12 +312,15 @@ class Ftp
      * the current directory of your application.
      *
      * Params:
-     * 		remoteFile = Filename of the distant file to download
-     * 		localPath  = Where to put to file on the local computer
-     * 		mode = Transfer mode
+     * 	    remoteFile = Filename of the distant file to download
+     * 	    localPath  = Where to put to file on the local computer
+     * 	    mode       = Transfer mode
      *
-     * Returns: Server response to the request.
-     * See_Also: upload
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      upload
      */
     Response download(const string remoteFile, const string localPath,
         TransferMode mode = TransferMode.Binary)
@@ -310,7 +335,8 @@ class Ftp
      * This command is useful because the server may close the connection
      * automatically if no command is sent.
      *
-     * Returns: Server response to the request.
+     * Returns:
+     *      Server response to the request.
      */
     Response keepAlive()
     {
@@ -323,7 +349,8 @@ class Ftp
      * Logging in is mandatory after connecting to the server. Users that are
      * not logged in cannot perform any operation.
      *
-     * Returns: Server response to the request.
+     * Returns:
+     *      Server response to the request.
      */
     Response login()
     {
@@ -337,10 +364,11 @@ class Ftp
      * not logged in cannot perform any operation.
      *
      * Params:
-     * 		name = User name
-     * 		password = The password
+     * 	    name     = User name
+     * 	    password = The password
      *
-     * Returns: Server response to the request.
+     * Returns:
+     *      Server response to the request.
      */
     Response login(const string name, const string password)
     {
@@ -350,8 +378,11 @@ class Ftp
     /**
      * Go to the parent directory of the current one.
      *
-     * Returns: Server response to the request.
-     * See_Also: workingDirectory, directoryListing, changeDirectory
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      workingDirectory, directoryListing, changeDirectory
      */
     Response parentDirectory()
     {
@@ -364,10 +395,13 @@ class Ftp
      * The new directory is created as a child of the current working directory.
      *
      * Params:
-     * 		name = Name of the directory to create
+     * 	    name = Name of the directory to create
      *
-     * Returns: Server response to the request.
-     * See_Also: deleteDirectory
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      deleteDirectory
      */
     Response createDirectory(const string name)
     {
@@ -380,16 +414,19 @@ class Ftp
      * The filenames must be relative to the current working directory.
      *
      * Params:
-     * 		file = File to rename
-     * 		newName = New name of the file
+     * 	    file = File to rename
+     * 	    name = New name of the file
      *
-     * Returns: Server response to the request.
-     * See_Also: deleteFile
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      deleteFile
      */
-    Response renameFile(const string file, const string newName)
+    Response renameFile(const string file, const string name)
     {
         return new Response(sfFtp_renameFile(m_ftp, file.toStringz,
-            newName.toStringz));
+            name.toStringz));
     }
 
     /**
@@ -403,14 +440,17 @@ class Ftp
      * overwritten if it already exists.
      *
      * Params:
-     * 		localFile = Path of the local file to upload
-     * 		remotePath = Where to put the file on the server
-     * 		mode = Transfer mode
-     *      append = Pass true to append to or false to overwrite the remote
+     * 	    localFile  = Path of the local file to upload
+     * 	    remotePath = Where to put the file on the server
+     * 	    mode       = Transfer mode
+     *      append     = Pass true to append to or false to overwrite the remote
      *                   file if it already exists
      *
-     * Returns: Server response to the request.
-     * See_Also: download
+     * Returns:
+     *      Server response to the request.
+     *
+     * See_Also:
+     *      download
      */
     Response upload(const string localFile, const string remotePath,
         TransferMode mode = TransferMode.Binary, bool append = false)
@@ -423,16 +463,17 @@ class Ftp
      * Send a command to the FTP server.
      *
      * While the most often used commands are provided as member functions in
-     * the Ftp class, this method can be used to send any FTP command to the
+     * the `Ftp` class, this method can be used to send any FTP command to the
      * server. If the command requires one or more parameters, they can be
      * specified in parameter. If the server returns information, you can
-     * extract it from the response using getMessage().
+     * extract it from the response using `message()`.
      *
      * Params:
-     * 		command = Command to send
-     * 		parameter = Command parameter
+     * 	    command   = Command to send
+     * 	    parameter = Command parameter
      *
-     * Returns: Server response to the request.
+     * Returns:
+     *      Server response to the request.
      */
     Response sendCommand(const string command, const string parameter)
     {
@@ -464,7 +505,8 @@ class Ftp
          * This function is defined for convenience, it is equivalent to testing
          * if the status code is < 400.
          *
-         * Returns: True if the status is a success, false if it is a failure
+         * Returns:
+         *      true if the status is a success, false if it is a failure
          */
         override bool isOk() const
         {
@@ -474,7 +516,8 @@ class Ftp
         /**
          * Get the status code of the response.
          *
-         * Returns: Status code
+         * Returns:
+         *      Status code
          */
         override Status status() const
         {
@@ -484,7 +527,8 @@ class Ftp
         /**
          * Get the full message contained in the response.
          *
-         * Returns: The response message
+         * Returns:
+         *      The response message
          */
         override string message() const
         {
@@ -495,7 +539,8 @@ class Ftp
         /**
          * Get the directory returned in the response.
          *
-         * Returns: Directory name.
+         * Returns:
+         *      Directory name.
          */
         string directory() const
         {
@@ -528,7 +573,8 @@ class Ftp
          * This function is defined for convenience, it is equivalent to testing
          * if the status code is < 400.
          *
-         * Returns: True if the status is a success, false if it is a failure
+         * Returns:
+         *      true if the status is a success, false if it is a failure
          */
         override bool isOk() const
         {
@@ -538,7 +584,8 @@ class Ftp
         /**
          * Get the status code of the response.
          *
-         * Returns: Status code
+         * Returns:
+         *      Status code
          */
         override Status status() const
         {
@@ -548,7 +595,8 @@ class Ftp
         /**
          * Get the full message contained in the response.
          *
-         * Returns: The response message
+         * Returns:
+         *      The response message
          */
         override string message() const
         {
@@ -559,7 +607,8 @@ class Ftp
         /**
          * Return the array of directory/file names.
          *
-         * Returns: Array containing the requested listing.
+         * Returns:
+         *      Array containing the requested listing.
          */
         string[] listing() const
         {
@@ -648,7 +697,8 @@ class Ftp
         /**
          * Get the full message contained in the response.
          *
-         * Returns: The message.
+         * Returns:
+         *      The message.
          */
         string message() const
         {
@@ -658,7 +708,8 @@ class Ftp
         /**
          * Get the status code of the response.
          *
-         * Returns: Status code.
+         * Returns:
+         *      Status code.
          */
         Status status() const
         {
@@ -671,7 +722,8 @@ class Ftp
          * This function is defined for convenience, it is equivalent to testing
          * if the status code is < 400.
          *
-         * Returns: true if the status is a success, false if it is a failure.
+         * Returns:
+         *      true if the status is a success, false if it is a failure.
          */
         bool isOk() const
         {

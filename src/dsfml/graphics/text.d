@@ -26,33 +26,33 @@
  */
 
 /**
- * $(U Text) is a drawable class that allows one to easily display some text
+ * `Text` is a drawable class that allows one to easily display some text
  * with a custom style and color on a render target.
  *
- * It inherits all the functions from $(TRANSFORMABLE_LINK): position, rotation,
- * scale, origin. It also adds text-specific properties such as the font to use,
- * the character size, the font style (bold, italic, underlined), the global
- * color and the text to display of course. It also provides convenience
- * functions to calculate the graphical size of the text, or to get the global
- * position of a given character.
+ * It inherits all the functions from $(TRANSFORMABLE_LINK): `position`,
+ * `rotation`, `scale`, `origin`. It also adds text-specific properties such as
+ * the font to use, the character size, the font style (bold, italic,
+ * underlined), the global color and the text to display of course. It also
+ * provides convenience functions to calculate the graphical size of the text,
+ * or to get the global position of a given character.
  *
- * $(U Text) works in combination with the $(FONT_LINK) class, which loads and
+ * `Text` works in combination with the $(FONT_LINK) class, which loads and
  * provides the glyphs (visual characters) of a given font.
  *
- * The separation of $(FONT_LINK) and $(U Text) allows more flexibility and
+ * The separation of $(FONT_LINK) and `Text` allows more flexibility and
  * better performances: indeed a $(FONT_LINK) is a heavy resource, and any
  * operation on it is slow (often too slow for real-time applications). On the
- * other side, a $(U Text) is a lightweight object which can combine the glyphs
+ * other side, a `Text` is a lightweight object which can combine the glyphs
  * data and metrics of a $(FONT_LINK) to display any text on a render target.
  *
- * It is important to note that the $(U Text) instance doesn't copy the font
+ * It is important to note that the `Text` instance doesn't copy the font
  * that it uses, it only keeps a reference to it. Thus, a $(FONT_LINK) must not
- * be destructed while it is used by a $(U Text).
+ * be destructed while it is used by a `Text`.
  *
  * See also the note on coordinates and undistorted rendering in
  * $(TRANSFORMABLE_LINK).
  *
- * example:
+ * Example:
  * ---
  * // Declare and load a font
  * auto font = new Font();
@@ -69,7 +69,7 @@
  * ---
  *
  * See_Also:
- * $(FONT_LINK), $(TRANSFORMABLE_LINK)
+ *      $(FONT_LINK), $(TRANSFORMABLE_LINK)
  */
 module dsfml.graphics.text;
 
@@ -129,9 +129,9 @@ class Text : Transformable, Drawable
      * supports that size is used.
      *
      * Params:
-     *	text          = Text assigned to the string
-     *	font          = Font used to draw the string
-     *	characterSize = Base size of characters, in pixels
+     *      text          = Text assigned to the string
+     *      font          = Font used to draw the string
+     *      characterSize = Base size of characters, in pixels
      */
     this(const(dstring) text, Font font, uint characterSize = 30)
     {
@@ -168,7 +168,7 @@ class Text : Transformable, Drawable
          * font that supports that size is used.
          *
          * Params:
-         *     size = New character size, in pixels
+         *      size = New character size, in pixels
          */
         void characterSize(uint size)
         {
@@ -178,7 +178,8 @@ class Text : Transformable, Drawable
         /**
          * Get the character size.
          *
-         * Returns: Size of the characters, in pixels
+         * Returns:
+         *      Size of the characters, in pixels
          */
         uint characterSize() const
         {
@@ -196,8 +197,8 @@ class Text : Transformable, Drawable
      * transformable object is (0, 0).
      *
      * Params:
-     *     x = X coordinate of the new origin
-     *     y = Y coordinate of the new origin
+     *      x = X coordinate of the new origin
+     *      y = Y coordinate of the new origin
      */
     @property
     override void origin(float x, float y)
@@ -215,18 +216,19 @@ class Text : Transformable, Drawable
      * transformable object is (0, 0).
      *
      * Params:
-     *     origin = New origin
+     *      _origin = New origin
      */
     @property
-    override void origin(Vector2f newOrigin)
+    override void origin(Vector2f _origin)
     {
-        sfText_setOrigin(m_text, newOrigin);
+        sfText_setOrigin(m_text, _origin);
     }
 
     /**
      * Get the local origin of the object
      *
-     * Returns: Current origin
+     * Returns:
+     *      Current origin
      */
     @property
     override Vector2f origin() const
@@ -242,23 +244,26 @@ class Text : Transformable, Drawable
      * displayed in the fill area of the text.
      *
      * Parameters
-     *     color = New fill color of the text
+     *      _color = New fill color of the text
      *
-     * See_Also: fillColor
+     * See_Also:
+     *      fillColor
      */
     @property
     deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.")
-    void color(Color color_)
+    void color(Color _color)
     {
-        sfText_setColor(m_text, color_);
+        sfText_setColor(m_text, _color);
     }
 
     /**
      * Get the fill color of the text.
      *
-     * Returns: Fill color of the text
+     * Returns:
+     *      Fill color of the text
      *
-     * See_Also: fillColor
+     * See_Also:
+     *      fillColor
      */
     @property
     deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.")
@@ -277,7 +282,7 @@ class Text : Transformable, Drawable
          * to be displayed in the fill area of the text.
          *
          * Params:
-         *     color = New fill color of the text
+         *      color = New fill color of the text
          */
         void fillColor(Color color)
         {
@@ -287,7 +292,8 @@ class Text : Transformable, Drawable
         /**
          * Get the fill color of the text.
          *
-         * Returns: Fill color of the text
+         * Returns:
+         *      Fill color of the text
          */
         Color fillColor() const
         {
@@ -303,7 +309,7 @@ class Text : Transformable, Drawable
          * By default, the text's outline color is opaque black.
          *
          * Params:
-         *     color = New outline color of the text
+         *      color = New outline color of the text
          */
         void outlineColor(Color color)
         {
@@ -313,7 +319,8 @@ class Text : Transformable, Drawable
         /**
          * Get the outline color of the text.
          *
-         * Returns: Outline color of the text
+         * Returns:
+         *      Outline color of the text
          */
         Color outlineColor() const
         {
@@ -332,7 +339,7 @@ class Text : Transformable, Drawable
          * cause distorted rendering.
          *
          * Params:
-         *     thickness = New outline thickness, in pixels
+         *      thickness = New outline thickness, in pixels
          */
         void outlineThickness(float thickness)
         {
@@ -342,7 +349,8 @@ class Text : Transformable, Drawable
         /**
          * Get the outline thickness of the text.
          *
-         * Returns: Outline thickness of the text, in pixels
+         * Returns:
+         *      Outline thickness of the text, in pixels
          */
         float outlineThickness() const
         {
@@ -362,21 +370,22 @@ class Text : Transformable, Drawable
          * behavior is undefined.
          *
          * Params:
-         *     font = New font
+         *      _font = New font
          */
-        void font(Font newFont)
+        void font(Font _font)
         {
-            sfText_setFont(m_text, newFont.ptr);
+            sfText_setFont(m_text, _font.ptr);
         }
 
         /**
          * Get the text's font.
          *
-         * If the text has no font attached, a NULL pointer is returned. The
+         * If the text has no font attached, a null pointer is returned. The
          * returned pointer is const, which means that you cannot modify the
          * font when you get it from this function.
          *
-         * Returns: Text's font
+         * Returns:
+         *      Text's font
          */
         const(Font) font() const
         {
@@ -392,7 +401,8 @@ class Text : Transformable, Drawable
      * that are applied to the entity. In other words, this function returns the
      * bounds of the sprite in the global 2D world's coordinate system.
      *
-     * Returns: Global bounding rectangle of the entity.
+     * Returns:
+     *      Global bounding rectangle of the entity.
      */
     @property
     FloatRect globalBounds()
@@ -408,7 +418,8 @@ class Text : Transformable, Drawable
      * applied to the entity. In other words, this function returns the bounds
      * of the entity in the entity's coordinate system.
      *
-     * Returns: Local bounding rectangle of the entity.
+     * Returns:
+     *      Local bounding rectangle of the entity.
      */
     @property
     FloatRect localBounds() const
@@ -420,7 +431,7 @@ class Text : Transformable, Drawable
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it. Thus, it is equivalent to the
+     * `position` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
      * Vector2f pos = object.position();
@@ -428,9 +439,11 @@ class Text : Transformable, Drawable
      * ---
      *
      * Params:
-     *     offsetX = X offset
-     *     offsetY = Y offset
-     * See_Also: position
+     *      offsetX = X offset
+     *      offsetY = Y offset
+     *
+     * See_Also:
+     *      position
      */
     override void move(float offsetX, float offsetY)
     {
@@ -441,15 +454,17 @@ class Text : Transformable, Drawable
      * Move the object by a given offset.
      *
      * This function adds to the current position of the object, unlike the
-     * position property which overwrites it. Thus, it is equivalent to the
+     * `position` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
-     * object.setPosition(object.position() + offset);
+     * object.position(object.position() + offset);
      * ---
      *
      * Params:
-     *     offset = Offset
-     * See_Also: position
+     *      offset = Offset
+     *
+     * See_Also:
+     *      position
      */
     override void move(Vector2f offset)
     {
@@ -462,22 +477,23 @@ class Text : Transformable, Drawable
          * Set the text's style.
          *
          * You can pass a combination of one or more styles, for example
-         * Text.Style.Bold | Text.Style.Italic.
+         * `Text.Bold | Text.Italic`.
          *
-         * The default style is sf::Text::Regular.
+         * The default style is `Text.Regular`.
          *
          * Params:
-         *     style = New style
+         *      _style = New style
          */
-        void style(Style newStyle)
+        void style(Style _style)
         {
-            sfText_setStyle(m_text, newStyle);
+            sfText_setStyle(m_text, _style);
         }
 
         /**
          * Get the text's style.
          *
-         * Returns: Text's style
+         * Returns:
+         *      Text's style
          */
         Style style() const
         {
@@ -493,7 +509,7 @@ class Text : Transformable, Drawable
          * A text's string is empty by default.
          *
          * Params:
-         *     text = New string
+         *      text = New string
          */
         void str(dstring text)
         {
@@ -503,7 +519,8 @@ class Text : Transformable, Drawable
         /**
          * Get the text's string.
          *
-         * Returns: Text's string
+         * Returns:
+         *      Text's string
          */
         const(dstring) str() const
         {
@@ -519,8 +536,8 @@ class Text : Transformable, Drawable
      * Draw the object to a render target.
      *
      * Params:
-     *  		renderTarget =	Render target to draw to
-     *  		renderStates =	Current render states
+     *      renderTarget = Render target to draw to
+     *      renderStates = Current render states
      */
     void draw(RenderTarget renderTarget, RenderStates renderStates)
     {
@@ -536,9 +553,10 @@ class Text : Transformable, Drawable
      * range, the position of the end of the string is returned.
      *
      * Params:
-     * 		index	= Index of the character
+     *      index = Index of the character
      *
-     * Returns: Position of the character.
+     * Returns:
+     *      Position of the character.
      */
     Vector2f findCharacterPos(size_t index)
     {
@@ -556,7 +574,7 @@ class Text : Transformable, Drawable
      * letter spacing factor is 1.
      *
      * Params:
-     *     spacingFactor = New letter spacing factor
+     *      spacingFactor = New letter spacing factor
      */
     @property
     void letterSpacing(float spacingFactor)
@@ -567,7 +585,8 @@ class Text : Transformable, Drawable
     /**
      * Get the size of the letter spacing factor.
      *
-     * Returns: Size of the letter spacing factor
+     * Returns:
+     *      Size of the letter spacing factor
      */
     @property
     float letterSpacing() const
@@ -583,7 +602,7 @@ class Text : Transformable, Drawable
      * By default the line spacing factor is 1.
      *
      * Params:
-     *     spacingFactor = New line spacing factor
+     *      spacingFactor = New line spacing factor
      */
     @property
     void lineSpacing(float spacingFactor)
@@ -594,7 +613,8 @@ class Text : Transformable, Drawable
     /**
      * Get the size of the line spacing factor.
      *
-     * Returns: Size of the line spacing factor
+     * Returns:
+     *      Size of the line spacing factor
      */
     @property
     float lineSpacing()
@@ -605,13 +625,13 @@ class Text : Transformable, Drawable
     /**
      * Set the position of the object
      *
-     * This function completely overwrites the previous position. See the move
+     * This function completely overwrites the previous position. See the `move`
      * function to apply an offset based on the previous position instead. The
      * default position of a transformable object is (0, 0).
      *
      * Params:
-     *     x = X coordinate of the new position
-     *     y = Y coordinate of the new position
+     *      x = X coordinate of the new position
+     *      y = Y coordinate of the new position
      * See_Also: move
      */
     @property
@@ -623,24 +643,27 @@ class Text : Transformable, Drawable
     /**
      * Set the position of the object
      *
-     * This function completely overwrites the previous position. See the move
+     * This function completely overwrites the previous position. See the `move`
      * function to apply an offset based on the previous position instead.
      * The default position of a transformable object is (0, 0).
      *
      * Params:
-     *     position = New position
-     * See_Also: move
+     *      _position = New position
+     *
+     * See_Also:
+     *      move
      */
     @property
-    override void position(Vector2f newPosition)
+    override void position(Vector2f _position)
     {
-        sfText_setPosition(m_text, newPosition);
+        sfText_setPosition(m_text, _position);
     }
 
     /**
      * Get the position of the object
      *
-     * Returns: Current position
+     * Returns:
+     *      Current position
      */
     @property
     override Vector2f position() const
@@ -652,13 +675,14 @@ class Text : Transformable, Drawable
      * Rotate the object.
      *
      * This function adds to the current rotation of the object, unlike the
-     * rotation property which overwrites it. Thus, it is equivalent to the
+     * `rotation` property which overwrites it. Thus, it is equivalent to the
      * following code:
      * ---
-     * object.setRotation(object.getRotation() + angle);
+     * object.rotation(object.rotation() + angle);
+     * ---
      *
      * Params:
-     *     angle = Angle of rotation, in degrees
+     *      angle = Angle of rotation, in degrees
      */
     override void rotate(float angle)
     {
@@ -668,12 +692,12 @@ class Text : Transformable, Drawable
     /**
      * Set the orientation of the object
      *
-     * This function completely overwrites the previous rotation. See the rotate
+     * This function completely overwrites the previous rotation. See the `rotate`
      * function to add an angle based on the previous rotation instead. The
      * default rotation of a transformable object is 0.
      *
      * Params:
-     *     angle = New rotation, in degrees
+     *      angle = New rotation, in degrees
      */
     @property
     override void rotation(float angle)
@@ -686,7 +710,8 @@ class Text : Transformable, Drawable
      *
      * The rotation is always in the range [0, 360].
      *
-     * Returns: Current rotation, in degrees
+     * Returns:
+     *      Current rotation, in degrees
      */
     @property
     override float rotation() const
@@ -697,13 +722,13 @@ class Text : Transformable, Drawable
     /**
      * Set the scale factors of the object
      *
-     * This function completely overwrites the previous scale. See the scale
+     * This function completely overwrites the previous scale. See the `scale`
      * function to add a factor based on the previous scale instead. The default
      * scale of a transformable object is (1, 1).
      *
      * Params:
-     *     factorX = New horizontal scale factor
-     *     factorY = New vertical scale factor
+     *      factorX = New horizontal scale factor
+     *      factorY = New vertical scale factor
      */
     @property
     override void scale(float factorX, float factorY)
@@ -714,12 +739,12 @@ class Text : Transformable, Drawable
     /**
      * Set the scale factors of the object
      *
-     * This function completely overwrites the previous scale. See the scale
+     * This function completely overwrites the previous scale. See the `scale`
      * function to add a factor based on the previous scale instead. The default
      * scale of a transformable object is (1, 1).
      *
      * Params:
-     *     factors = New scale factors
+     *      factors = New scale factors
      */
     @property
     override void scale(Vector2f factors)
@@ -730,7 +755,8 @@ class Text : Transformable, Drawable
     /**
      * Get the current scale of the object
      *
-     * Returns: Current scale factors
+     * Returns:
+     *      Current scale factors
      */
     @property
     override Vector2f scale() const
@@ -741,7 +767,8 @@ class Text : Transformable, Drawable
     /**
      * Get the combined transform of the object
      *
-     * Returns: Transform combining the position/rotation/scale/origin of the object
+     * Returns:
+     *      Transform combining the position/rotation/scale/origin of the object
      */
     override const(Transform) transform() const
     {
@@ -751,7 +778,8 @@ class Text : Transformable, Drawable
     /**
      * Get the inverse of the combined transform of the object
      *
-     * Returns: Inverse of the combined transformations applied to the object
+     * Returns:
+     *      Inverse of the combined transformations applied to the object
      */
     override const(Transform) inverseTransform() const
     {

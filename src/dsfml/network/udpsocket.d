@@ -47,12 +47,12 @@
  *
  * Sending and receiving data can use either the low-level or the high-level
  * functions. The low-level functions process a raw sequence of bytes, whereas
- * the high-level interface uses packets (see Packet), which are easier to use
+ * the high-level interface uses packets (see $(PACKET_LINK)), which are easier to use
  * and provide more safety regarding the data that is exchanged. You can look at
  * the Packet class to get more details about how they work.
  *
- * It is important to note that UdpSocket is unable to send datagrams bigger
- * than MaxDatagramSize. In this case, it returns an error and doesn't send
+ * It is important to note that `UdpSocket` is unable to send datagrams bigger
+ * than `MaxDatagramSize`. In this case, it returns an error and doesn't send
  * anything. This applies to both raw data and packets. Indeed, even packets are
  * unable to split and recompose data, due to the unreliability of the protocol
  * (dropped, mixed or duplicated datagrams may lead to a big mess when trying to
@@ -60,7 +60,7 @@
  *
  * If the socket is bound to a port, it is automatically unbound from it when
  * the socket is destroyed. However, you can unbind the socket explicitely with
- * the Unbind function if necessary, to stop receiving messages or make the port
+ * the `unbind` function if necessary, to stop receiving messages or make the port
  * available for other sockets.
  *
  * Example:
@@ -103,7 +103,7 @@
  * ---
  *
  * See_Also:
- * $(SOCKET_LINK), $(TCPSOCKET_LINK), $(PACKET_LINK)
+ *      $(SOCKET_LINK), $(TCPSOCKET_LINK), $(PACKET_LINK)
  */
 module dsfml.network.udpsocket;
 
@@ -138,8 +138,11 @@ class UdpSocket : Socket
      *
      * If the socket is not bound to a port, this function returns 0.
      *
-     * Returns: Port to which the socket is bound.
-     * See_Also: bind
+     * Returns:
+     *      Port to which the socket is bound.
+     *
+     * See_Also:
+     *      bind
      */
     @property
     ushort localPort() const
@@ -161,7 +164,7 @@ class UdpSocket : Socket
      * By default, all sockets are blocking.
      *
      * Params:
-     * 	blocking = true to set the socket as blocking, false for non-blocking
+     *      _blocking = true to set the socket as blocking, false for non-blocking
      */
     @property
     void blocking(bool _blocking)
@@ -178,11 +181,14 @@ class UdpSocket : Socket
      * localPort to retrieve the chosen port.
      *
      * Params:
-     * 	port    = Port to bind the socket to
-     *  address = Address of the interface to bind to
+     * 	    port    = Port to bind the socket to
+     *      address = Address of the interface to bind to
      *
-     * Returns: Status code.
-     * See_Also: unbind, localPort
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      unbind, localPort
      */
     Status bind(ushort port, IpAddress address = IpAddress.Any)
     {
@@ -192,7 +198,8 @@ class UdpSocket : Socket
     /**
      * Tell whether the socket is in blocking or non-blocking mode.
      *
-     * Returns: true if the socket is blocking, false otherwise.
+     * Returns:
+     *      true if the socket is blocking, false otherwise.
      */
     @property
     bool blocking() const
@@ -203,16 +210,19 @@ class UdpSocket : Socket
     /**
      * Send raw data to a remote peer.
      *
-     * Make sure that the size is not greater than UdpSocket.MaxDatagramSize,
+     * Make sure that the size is not greater than `UdpSocket.MaxDatagramSize`,
      * otherwise this function will fail and no data will be sent.
      *
      * Params:
-     * 	data    = Pointer to the sequence of bytes to send
-     * 	address = Address of the receiver
-     * 	port    = Port of the receiver to send the data to
+     * 	    data    = Pointer to the sequence of bytes to send
+     * 	    address = Address of the receiver
+     * 	    port    = Port of the receiver to send the data to
      *
-     * Returns: Status code.
-     * See_Also: receive
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      receive
      */
     Status send(const(void)[] data, IpAddress address, ushort port)
     {
@@ -224,16 +234,19 @@ class UdpSocket : Socket
      * Send a formatted packet of data to a remote peer.
      *
      * Make sure that the packet size is not greater than
-     * UdpSocket.MaxDatagramSize, otherwise this function will fail and no data
-     * will be sent.
+     * `UdpSocket.MaxDatagramSize`, otherwise this function will fail and no
+     * data will be sent.
      *
      * Params:
-     * 	packet = Packet to send
-     * 	address = Address of the receiver
-     * 	port = Port of the receiver to send the data to
+     * 	    packet = Packet to send
+     * 	    address = Address of the receiver
+     * 	    port = Port of the receiver to send the data to
      *
-     * Returns: Status code.
-     * See_Also: receive
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      receive
      */
     Status send(Packet packet, IpAddress address, ushort port)
     {
@@ -252,15 +265,19 @@ class UdpSocket : Socket
      * all the data will be lost.
      *
      * Params:
-     * 		data = The array to fill with the received bytes
-     * 		sizeReceived = The number of bytes received
-     * 		address = Address of the peer that sent the data
-     * 		port = Port of the peer that sent the data
+     * 	    data         = The array to fill with the received bytes
+     * 	    sizeReceived = The number of bytes received
+     * 	    address      = Address of the peer that sent the data
+     * 	    port         = Port of the peer that sent the data
      *
-     * Returns: Status code.
-     * See_Also: send
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      send
      */
-    Status receive(void[] data, out size_t sizeReceived, out IpAddress address, out ushort port)
+    Status receive(void[] data, out size_t sizeReceived, out IpAddress address,
+        out ushort port)
     {
         sfIpAddress ia;
         Status status = sfUdpSocket_receive(m_udpSocket, data.ptr, data.length,
@@ -276,12 +293,15 @@ class UdpSocket : Socket
      * received.
      *
      * Params:
-     * 	packet = Packet to fill with the received data
-     * 	address = Address of the peer that sent the data
-     * 	port = Port of the peer that sent the data
+     * 	    packet  = Packet to fill with the received data
+     * 	    address = Address of the peer that sent the data
+     * 	    port    = Port of the peer that sent the data
      *
-     * Returns: Status code.
-     * See_Also: send
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      send
      */
     Status receive(Packet packet, out IpAddress address, out ushort port)
     {
@@ -304,7 +324,8 @@ class UdpSocket : Socket
      * after this function is called. If the socket is not bound to a port, this
      * function has no effect.
      *
-     * See_Also: bind
+     * See_Also:
+     *      bind
      */
     void unbind()
     {

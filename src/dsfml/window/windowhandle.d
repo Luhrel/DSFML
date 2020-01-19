@@ -28,21 +28,19 @@
 /**
  * Define a low-level window handle type, specific to each platform.
  *
- * $(TABLE
- * $(TR $(TH Platform) $(TH Type))
- * $(TR $(TD Windows) $(TD `HWND`))
- * $(TR $(TD Linux/FreeBSD) $(TD `Window`))
- * $(TR $(TD Mac OS X)
- * $(TD either `NSWindow*` or `NSView*`, disguised as `void*`)))
- * $(LF)
  *
- * $(PARA $(B Mac OS X Specification)
+ * | Platform        | Type     |
+ * | --------------: | :------- |
+ * | Windows         | `HWND`   |
+ * | Linux / FreeBSD | `Window` |
+ * | Mac OS X        | either `NSWindow*` or `NSView*`, disguised as `void*` |
  *
+ * **Mac OS X Specification:**
  * On Mac OS X, a $(WINDOW_LINK) can be created either from an existing
  * `NSWindow*` or an `NSView*`. When the window is created from a window, DSFML
  * will use its content view as the OpenGL area. `Window.getSystemHandle()` will
- * return the handle that was used to create the window,
- * which is a `NSWindow*` by default.)
+ * return the handle that was used to create the window, which is a `NSWindow*`
+ * by default.
  */
 module dsfml.window.windowhandle;
 
@@ -55,6 +53,7 @@ version (Windows)
 }
 version (OSX)
 {
+    // Window handle is NSWindow or NSView (void*) on Mac OS X - Cocoa
     alias WindowHandle = void*;
 }
 version (Android)
@@ -67,5 +66,6 @@ version (FreeBSD)
 }
 version (linux)
 {
+    // Window handle is Window (unsigned long) on Unix - X11
     alias WindowHandle = ulong;
 }

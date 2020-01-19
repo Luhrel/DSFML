@@ -26,7 +26,7 @@
  */
 
 /**
- * Clock is a lightweight class for measuring time.
+ * `Clock` is a lightweight class for measuring time.
  *
  * Its provides the most precise time that the underlying OS can achieve
  * (generally microseconds or nanoseconds). It also ensures monotonicity, which
@@ -42,11 +42,11 @@
  * Time duration2 = clock.restart();
  * ---
  *
- * $(PARA The Time value returned by the clock can then be converted to a number
- * of seconds, milliseconds or even microseconds.)
+ * The Time value returned by the clock can then be converted to a number
+ * of seconds, milliseconds or even microseconds.
  *
  * See_Also:
- * $(TIME_LINK)
+ *      $(TIME_LINK)
  */
 module dsfml.system.clock;
 
@@ -73,7 +73,8 @@ class Clock
      * This function returns the time elapsed since the last call to `restart()`
      * (or the construction of the instance if `restart()` has not been called).
      *
-     * Returns: Time elapsed.
+     * Returns:
+     *      Time elapsed.
      */
     Time getElapsedTime() const
     {
@@ -86,7 +87,8 @@ class Clock
      * This function puts the time counter back to zero. It also returns the
      * time elapsed since the clock was started.
      *
-     * Returns: Time elapsed.
+     * Returns:
+     *      Time elapsed.
      */
     Time restart()
     {

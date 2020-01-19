@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U View) defines a camera in the 2D scene. This is a very powerful concept:
+ * `View` defines a camera in the 2D scene. This is a very powerful concept:
  * you can scroll, rotate or zoom the entire scene without altering the way that
  * your drawable objects are drawn.
  *
@@ -71,11 +71,11 @@
  * window.draw(someText);
  * ---
  *
- * $(PARA See also the note on coordinates and undistorted rendering in
- * $(TRANSFORMABLE_LINK).)
+ * See also the note on coordinates and undistorted rendering in
+ * $(TRANSFORMABLE_LINK).
  *
  * See_Also:
- * $(RENDERWINDOW_LINK), $(RENDERTEXTURE_LINK)
+ *      $(RENDERWINDOW_LINK), $(RENDERTEXTURE_LINK)
  */
 module dsfml.graphics.view;
 
@@ -104,7 +104,7 @@ class View
      * Construct the view from a rectangle
      *
      * Params:
-     *    rectangle = Rectangle defining the zone to display
+     *      rectangle = Rectangle defining the zone to display
      */
     this(FloatRect rectangle)
     {
@@ -115,8 +115,8 @@ class View
      * Construct the view from its center and size
      *
      * Params:
-     * center = Center of the zone to display
-     * size   = Size of zone to display
+     *      center = Center of the zone to display
+     *      size   = Size of zone to display
      */
     this(Vector2f center, Vector2f size)
     {
@@ -143,12 +143,14 @@ class View
          * Set the center of the view.
          *
          * Params:
-         *         center    = New center
-         * See_Also: size
+         *      _center = New center
+         *
+         * See_Also:
+         *      size
          */
-        void center(Vector2f newCenter)
+        void center(Vector2f _center)
         {
-            sfView_setCenter(m_view, newCenter);
+            sfView_setCenter(m_view, _center);
         }
 
         /**
@@ -167,8 +169,11 @@ class View
         /**
          * Get the center of the view.
          *
-         * Returns: Center of the view
-         * See_Also: size
+         * Returns:
+         *      Center of the view
+         *
+         * See_Also:
+         *      size
          */
         Vector2f center() const
         {
@@ -184,7 +189,7 @@ class View
          * The default rotation of a view is 0 degree.
          *
          * Params:
-         *         angle    = New angle, in degrees
+         *      angle = New angle, in degrees
          */
         void rotation(float angle)
         {
@@ -194,7 +199,8 @@ class View
         /**
          * Get the current orientation of the view.
          *
-         * Returns: Rotation angle of the view, in degrees
+         * Returns:
+         *      Rotation angle of the view, in degrees
          */
         float rotation() const
         {
@@ -207,8 +213,10 @@ class View
      * Rotate the view relatively to its current orientation.
      *
      * Params:
-     *         angle    = Angle to rotate, in degrees
-     * See_Also: rotation, move, zoom
+     *      angle = Angle to rotate, in degrees
+     *
+     * See_Also:
+     *      rotation, move, zoom
      */
     void rotate(float angle)
     {
@@ -221,21 +229,25 @@ class View
          * Set the size of the view.
          *
          * Params:
-         *         size    = New size
-         * See_Also: center
+         *      _size = New size
+         *
+         * See_Also:
+         *      center
          */
-        void size(Vector2f newSize)
+        void size(Vector2f _size)
         {
-            sfView_setSize(m_view, newSize);
+            sfView_setSize(m_view, _size);
         }
 
         /**
          * Set the size of the view.
          *
          * Params:
-         *         width    = New width of the view
-         *         height    = New height of the view
-         * See_Also: center
+         *      width  = New width of the view
+         *      height = New height of the view
+         *
+         * See_Also:
+         *      center
          */
         void size(float width, float height)
         {
@@ -245,8 +257,11 @@ class View
         /**
          * Get the size of the view.
          *
-         * Returns: Size of the view
-         * See_Also: center
+         * Returns:
+         *      Size of the view
+         *
+         * See_Also:
+         *      center
          */
         Vector2f size() const
         {
@@ -261,23 +276,24 @@ class View
          *
          * The viewport is the rectangle into which the contents of the view are
          * displayed, expressed as a factor (between 0 and 1) of the size of the
-         * RenderTarget to which the view is applied. For example, a view which
+         * `RenderTarget` to which the view is applied. For example, a view which
          * takes the left side of the target would be defined with
          * `View.setViewport(FloatRect(0, 0, 0.5, 1))`. By default, a view has a
          * viewport which covers the entire target.
          *
          * Params:
-         *         viewport    = New viewport rectangle
+         *      _viewport = New viewport rectangle
          */
-        void viewport(FloatRect newViewport)
+        void viewport(FloatRect _viewport)
         {
-            sfView_setViewport(m_view, newViewport);
+            sfView_setViewport(m_view, _viewport);
         }
 
         /**
          * Get the target viewport rectangle of the view.
          *
-         * Returns: Viewport rectangle, expressed as a factor of the target size
+         * Returns:
+         *      Viewport rectangle, expressed as a factor of the target size
          */
         FloatRect viewport() const
         {
@@ -289,8 +305,10 @@ class View
      * Move the view relatively to its current position.
      *
      * Params:
-     *         offset    = Move offset
-     * See_Also: center, rotate, move
+     *      offset = Move offset
+     *
+     * See_Also:
+     *      center, rotate, move
      */
     void move(Vector2f offset)
     {
@@ -301,9 +319,11 @@ class View
      * Move the view relatively to its current position.
      *
      * Params:
-     *         offsetX    = X coordinate of the move offset
-     *         offsetY    = Y coordinate of the move offset
-     * See_Also: center, rotate, move
+     *      offsetX = X coordinate of the move offset
+     *      offsetY = Y coordinate of the move offset
+     *
+     * See_Also:
+     *      center, rotate, move
      */
     void move(float offsetX, float offsetY)
     {
@@ -316,8 +336,10 @@ class View
      * Note that this function resets the rotation angle to 0.
      *
      * Params:
-     *         rectangle    = Rectangle defining the zone to display.
-     * See_Also: center, size, rotation
+     *      rectangle = Rectangle defining the zone to display.
+     *
+     * See_Also:
+     *      center, size, rotation
      */
     void reset(FloatRect rectangle)
     {
@@ -329,14 +351,15 @@ class View
      *
      * Resizing the view simulates a zoom, as the zone displayed on screen grows
      * or shrinks. factor is a multiplier:
-     * $(UL
-     * $(LI `1` keeps the size unchanged.)
-     * $(LI `> 1` makes the view bigger (objects appear smaller).)
-     * $(LI `< 1` makes the view smaller (objects appear bigger).))
+     * - `1` keeps the size unchanged.
+     * - `> 1` makes the view bigger (objects appear smaller).
+     * - `< 1` makes the view smaller (objects appear bigger).
      *
      * Params:
-     *         factor    = Zoom factor to apply
-     * See_Also: size, move, rotate
+     *      factor = Zoom factor to apply
+     *
+     * See_Also:
+     *      size, move, rotate
      */
     void zoom(float factor)
     {
@@ -348,8 +371,11 @@ class View
      *
      * This function is meant for internal use only.
      *
-     * Returns: Projection transform defining the view.
-     * See_Also: inverseTransform
+     * Returns:
+     *      Projection transform defining the view.
+     *
+     * See_Also:
+     *      inverseTransform
      */
     // Disabled: This function is meant for internal use only.
     @disable
@@ -380,9 +406,11 @@ class View
      *
      * This function is meant for internal use only.
      *
-     * Returns: Inverse of the projection transform defining the view.
+     * Returns:
+     *      Inverse of the projection transform defining the view.
      *
-     * See_Also: transform
+     * See_Also:
+     *      transform
      */
     // Disabled: This function is meant for internal use only.
     @disable

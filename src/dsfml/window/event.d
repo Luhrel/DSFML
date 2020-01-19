@@ -24,20 +24,21 @@
  *
  * DSFML is based on SFML (Copyright Laurent Gomila)
  */
+
 /**
- * Event holds all the informations about a system event that just happened.
+ * `Event` holds all the informations about a system event that just happened.
  *
- * Events are retrieved using the sf::Window::pollEvent and Window.waitEvent
+ * Events are retrieved using the `Window.pollEvent` and `Window.waitEvent`
  * functions.
  *
- * An Event instance contains the type of the event (mouse moved, key pressed,
- * window closed, ...) as well as the details about this particular event. Please
- * note that the event parameters are defined in a union, which means that only the
- * member matching the type of the event will be properly filled; all other members
- * will have undefined values and must not be read if the type of the event doesn't
- * match. For example, if you received a KeyPressed event, then you must read the
- * event.key member, all other members such as event.mouseMove or event.text will
- * have undefined values.
+ * An `Event` instance contains the type of the event (mouse moved, key pressed,
+ * window closed, ...) as well as the details about this particular event.
+ * Please note that the event parameters are defined in a union, which means
+ * that only the member matching the type of the event will be properly filled;
+ * all other members will have undefined values and must not be read if the type
+ * of the event doesn't match. For example, if you received a `KeyPressed`
+ * event, then you must read the `event.key` member, all other members such as
+ * `event.mouseMove` or `event.text` will have undefined values.
  *
  * Usage example:
  * ---
@@ -71,32 +72,32 @@ struct Event
 {
     enum EventType
     {
-        Closed,                 ///< The window requested to be closed (no data)
-        Resized,                ///< The window was resized (data in event.size)
-        LostFocus,              ///< The window lost the focus (no data)
-        GainedFocus,            ///< The window gained the focus (no data)
-        TextEntered,            ///< A character was entered (data in event.text)
-        KeyPressed,             ///< A key was pressed (data in event.key)
-        KeyReleased,            ///< A key was released (data in event.key)
+        Closed,                 /// The window requested to be closed (no data)
+        Resized,                /// The window was resized (data in event.size)
+        LostFocus,              /// The window lost the focus (no data)
+        GainedFocus,            /// The window gained the focus (no data)
+        TextEntered,            /// A character was entered (data in event.text)
+        KeyPressed,             /// A key was pressed (data in event.key)
+        KeyReleased,            /// A key was released (data in event.key)
         deprecated("MouseWheelMoved is deprecated, please use MouseWheelScrolled instead.")
-        MouseWheelMoved,        ///< The mouse wheel was scrolled (data in event.mouseWheel) (deprecated)
-        MouseWheelScrolled,     ///< The mouse wheel was scrolled (data in event.mouseWheelScroll)
-        MouseButtonPressed,     ///< A mouse button was pressed (data in event.mouseButton)
-        MouseButtonReleased,    ///< A mouse button was released (data in event.mouseButton)
-        MouseMoved,             ///< The mouse cursor moved (data in event.mouseMove)
-        MouseEntered,           ///< The mouse cursor entered the area of the window (no data)
-        MouseLeft,              ///< The mouse cursor left the area of the window (no data)
-        JoystickButtonPressed,  ///< A joystick button was pressed (data in event.joystickButton)
-        JoystickButtonReleased, ///< A joystick button was released (data in event.joystickButton)
-        JoystickMoved,          ///< The joystick moved along an axis (data in event.joystickMove)
-        JoystickConnected,      ///< A joystick was connected (data in event.joystickConnect)
-        JoystickDisconnected,   ///< A joystick was disconnected (data in event.joystickConnect)
-        TouchBegan,             ///< A touch event began (data in event.touch)
-        TouchMoved,             ///< A touch moved (data in event.touch)
-        TouchEnded,             ///< A touch event ended (data in event.touch)
-        SensorChanged,          ///< A sensor value changed (data in event.sensor)
+        MouseWheelMoved,        /// The mouse wheel was scrolled (data in event.mouseWheel) (deprecated)
+        MouseWheelScrolled,     /// The mouse wheel was scrolled (data in event.mouseWheelScroll)
+        MouseButtonPressed,     /// A mouse button was pressed (data in event.mouseButton)
+        MouseButtonReleased,    /// A mouse button was released (data in event.mouseButton)
+        MouseMoved,             /// The mouse cursor moved (data in event.mouseMove)
+        MouseEntered,           /// The mouse cursor entered the area of the window (no data)
+        MouseLeft,              /// The mouse cursor left the area of the window (no data)
+        JoystickButtonPressed,  /// A joystick button was pressed (data in event.joystickButton)
+        JoystickButtonReleased, /// A joystick button was released (data in event.joystickButton)
+        JoystickMoved,          /// The joystick moved along an axis (data in event.joystickMove)
+        JoystickConnected,      /// A joystick was connected (data in event.joystickConnect)
+        JoystickDisconnected,   /// A joystick was disconnected (data in event.joystickConnect)
+        TouchBegan,             /// A touch event began (data in event.touch)
+        TouchMoved,             /// A touch moved (data in event.touch)
+        TouchEnded,             /// A touch event ended (data in event.touch)
+        SensorChanged,          /// A sensor value changed (data in event.sensor)
 
-        Count,                  ///< Keep last -- the total number of event types
+        Count,                  /// Keep last -- the total number of event types
     }
 
     struct KeyEvent
@@ -198,18 +199,18 @@ struct Event
 
     union
     {
-        EventType type;                         ///< Type of the event
-        SizeEvent size;                         ///< Size event parameters
-        KeyEvent key;                           ///< Key event parameters
-        TextEvent text;                         ///< Text event parameters
-        MouseMoveEvent mouseMove;               ///< Mouse move event parameters
-        MouseButtonEvent mouseButton;           ///< Mouse button event parameters
-        MouseWheelEvent mouseWheel;             ///< Mouse wheel event parameters (deprecated)
-        MouseWheelScrollEvent mouseWheelScroll; ///< Mouse wheel event parameters
-        JoystickMoveEvent joystickMove;         ///< Joystick move event parameters
-        JoystickButtonEvent joystickButton;     ///< Joystick button event parameters
-        JoystickConnectEvent joystickConnect;   ///< Joystick (dis)connect event parameters
-        TouchEvent touch;                       ///< Touch events parameters
-        SensorEvent sensor;                     ///< Sensor event parameters
+        EventType type;                         /// Type of the event
+        SizeEvent size;                         /// Size event parameters
+        KeyEvent key;                           /// Key event parameters
+        TextEvent text;                         /// Text event parameters
+        MouseMoveEvent mouseMove;               /// Mouse move event parameters
+        MouseButtonEvent mouseButton;           /// Mouse button event parameters
+        MouseWheelEvent mouseWheel;             /// Mouse wheel event parameters (deprecated)
+        MouseWheelScrollEvent mouseWheelScroll; /// Mouse wheel event parameters
+        JoystickMoveEvent joystickMove;         /// Joystick move event parameters
+        JoystickButtonEvent joystickButton;     /// Joystick button event parameters
+        JoystickConnectEvent joystickConnect;   /// Joystick (dis)connect event parameters
+        TouchEvent touch;                       /// Touch events parameters
+        SensorEvent sensor;                     /// Sensor event parameters
     }
 }

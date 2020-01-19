@@ -26,17 +26,17 @@
  */
 
 /**
- * $(U Window) is the main class of the Window module. It defines an OS window
+ * `Window` is the main class of the window module. It defines an OS window
  * that is able to receive an OpenGL rendering.
  *
- * A $(U Window) can create its own new window, or be embedded into an already
+ * A `Window` can create its own new window, or be embedded into an already
  * existing control using the create(handle) function. This can be useful for
  * embedding an OpenGL rendering area into a view which is part of a bigger GUI
  * with existing windows, controls, etc. It can also serve as embedding an
  * OpenGL rendering area into a window created by another (probably richer) GUI
  * library like Qt or wxWidgets.
  *
- * The $(U Window) class provides a simple interface for manipulating the
+ * The `Window` class provides a simple interface for manipulating the
  * window: move, resize, show/hide, control mouse cursor, etc. It also provides
  * event handling through its `pollEvent()` and `waitEvent()` functions.
  *
@@ -99,9 +99,6 @@ import std.string;
 class Window
 {
     private sfWindow* m_window;
-    //let's RenderWindow inherit from Window without trying to delete the null
-    //pointer
-    //private bool m_needsToDelete = true;
 
     /// Choices for window style
     enum Style
@@ -118,7 +115,7 @@ class Window
      * Default constructor.
      *
      * This constructor doesn't actually create the window, use the other
-     * constructors or call create() to do so.
+     * constructors or call `create()` to do so.
      */
     this()
     {
@@ -131,18 +128,18 @@ class Window
      * This constructor creates the window with the size and pixel depth defined
      * in mode. An optional style can be passed to customize the look and
      * behaviour of the window (borders, title bar, resizable, closable, ...).
-     * If style contains Style::Fullscreen, then mode must be a valid video
+     * If style contains `Style.Fullscreen`, then mode must be a valid video
      * mode.
      *
      * The fourth parameter is an optional structure specifying advanced OpenGL
      * context settings such as antialiasing, depth-buffer bits, etc.
      *
      * Params:
-     *        mode = Video mode to use (defines the width, height and depth of the
-     *               rendering area of the window)
-     *       title = Title of the window
-     *        style = Window style
-     *         settings = Additional settings for the underlying OpenGL context
+     *      mode     = Video mode to use (defines the width, height and depth of
+     *                 the rendering area of the window)
+     *      title    = Title of the window
+     *      style    = Window style
+     *      settings = Additional settings for the underlying OpenGL context
      */
     this(VideoMode mode, const(dstring) title, Style style = Style.DefaultStyle,
         ContextSettings settings = ContextSettings.init)
@@ -160,8 +157,8 @@ class Window
      * context settings such as antialiasing, depth-buffer bits, etc.
      *
      * Params:
-     *         handle = Platform-specific handle of the control
-     *         settings = Additional settings for the underlying OpenGL context
+     *      handle   = Platform-specific handle of the control
+     *      settings = Additional settings for the underlying OpenGL context
      */
     this(WindowHandle handle, ContextSettings settings = ContextSettings.init)
     {
@@ -181,24 +178,25 @@ class Window
     @property
     {
         /**
-          * Change the position of the window on screen.
+         * Change the position of the window on screen.
          *
          * This function only works for top-level windows (i.e. it will be ignored
          * for windows created from the handle of a child window/control).
          *
          * Params:
-         * position=New position, in pixels
-          */
-        void position(Vector2i newPosition)
+         *      _position = New position, in pixels
+         */
+        void position(Vector2i _position)
         {
             if (m_window !is null)
-                sfWindow_setPosition(m_window, newPosition);
+                sfWindow_setPosition(m_window, _position);
         }
 
         /**
          * Get the position of the window.
          *
-         * Returns: Position of the window, in pixels
+         * Returns:
+         *      Position of the window, in pixels
          */
         Vector2i position() const
         {
@@ -214,13 +212,13 @@ class Window
          * Change the size of the rendering region of the window.
          *
          * Params:
-         * size=New size, in pixels
+         *      _size = New size, in pixels
          */
-        void size(Vector2u newSize)
+        void size(Vector2u _size)
         {
             if (m_window !is null)
             {
-                sfWindow_setSize(m_window, newSize);
+                sfWindow_setSize(m_window, _size);
                 onResize();
             }
         }
@@ -230,7 +228,8 @@ class Window
          *
          * The size doesn't include the titlebar and borders of the window.
          *
-         * Returns: Size in pixels
+         * Returns:
+         *      Size in pixels
          */
         Vector2u size() const
         {
@@ -248,18 +247,19 @@ class Window
      * active on another thread you have to deactivate it on the previous thread
      * first if it was active. Only one window can be active on a thread at a
      * time, thus the window previously active (if any) automatically gets
-     * deactivated. This is not to be confused with requestFocus().
+     * deactivated. This is not to be confused with `requestFocus()`.
      *
      * Params:
-     *         active = true to activate, false to deactivate
+     *      _active = true to activate, false to deactivate
      *
-     * Returns: true if operation was successful, false otherwise.
+     * Returns:
+     *      true if operation was successful, false otherwise.
      */
-    bool active(bool active_ = true)
+    bool active(bool _active = true)
     {
         if (m_window is null)
             return false;
-        return sfWindow_setActive(m_window, active_);
+        return sfWindow_setActive(m_window, _active);
     }
 
     /**
@@ -269,9 +269,10 @@ class Window
      * events such as keystrokes or mouse events. If a window requests focus, it
      * only hints to the operating system, that it would like to be focused. The
      * operating system is free to deny the request. This is not to be confused with
-     * setActive().
+     * `active()`.
      *
-     * See_Also: hasFocus
+     * See_Also:
+     *      hasFocus
      */
     void requestFocus()
     {
@@ -285,7 +286,8 @@ class Window
      * At any given time, only one window may have the input focus to receive input
      * events such as keystrokes or most mouse events.
      *
-     * Returns: true if the window has focus, false otherwise
+     * Returns:
+     *      true if the window has focus, false otherwise
      */
     bool hasFocus() const
     {
@@ -298,14 +300,14 @@ class Window
      * Limit the framerate to a maximum fixed frequency.
      *
      * If a limit is set, the window will use a small delay after each call to
-     * display() to ensure that the current frame lasted long enough to match
+     * `display()` to ensure that the current frame lasted long enough to match
      * the framerate limit. SFML will try to match the given limit as much as it
      * can, but since it internally uses dsfml.system.sleep, whose precision
      * depends on the underlying OS, the results may be a little unprecise as
      * well (for example, you can get 65 FPS when requesting 60).
      *
      * Params:
-     *         limit = Framerate limit, in frames per seconds (use 0 to disable limit).
+     *      limit = Framerate limit, in frames per seconds (use 0 to disable limit).
      */
     @property
     void framerateLimit(uint limit)
@@ -322,10 +324,10 @@ class Window
      * The OS default icon is used by default.
      *
      * Params:
-     *      width = Icon's width, in pixels
+     *      width  = Icon's width, in pixels
      *      height = Icon's height, in pixels
-     *      pixels = Array of pixels in memory. The pixels are copied, so you need
-     *          not keep the source alive after calling this function.
+     *      pixels = Array of pixels in memory. The pixels are copied, so you
+     *               need not keep the source alive after calling this function.
      */
     void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
@@ -342,7 +344,7 @@ class Window
      * The threshold value is 0.1 by default.
      *
      * Params:
-     *     threshold = New threshold, in the range [0, 100].
+     *      threshold = New threshold, in the range [0, 100].
      */
     @property
     void joystickThreshold(float threshold)
@@ -354,14 +356,14 @@ class Window
     /**
      * Enable or disable automatic key-repeat.
      *
-     * If key repeat is enabled, you will receive repeated KeyPressed events
+     * If key repeat is enabled, you will receive repeated `KeyPressed` events
      * while keeping a key pressed. If it is disabled, you will only get a
      * single event when the key is pressed.
      *
      * Key repeat is enabled by default.
      *
      * Params:
-     *     enabled = true to enable, false to disable.
+     *      enabled = true to enable, false to disable.
      */
     @property
     void keyRepeatEnabled(bool enabled)
@@ -376,7 +378,7 @@ class Window
      * The mouse cursor is visible by default.
      *
      * Params:
-     *         visible = true to show the mouse cursor, false to hide it.
+     *      visible = true to show the mouse cursor, false to hide it.
      */
     @property
     void mouseCursorVisible(bool visible)
@@ -389,13 +391,13 @@ class Window
      * Change the title of the window.
      *
      * Params:
-     *         newTitle = New title
+     *      _title = New title
      */
     @property
-    void title(const dstring newTitle)
+    void title(const dstring _title)
     {
         if (m_window !is null)
-            sfWindow_setUnicodeTitle(m_window, representation(newTitle).ptr);
+            sfWindow_setUnicodeTitle(m_window, representation(_title).ptr);
     }
 
     /**
@@ -404,13 +406,13 @@ class Window
      * The window is shown by default.
      *
      * Params:
-     *     visible = true to show the window, false to hide it
+     *      _visible = true to show the window, false to hide it
      */
     @property
-    void visible(bool visible_)
+    void visible(bool _visible)
     {
         if (m_window !is null)
-            sfWindow_setVisible(m_window, visible_);
+            sfWindow_setVisible(m_window, _visible);
     }
 
     /**
@@ -424,7 +426,7 @@ class Window
      * Vertical synchronization is disabled by default.
      *
      * Params:
-     *     enabled=true to enable v-sync, false to deactivate it
+     *      enabled = true to enable v-sync, false to deactivate it
      */
     @property
     void verticalSyncEnabled(bool enabled)
@@ -437,10 +439,11 @@ class Window
      * Get the settings of the OpenGL context of the window.
      *
      * Note that these settings may be different from what was passed to the
-     * constructor or the create() function, if one or more settings were not
+     * constructor or the `create()` function, if one or more settings were not
      * supported. In this case, SFML chose the closest match.
      *
-     * Returns: Structure containing the OpenGL context settings.
+     * Returns:
+     *      Structure containing the OpenGL context settings.
      */
     @property
     ContextSettings settings() const
@@ -453,13 +456,14 @@ class Window
     /**
      * Get the OS-specific handle of the window.
      *
-     * The type of the returned handle is WindowHandle, which is a typedef
+     * The type of the returned handle is `WindowHandle`, which is a typedef
      * to the handle type defined by the OS. You shouldn't need to use this
      * function, unless you have very specific stuff to implement that SFML
      * doesn't support, or implement a temporary workaround until a bug is
      * fixed.
      *
-     * Returns: System handle of the window.
+     * Returns:
+     *      System handle of the window.
      */
     @property
     WindowHandle systemHandle() const
@@ -473,9 +477,9 @@ class Window
      * Close the window and destroy all the attached resources.
      *
      * After calling this function, the Window instance remains valid and you
-     * can call create() to recreate the window. All other functions such as
-     * pollEvent() or display() will still work (i.e. you don't have to test
-     * isOpen() every time), and will have no effect on closed windows.
+     * can call `create()` to recreate the window. All other functions such as
+     * `pollEvent()` or `display()` will still work (i.e. you don't have to test
+     * `isOpen()` every time), and will have no effect on closed windows.
      */
     void close()
     {
@@ -487,16 +491,18 @@ class Window
      * Create (or recreate) the window.
      *
      * If the window was already created, it closes it first. If style contains
-     * Style.Fullscreen, then mode must be a valid video mode.
+     * `Style.Fullscreen`, then mode must be a valid video mode.
      *
      * The fourth parameter is an optional structure specifying advanced OpenGL
      * context settings such as antialiasing, depth-buffer bits, etc.
      *
      * Params:
-     * mode=Video mode to use (defines the width, height and depth of the rendering area of the window)
-     * title=Title of the window
-     * style=Window style, a bitwise OR combination of sf::Style enumerators
-     * settings=Additional settings for the underlying OpenGL context
+     *      mode     = Video mode to use (defines the width, height and depth of
+     *                 the rendering area of the window)
+     *      title    = Title of the window
+     *      style    = Window style, a bitwise OR combination of `Style`
+     *                 enumerators
+     *      settings = Additional settings for the underlying OpenGL context
      */
     void create(VideoMode mode, const dstring title, Style style = Style.DefaultStyle,
         ContextSettings settings = ContextSettings.init)
@@ -515,8 +521,8 @@ class Window
      * context settings such as antialiasing, depth-buffer bits, etc.
      *
      * Params:
-     * handle=Platform-specific handle of the control
-     * settings=Additional settings for the underlying OpenGL context
+     *      handle   = Platform-specific handle of the control
+     *      settings = Additional settings for the underlying OpenGL context
      */
     void create(WindowHandle handle, ContextSettings settings = ContextSettings.init)
     {
@@ -540,10 +546,11 @@ class Window
      * Tell whether or not the window is open.
      *
      * This function returns whether or not the window exists. Note that a
-     * hidden window (setVisible(false)) is open (therefore this function would
+     * hidden window (`visible(false)`) is open (therefore this function would
      * return true).
      *
-     * Returns: true if the window is open, false if it has been closed.
+     * Returns:
+     *      true if the window is open, false if it has been closed.
      */
     bool isOpen() const
     {
@@ -567,11 +574,13 @@ class Window
      * }
      * ---
      * Params:
-     *         event = Event to be returned.
+     *      event = Event to be returned.
      *
-     * Returns: true if an event was returned, or false if the event queue was
-     *             empty.
-     * See_Also: waitEvent
+     * Returns:
+     *      true if an event was returned, or false if the event queue was empty.
+     *
+     * See_Also:
+     *      waitEvent
      */
     bool pollEvent(ref Event event)
     {
@@ -597,10 +606,13 @@ class Window
      * }
      * ---
      * Params:
-     *         event = Event to be returned
+     *      event = Event to be returned
      *
-     * Returns: False if any error occured.
-     * See_Also: pollEvent
+     * Returns:
+     *      false if any error occured.
+     *
+     * See_Also:
+     *      pollEvent
      */
     bool waitEvent(ref Event event)
     {
@@ -614,12 +626,12 @@ class Window
      *
      * Upon window creation, the arrow cursor is used by default.
      *
-     * Warning
+     * **Warning:**
      * The cursor must not be destroyed while in use by the window.
-     * Features related to Cursor are not supported on iOS and Android.
+     * Features related to `Cursor` are not supported on iOS and Android.
      *
      * Params:
-     * cursor=Native system cursor type to display
+     *      cursor = Native system cursor type to display
      */
     @property
     void mouseCursor(Cursor cursor)
@@ -636,7 +648,7 @@ class Window
      * the window has focus.
      *
      * Params:
-     * grabbed=True to enable, false to disable
+     *      grabbed = true to enable, false to disable
      */
     void mouseCursorGrabbeb(bool grabbed)
     {
@@ -655,8 +667,8 @@ class Window
     /**
      * Function called after the window has been resized.
      *
-     * This function is called so that derived classes can perform custom actions
-     * when the size of the window changes.
+     * This function is called so that derived classes can perform custom
+     * actions when the size of the window changes.
      */
     protected void onResize() {}
 

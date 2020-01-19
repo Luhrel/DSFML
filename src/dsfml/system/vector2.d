@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U Vector2) is a simple structure that defines a mathematical vector with
+ * `Vector2` is a simple structure that defines a mathematical vector with
  * two coordinates (x and y).  It can be used to represent anything that has two
  * dimensions: a size, a point, a velocity, etc.
  *
@@ -34,18 +34,16 @@
  * that supports arithmetic operations (+, -, /, *) and comparisons (==, !=),
  * for example int or float.
  *
- * You generally don't have to care about the templated form (Vector2!(T)),
+ * You generally don't have to care about the templated form (`Vector2!(T)`),
  * the most common specializations have special aliases:
- * $(UL
- * $(LI Vector2!(float) is Vector2f)
- * $(LI Vector2!(int) is Vector2i)
- * $(LI Vector2!(uint) is Vector2u))
+ * - `Vector2!(float)` is `Vector2f`
+ * - `Vector2!(int)` is `Vector2i`
+ * - `Vector2!(uint)` is `Vector2u`
  *
- * $(PARA
- * The $(U Vector2) struct has a small and simple interface, its x and y members
+ * The `Vector2` struct has a small and simple interface, its x and y members
  * can be accessed directly (there are no accessors like `setX()`, `getX()`) and
  * it contains no mathematical function like dot product, cross product, length,
- * etc.)
+ * etc.
  *
  * Example:
  * ---
@@ -61,7 +59,7 @@
  * ---
  *
  * See_Also:
- * $(VECTOR3_LINK)
+ *      $(VECTOR3_LINK)
  */
 module dsfml.system.vector2;
 
@@ -83,20 +81,20 @@ struct Vector2(T)
      * Construct the vector from its coordinates.
      *
      * Params:
-     *         X = X coordinate
-     *         Y = Y coordinate
+     *      x = X coordinate
+     *      y = Y coordinate
      */
-    this(T X,T Y)
+    this(T x,T y)
     {
-        x = X;
-        y = Y;
+        this.x = x;
+        this.y = y;
     }
 
     /**
      * Construct the vector from another type of vector.
      *
      * Params:
-     *     otherVector = Vector to convert
+     *      otherVector = Vector to convert
      */
     this(E)(Vector2!(E) otherVector)
     {

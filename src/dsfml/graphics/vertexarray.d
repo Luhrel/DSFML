@@ -26,15 +26,15 @@
  */
 
 /**
- * $(U VertexArray) is a very simple wrapper around a dynamic array of vertices
- *and a primitives type.
+ * `VertexArray` is a very simple wrapper around a dynamic array of vertices
+ * and a primitives type.
  *
  * It inherits $(DRAWABLE_LINK), but unlike other drawables it is not
  * transformable.
  *
  * Example:
  * ---
- * VertexArray lines(PrimitiveType.LineStrip, 4);
+ * VertexArray lines = New VertexArray(PrimitiveType.LineStrip, 4);
  * lines[0].position = Vector2f(10, 0);
  * lines[1].position = Vector2f(20, 0);
  * lines[2].position = Vector2f(30, 5);
@@ -44,7 +44,7 @@
  * ---
  *
  * See_Also:
- * $(VERTEX_LINK)
+ *      $(VERTEX_LINK)
  */
 module dsfml.graphics.vertexarray;
 
@@ -78,8 +78,8 @@ class VertexArray : Drawable
      * Construct the vertex array with a type and an initial number of vertices
      *
      * Params:
-     *  type        = Type of primitives
-     *  vertexCount = Initial number of vertices in the array
+     *      type        = Type of primitives
+     *      vertexCount = Initial number of vertices in the array
      */
     this(PrimitiveType type, size_t vertexCount = 0)
     {
@@ -106,7 +106,8 @@ class VertexArray : Drawable
      * This function returns the axis-aligned rectangle that contains all the
      * vertices of the array.
      *
-     * Returns: Bounding rectangle of the vertex array.
+     * Returns:
+     *      Bounding rectangle of the vertex array.
      */
     @property
     FloatRect bounds() const
@@ -127,7 +128,7 @@ class VertexArray : Drawable
      * The default primitive type is PrimitiveType.Points.
      *
      * Params:
-     *     type = Type of primitive
+     *      type = Type of primitive
      */
     @property
     void primitiveType(PrimitiveType type)
@@ -138,7 +139,8 @@ class VertexArray : Drawable
     /**
      * Get the type of primitives drawn by the vertex array.
      *
-     * Returns: Primitive type
+     * Returns:
+     *      Primitive type
      */
     @property
     PrimitiveType primitiveType() const
@@ -149,7 +151,8 @@ class VertexArray : Drawable
     /**
      * Return the vertex count.
      *
-     * Returns: Number of vertices in the array
+     * Returns:
+     *      Number of vertices in the array
      */
     ulong vertexCount() const
     {
@@ -160,11 +163,11 @@ class VertexArray : Drawable
      * Add a vertex to the array.
      *
      * Params:
-     * 		newVertex = Vertex to add.
+     *      vertex = Vertex to add.
      */
-    void append(Vertex newVertex)
+    void append(Vertex vertex)
     {
-        sfVertexArray_append(m_vertexArray, newVertex);
+        sfVertexArray_append(m_vertexArray, vertex);
     }
 
     /**
@@ -183,7 +186,7 @@ class VertexArray : Drawable
      * Draw the object to a render target.
      *
      * Params:
-     *  	renderTarget = Render target to draw to
+     *      renderTarget = Render target to draw to
      *  	renderStates = Current render states
      */
     override void draw(RenderTarget renderTarget, RenderStates renderStates)
@@ -211,12 +214,13 @@ class VertexArray : Drawable
      * Get a read-write access to a vertex by its index
      *
      * This function doesn't check index, it must be in range
-     * [0, getVertexCount() - 1]. The behavior is undefined otherwise.
+     * [0, `vertexCount()` - 1]. The behavior is undefined otherwise.
      *
      * Params:
-     *  index = Index of the vertex to get
+     *      index = Index of the vertex to get
      *
-     * Returns: Reference to the index-th vertex.
+     * Returns:
+     *      Reference to the index-th vertex.
      */
     ref Vertex opIndex(size_t index)
     {

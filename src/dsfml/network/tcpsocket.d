@@ -36,10 +36,10 @@
  * lost or duplicated).
  *
  * When a socket is connected to a remote host, you can retrieve informations
- * about this host with the `getRemoteAddress` and `getRemotePort` functions.
+ * about this host with the `remoteAddress` and `remotePort` functions.
  *
  * You can also get the local port to which the socket is bound (which is
- * automatically chosen when the socket is connected), with the `getLocalPort`
+ * automatically chosen when the socket is connected), with the `localPort`
  * function.
  *
  * Sending and receiving data can use either the low-level or the high-level
@@ -96,7 +96,7 @@
  * ---
  *
  * See_Also:
- * $(SOCKET_LINK), $(UDPSOCKET_LINK), $(PACKET_LINK)
+ *      $(SOCKET_LINK), $(UDPSOCKET_LINK), $(PACKET_LINK)
  */
 module dsfml.network.tcpsocket;
 
@@ -136,8 +136,11 @@ class TcpSocket : Socket
      *
      * If the socket is not connected, this function returns 0.
      *
-     * Returns: Port to which the socket is bound.
-     * See_Also: connect, remotePort
+     * Returns:
+     *      Port to which the socket is bound.
+     *
+     * See_Also:
+     *      connect, remotePort
      */
     @property
     ushort localPort() const
@@ -150,8 +153,11 @@ class TcpSocket : Socket
      *
      * It the socket is not connected, this function returns `IpAddress.None`.
      *
-     * Returns: Address of the remote peer.
-     * See_Also: remotePort
+     * Returns:
+     *      Address of the remote peer.
+     *
+     * See_Also:
+     *      remotePort
      */
     @property
     IpAddress remoteAddress() const
@@ -164,8 +170,11 @@ class TcpSocket : Socket
      *
      * If the socket is not connected, this function returns 0.
      *
-     * Returns: Remote port to which the socket is connected.
-     * See_Also: remoteAddress
+     * Returns:
+     *      Remote port to which the socket is connected.
+     *
+     * See_Also:
+     *      remoteAddress
      */
     @property
     ushort remotePort() const
@@ -185,7 +194,7 @@ class TcpSocket : Socket
      * default, all sockets are blocking.
      *
      * Params:
-     *  blocking = true to set the socket as blocking, false for non-blocking
+     *      _blocking = true to set the socket as blocking, false for non-blocking
      */
     @property
     void blocking(bool _blocking)
@@ -203,12 +212,15 @@ class TcpSocket : Socket
      * If the socket was previously connected, it is first disconnected.
      *
      * Params:
-     *  host    = Address of the remote peer
-     * 	port    = Port of the remote peer
-     * 	timeout = Optional maximum time to wait
+     *      host    = Address of the remote peer
+     * 	    port    = Port of the remote peer
+     * 	    timeout = Optional maximum time to wait
      *
-     * Returns: Status code.
-     * See_Also: disconnect
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      disconnect
      */
     Status connect(IpAddress host, ushort port, Time timeout = Time.Zero)
     {
@@ -221,7 +233,8 @@ class TcpSocket : Socket
      * This function gracefully closes the connection. If the socket is not
      * connected, this function has no effect.
      *
-     * See_Also: connect
+     * See_Also:
+     *      connect
      */
     void disconnect()
     {
@@ -231,7 +244,8 @@ class TcpSocket : Socket
     /**
      * Tell whether the socket is in blocking or non-blocking mode.
      *
-     * Returns: true if the socket is blocking, false otherwise.
+     * Returns:
+     *      true if the socket is blocking, false otherwise.
      */
     @property
     bool blocking() const
@@ -243,14 +257,17 @@ class TcpSocket : Socket
      * Send raw data to the remote peer.
      *
      * To be able to handle partial sends over non-blocking sockets, use the
-     * send(const(void)[], out size_t) overload instead.
+     * `send(const(void)[], out size_t)` overload instead.
      * This function will fail if the socket is not connected.
      *
      * Params:
-     * 	data = Sequence of bytes to send
+     *      data = Sequence of bytes to send
      *
-     * Returns: Status code.
-     * See_Also: receive
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      receive
      */
     Status send(const(void)[] data)
     {
@@ -263,11 +280,14 @@ class TcpSocket : Socket
      * This function will fail if the socket is not connected.
      *
      * Params:
-     * 	data = Sequence of bytes to send
-     *  sent = The number of bytes sent will be written here
+     *      data = Sequence of bytes to send
+     *      sent = The number of bytes sent will be written here
      *
-     * Returns: Status code.
-     * See_Also: receive
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      receive
      */
     Status send(const(void)[] data, out size_t sent)
     {
@@ -280,10 +300,13 @@ class TcpSocket : Socket
      * This function will fail if the socket is not connected.
      *
      * Params:
-     * 	packet = Packet to send
+     * 	    packet = Packet to send
      *
-     * Returns: Status code.
-     * See_Also: receive
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      receive
      */
     Status send(Packet packet)
     {
@@ -297,12 +320,15 @@ class TcpSocket : Socket
      * received. This function will fail if the socket is not connected.
      *
      * Params:
-     * 	data = Array to fill with the received bytes
-     * 	sizeReceived = This variable is filled with the actual number of bytes
-                       received
+     *      data         = Array to fill with the received bytes
+     * 	    sizeReceived = This variable is filled with the actual number of
+     *                     bytes received
      *
-     * Returns: Status code.
-     * See_Also: send
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      send
      */
     Status receive(void[] data, out size_t sizeReceived)
     {
@@ -317,10 +343,13 @@ class TcpSocket : Socket
      * received. This function will fail if the socket is not connected.
      *
      * Params:
-     * 	packet = Packet to fill with the received data
+     *      packet = Packet to fill with the received data
      *
-     * Returns: Status code.
-     * See_Also: send
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      send
      */
     Status receive(Packet packet)
     {

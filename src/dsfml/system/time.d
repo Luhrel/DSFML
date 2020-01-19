@@ -26,7 +26,7 @@
  */
 
  /**
- * $(U Time) encapsulates a time value in a flexible way. It allows to define a
+ * `Time` encapsulates a time value in a flexible way. It allows to define a
  * time value either as a number of seconds, milliseconds or microseconds. It
  * also works the other way round: you can read a time value as either a number
  * of seconds, milliseconds or microseconds.
@@ -64,7 +64,7 @@
  * ---
  *
  * See_Also:
- * $(CLOCK_LINK)
+ *      $(CLOCK_LINK)
  */
 module dsfml.system.time;
 
@@ -89,7 +89,8 @@ struct Time
     /**
      * Return the time value as a number of seconds.
      *
-     * Returns: Time in seconds.
+     * Returns:
+     *      Time in seconds.
      */
     float asSeconds() const
     {
@@ -99,7 +100,8 @@ struct Time
     /**
      * Return the time value as a number of milliseconds.
      *
-     * Returns: Time in milliseconds.
+     * Returns:
+     *      Time in milliseconds.
      */
     int asMilliseconds() const
     {
@@ -109,7 +111,8 @@ struct Time
     /**
      * Return the time value as a number of microseconds.
      *
-     * Returns: Time in microseconds.
+     * Returns:
+     *      Time in microseconds.
      */
     long asMicroseconds() const
     {
@@ -117,7 +120,10 @@ struct Time
     }
 
     /**
-     * Return the time value as a Duration.
+     * Return the time value as a `Duration`.
+     *
+     * Returns:
+     *      Time as `Duration`
      */
     Duration asDuration() const
     {
@@ -167,7 +173,7 @@ struct Time
      * Overload of binary + and - operators toadd or subtract two time values.
      */
     Time opBinary(string op)(Time rhs) const
-    if((op == "+") || (op == "-"))
+        if (op == "+" || op == "-")
     {
         static if (op == "+")
         {
@@ -183,7 +189,7 @@ struct Time
      * Overload of += and -= assignment operators.
      */
     ref Time opOpAssign(string op)(Time rhs)
-    if((op == "+") || (op == "-"))
+        if(op == "+" || op == "-")
     {
         static if(op == "+")
         {
@@ -202,7 +208,7 @@ struct Time
      * Overload of binary * and / operators to scale a time value.
      */
     Time opBinary (string op, E)(E num) const
-    if(isNumeric!(E) && ((op == "*") || (op == "/")))
+        if(isNumeric!(E) && (op == "*" || op == "/"))
     {
         static if (op == "*")
         {
@@ -237,21 +243,23 @@ struct Time
  * Construct a time value from a number of seconds.
  *
  * Params:
- *   amount = Number of seconds.
+ *      amount = Number of seconds.
  *
- * Returns: Time value constructed from the amount of microseconds.
+ * Returns:
+ *      Time value constructed from the amount of microseconds.
  */
 Time seconds(float amount)
 {
     return Time(cast(long)(amount * 1000000));
 }
 /**
- *Construct a time value from a number of milliseconds.
+ * Construct a time value from a number of milliseconds.
  *
  * Params:
  *      amount = Number of milliseconds.
  *
- * Returns: Time value constructed from the amount of microseconds.
+ * Returns:
+ *      Time value constructed from the amount of microseconds.
  */
 Time milliseconds(int amount)
 {
@@ -262,9 +270,10 @@ Time milliseconds(int amount)
  * Construct a time value from a number of microseconds.
  *
  * Params:
- *  amount = Number of microseconds.
+ *      amount = Number of microseconds.
  *
- * Returns: Time value constructed from the amount of microseconds.
+ * Returns:
+ *      Time value constructed from the amount of microseconds.
  */
 Time microseconds(long amount)
 {
@@ -275,9 +284,10 @@ Time microseconds(long amount)
  * Construct a time value from a Duration.
  *
  * Params:
- *  dur = The time duration.
+ *      dur = The time duration.
  *
- * Returns: Time value constructed from the time duration.
+ * Returns:
+ *      Time value constructed from the time duration.
  */
 Time duration(Duration dur)
 {

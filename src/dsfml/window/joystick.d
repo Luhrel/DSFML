@@ -26,7 +26,7 @@
  */
 
 /**
- * $(U Joystick) provides an interface to the state of the joysticks. It only
+ * `Joystick` provides an interface to the state of the joysticks. It only
  * contains static functions, so it's not meant to be instanciated. Instead,
  * each joystick is identified by an index that is passed to the functions of
  * this class.
@@ -34,26 +34,24 @@
  * This class allows users to query the state of joysticks at any time and
  * directly, without having to deal with a window and its events. Compared to
  * the `JoystickMoved`, `JoystickButtonPressed`, and `JoystickButtonReleased`
- * events, $(U Joystick) can retrieve the state of axes and buttons of joysticks
+ * events, `Joystick` can retrieve the state of axes and buttons of joysticks
  * at any time (you don't need to store and update a boolean on your side in
  * order to know if a button is pressed or released), and you always get the
  * real state of joysticks, even if they are moved, pressed or released when
  * your window is out of focus and no event is triggered.
  *
  * DSFML supports:
- * $(UL
- * $(LI 8 joysticks (Joystick.Count))
- * $(LI 32 buttons per joystick (Joystick.ButtonCount))
- * $(LI 8 axes per joystick (Joystick.AxisCount)))
+ * - 8 joysticks (Joystick.Count)
+ * - 32 buttons per joystick (Joystick.ButtonCount)
+ * - 8 axes per joystick (Joystick.AxisCount)
  *
- * $(PARA
  * Unlike the keyboard or mouse, the state of joysticks is sometimes not
  * directly available (depending on the OS), therefore an `update()` function
  * must be called in order to update the current state of joysticks. When you
  * have a window with event handling, this is done automatically, you don't need
  * to call anything. But if you have no window, or if you want to check
  * joysticks state before creating one, you must call `Joystick.update`
- * explicitly.)
+ * explicitly.
  *
  * Example:
  * ---
@@ -74,7 +72,7 @@
  * ---
  *
  * See_Also:
- * $(KEYBOAD_LINK), $(MOUSE_LINK)
+ *      $(KEYBOAD_LINK), $(MOUSE_LINK)
  */
 module dsfml.window.joystick;
 
@@ -131,9 +129,10 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns 0.
      *
      * Params:
-     *         joystick = Index of the joystick
+     *      joystick = Index of the joystick
      *
-     * Returns: Number of buttons supported by the joystick.
+     * Returns:
+     *      Number of buttons supported by the joystick.
      */
     static uint getButtonCount(uint joystick)
     {
@@ -146,10 +145,11 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns 0.
      *
      * Params:
-     *         joystick =     Index of the joystick
-     *         axis     = Axis to check
+     *      joystick = Index of the joystick
+     *      axis     = Axis to check
      *
-     * Returns: Current position of the axis, in range [-100 .. 100].
+     * Returns:
+     *      Current position of the axis, in range [-100 .. 100].
      */
     static float getAxisPosition(uint joystick, Axis axis)
     {
@@ -160,9 +160,10 @@ final abstract class Joystick
      * Get the joystick information
      *
      * Params:
-     *         joystick = Index of the joystick
+     *      joystick = Index of the joystick
      *
-     * Returns: Structure containing the joystick information.
+     * Returns:
+     *      Structure containing the joystick information.
      */
     static Identification getIdentification(uint joystick)
     {
@@ -177,10 +178,11 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns false.
      *
      * Params:
-     *         joystick =     Index of the joystick
-     *         axis = Axis to check
+     *      joystick = Index of the joystick
+     *      axis     = Axis to check
      *
-     * Returns: true if the joystick supports the axis, false otherwise.
+     * Returns:
+     *      true if the joystick supports the axis, false otherwise.
      */
     static bool hasAxis(uint joystick, Axis axis)
     {
@@ -193,10 +195,11 @@ final abstract class Joystick
      * If the joystick is not connected, this function returns false.
      *
      * Params:
-     *         joystick =     Index of the joystick
-     *         button = Button to check
+     *      joystick = Index of the joystick
+     *      button   = Button to check
      *
-     * Returns: true if the button is pressed, false otherwise.
+     * Returns:
+     *      true if the button is pressed, false otherwise.
      */
     static bool isButtonPressed(uint joystick, uint button)
     {
@@ -207,9 +210,10 @@ final abstract class Joystick
      * Check if a joystick is connected.
      *
      * Params:
-     *         joystick =     Index of the joystick
+     *      joystick = Index of the joystick
      *
-     * Returns: true if the joystick is connected, false otherwise.
+     * Returns:
+     *      true if the joystick is connected, false otherwise.
      */
     static bool isConnected(uint joystick)
     {

@@ -26,20 +26,19 @@
  */
 
 /**
- * $(U BlendMode) is a structure that represents a blend mode. A blend mode
+ * `BlendMode` is a structure that represents a blend mode. A blend mode
  * determines how the colors of an object you draw are mixed with the colors
  * that are already in the buffer.
  *
- * The structure is composed of 6 components, each of which has its
- * own public member variable:
- * $(UL
- * $(LI Color Source Factor (colorSrcFactor))
- * $(LI Color Destination Factor (colorDstFactor))
- * $(LI Color Blend Equation (colorEquation))
- * $(LI Alpha Source Factor (alphaSrcFactor))
- * $(LI Alpha Destination Factor (alphaDstFactor))
- * $(LI Alpha Blend Equation (alphaEquation)))
- * $(PARA
+ * The structure is composed of 6 components, each of which has its own public
+ * member variable:
+ * - Color Source Factor (colorSrcFactor)
+ * - Color Destination Factor (colorDstFactor)
+ * - Color Blend Equation (colorEquation)
+ * - Alpha Source Factor (alphaSrcFactor)
+ * - Alpha Destination Factor (alphaDstFactor)
+ * - Alpha Blend Equation (alphaEquation)
+ *
  * The source factor specifies how the pixel you are drawing contributes to the
  * final color. The destination factor specifies how the pixel already drawn in
  * the buffer contributes to the final color.
@@ -51,19 +50,18 @@
  *
  * The blend factors and equations correspond to their OpenGL equivalents. In
  * general, the color of the resulting pixel is calculated according to the
- * following formula ($(I src) is the color of the source pixel, $(I dst) the
+ * following formula (*src*) is the color of the source pixel, *dst* the
  * color of the destination pixel, the other variables correspond to the
- * public members, with the equations being `+` or `-` operators):)
+ * public members, with the equations being `+` or `-` operators:
  * ---
  * dst.rgb = colorSrcFactor * src.rgb (colorEquation) colorDstFactor * dst.rgb
  * dst.a   = alphaSrcFactor * src.a   (alphaEquation) alphaDstFactor * dst.a
  * ---
  *
- * $(PARA All factors and colors are represented as floating point numbers
+ * All factors and colors are represented as floating point numbers
  * between 0 and 1. Where necessary, the result is clamped to fit in that range.
  *
- * The most common blending modes are defined as constants inside of
- * $(U BlendMode):)
+ * The most common blending modes are defined as constants inside of `BlendMode`:
  * ---
  * auto alphaBlending          = BlendMode.Alpha;
  * auto additiveBlending       = BlendMode.Add;
@@ -71,12 +69,12 @@
  * auto noBlending             = BlendMode.None;
  * ---
  *
- * $(PARA In DSFML, a blend mode can be specified every time you draw a Drawable
+ * In DSFML, a blend mode can be specified every time you draw a Drawable
  * object to a render target. It is part of the RenderStates compound
- * that is passed to the member function RenderTarget::draw().)
+ * that is passed to the member function `RenderTarget.draw()`.
  *
  * See_Also:
- * $(RENDERSTATES_LINK), $(RENDERTARGET_LINK)
+ *      $(RENDERSTATES_LINK), $(RENDERTARGET_LINK)
  */
 module dsfml.graphics.blendmode;
 
@@ -119,7 +117,7 @@ struct BlendMode
      * Enumeration of the blending equations
      *
      * The equations are mapped directly to their OpenGL equivalents,
-     * specified by glBlendEquation() or glBlendEquationSeparate().
+     * specified by `glBlendEquation()` or `glBlendEquationSeparate()`.
      */
     enum Equation
     {
@@ -165,12 +163,12 @@ struct BlendMode
      * color and alpha components. It also defaults to the Add equation.
      *
      * Params:
-     * sourceFactor      = Specifies how to compute the source factor for the
-                           color and alpha channels
-     * destinationFactor = Specifies how to compute the destination factor for
-                           the color and alpha channels
-     * blendEquation     = Specifies how to combine the source and destination
-                           colors and alpha
+     *      sourceFactor      = Specifies how to compute the source factor for
+     *                          the color and alpha channels
+     *      destinationFactor = Specifies how to compute the destination factor
+     *                          for the color and alpha channels
+     *      blendEquation     = Specifies how to combine the source and
+     *                          destination colors and alpha
      */
     this(Factor sourceFactor, Factor destinationFactor,
          Equation blendEquation = Equation.Add)
@@ -188,16 +186,17 @@ struct BlendMode
      * Construct the blend mode given the factors and equation.
      *
      * Params:
-     * colorSourceFactor      = Specifies how to compute the source factor for
-                                the color channels
-     * colorDestinationFactor = Specifies how to compute the destination factor
-                                for the color channels
-     * colorBlendEquation     = Specifies how to combine the source and
-                                destination colors
-     * alphaSourceFactor      = Specifies how to compute the source factor
-     * alphaDestinationFactor = Specifies how to compute the destination factor
-     * alphaBlendEquation     = Specifies how to combine the source and
-                                destination alphas
+     *      colorSourceFactor      = Specifies how to compute the source factor
+     *                               for the color channels
+     *      colorDestinationFactor = Specifies how to compute the destination
+     *                               factor for the color channels
+     *      colorBlendEquation     = Specifies how to combine the source and
+     *                               destination colors
+     *      alphaSourceFactor      = Specifies how to compute the source factor
+     *      alphaDestinationFactor = Specifies how to compute the destination
+     *                               factor
+     *      alphaBlendEquation     = Specifies how to combine the source and
+     *                               destination alphas
      */
     this(Factor colorSourceFactor, Factor colorDestinationFactor,
               Equation colorBlendEquation, Factor alphaSourceFactor,
@@ -214,12 +213,12 @@ struct BlendMode
 
     bool opEquals(BlendMode rhs) const
     {
-        return (colorSrcFactor == rhs.colorSrcFactor &&
-                colorDstFactor == rhs.colorDstFactor &&
-                colorEquation == rhs.colorEquation   &&
-                alphaSrcFactor == rhs.alphaSrcFactor &&
-                alphaDstFactor == rhs.alphaDstFactor &&
-                alphaEquation == rhs.alphaEquation);
+        return colorSrcFactor == rhs.colorSrcFactor &&
+               colorDstFactor == rhs.colorDstFactor &&
+               colorEquation == rhs.colorEquation   &&
+               alphaSrcFactor == rhs.alphaSrcFactor &&
+               alphaDstFactor == rhs.alphaDstFactor &&
+               alphaEquation == rhs.alphaEquation;
     }
 }
 

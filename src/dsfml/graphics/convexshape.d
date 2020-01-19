@@ -49,7 +49,7 @@
  * ---
  *
  * See_Also:
- * $(SHAPE_LINK), $(RECTANGLESHAPE_LINK), $(CIRCLESHAPE_LINK)
+ *      $(SHAPE_LINK), $(RECTANGLESHAPE_LINK), $(CIRCLESHAPE_LINK)
  */
 module dsfml.graphics.convexshape;
 
@@ -76,9 +76,9 @@ class ConvexShape : Shape
      * Default constructor.
      *
      * Params:
-     *     pointCount = Number of points of the polygon
+     *      pointCount = Number of points of the polygon
      */
-    this(size_t pointCount=0)
+    this(size_t pointCount = 0)
     {
         m_convexShape = sfConvexShape_create();
         this.pointCount = pointCount;
@@ -105,30 +105,31 @@ class ConvexShape : Shape
          * shape uses it. Indeed, the shape doesn't store its own copy of the
          * texture, but rather keeps a pointer to the one that you passed to this
          * function. If the source texture is destroyed and the shape tries to use
-         * it, the behaviour is undefined. texture can be NULL to disable texturing.
+         * it, the behaviour is undefined. texture can be null to disable texturing.
          *
          * If resetRect is true, the TextureRect property of the shape is
          * automatically adjusted to the size of the new texture. If it is false,
          * the texture rect is left unchanged.
          *
          * Params:
-         *     texture   = New texture
-         *     resetRect = Should the texture rect be reset to the size of the new
-         *              texture?
+         *      _texture  = New texture
+         *      resetRect = Should the texture rect be reset to the size of the
+         *                  new texture ?
          */
-        override void texture(Texture newTexture, bool resetRect = false)
+        override void texture(Texture _texture, bool resetRect = false)
         {
-            sfConvexShape_setTexture(m_convexShape, newTexture.ptr, resetRect);
+            sfConvexShape_setTexture(m_convexShape, _texture.ptr, resetRect);
         }
 
         /**
          * Get the source texture of the shape.
          *
-         * If the shape has no source texture, a NULL pointer is returned. The
+         * If the shape has no source texture, a null pointer is returned. The
          * returned pointer is const, which means that you can't modify the texture
          * when you retrieve it with this function.
          *
-         * Returns: The shape's texture.
+         * Returns:
+         *      The shape's texture.
          */
         override const(Texture) texture() const
         {
@@ -141,11 +142,15 @@ class ConvexShape : Shape
         /**
          * Set the sub-rectangle of the texture that the shape will display.
          *
-         * The texture rect is useful when you don't want to display the whole texture, but rather a part of it. By default, the texture rect covers the entire texture.
+         * The texture rect is useful when you don't want to display the whole
+         * texture, but rather a part of it. By default, the texture rect covers
+         * the entire texture.
          *
          * Params:
-         *     rect = Rectangle defining the region of the texture to display
-         * See_Also: texture
+         *      rect = Rectangle defining the region of the texture to display
+         *
+         * See_Also:
+         *      texture
          */
         override void textureRect(IntRect rect)
         {
@@ -155,7 +160,8 @@ class ConvexShape : Shape
         /**
          * Get the sub-rectangle of the texture displayed by the shape.
          *
-         * Returns: Texture rectangle of the shape
+         * Returns:
+         *      Texture rectangle of the shape
          */
         override IntRect textureRect() const
         {
@@ -175,8 +181,10 @@ class ConvexShape : Shape
          * white.
          *
          * Params:
-         *     color = New color of the shape
-         * See_Also: outlineColor
+         *      color = New color of the shape
+         *
+         * See_Also:
+         *      outlineColor
          */
         override void fillColor(Color color)
         {
@@ -186,7 +194,8 @@ class ConvexShape : Shape
         /**
          * Get the fill color of the shape.
          *
-         * Returns: Fill color of the shape
+         * Returns:
+         *      Fill color of the shape
          */
         override Color fillColor() const
         {
@@ -202,8 +211,10 @@ class ConvexShape : Shape
          * By default, the shape's outline color is opaque white.
          *
          * Params:
-         *     color = New outline color of the shape
-         * See_Also: fillColor
+         *      color = New outline color of the shape
+         *
+         * See_Also:
+         *      fillColor
          */
         override void outlineColor(Color color)
         {
@@ -213,8 +224,11 @@ class ConvexShape : Shape
         /**
          * Get the outline color of the shape.
          *
-         * Returns: Outline color of the shape
-         * See_Also: fillColor
+         * Returns:
+         *      Outline color of the shape
+         *
+         * See_Also:
+         *      fillColor
          */
         override Color outlineColor() const
         {
@@ -232,7 +246,7 @@ class ConvexShape : Shape
          * By default, the outline thickness is 0.
          *
          * Params:
-         *     thickness = New outline thickness
+         *      thickness = New outline thickness
          */
         override void outlineThickness(float thickness)
         {
@@ -242,7 +256,8 @@ class ConvexShape : Shape
         /**
          * Get the outline thickness of the shape.
          *
-         * Returns: Outline thickness of the shape
+         * Returns:
+         *      Outline thickness of the shape
          */
         override float outlineThickness() const
         {
@@ -262,8 +277,8 @@ class ConvexShape : Shape
          * transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new origin
-         *     y = Y coordinate of the new origin
+         *      x = X coordinate of the new origin
+         *      y = Y coordinate of the new origin
          */
         override void origin(float x, float y)
         {
@@ -280,17 +295,18 @@ class ConvexShape : Shape
          * transformable object is (0, 0).
          *
          * Params:
-         *     origin = New origin
+         *     _origin = New origin
          */
-        override void origin(Vector2f newOrigin)
+        override void origin(Vector2f _origin)
         {
-            sfConvexShape_setOrigin(m_convexShape, newOrigin);
+            sfConvexShape_setOrigin(m_convexShape, _origin);
         }
 
         /**
          * Get the local origin of the object
          *
-         * Returns: Current origin
+         * Returns:
+         *      Current origin
          */
         override Vector2f origin() const
         {
@@ -303,10 +319,10 @@ class ConvexShape : Shape
         /**
          * Set the number of points of the polygon.
          *
-         * count must be greater than 2 to define a valid shape.
+         * `count` must be greater than 2 to define a valid shape.
          *
          * Params:
-         *     count = New number of points of the polygon
+         *      count = New number of points of the polygon
          */
         void pointCount(size_t count)
         {
@@ -316,7 +332,8 @@ class ConvexShape : Shape
         /**
          * Get the number of points of the polygon.
          *
-         * Returns: Number of points of the polygon
+         * Returns:
+         *      Number of points of the polygon
          */
         override size_t pointCount() const
         {
@@ -329,14 +346,16 @@ class ConvexShape : Shape
         /**
          * Set the position of the object
          *
-         * This function completely overwrites the previous position. See the move
+         * This function completely overwrites the previous position. See the `move`
          * function to apply an offset based on the previous position instead. The
          * default position of a transformable object is (0, 0).
          *
          * Params:
-         *     x = X coordinate of the new position
-         *     y = Y coordinate of the new position
-         * See_Also: move
+         *      x = X coordinate of the new position
+         *      y = Y coordinate of the new position
+         *
+         * See_Also:
+         *      move
          */
         override void position(float x, float y)
         {
@@ -346,23 +365,26 @@ class ConvexShape : Shape
         /**
          * Set the position of the object
          *
-         * This function completely overwrites the previous position. See the move
+         * This function completely overwrites the previous position. See the `move`
          * function to apply an offset based on the previous position instead. The
          * default position of a transformable object is (0, 0).
          *
          * Params:
-         *     position = New position
-         * See_Also: move
+         *      _position = New position
+         *
+         * See_Also:
+         *      move
          */
-        override void position(Vector2f newPosition)
+        override void position(Vector2f _position)
         {
-            sfConvexShape_setPosition(m_convexShape, newPosition);
+            sfConvexShape_setPosition(m_convexShape, _position);
         }
 
         /**
          * Get the position of the object
          *
-         * Returns: Current position
+         * Returns:
+         *      Current position
          */
         override Vector2f position() const
         {
@@ -373,14 +395,14 @@ class ConvexShape : Shape
     /**
      * Rotate the object.
      *
-     * This function adds to the current rotation of the object, unlike the rotation
+     * This function adds to the current rotation of the object, unlike the `rotation`
      * property which overwrites it. Thus, it is equivalent to the following code:
      * ---
      * object.setRotation(object.rotation() + angle);
      * ---
      *
      * Params:
-     *     angle = Angle of rotation, in degrees
+     *      angle = Angle of rotation, in degrees
      */
     override void rotate(float angle)
     {
@@ -392,13 +414,15 @@ class ConvexShape : Shape
         /**
          * Set the orientation of the object
          *
-         * This function completely overwrites the previous rotation. See the rotate
+         * This function completely overwrites the previous rotation. See the `rotate`
          * function to add an angle based on the previous rotation instead. The
          * default rotation of a transformable object is 0.
          *
          * Params:
-         *     angle = New rotation, in degrees
-         * See_Also: rotate
+         *      angle = New rotation, in degrees
+         *
+         * See_Also:
+         *      rotate
          */
         override void rotation(float angle)
         {
@@ -410,7 +434,8 @@ class ConvexShape : Shape
          *
          * The rotation is always in the range [0, 360].
          *
-         * Returns: Current rotation, in degrees
+         * Returns:
+         *      Current rotation, in degrees
          */
         override float rotation() const
         {
@@ -423,13 +448,13 @@ class ConvexShape : Shape
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The default
          * scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factorX = New horizontal scale factor
-         *     factorY = New vertical scale factor
+         *      factorX = New horizontal scale factor
+         *      factorY = New vertical scale factor
          */
         override void scale(float factorX, float factorY)
         {
@@ -439,12 +464,12 @@ class ConvexShape : Shape
         /**
          * Set the scale factors of the object
          *
-         * This function completely overwrites the previous scale. See the scale
+         * This function completely overwrites the previous scale. See the `scale`
          * function to add a factor based on the previous scale instead. The default
          * scale of a transformable object is (1, 1).
          *
          * Params:
-         *     factors = New scale factors
+         *      factors = New scale factors
          */
         override void scale(Vector2f factors)
         {
@@ -454,7 +479,8 @@ class ConvexShape : Shape
         /**
          * Get the current scale of the object
          *
-         * Returns: Current scale factors
+         * Returns:
+         *      Current scale factors
          */
         override Vector2f scale() const
         {
@@ -475,7 +501,8 @@ class ConvexShape : Shape
      * possibly more). This allows for a fast approximation of the bounds as a first
      * check; you may want to use more precise checks on top of that.
      *
-     * Returns: Global bounding rectangle of the entity
+     * Returns:
+     *      Global bounding rectangle of the entity
      */
     @property
     override FloatRect globalBounds() const
@@ -491,7 +518,8 @@ class ConvexShape : Shape
      * applied to the entity. In other words, this function returns the bounds
      * of the entity in the entity's coordinate system.
      *
-     * Returns: Local bounding rectangle of the entity.
+     * Returns:
+     *      Local bounding rectangle of the entity.
      */
     @property
     override FloatRect localBounds() const
@@ -507,10 +535,13 @@ class ConvexShape : Shape
      * The result is undefined if index is out of the valid range.
      *
      * Params:
-     *     index = Index of the point to get, in range [0 .. pointCount() - 1]
+     *      index = Index of the point to get, in range [0 .. pointCount() - 1]
      *
-     * Returns: Position of the index-th point of the polygon
-     * See_Also: setPoint
+     * Returns:
+     *      Position of the index-th point of the polygon
+     *
+     * See_Also:
+     *      setPoint
      */
     override Vector2f getPoint(size_t index = 0) const
     {
@@ -526,10 +557,12 @@ class ConvexShape : Shape
      * range.
      *
      * Params:
-     * 		index =	Index of the point to change, in range
+     *      index =	Index of the point to change, in range
      *              [0 .. `pointCount` - 1]
-     * 		point =	New position of the point
-     * See_Also: getPoint
+     *      point =	New position of the point
+     *
+     * See_Also:
+     *      getPoint
      */
     void setPoint(size_t index, Vector2f point)
     {
@@ -540,7 +573,7 @@ class ConvexShape : Shape
      * Overload of the slice operator (set).
      * This function simply call `point(index, vec)`.
      *
-     * example:
+     * Example:
      * ---
      * convex[4] = Vector2f(4, 2);
      * ---
@@ -553,7 +586,7 @@ class ConvexShape : Shape
     /**
      * Overload of the slice operator (set with operator).
      *
-     * example:
+     * Example:
      * ---
      * convex[4] += Vector2f(1, 6);
      * ---
@@ -567,7 +600,7 @@ class ConvexShape : Shape
     /**
      * Overload of the slice operator (set with operator).
      *
-     * example:
+     * Example:
      * ---
      * convex[4] -= 3;
      * ---
@@ -582,8 +615,8 @@ class ConvexShape : Shape
      * Draw the shape to a render target.
      *
      * Params:
-     *         renderTarget    = Target to draw to
-     *         renderStates    = Current render states
+     *      renderTarget = Target to draw to
+     *      renderStates = Current render states
      */
     override void draw(RenderTarget renderTarget, RenderStates renderStates = RenderStates.init)
     {
@@ -593,7 +626,8 @@ class ConvexShape : Shape
     /**
      * Get the inverse of the combined transform of the object
      *
-     * Returns: Inverse of the combined transformations applied to the object
+     * Returns:
+     *      Inverse of the combined transformations applied to the object
      */
     override Transform inverseTransform() const
     {
@@ -603,8 +637,11 @@ class ConvexShape : Shape
     /**
      * Get the combined transform of the object
      *
-     * Returns: Transform combining the position/rotation/scale/origin of the object
-     * See_Also: inverseTransform
+     * Returns:
+     *      Transform combining the position/rotation/scale/origin of the object
+     *
+     * See_Also:
+     *      inverseTransform
      */
     override Transform transform()
     {
@@ -614,7 +651,7 @@ class ConvexShape : Shape
     /**
      * Move the object by a given offset.
      *
-     * This function adds to the current position of the object, unlike the position
+     * This function adds to the current position of the object, unlike the `position`
      * property which overwrites it. Thus, it is equivalent to the following code:
      * ---
      * Vector2f pos = object.position();
@@ -622,9 +659,11 @@ class ConvexShape : Shape
      * ---
      *
      * Params:
-     *     offsetX = X offset
-     *     offsetY = Y offset
-     * See_Also: position
+     *      offsetX = X offset
+     *      offsetY = Y offset
+     *
+     * See_Also:
+     *      position
      */
     override void move(float offsetX, float offsetY)
     {
@@ -634,7 +673,7 @@ class ConvexShape : Shape
     /**
      * Move the object by a given offset.
      *
-     * This function adds to the current position of the object, unlike the position
+     * This function adds to the current position of the object, unlike the `position`
      * property which overwrites it. Thus, it is equivalent to the following code:
      * ---
      * object.position(object.getPosition() + offset);

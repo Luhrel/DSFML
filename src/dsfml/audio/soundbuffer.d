@@ -44,19 +44,19 @@
  * outputted (volume, pitch, 3D position, ...).
  *
  * This separation allows more flexibility and better performances: indeed a
- * $(U SoundBuffer) is a heavy resource, and any operation on it is slow (often
+ * `SoundBuffer` is a heavy resource, and any operation on it is slow (often
  * too slow for real-time applications). On the other side, a $(SOUND_LINK) is a
  * lightweight object, which can use the audio data of a sound buffer and change
  * the way it is played without actually modifying that data. Note that it is
  * also possible to bind several $(SOUND_LINK) instances to the same
- * $(U SoundBuffer).
+ * `SoundBuffer`.
  *
  * It is important to note that the Sound instance doesn't copy the buffer that
- * it uses, it only keeps a reference to it. Thus, a $(U SoundBuffer) must not
+ * it uses, it only keeps a reference to it. Thus, a `SoundBuffer` must not
  * be destructed while it is used by a Sound (i.e. never write a function that
- * uses a local $(U SoundBuffer) instance for loading a sound).
+ * uses a local `SoundBuffer` instance for loading a sound).
  *
- *Example:
+ * Example:
  * ---
  * // Declare a new sound buffer
  * auto buffer = SoundBuffer();
@@ -84,7 +84,7 @@
  * ---
  *
  * See_Also:
- * $(SOUND_LINK), $(SOUNDBUFFERRECORDER_LINK)
+ *      $(SOUND_LINK), $(SOUNDBUFFERRECORDER_LINK)
  */
 module dsfml.audio.soundbuffer;
 
@@ -122,11 +122,14 @@ class SoundBuffer
      * Get the array of audio samples stored in the buffer.
      *
      * The format of the returned samples is 16 bits signed integer (short). The
-     * total number of samples in this array is given by the getSampleCount()
+     * total number of samples in this array is given by the `sampleCount()`
      * function.
      *
-     * Returns: Read-only array of sound samples.
-     * See_Also: sampleCount
+     * Returns:
+     *      Read-only array of sound samples.
+     *
+     * See_Also:
+     *      sampleCount
      */
     @property
     const(short[]) samples() const
@@ -141,7 +144,6 @@ class SoundBuffer
                 else
                     return sfSoundBuffer_getSamples(m_soundBuffer)[0 .. sampleCount];
             }
-
         }
         return null;
     }
@@ -152,8 +154,11 @@ class SoundBuffer
      * The sample rate is the number of samples played per second. The higher,
      * the better the quality (for example, 44100 samples/s is CD quality).
      *
-     * Returns: Sample rate (number of samples per second).
-     * See_Also: channelCount, duration
+     * Returns:
+     *      Sample rate (number of samples per second).
+     *
+     * See_Also:
+     *      channelCount, duration
      */
     @property
     uint sampleRate() const
@@ -168,8 +173,11 @@ class SoundBuffer
      *
      * The array of samples can be accessed with the samples() function.
      *
-     * Returns: Number of samples
-     * See_Also: samples
+     * Returns:
+     *      Number of samples
+     *
+     * See_Also:
+     *      samples
      */
     @property
     ulong sampleCount() const
@@ -185,8 +193,11 @@ class SoundBuffer
      * If the sound is mono then the number of channels will be 1, 2 for stereo,
      * etc.
      *
-     * Returns: Number of channels.
-     * See_Also: sampleRate, duration
+     * Returns:
+     *      Number of channels.
+     *
+     * See_Also:
+     *      sampleRate, duration
      */
     @property
     uint channelCount() const
@@ -199,8 +210,11 @@ class SoundBuffer
     /**
      * Get the total duration of the sound.
      *
-     * Returns: Sound duration.
-     * See_Also: sampleRate, channelCount
+     * Returns:
+     *      Sound duration.
+     *
+     * See_Also:
+     *      sampleRate, channelCount
      */
     @property
     Time duration() const
@@ -216,10 +230,13 @@ class SoundBuffer
      * See the documentation of InputSoundFile for the list of supported formats.
      *
      * Params:
-     * filename=Path of the sound file to load
+     *      filename = Path of the sound file to load
      *
-     * Returns: True if loading succeeded, false if it failed.
-     * See_Also: loadFromMemory, loadFromStream, loadFromSamples, saveToFile
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromMemory, loadFromStream, loadFromSamples, saveToFile
      */
     bool loadFromFile(string filename)
     {
@@ -233,10 +250,13 @@ class SoundBuffer
      * See the documentation of InputSoundFile for the list of supported formats.
      *
      * Params:
-     * data=The array of data
+     *      data = The array of data
      *
-     * Returns: True if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromStream, loadFromSamples
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromStream, loadFromSamples
      */
     bool loadFromMemory(const(void*) data)
     {
@@ -250,10 +270,13 @@ class SoundBuffer
      * See the documentation of InputSoundFile for the list of supported formats.
      *
      * Params:
-     * stream=Source stream to read from
+     *      stream = Source stream to read from
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory, loadFromSamples
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory, loadFromSamples
      */
     bool loadFromStream(InputStream stream)
     {
@@ -267,12 +290,15 @@ class SoundBuffer
      * The assumed format of the audio samples is 16 bits signed integer (short).
      *
      * Params:
-     *         samples      = Array of samples in memory
-     *         channelCount = Number of channels (1 = mono, 2 = stereo, ...)
-     *         sampleRate   = Sample rate (number of samples to play per second)
+     *      samples      = Array of samples in memory
+     *      channelCount = Number of channels (1 = mono, 2 = stereo, ...)
+     *      sampleRate   = Sample rate (number of samples to play per second)
      *
-     * Returns: true if loading succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory, saveToFile
+     * Returns:
+     *      true if loading succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory, saveToFile
      */
     bool loadFromSamples(const(short[]) samples, uint channelCount, uint sampleRate)
     {
@@ -286,10 +312,13 @@ class SoundBuffer
      * See the documentation of OutputSoundFile for the list of supported formats.
      *
      * Params:
-     *         filename =    Path of the sound file to write
+     *      filename =    Path of the sound file to write
      *
-     * Returns: True if saving succeeded, false if it failed.
-     * See_Also: loadFromFile, loadFromMemory, loadFromSamples
+     * Returns:
+     *      true if saving succeeded, false if it failed.
+     *
+     * See_Also:
+     *      loadFromFile, loadFromMemory, loadFromSamples
      */
     bool saveToFile(string filename) const
     {
@@ -298,13 +327,7 @@ class SoundBuffer
         return false;
     }
 
-    /**
-     * Returns de C pointer of the sound buffer
-     *
-     * Returns: Sound buffer pointer attached to the class (can be NULL)
-     *
-     * Implemented in the class Sound.
-     */
+    // Returns de C pointer.
     package sfSoundBuffer* ptr()
     {
         return m_soundBuffer;

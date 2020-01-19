@@ -63,7 +63,7 @@
  * ---
  *
  * See_Also:
- * $(TCPSOCKET_LINK), $(SOCKET_LINK)
+ *      $(TCPSOCKET_LINK), $(SOCKET_LINK)
  */
 module dsfml.network.tcplistener;
 
@@ -95,8 +95,11 @@ class TcpListener : Socket
      *
      * If the socket is not listening to a port, this function returns 0.
      *
-     * Returns: Port to which the socket is bound.
-     * See_Also: listen
+     * Returns:
+     *      Port to which the socket is bound.
+     *
+     * See_Also:
+     *      listen
      */
     ushort localPort() const
     {
@@ -115,7 +118,7 @@ class TcpListener : Socket
      * was data available or not. By default, all sockets are blocking.
      *
      * Params:
-     *  blocking = true to set the socket as blocking, false for non-blocking
+     *      _blocking = true to set the socket as blocking, false for non-blocking
      */
     @property
     void blocking(bool _blocking)
@@ -130,9 +133,10 @@ class TcpListener : Socket
      * connection is actually received.
      *
      * Params:
-     *  socket = Socket that will hold the new connection
+     *      socket = Socket that will hold the new connection
      *
-     * Returns: Status code.
+     * Returns:
+     *      Status code.
      */
     Status accept(out TcpSocket socket)
     {
@@ -150,11 +154,14 @@ class TcpListener : Socket
      * it will be stopped first and bound to the new port.
      *
      * Params:
-     *  port    = Port to listen for new connections
-     *  address = Address of the interface to listen on
+     *      port    = Port to listen for new connections
+     *      address = Address of the interface to listen on
      *
-     * Returns: Status code.
-     * See_Also: accept, close
+     * Returns:
+     *      Status code.
+     *
+     * See_Also:
+     *      accept, close
      */
     Status listen(ushort port, IpAddress address = IpAddress.Any)
     {
@@ -164,7 +171,8 @@ class TcpListener : Socket
     /**
      * Tell whether the socket is in blocking or non-blocking mode.
      *
-     * Returns: true if the socket is blocking, false otherwise.
+     * Returns:
+     *      true if the socket is blocking, false otherwise.
      */
     @property
     bool blocking() const

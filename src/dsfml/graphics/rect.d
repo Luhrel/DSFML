@@ -31,26 +31,24 @@
  * `top`, `width`, and `height`) are public and can be accessed directly, just
  * like the vector structures ($(VECTOR2_LINK) and $(VECTOR3_LINK)).
  *
- * To keep things simple, $(U Rect) doesn't define functions to emulate the
+ * To keep things simple, `Rect` doesn't define functions to emulate the
  * properties that are not directly members (such as right, bottom, center,
  * etc.), it rather only provides intersection functions.
  *
  * Rect uses the usual rules for its boundaries:
- * $(UL
- * $(LI The let and top edges are included in the rectangle's area)
- * $(LI The right (left + width) and bottom (top + height) edges are excluded
- * from the rectangle's area))
+ * - The let and top edges are included in the rectangle's area
+ * - The right (left + width) and bottom (top + height) edges are excluded
+ *   from the rectangle's area
  *
- * $(PARA This means that `IntRect(0, 0, 1, 1)` and `IntRect(1, 1, 1, 1)` don't
+ * This means that `IntRect(0, 0, 1, 1)` and `IntRect(1, 1, 1, 1)` don't
  * intersect.
  *
- * $(U Rect) is a template and may be used with any numeric type, but for
- * simplicity the instanciations used by SFML are aliased:)
- * $(UL
- * $(LI Rect!(int) is IntRect)
- * $(LI Rect!(float) is FloatRect))
+ * `Rect` is a template and may be used with any numeric type, but for
+ * simplicity the instanciations used by SFML are aliased:
+ * - Rect!(int) is IntRect
+ * - Rect!(float) is FloatRect
  *
- * $(PARA This is so you don't have to care about the template syntax.)
+ * This is so you don't have to care about the template syntax.
  *
  * Example:
  * ---
@@ -100,10 +98,10 @@ struct Rect(T)
      * and height, not the right and bottom coordinates!
      *
      * Params:
-     *    rectLeft   = Left coordinate of the rectangle
-     *  rectTop    = Top coordinate of the rectangle
-     *  rectWidth  = Width of the rectangle
-     *  rectHeight = Height of the rectangle
+     *      rectLeft   = Left coordinate of the rectangle
+     *      rectTop    = Top coordinate of the rectangle
+     *      rectWidth  = Width of the rectangle
+     *      rectHeight = Height of the rectangle
      */
     this(T rectLeft, T rectTop, T rectWidth, T rectHeight)
     {
@@ -120,8 +118,8 @@ struct Rect(T)
      * not the bottom-right corner!
      *
      * Params:
-     *  position = Position of the top-left corner of the rectangle
-     *  size     = Size of the rectangle
+     *      position = Position of the top-left corner of the rectangle
+     *      size     = Size of the rectangle
      */
     this(Vector2!(T) position, Vector2!(T) size)
     {
@@ -139,7 +137,7 @@ struct Rect(T)
      * convertible to T.
      *
      * Params:
-     *     rectangle = Rectangle to convert
+     *      rectangle = Rectangle to convert
      */
     this(U)(Rect!(U) rectangle)
     {
@@ -154,11 +152,14 @@ struct Rect(T)
      * Check if a point is inside the rectangle's area.
      *
      * Params:
-     *         x    = X coordinate of the point to test
-     *         y    = Y coordinate of the point to test
+     *      x = X coordinate of the point to test
+     *      y = Y coordinate of the point to test
      *
-     * Returns: true if the point is inside, false otherwise.
-     * See_Also: intersects
+     * Returns:
+     *      true if the point is inside, false otherwise.
+     *
+     * See_Also:
+     *      intersects
      */
     bool contains(E)(E x, E y) const
         if(isNumeric!(E))
@@ -173,10 +174,13 @@ struct Rect(T)
      * Check if a point is inside the rectangle's area.
      *
      * Params:
-     *         point    = Point to test
+     *      point = Point to test
      *
-     * Returns: true if the point is inside, false otherwise.
-     * See_Also: intersects
+     * Returns:
+     *      true if the point is inside, false otherwise.
+     *
+     * See_Also:
+     *      intersects
      */
     bool contains(E)(Vector2!(E) point) const
         if(isNumeric!(E))
@@ -188,10 +192,13 @@ struct Rect(T)
      * Check the intersection between two rectangles.
      *
      * Params:
-     *         rectangle    = Rectangle to test
+     *      rectangle = Rectangle to test
      *
-     * Returns: true if rectangles overlap, false otherwise.
-     * See_Also: contains
+     * Returns:
+     *      true if rectangles overlap, false otherwise.
+     *
+     * See_Also:
+     *      contains
      */
     bool intersects(E)(Rect!(E) rectangle) const
     if(isNumeric!(E))
@@ -207,11 +214,14 @@ struct Rect(T)
      * parameter.
      *
      * Params:
-     *         rectangle        = Rectangle to test
-     *         intersection    = Rectangle to be filled with the intersection
+     *      rectangle    = Rectangle to test
+     *      intersection = Rectangle to be filled with the intersection
      *
-     * Returns: true if rectangles overlap, false otherwise.
-     * See_Also: contains
+     * Returns:
+     *      true if rectangles overlap, false otherwise.
+     *
+     * See_Also:
+     *      contains
      */
     bool intersects(E,O)(Rect!(E) rectangle, out Rect!(O) intersection) const
         if(isNumeric!(E) && isNumeric!(O))

@@ -9,7 +9,7 @@ public import dsfml.system.time;
  * consume any CPU power.
  *
  * Params:
- *        duration = The length of time to sleep for
+ *      duration = The length of time to sleep for
  */
 void sleep(Time duration)
 {

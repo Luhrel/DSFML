@@ -27,7 +27,7 @@
 
 /**
  *
- * $(U SoundRecorder) provides a simple interface to access the audio recording
+ * `SoundRecorder` provides a simple interface to access the audio recording
  * capabilities of the computer (the microphone).
  *
  * As an abstract base class, it only cares about capturing sound samples, the
@@ -36,19 +36,17 @@
  * a sound buffer (see $(SOUNDBUFFERRECORDER_LINK)).
  *
  * A derived class has only one virtual function to override:
- * $(UL $(LI onProcessSamples provides the new chunks of audio samples while the
- * capture happens))
+ * - onProcessSamples provides the new chunks of audio samples while the
+ * capture happens
  *
- * $(PARA Moreover, two additionnal virtual functions can be overriden as well
- * if necessary:)
- * $(UL
- * $(LI onStart is called before the capture happens, to perform custom
- * initializations)
- * $(LI onStop is called after the capture ends, to perform custom cleanup))
+ * Moreover, two additionnal virtual functions can be overriden as well
+ * if necessary:
+ * - onStart is called before the capture happens, to perform custom
+ * initializations
+ * - onStop is called after the capture ends, to perform custom cleanup
  *
- * $(PARA
  * A derived class can also control the frequency of the onProcessSamples calls,
- * with the setProcessingInterval protected function. The default interval is
+ * with the `setProcessingInterval` protected function. The default interval is
  * chosen so that recording thread doesn't consume too much CPU, but it can be
  * changed to a smaller value if you need to process the recorded data in real
  * time, for example.
@@ -60,8 +58,8 @@
  *
  * If you have multiple sound input devices connected to your  computer (for
  * example: microphone, external soundcard, webcam mic, ...) you can get a list
- * of all available devices through the `getAvailableDevices()` function. You
- * can then select a device by calling `setDevice()` with the appropriate
+ * of all available devices through the `availableDevices()` function. You
+ * can then select a device by calling `device()` with the appropriate
  * device. Otherwise the default capturing device will be used.
  *
  * By default the recording is in 16-bit mono. Using the setChannelCount method
@@ -74,7 +72,7 @@
  * `onProcessSamples` and `onStop` virtual functions (but not `onStart`) will be
  * called from this separate thread. It is important to keep this in mind,
  * because you may have to take care of synchronization issues if you share data
- * between threads.)
+ * between threads.
  *
  * Example:
  * ---
@@ -125,7 +123,7 @@
  * ---
  *
  * See_Also:
- * $(SOUNDBUFFERRECORDER_LINK)
+ *      $(SOUNDBUFFERRECORDER_LINK)
  */
 module dsfml.audio.soundrecorder;
 
@@ -147,7 +145,6 @@ class SoundRecorder
      *
      * This constructor is only meant to be called by derived classes.
      */
-    // Not putting protected attribute otherwise it'll be null when calling it directly
     this()
     {
         m_soundRecorder = sfSoundRecorder_create(&onStartCallback,
@@ -170,12 +167,14 @@ class SoundRecorder
      * that only one capture can happen at the same time.
      *
      * Params:
-     *  theSampleRate = Desired capture rate, in number of samples per second
-     * Returns: True, if start of capture was successful
+     *      sampleRate = Desired capture rate, in number of samples per second
+     *
+     * Returns:
+     *      true, if start of capture was successful
      */
-    bool start(uint theSampleRate = 44100)
+    bool start(uint sampleRate = 44100)
     {
-        return sfSoundRecorder_start(m_soundRecorder, theSampleRate);
+        return sfSoundRecorder_start(m_soundRecorder, sampleRate);
     }
 
     /// Stop the capture.
@@ -193,7 +192,8 @@ class SoundRecorder
          * The higher, the better the quality (for example, 44100 samples/sec is CD
          * quality).
          *
-         * Returns: Sample rate, in samples per second
+         * Returns:
+         *      Sample rate, in samples per second
          */
         uint sampleRate() const
         {
@@ -206,7 +206,8 @@ class SoundRecorder
         /**
          * Get the name of the current audio capture device.
          *
-         * Returns: The name of the current audio capture device.
+         * Returns:
+         *      The name of the current audio capture device.
          */
         string device()
         {
@@ -221,11 +222,13 @@ class SoundRecorder
          * while recording and opening the device fails, it stops the recording.
          *
          * Params:
-         *  name = The name of the audio capture device
+         *      name = The name of the audio capture device
          *
-         * Returns: true, if it was able to set the requested device.
+         * Returns:
+         *      true, if it was able to set the requested device.
          *
-         * See_Also: getAvailableDevices
+         * See_Also:
+         *      availableDevices
          */
         bool device(string name)
         {
@@ -241,7 +244,8 @@ class SoundRecorder
          * Currently only mono and stereo are supported, so the value is either 1
          * (for mono) or 2 (for stereo).
          *
-         * Returns: Number of channels
+         * Returns:
+         *      Number of channels
          */
         uint channelCount() const
         {
@@ -255,11 +259,11 @@ class SoundRecorder
          * recording. Currently only 16-bit mono and 16-bit stereo are supported.
          *
          * Params:
-         * channelCount=Number of channels. Currently only mono (1) and stereo (2) are supported.
+         *      _channelCount=Number of channels. Currently only mono (1) and stereo (2) are supported.
          */
-        void channelCount(uint newChannelCount)
+        void channelCount(uint _channelCount)
         {
-            sfSoundRecorder_setChannelCount(m_soundRecorder, newChannelCount);
+            sfSoundRecorder_setChannelCount(m_soundRecorder, _channelCount);
         }
     }
 
@@ -269,14 +273,15 @@ class SoundRecorder
      * This function returns an array of strings, containing the names of all
      * available audio capture devices.
      *
-     * Returns: An array of strings containing the names.
+     * Returns:
+     *      An array of strings containing the names.
      */
-    static const(string)[] getAvailableDevices()
+    static const(string)[] availableDevices()
     {
-        //stores all available devices after the first call
+        // stores all available devices after the first call
         static string[] availableDevices;
 
-        //if getAvailableDevices hasn't been called yet
+        // if getAvailableDevices hasn't been called yet
         if(availableDevices.length == 0)
         {
             char** devices;
@@ -302,7 +307,8 @@ class SoundRecorder
      * This function returns the name of the default audio capture device. If
      * none is available, an empty string is returned.
      *
-     * Returns: The name of the default audio capture device.
+     * Returns:
+     *      The name of the default audio capture device.
      */
     static string getDefaultDevice()
     {
@@ -316,7 +322,8 @@ class SoundRecorder
      * features. If it returns false, then any attempt to use SoundRecorder or
      * one of its derived classes will fail.
      *
-     * Returns: true if audio capture is supported, false otherwise.
+     * Returns:
+     *      true if audio capture is supported, false otherwise.
      */
     static bool isAvailable()
     {
@@ -338,7 +345,7 @@ class SoundRecorder
          * The default processing interval is 100 ms.
          *
          * Params:
-         *  interval = Processing interval
+         *      interval = Processing interval
          */
         void setProcessingInterval(Time interval)
         {
@@ -353,7 +360,8 @@ class SoundRecorder
          * this function can be ignored; the default implementation does
          * nothing.
          *
-         * Returns: true to the start the capture, or false to abort it.
+         * Returns:
+         *      true to the start the capture, or false to abort it.
          */
         bool onStart()
         {
@@ -369,9 +377,10 @@ class SoundRecorder
          * with it (storing it, playing it, sending it over the network, etc.).
          *
          * Params:
-         *         samples =    Array of the new chunk of recorded samples
+         *      samples = Array of the new chunk of recorded samples
          *
-         * Returns: true to continue the capture, or false to stop it.
+         * Returns:
+         *      true to continue the capture, or false to stop it.
          */
         abstract bool onProcessSamples(const(short)[] samples);
 
@@ -392,12 +401,12 @@ class SoundRecorder
      * This function is called by CSFML.
      *
      * CSFML's "sfBool" is a byte of 0 or 1.
-     * Passing a bool to CSFML will simply fail.
+     * Passing a bool func to CSFML will simply fail.
      */
     private extern(C) static byte onProcessSamplesCallback(const short* samples, size_t sampleCount, void* userData)
     {
         SoundRecorder sr = cast(SoundRecorder) userData;
-        return sr.onProcessSamples(samples[0..sampleCount]);
+        return sr.onProcessSamples(samples[0 .. sampleCount]);
     }
 
     /**
