@@ -1,7 +1,5 @@
 DDOC_DESCRIPTION = <div class="ddoc_description">
-  <p class="para">
-    $0
-  </p>
+    <p>$0</p>
 </div>$(LF)
 
 DDOC_HEADER_ANCHOR = <div></div>
@@ -9,24 +7,22 @@ DDOC_ANCHOR = <a href="#$1" id="$1"></a>
 
 DDOC_DECL = <div class="ddoc_decl">
   <section>
-    <p class="para">$(B $0)</p>
+    <p>$(B $0)</p>
   </section>
 </div>
 
 DDOC_DECL_DD = <div class="ddoc_decl_dd">
-  $0
+  <p>$0</p>
 </div>
 
 DDOC_SEE_ALSO = <div class="ddoc_see_also">
   <h4>See also:</h4>
-  <p class="para">$0</p>
+  <p>$0</p>
 </div>$(LF)
 
 DDOC_DEPRECATED = <div class="ddoc_deprecated">
   <h4>Deprecated:</h4>
-  <p class="para">
-    $(RED $0)
-  </p>
+    <p>$(RED $0)</p>
 </div>$(LF)
 
 DDOC_ENUM_MEMBERS = <ul class="ddoc_enum_members">
@@ -221,7 +217,7 @@ DDOC =
     .ddoc_description > ul, .ddoc_summary > ul
     {
         margin-left: 10px;
-        font-size: 1.2em;
+        font-size: 11pt;
     }
 
     /* The main div containing everything */
@@ -242,9 +238,9 @@ DDOC =
     }
 
     /* paragraph */
-    p {
+    p, .ddoc_description {
         color: rgba(65, 65, 65, 1);
-        font-size: 1.4em;
+        font-size: 11pt;
         line-height: 145%;
     }
 
@@ -252,7 +248,7 @@ DDOC =
     .ddoc .module_name {
         color: black;
         display: block;
-        font-size: 2.8em;
+        font-size: 32px;
         font-weight: normal;
         margin-bottom: 0;
         padding: 15px 0;
@@ -272,7 +268,14 @@ DDOC =
 
     /* Parent classes */
     .ddoc_psuper_symbol {
-        color: rgba(92, 38, 153, 1);
+        color: rgba(170, 96, 0, 1);
+    }
+
+    /* Text marked as code, with a "`" symbol */
+    .code {
+        font-size: 10pt;
+        font-family: Consolas, Liberation-Mono;
+        font-style: italic;
     }
 
     /*
@@ -338,16 +341,10 @@ DDOC =
     .graybox p {
         margin: 0;
         min-width: 50px;
-        font-size: 0.9em;
+        font-size: 11pt;
     }
 
     /* END Params */
-
-    /* Text marked as code, with a "`" symbol */
-    .code {
-        font-size: 0.9em;
-        font-family: Consolas, Liberation-Mono;
-    }
 
     /*
      * Every element (class, struct, delegates, functions, ...)
@@ -379,7 +376,7 @@ DDOC =
     **/
     table
     {
-        font-size: 1.4em;
+        font-size: 11pt;
         border-collapse: collapse;
     }
 
