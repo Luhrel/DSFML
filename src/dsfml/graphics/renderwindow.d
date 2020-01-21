@@ -733,7 +733,7 @@ class RenderWindow : Window, RenderTarget
         }
         else
         {
-            err.writefln("Unable to draw %s because it is not implemented in DSFML.", drawable);
+            drawable.draw(this, states);
         }
     }
 
