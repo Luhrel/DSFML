@@ -166,6 +166,7 @@ struct IpAddress
      * See_Also:
      *      toString
      */
+    @nogc
     uint toInteger() const
     {
         return ntohl(m_address);
@@ -276,6 +277,7 @@ struct IpAddress
     }
 
     // Returns the C struct.
+    @property @nogc
     package sfIpAddress toc()
     {
         return sfIpAddress_fromInteger(ntohl(m_address));
@@ -286,7 +288,8 @@ struct IpAddress
  * `htonl` and `ntohle` have the same implementation, but use different names
  * for readability
  */
-private uint htonl(uint host) nothrow @nogc @safe
+@nogc @safe
+private uint htonl(uint host) nothrow
 {
     version(LittleEndian)
     {
@@ -309,6 +312,7 @@ package extern(C)
     }
 }
 
+@nogc
 private extern(C)
 {
     sfIpAddress sfIpAddress_fromString(const char* address);

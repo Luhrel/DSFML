@@ -182,6 +182,7 @@ class Cursor
     alias Type this;
 
     // Retuns the C pointer
+    @property @nogc
     package(dsfml) sfCursor* ptr()
     {
         return m_cursor;
@@ -193,6 +194,7 @@ package(dsfml) extern(C)
     struct sfCursor;
 }
 
+@nogc
 private extern(C)
 {
     sfCursor* sfCursor_createFromPixels(const ubyte* pixels, Vector2u size, Vector2u hotspot);

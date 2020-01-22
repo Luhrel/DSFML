@@ -154,6 +154,7 @@ class Packet
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfPacket* packetPointer)
     {
         m_packet = sfPacket_copy(packetPointer);
@@ -186,6 +187,7 @@ class Packet
      * See_Also:
      *      clear
      */
+    @nogc
     void append(const(void)[] data)
     {
         sfPacket_append(m_packet, data.ptr, data.length);
@@ -199,6 +201,7 @@ class Packet
      * See_Also:
      *      append
      */
+    @nogc
     void clear()
     {
         sfPacket_clear(m_packet);
@@ -216,6 +219,7 @@ class Packet
      * See_Also:
      *      opCast
      */
+    @nogc
     bool endOfPacket() const
     {
         return sfPacket_endOfPacket(m_packet);
@@ -513,13 +517,14 @@ class Packet
      * See_Also:
      *      endOfPacket
      */
+    @nogc
     bool opCast(T : bool)()
     {
         // sfPacket_canRead calls the BoolType operator of SFML's sf::Packet
         return sfPacket_canRead(m_packet);
     }
 
-    @property
+    @property @nogc
     package sfPacket* ptr()
     {
         return m_packet;
@@ -549,6 +554,7 @@ package extern(C)
     struct sfPacket;
 }
 
+@nogc
 private extern(C)
 {
     sfPacket* sfPacket_create();

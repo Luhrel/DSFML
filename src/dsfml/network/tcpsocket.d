@@ -142,7 +142,7 @@ class TcpSocket : Socket
      * See_Also:
      *      connect, remotePort
      */
-    @property
+    @property @nogc
     ushort localPort() const
     {
         return sfTcpSocket_getLocalPort(m_tcpSocket);
@@ -176,7 +176,7 @@ class TcpSocket : Socket
      * See_Also:
      *      remoteAddress
      */
-    @property
+    @property @nogc
     ushort remotePort() const
     {
         return sfTcpSocket_getRemotePort(m_tcpSocket);
@@ -196,7 +196,7 @@ class TcpSocket : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property
+    @property @nogc
     void blocking(bool _blocking)
     {
         sfTcpSocket_setBlocking(m_tcpSocket, _blocking);
@@ -222,6 +222,7 @@ class TcpSocket : Socket
      * See_Also:
      *      disconnect
      */
+    @nogc
     Status connect(IpAddress host, ushort port, Time timeout = Time.Zero)
     {
         return sfTcpSocket_connect(m_tcpSocket, host.toc, port, timeout);
@@ -236,6 +237,7 @@ class TcpSocket : Socket
      * See_Also:
      *      connect
      */
+    @nogc
     void disconnect()
     {
         sfTcpSocket_disconnect(m_tcpSocket);
@@ -247,7 +249,7 @@ class TcpSocket : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property
+    @property @nogc
     bool blocking() const
     {
         return sfTcpSocket_isBlocking(m_tcpSocket);
@@ -269,6 +271,7 @@ class TcpSocket : Socket
      * See_Also:
      *      receive
      */
+    @nogc
     Status send(const(void)[] data)
     {
         return sfTcpSocket_send(m_tcpSocket, data.ptr, data.length);
@@ -289,6 +292,7 @@ class TcpSocket : Socket
      * See_Also:
      *      receive
      */
+    @nogc
     Status send(const(void)[] data, out size_t sent)
     {
         return sfTcpSocket_sendPartial(m_tcpSocket, data.ptr, data.length, &sent);
@@ -308,6 +312,7 @@ class TcpSocket : Socket
      * See_Also:
      *      receive
      */
+    @nogc
     Status send(Packet packet)
     {
         return sfTcpSocket_sendPacket(m_tcpSocket, packet.ptr);
@@ -330,6 +335,7 @@ class TcpSocket : Socket
      * See_Also:
      *      send
      */
+    @nogc
     Status receive(void[] data, out size_t sizeReceived)
     {
         return sfTcpSocket_receive(m_tcpSocket, data.ptr, data.length,
@@ -362,7 +368,7 @@ class TcpSocket : Socket
         return status;
     }
 
-    @property
+    @property @nogc
     package sfTcpSocket* ptr()
     {
         return m_tcpSocket;
@@ -374,6 +380,7 @@ package extern(C)
     struct sfTcpSocket;
 }
 
+@nogc
 private extern(C)
 {
     sfTcpSocket* sfTcpSocket_create();

@@ -97,6 +97,7 @@ struct VideoMode
      * Returns:
      *      Current desktop video mode.
      */
+    @nogc
     static VideoMode getDesktopMode()
     {
         return sfVideoMode_getDesktopMode();
@@ -140,6 +141,7 @@ struct VideoMode
      * Returns:
      *      true if the video mode is valid for fullscreen mode.
      */
+    @nogc
     bool isValid() const
     {
         return sfVideoMode_isValid(this);
@@ -147,12 +149,13 @@ struct VideoMode
 
     string toString() const
     {
-        import std.conv: text;
+        import std.conv : text;
         return "Width: " ~ text(width) ~ "\tHeight: " ~ text(height) ~
             "\tBits per pixel: " ~ text(bitsPerPixel);
     }
 }
 
+@nogc
 private extern(C)
 {
     VideoMode sfVideoMode_getDesktopMode();

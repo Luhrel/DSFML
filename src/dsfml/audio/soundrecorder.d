@@ -172,12 +172,14 @@ class SoundRecorder
      * Returns:
      *      true, if start of capture was successful
      */
+    @nogc
     bool start(uint sampleRate = 44100)
     {
         return sfSoundRecorder_start(m_soundRecorder, sampleRate);
     }
 
     /// Stop the capture.
+    @nogc
     void stop()
     {
         sfSoundRecorder_stop(m_soundRecorder);
@@ -195,6 +197,7 @@ class SoundRecorder
          * Returns:
          *      Sample rate, in samples per second
          */
+        @nogc
         uint sampleRate() const
         {
             return sfSoundRecorder_getSampleRate(m_soundRecorder);
@@ -247,6 +250,7 @@ class SoundRecorder
          * Returns:
          *      Number of channels
          */
+        @nogc
         uint channelCount() const
         {
             return sfSoundRecorder_getChannelCount(m_soundRecorder);
@@ -261,6 +265,7 @@ class SoundRecorder
          * Params:
          *      _channelCount=Number of channels. Currently only mono (1) and stereo (2) are supported.
          */
+        @nogc
         void channelCount(uint _channelCount)
         {
             sfSoundRecorder_setChannelCount(m_soundRecorder, _channelCount);
@@ -325,6 +330,7 @@ class SoundRecorder
      * Returns:
      *      true if audio capture is supported, false otherwise.
      */
+    @nogc
     static bool isAvailable()
     {
         return sfSoundRecorder_isAvailable();
@@ -347,6 +353,7 @@ class SoundRecorder
          * Params:
          *      interval = Processing interval
          */
+        @nogc
         void setProcessingInterval(Time interval)
         {
             sfSoundRecorder_setProcessingInterval(m_soundRecorder, interval);
@@ -440,6 +447,8 @@ private extern(C)
     alias sfSoundRecorderStopCallback = void function(void*);
 
     struct sfSoundRecorder;
+
+    @nogc:
 
     sfSoundRecorder* sfSoundRecorder_create(sfSoundRecorderStartCallback onStart,
         sfSoundRecorderProcessCallback onProcess,

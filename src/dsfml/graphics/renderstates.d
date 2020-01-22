@@ -83,6 +83,7 @@ struct RenderStates
     }
 }
 
+@nogc
 package sfRenderStates convertRenderStates(ref RenderStates states)
 {
     if (states.texture !is null && states.shader !is null)

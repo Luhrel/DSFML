@@ -118,6 +118,7 @@ class SoundStream : SoundSource
      *
      * This constructor is only meant to be called by derived classes.
      */
+    @nogc
     this()
     {
         m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback, 0, 0, cast(void*) this);
@@ -142,6 +143,7 @@ class SoundStream : SoundSource
      *      channelCount = Number of channels of the stream
      *      sampleRate   = Sample rate, in samples per second
      */
+    @nogc
     protected void initialize(uint channelCount, uint sampleRate)
     {
         m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback,
@@ -161,6 +163,7 @@ class SoundStream : SoundSource
          * Params:
          *      _pitch = New pitch to apply to the sound
          */
+        @nogc
         void pitch(float _pitch)
         {
             sfSoundStream_setPitch(m_soundStream, _pitch);
@@ -172,6 +175,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Pitch of the sound
          */
+        @nogc
         float pitch() const
         {
             return sfSoundStream_getPitch(m_soundStream);
@@ -189,6 +193,7 @@ class SoundStream : SoundSource
          * Params:
          *      _volume = Volume of the sound
          */
+        @nogc
         void volume(float _volume)
         {
             sfSoundStream_setVolume(m_soundStream, _volume);
@@ -200,6 +205,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Volume of the sound, in the range [0, 100]
          */
+        @nogc
         float volume() const
         {
             return sfSoundStream_getVolume(m_soundStream);
@@ -217,6 +223,7 @@ class SoundStream : SoundSource
          * Params:
          *      _position = Position of the sound in the scene
          */
+        @nogc
         void position(Vector3f _position)
         {
             sfSoundStream_setPosition(m_soundStream, _position);
@@ -228,6 +235,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Position of the sound
          */
+        @nogc
         Vector3f position() const
         {
             return sfSoundStream_getPosition(m_soundStream);
@@ -246,6 +254,7 @@ class SoundStream : SoundSource
          * Params:
          *      _loop = true to play in loop, false to play once
          */
+        @nogc
         void loop(bool _loop)
         {
             sfSoundStream_setLoop(m_soundStream, _loop);
@@ -257,6 +266,7 @@ class SoundStream : SoundSource
          * Returns:
          *      true if the stream is looping, false otherwise
          */
+        @nogc
         bool loop() const
         {
             return sfSoundStream_getLoop(m_soundStream);
@@ -275,6 +285,7 @@ class SoundStream : SoundSource
          * Params:
          *      offset = New playing position, from the beginning of the stream
          */
+        @nogc
         void playingOffset(Time offset)
         {
             sfSoundStream_setPlayingOffset(m_soundStream, offset);
@@ -287,6 +298,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Current playing position, from the beginning of the stream
          */
+        @nogc
         Time playingOffset() const
         {
             return sfSoundStream_getPlayingOffset(m_soundStream);
@@ -307,6 +319,7 @@ class SoundStream : SoundSource
          * Params:
          *      relative = true to set the position relative, false to set it absolute
          */
+        @nogc
         void relativeToListener(bool relative)
         {
             sfSoundStream_setRelativeToListener(m_soundStream, relative);
@@ -318,6 +331,7 @@ class SoundStream : SoundSource
          * Returns:
          *      true if the position is relative, false if it's absolute
          */
+        @nogc
         bool relativeToListener() const
         {
             return sfSoundStream_isRelativeToListener(m_soundStream);
@@ -341,6 +355,7 @@ class SoundStream : SoundSource
          * See_Also:
          *      attenuation
          */
+        @nogc
         void minDistance(float distance)
         {
             sfSoundStream_setMinDistance(m_soundStream, distance);
@@ -352,6 +367,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Minimum distance of the sound
          */
+        @nogc
         float minDistance() const
         {
             return sfSoundStream_getMinDistance(m_soundStream);
@@ -378,6 +394,7 @@ class SoundStream : SoundSource
          * See_Also:
          *      minDistance
          */
+        @nogc
         void attenuation(float _attenuation)
         {
             sfSoundStream_setAttenuation(m_soundStream, _attenuation);
@@ -392,6 +409,7 @@ class SoundStream : SoundSource
          * See_Also:
          *      minDistance
          */
+        @nogc
         float attenuation() const
         {
             return sfSoundStream_getAttenuation(m_soundStream);
@@ -409,6 +427,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Number of channels
          */
+        @nogc
         uint channelCount() const
         {
             return sfSoundStream_getChannelCount(m_soundStream);
@@ -426,6 +445,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Sample rate, in number of samples per second
          */
+        @nogc
         uint sampleRate() const
         {
             return sfSoundStream_getSampleRate(m_soundStream);
@@ -440,6 +460,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Current status
          */
+        @nogc
         Status status() const
         {
             return cast(Status) sfSoundStream_getStatus(m_soundStream);
@@ -457,6 +478,7 @@ class SoundStream : SoundSource
      * See_Also:
      *      pause, stop
      */
+    @nogc
     void play()
     {
         sfSoundStream_play(m_soundStream);
@@ -471,6 +493,7 @@ class SoundStream : SoundSource
      * See_Also:
      *      play, stop
      */
+    @nogc
     void pause()
     {
         sfSoundStream_pause(m_soundStream);
@@ -486,6 +509,7 @@ class SoundStream : SoundSource
      * See_Also:
      *      play, pause
      */
+    @nogc
     void stop()
     {
         sfSoundStream_stop(m_soundStream);
@@ -569,6 +593,8 @@ private extern(C)
     alias sfSoundStreamSeekCallback = void function(Time, void*);
 
     struct sfSoundStream;
+
+    @nogc:
 
     sfSoundStream* sfSoundStream_create(sfSoundStreamGetDataCallback getData,
         sfSoundStreamSeekCallback  seek, uint  channelCount, uint  sampleRate,

@@ -133,6 +133,7 @@ class SocketSelector
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfSocketSelector* socketSelectorPointer)
     {
         m_socketSelector = sfSocketSelector_copy(socketSelectorPointer);
@@ -157,6 +158,7 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
+    @nogc
     void add(TcpListener listener)
     {
         sfSocketSelector_addTcpListener(m_socketSelector, listener.ptr);
@@ -175,6 +177,7 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
+    @nogc
     void add(TcpSocket socket)
     {
         sfSocketSelector_addTcpSocket(m_socketSelector, socket.ptr);
@@ -193,6 +196,7 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
+    @nogc
     void add(UdpSocket socket)
     {
         sfSocketSelector_addUdpSocket(m_socketSelector, socket.ptr);
@@ -207,6 +211,7 @@ class SocketSelector
      * See_Also:
      *      add, remove
      */
+    @nogc
     void clear()
     {
         sfSocketSelector_clear(m_socketSelector);
@@ -227,18 +232,21 @@ class SocketSelector
      * Returns:
      *      true if the socket is ready to read, false otherwise.
      */
+    @nogc
     bool isReady(TcpListener socket) const
     {
         return sfSocketSelector_isTcpListenerReady(m_socketSelector, socket.ptr);
     }
 
     /// ditto
+    @nogc
     bool isReady(TcpSocket socket) const
     {
         return sfSocketSelector_isTcpSocketReady(m_socketSelector, socket.ptr);
     }
 
     /// ditto
+    @nogc
     bool isReady(UdpSocket socket) const
     {
         return sfSocketSelector_isUdpSocketReady(m_socketSelector, socket.ptr);
@@ -256,6 +264,7 @@ class SocketSelector
      * See_Also:
      *      add, clear
      */
+    @nogc
     void remove(TcpListener socket)
     {
         sfSocketSelector_removeTcpListener(m_socketSelector, socket.ptr);
@@ -273,6 +282,7 @@ class SocketSelector
      * See_Also:
      *      add, clear
      */
+    @nogc
     void remove(TcpSocket socket)
     {
         sfSocketSelector_removeTcpSocket(m_socketSelector, socket.ptr);
@@ -290,6 +300,7 @@ class SocketSelector
      * See_Also:
      *      add, clear
      */
+    @nogc
     void remove(UdpSocket socket)
     {
         sfSocketSelector_removeUdpSocket(m_socketSelector, socket.ptr);
@@ -312,6 +323,7 @@ class SocketSelector
      * See_Also:
      *      isReady
      */
+    @nogc
     bool wait(Time timeout = Time.Zero)
     {
         return sfSocketSelector_wait(m_socketSelector, timeout);
@@ -325,6 +337,7 @@ class SocketSelector
     }
 }
 
+@nogc
 private extern(C)
 {
     struct sfSocketSelector;

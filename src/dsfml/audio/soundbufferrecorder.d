@@ -90,7 +90,8 @@ class SoundBufferRecorder : SoundRecorder
      * Returns:
      *      Read-only access to the sound buffer.
      */
-    @property const(SoundBuffer) buffer()
+    @property @nogc
+    const(SoundBuffer) buffer()
     {
         return m_soundBuffer;
     }

@@ -100,13 +100,14 @@ struct Clipboard
      * Params:
      *      text = String containing the data to be sent to the clipboard
      */
-    @property
+    @property @nogc
     static void str(dstring text)
     {
         sfClipboard_setUnicodeString(representation(text).ptr);
     }
 }
 
+@nogc
 private extern(C)
 {
     //const(char)* sfClipboard_getString();

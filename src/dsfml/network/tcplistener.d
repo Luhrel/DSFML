@@ -101,6 +101,7 @@ class TcpListener : Socket
      * See_Also:
      *      listen
      */
+    @nogc
     ushort localPort() const
     {
         return sfTcpListener_getLocalPort(m_tcpListener);
@@ -120,7 +121,7 @@ class TcpListener : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property
+    @property @nogc
     void blocking(bool _blocking)
     {
         sfTcpListener_setBlocking(m_tcpListener, _blocking);
@@ -163,6 +164,7 @@ class TcpListener : Socket
      * See_Also:
      *      accept, close
      */
+    @nogc
     Status listen(ushort port, IpAddress address = IpAddress.Any)
     {
         return sfTcpListener_listen(m_tcpListener, port, address.toc);
@@ -174,13 +176,13 @@ class TcpListener : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property
+    @property @nogc
     bool blocking() const
     {
         return sfTcpListener_isBlocking(m_tcpListener);
     }
 
-    @property
+    @property @nogc
     package sfTcpListener* ptr()
     {
         return m_tcpListener;
@@ -192,6 +194,7 @@ package extern(C)
     struct sfTcpListener;
 }
 
+@nogc
 private extern(C)
 {
     sfTcpListener* sfTcpListener_create();

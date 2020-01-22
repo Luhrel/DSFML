@@ -137,6 +137,7 @@ struct Color
      * Returns:
      *      Color represented as a 32-bit unsigned integer
      */
+    @nogc
     uint toInteger() const
     {
         return (r << 24) | (g << 16) | (b << 8) | a;
@@ -265,6 +266,7 @@ struct Color
      * Returns:
      *      true if colors are equal, false if they are different.
      */
+    @nogc
     bool opEquals(Color otherColor) const
     {
         return r == otherColor.r &&

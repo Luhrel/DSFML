@@ -113,6 +113,7 @@ final abstract class Mouse
      * Params:
      *      position = New position of the mouse
      */
+    @nogc
     static void setPosition(Vector2i position)
     {
         sfMouse_setPosition(position, null);
@@ -128,6 +129,7 @@ final abstract class Mouse
      *      position   = New position of the mouse
      *      relativeTo = Reference window
      */
+    @nogc
     static void setPosition(Vector2i position, Window relativeTo)
     {
         sfMouse_setPosition(position, relativeTo.ptr);
@@ -143,6 +145,7 @@ final abstract class Mouse
      *      position   = New position of the mouse
      *      relativeTo = Reference window
      */
+    @nogc
     static void setPosition(Vector2i position, RenderWindow relativeTo)
     {
         sfMouse_setPositionRenderWindow(position, relativeTo.ptr);
@@ -158,6 +161,7 @@ final abstract class Mouse
      * Returns:
      *      Current position of the mouse.
      */
+    @nogc
     static Vector2i getPosition()
     {
         return sfMouse_getPosition(null);
@@ -175,6 +179,7 @@ final abstract class Mouse
      * Returns:
      *      Current position of the mouse.
      */
+    @nogc
     static Vector2i getPosition(Window relativeTo)
     {
         return sfMouse_getPosition(relativeTo.ptr);
@@ -192,6 +197,7 @@ final abstract class Mouse
      * Returns:
      *      Current position of the mouse.
      */
+    @nogc
     static Vector2i getPosition(RenderWindow relativeTo)
     {
         return sfMouse_getPositionRenderWindow(relativeTo.ptr);
@@ -206,12 +212,14 @@ final abstract class Mouse
      * Returns:
      *      true if the button is pressed, false otherwise.
      */
+    @nogc
     static bool isButtonPressed(Button button)
     {
         return sfMouse_isButtonPressed(button);
     }
 }
 
+@nogc
 private extern(C)
 {
     bool sfMouse_isButtonPressed(Mouse.Button button);

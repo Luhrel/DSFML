@@ -111,6 +111,7 @@ final abstract class Sensor
      * Returns:
      *      true if the sensor is available, false otherwise.
      */
+    @nogc
     static bool isAvailable(Type sensor)
     {
         return sfSensor_isAvailable(sensor);
@@ -129,6 +130,7 @@ final abstract class Sensor
      *      sensor  = Sensor to enable
      *      enabled = true to enable, false to disable
      */
+    @nogc
     static void setEnabled(Type sensor, bool enabled)
     {
         sfSensor_setEnabled(sensor, enabled);
@@ -143,21 +145,18 @@ final abstract class Sensor
      * Returns:
      *      The current sensor value.
      */
+    @nogc
     static Vector3f getValue(Type sensor)
     {
         return sfSensor_getValue(sensor);
     }
 }
 
+@nogc
 private extern(C)
 {
-    // Check if a sensor is available
     bool sfSensor_isAvailable(Sensor.Type sensor);
-
-    // Enable or disable a given sensor
     void sfSensor_setEnabled(Sensor.Type sensor, byte enabled);
-
-    // Get the current value of the sensor
     Vector3f sfSensor_getValue(Sensor.Type sensor);
 }
 

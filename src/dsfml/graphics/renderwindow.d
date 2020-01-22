@@ -240,6 +240,7 @@ class RenderWindow : Window, RenderTarget
          * Params:
          *      _position = New position, in pixels
          */
+        @nogc
         override void position(Vector2i _position)
         {
             if (m_renderWindow !is null)
@@ -252,6 +253,7 @@ class RenderWindow : Window, RenderTarget
          * Returns:
          *      Position of the window, in pixels
          */
+        @nogc
         override Vector2i position() const
         {
             if (m_renderWindow is null)
@@ -285,6 +287,7 @@ class RenderWindow : Window, RenderTarget
          * Returns:
          *      Size in pixels
          */
+        @nogc
         override Vector2u size() const
         {
             if (m_renderWindow is null)
@@ -313,6 +316,7 @@ class RenderWindow : Window, RenderTarget
          * See_Also:
          *      defaultView
          */
+        @nogc
         void view(View _view)
         {
             if (m_renderWindow !is null)
@@ -366,7 +370,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      Structure containing the OpenGL context settings
      */
-    @property
+    @property @nogc
     override ContextSettings settings() const
     {
         if (m_renderWindow is null)
@@ -386,7 +390,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      System handle of the window
      */
-    @property
+    @property @nogc
     override WindowHandle systemHandle() const
     {
         if (m_renderWindow is null)
@@ -404,7 +408,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      view = The view for which we want to compute the viewport
      */
-    @property
+    @property @nogc
     IntRect viewport(View view) const
     {
         if (m_renderWindow is null)
@@ -427,7 +431,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      true if operation was successful, false otherwise
      */
-    @property
+    @property @nogc
     override bool active(bool _active = true)
     {
         if (m_renderWindow is null)
@@ -450,7 +454,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      limit = Framerate limit, in frames per seconds (use 0 to disable limit)
      */
-    @property
+    @property @nogc
     override void framerateLimit(uint limit)
     {
         if (m_renderWindow !is null)
@@ -472,6 +476,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      title
      */
+    @nogc
     override void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
         if (m_renderWindow !is null)
@@ -489,7 +494,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      threshold = New threshold, in the range [0, 100]
      */
-    @property
+    @property @nogc
     override void joystickThreshold(float threshold)
     {
         if (m_renderWindow !is null)
@@ -508,7 +513,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      enabled = true to enable, false to disable
      */
-    @property
+    @property @nogc
     override void keyRepeatEnabled(bool enabled)
     {
         if (m_renderWindow !is null)
@@ -523,7 +528,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      visible = true show the mouse cursor, false to hide it
      */
-    @property
+    @property @nogc
     override void mouseCursorVisible(bool visible)
     {
         if (m_renderWindow !is null)
@@ -537,7 +542,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      _title = New title
      */
-    @property
+    @property @nogc
     override void title(const dstring _title)
     {
         if (m_renderWindow !is null)
@@ -557,7 +562,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      enabled = true to enable v-sync, false to deactivate it
      */
-    @property
+    @property @nogc
     override void verticalSyncEnabled(bool enabled)
     {
         if (m_renderWindow !is null)
@@ -572,7 +577,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      _visible = true to show the window, false to hide it
      */
-    @property
+    @property @nogc
     override void visible(bool _visible)
     {
         if (m_renderWindow !is null)
@@ -588,6 +593,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      color = Fill color to use to clear the render target
      */
+    @nogc
     void clear(Color color = Color.Black)
     {
         if (m_renderWindow !is null)
@@ -602,6 +608,7 @@ class RenderWindow : Window, RenderTarget
      * `pollEvent()` or `display()` will still work (i.e. you don't have to test
      * `isOpen()` every time), and will have no effect on closed windows.
      */
+    @nogc
     override void close()
     {
         if (m_renderWindow !is null)
@@ -683,6 +690,7 @@ class RenderWindow : Window, RenderTarget
      * This function is typically called after all OpenGL rendering has been
      * done for the current frame, in order to show it on screen.
      */
+    @nogc
     override void display()
     {
         if (m_renderWindow !is null)
@@ -801,6 +809,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      true if the window is open, false if it has been closed
      */
+    @nogc
     override bool isOpen() const
     {
         if (m_renderWindow is null)
@@ -817,6 +826,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      pushGLStates
      */
+    @nogc
     void popGLStates()
     {
         if (m_renderWindow !is null)
@@ -852,6 +862,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      popGLStates
      */
+    @nogc
     void pushGLStates()
     {
         if (m_renderWindow !is null)
@@ -877,6 +888,7 @@ class RenderWindow : Window, RenderTarget
      * // OpenGL code here...
      * ---
      */
+    @nogc
     void resetGLStates()
     {
         if (m_renderWindow !is null)
@@ -906,6 +918,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      waitEvent
      */
+    @nogc
     override bool pollEvent(ref Event event)
     {
         if (m_renderWindow is null)
@@ -939,6 +952,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      pollEvent
      */
+    @nogc
     override bool waitEvent(ref Event event)
     {
         if (m_renderWindow is null)
@@ -958,6 +972,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      requestFocus
      */
+    @nogc
     override bool hasFocus() const
     {
         if (m_renderWindow is null)
@@ -977,6 +992,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      hasFocus
      */
+    @nogc
     override void requestFocus()
     {
         if (m_renderWindow !is null)
@@ -1002,6 +1018,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
+    @nogc
     Vector2i mapCoordsToPixel(Vector2f point) inout
     {
         if (m_renderWindow is null)
@@ -1035,6 +1052,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
+    @nogc
     Vector2i mapCoordsToPixel(Vector2f point, View view) inout
     {
         if (m_renderWindow is null)
@@ -1061,6 +1079,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
+    @nogc
     Vector2f mapPixelToCoords(Vector2i point) inout
     {
         if (m_renderWindow is null)
@@ -1097,6 +1116,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
+    @nogc
     Vector2f mapPixelToCoords(Vector2i point, View view) inout
     {
         if (m_renderWindow is null)
@@ -1111,7 +1131,6 @@ class RenderWindow : Window, RenderTarget
      * specific initialization as soon as the window is created.
      */
     alias onCreate = Window.onCreate;
-    //override protected void onCreate() {}
 
     /**
      * Function called after the window has been resized.
@@ -1120,7 +1139,6 @@ class RenderWindow : Window, RenderTarget
      * when the size of the window changes.
      */
     alias onResize = Window.onResize;
-    //override protected void onResize() {}
 
     /**
      * Set the displayed cursor to a native system cursor.
@@ -1137,7 +1155,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      Cursor.loadFromSystem, Cursor.loadFromPixels
      */
-    @property
+    @property @nogc
     override void mouseCursor(Cursor cursor)
     {
         if (m_renderWindow !is null)
@@ -1154,7 +1172,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      grabbed = true to enable, false to disable
      */
-    @property
+    @property @nogc
     override void mouseCursorGrabbeb(bool grabbed)
     {
         if (m_renderWindow !is null)
@@ -1162,6 +1180,7 @@ class RenderWindow : Window, RenderTarget
     }
 
     // Returns the C pointer
+    @property @nogc
     package(dsfml) sfRenderWindow* ptr()
     {
         return m_renderWindow;
@@ -1173,6 +1192,7 @@ package(dsfml) extern(C)
     struct sfRenderWindow;
 }
 
+@nogc
 private extern(C)
 {
     sfRenderWindow* sfRenderWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);

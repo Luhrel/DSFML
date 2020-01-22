@@ -96,6 +96,8 @@ class Image
         m_image = sfImage_create(0, 0);
     }
 
+    // Copy constructor.
+    @nogc
     package this(const sfImage* image)
     {
         m_image = sfImage_copy(image);
@@ -116,6 +118,7 @@ class Image
      *      color  = Fill color
      *
      */
+    @nogc
     void create(uint width, uint height, Color color = Color.init)
     {
         m_image = sfImage_createFromColor(width, height, color);
@@ -133,6 +136,7 @@ class Image
      *      height = Height of the image
      *      pixels = Array of pixels to copy to the image
      */
+    @nogc
     void create(uint width, uint height, const(ubyte)[] pixels)
     {
         m_image = sfImage_createFromPixels(width, height, pixels.ptr);
@@ -176,6 +180,7 @@ class Image
      * See_Also:
      *      loadFromFile, loadFromStream
      */
+    @nogc
     bool loadFromMemory(const(void)[] data)
     {
         m_image = sfImage_createFromMemory(data.ptr, data.length);
@@ -198,6 +203,7 @@ class Image
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
+    @nogc
     bool loadFromStream(InputStream stream)
     {
         m_image = sfImage_createFromStream(stream.ptr);
@@ -233,7 +239,7 @@ class Image
      * Returns:
      *      Size of the image, in pixels.
      */
-    @property
+    @property @nogc
     Vector2u size() const
     {
         return sfImage_getSize(m_image);
@@ -252,6 +258,7 @@ class Image
      * Returns:
      *      Color of the pixel at coordinates (x, y)
      */
+    @nogc
     Color pixel(uint x, uint y) const
     {
         return sfImage_getPixel(m_image, x, y);
@@ -268,6 +275,7 @@ class Image
      *      y     = Y coordinate of pixel to change
      *      color = New color of the pixel
      */
+    @nogc
     void pixel(uint x, uint y, Color color)
     {
         sfImage_setPixel(m_image, x, y, color);
@@ -282,6 +290,7 @@ class Image
      * image[2, 3] = Color.Red;
      * ---
      */
+    @nogc
     void opIndexAssign(Color color, uint x, uint y)
     {
         pixel(x, y, color);
@@ -324,6 +333,7 @@ class Image
      * Color pixelX2Y3 = convex[2, 3];
      * ---
      */
+    @nogc
     Color opIndex(uint x, uint y) const
     {
         return pixel(x, y);
@@ -348,6 +358,7 @@ class Image
      *      sourceRect = Sub-rectangle of the source image to copy
      *      applyAlpha = Should the copy take the source transparency into account?
      */
+    @nogc
     void copy(Image source, uint destX, uint destY, IntRect sourceRect = IntRect.init, bool applyAlpha = false)
     {
         sfImage_copyImage(m_image, source.ptr, destX, destY, sourceRect, applyAlpha);
@@ -363,18 +374,21 @@ class Image
      *      color = Color to make transparent
      *      alpha = Alpha value to assign to transparent pixels
      */
+    @nogc
     void createMaskFromColor(Color color, ubyte alpha = 0)
     {
         sfImage_createMaskFromColor(m_image, color, alpha);
     }
 
     /// Flip the image horizontally (left <-> right)
+    @nogc
     void flipHorizontally()
     {
         sfImage_flipHorizontally(m_image);
     }
 
     /// Flip the image vertically (top <-> bottom)
+    @nogc
     void flipVertically()
     {
         sfImage_flipVertically(m_image);
@@ -403,6 +417,7 @@ class Image
     }
 
     // Returns the C pointer.
+    @property @nogc
     package sfImage* ptr()
     {
         return m_image;
@@ -421,6 +436,7 @@ package extern(C)
     struct sfImage;
 }
 
+@nogc
 private extern(C)
 {
     sfImage* sfImage_create(uint width, uint height);

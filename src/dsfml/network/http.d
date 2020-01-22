@@ -254,6 +254,7 @@ class Http
          * 	    major = Major HTTP version number
          * 	    minor = Minor HTTP version number
          */
+        @nogc
         void httpVersion(uint major, uint minor)
         {
             sfHttpRequest_setHttpVersion(m_httpRequest, major, minor);
@@ -268,6 +269,7 @@ class Http
          * Params:
          * 	    method = Method to use for the request
          */
+        @nogc
         void method(Method method)
         {
             sfHttpRequest_setMethod(m_httpRequest, method);
@@ -287,6 +289,7 @@ class Http
             sfHttpRequest_setUri(m_httpRequest, uri.toStringz);
         }
 
+        @property @nogc
         package sfHttpRequest* ptr()
         {
             return m_httpRequest;
@@ -338,6 +341,7 @@ class Http
         private sfHttpResponse* m_httpResponse;
 
         // Internally used constructor
+        @nogc
         package this(sfHttpResponse* httpResponsePointer)
         {
             m_httpResponse = httpResponsePointer;
@@ -387,6 +391,7 @@ class Http
          * See_Also:
          *      minorHttpVersion
          */
+        @nogc
         uint majorHttpVersion() const
         {
             return sfHttpResponse_getMajorVersion(m_httpResponse);
@@ -401,6 +406,7 @@ class Http
          * See_Also:
          *      majorHttpVersion
          */
+        @nogc
         uint minorHttpVersion() const
         {
             return sfHttpResponse_getMinorVersion(m_httpResponse);
@@ -416,6 +422,7 @@ class Http
          * Returns:
          *      Status code of the response.
          */
+        @nogc
         Status status() const
         {
             return sfHttpResponse_getStatus(m_httpResponse);
@@ -423,6 +430,7 @@ class Http
     }
 }
 
+@nogc
 private extern(C)
 {
     struct sfHttp;

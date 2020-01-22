@@ -92,9 +92,10 @@ struct Time
      * Returns:
      *      Time in seconds.
      */
+    @nogc
     float asSeconds() const
     {
-        return m_microseconds/1_000_000f;
+        return m_microseconds / 1_000_000f;
     }
 
     /**
@@ -103,6 +104,7 @@ struct Time
      * Returns:
      *      Time in milliseconds.
      */
+    @nogc
     int asMilliseconds() const
     {
         return cast(int)(m_microseconds / 1_000);
@@ -114,6 +116,7 @@ struct Time
      * Returns:
      *      Time in microseconds.
      */
+    @nogc
     long asMicroseconds() const
     {
         return m_microseconds;
@@ -125,6 +128,7 @@ struct Time
      * Returns:
      *      Time as `Duration`
      */
+    @nogc
     Duration asDuration() const
     {
         return usecs(m_microseconds);
@@ -136,11 +140,13 @@ struct Time
      */
     static immutable(Time) Zero;
 
+    @nogc
     bool opEquals(const Time rhs) const
     {
         return m_microseconds == rhs.m_microseconds;
     }
 
+    @nogc
     int opCmp(const ref Time rhs) const
     {
         if(opEquals(rhs))
@@ -155,13 +161,12 @@ struct Time
         {
             return 1;
         }
-
-
     }
 
     /**
-    * Overload of unary - operator to negate a time value.
-    */
+     * Overload of unary - operator to negate a time value.
+     */
+    @nogc
     Time opUnary(string s)() const
         if (s == "-")
     {
@@ -263,7 +268,7 @@ Time seconds(float amount)
  */
 Time milliseconds(int amount)
 {
-    return Time(amount*1000);
+    return Time(amount * 1000);
 }
 
 /**

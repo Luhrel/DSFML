@@ -85,6 +85,7 @@ struct Transform
      *      a21 = Element (2, 1) of the matrix
      *      a22 = Element (2, 2) of the matrix
      */
+    @nogc
     this(float a00, float a01, float a02,
          float a10, float a11, float a12,
          float a20, float a21, float a22)
@@ -95,6 +96,7 @@ struct Transform
     }
 
     /// Construct a transform from a float array describing a 3x3 matrix.
+    @nogc
     this(float[9] matrix)
     {
         this(matrix[0], matrix[1], matrix[2],
@@ -102,6 +104,7 @@ struct Transform
              matrix[6], matrix[7], matrix[8]);
     }
 
+    @nogc
     package this(sfTransform transform)
     {
         m_transform = transform;
@@ -115,7 +118,7 @@ struct Transform
      * Returns:
      *      A new transform which is the inverse of self.
      */
-    @property
+    @property @nogc
     Transform inverse() const
     {
         return Transform(sfTransform_getInverse(&m_transform));
@@ -157,6 +160,7 @@ struct Transform
      * Returns:
      *      Reference to this.
      */
+    @nogc
     ref Transform combine(Transform other)
     {
         sfTransform_combine(&m_transform, &other.m_transform);
@@ -173,6 +177,7 @@ struct Transform
      * Returns:
      *      Transformed point.
      */
+    @nogc
     Vector2f transformPoint(float x, float y) const
     {
         return transformPoint(Vector2f(x, y));
@@ -187,6 +192,7 @@ struct Transform
      * Returns:
      *      Transformed point.
      */
+    @nogc
     Vector2f transformPoint(Vector2f point) const
     {
         return sfTransform_transformPoint(&m_transform, point);
@@ -206,6 +212,7 @@ struct Transform
      * Returns:
      *      Transformed rectangle.
      */
+    @nogc
     FloatRect transformRect(const(FloatRect) rectangle) const
     {
         return sfTransform_transformRect(&m_transform, rectangle);
@@ -229,6 +236,7 @@ struct Transform
      * See_Also:
      *      rotate, scale
      */
+    @nogc
     ref Transform translate(Vector2f offset)
     {
         return translate(offset.x, offset.y);
@@ -253,6 +261,7 @@ struct Transform
      * See_Also:
      *      rotate, scale
      */
+    @nogc
     ref Transform translate(float x, float y)
     {
         sfTransform_translate(&m_transform, x, y);
@@ -276,6 +285,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
+    @nogc
     ref Transform rotate(float angle)
     {
         sfTransform_rotate(&m_transform, angle);
@@ -307,6 +317,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
+    @nogc
     ref Transform rotate(float angle, float centerX, float centerY)
     {
         sfTransform_rotateWithCenter(&m_transform, angle, centerX, centerY);
@@ -337,6 +348,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
+    @nogc
     ref Transform rotate(float angle, Vector2f center)
     {
         return rotate(angle, center.x, center.y);
@@ -361,6 +373,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
+    @nogc
     ref Transform scale(float scaleX, float scaleY)
     {
         sfTransform_scale(&m_transform, scaleX, scaleY);
@@ -385,6 +398,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
+    @nogc
     ref Transform scale(Vector2f factors)
     {
         return scale(factors.x, factors.y);
@@ -416,6 +430,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
+    @nogc
     ref Transform scale(float scaleX, float scaleY, float centerX, float centerY)
     {
         sfTransform_scaleWithCenter(&m_transform, scaleX, scaleY, centerX, centerY);
@@ -439,6 +454,7 @@ struct Transform
      * Returns:
      *      Reference to this
      */
+    @nogc
     ref Transform scale(Vector2f factors, Vector2f center)
     {
         return scale(factors.x, factors.y, center.x, center.y);
@@ -464,6 +480,7 @@ struct Transform
      * Returns:
      *      New combined transform.
      */
+    @nogc
     Transform opBinary(string op)(Transform rhs)
         if(op == "*" || op == "/")
     {
@@ -484,6 +501,7 @@ struct Transform
      * Returns:
      *      The combined transform.
      */
+    @nogc
     ref Transform opOpAssign(string op)(Transform rhs)
         if(op == "*" || op == "/")
     {
@@ -494,16 +512,17 @@ struct Transform
     }
 
     /**
-    * Overload of binary operator `*` to transform a point
-    *
-    * This call is equivalent to calling `transform.transformPoint(vector)`.
-    *
-    * Params:
-    *       vector = the point to transform
-    *
-    * Returns:
-    *       New transformed point.
-    */
+     * Overload of binary operator `*` to transform a point
+     *
+     * This call is equivalent to calling `transform.transformPoint(vector)`.
+     *
+     * Params:
+     *      vector = the point to transform
+     *
+     * Returns:
+     *      New transformed point.
+     */
+    @nogc
     Vextor2f opBinary(string op)(Vector2f vector)
         if(op == "*")
     {
@@ -511,6 +530,7 @@ struct Transform
     }
 
     /// The identity transform (does nothing).
+    @nogc
     static const(Transform) identity()
     {
         return Transform([1, 0, 0,
@@ -528,6 +548,7 @@ struct Transform
     }
 
     // Returns the C struct.
+    @nogc
     sfTransform toc()
     {
         return m_transform;
@@ -542,6 +563,7 @@ package extern(C)
     }
 }
 
+@nogc
 private extern(C)
 {
     //const sfTransform sfTransform_Identity;

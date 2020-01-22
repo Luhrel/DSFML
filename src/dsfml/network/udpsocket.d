@@ -144,7 +144,7 @@ class UdpSocket : Socket
      * See_Also:
      *      bind
      */
-    @property
+    @property @nogc
     ushort localPort() const
     {
         return sfUdpSocket_getLocalPort(m_udpSocket);
@@ -166,7 +166,7 @@ class UdpSocket : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property
+    @property @nogc
     void blocking(bool _blocking)
     {
         sfUdpSocket_setBlocking(m_udpSocket, _blocking);
@@ -190,6 +190,7 @@ class UdpSocket : Socket
      * See_Also:
      *      unbind, localPort
      */
+    @nogc
     Status bind(ushort port, IpAddress address = IpAddress.Any)
     {
         return sfUdpSocket_bind(m_udpSocket, port, address.toc);
@@ -201,7 +202,7 @@ class UdpSocket : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property
+    @property @nogc
     bool blocking() const
     {
         return sfUdpSocket_isBlocking(m_udpSocket);
@@ -224,6 +225,7 @@ class UdpSocket : Socket
      * See_Also:
      *      receive
      */
+    @nogc
     Status send(const(void)[] data, IpAddress address, ushort port)
     {
         return sfUdpSocket_send(m_udpSocket, data.ptr, data.length,
@@ -327,12 +329,13 @@ class UdpSocket : Socket
      * See_Also:
      *      bind
      */
+    @nogc
     void unbind()
     {
         sfUdpSocket_unbind(m_udpSocket);
     }
 
-    @property
+    @property @nogc
     package sfUdpSocket* ptr()
     {
         return m_udpSocket;
@@ -344,6 +347,7 @@ package extern(C)
     struct sfUdpSocket;
 }
 
+@nogc
 private extern(C)
 {
     sfUdpSocket* sfUdpSocket_create();

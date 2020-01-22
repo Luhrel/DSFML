@@ -186,6 +186,7 @@ class Window
          * Params:
          *      _position = New position, in pixels
          */
+        @nogc
         void position(Vector2i _position)
         {
             if (m_window !is null)
@@ -198,6 +199,7 @@ class Window
          * Returns:
          *      Position of the window, in pixels
          */
+        @nogc
         Vector2i position() const
         {
             if (m_window is null)
@@ -231,6 +233,7 @@ class Window
          * Returns:
          *      Size in pixels
          */
+        @nogc
         Vector2u size() const
         {
             if (m_window is null)
@@ -255,6 +258,7 @@ class Window
      * Returns:
      *      true if operation was successful, false otherwise.
      */
+    @nogc
     bool active(bool _active = true)
     {
         if (m_window is null)
@@ -274,6 +278,7 @@ class Window
      * See_Also:
      *      hasFocus
      */
+    @nogc
     void requestFocus()
     {
         if (m_window !is null)
@@ -289,6 +294,7 @@ class Window
      * Returns:
      *      true if the window has focus, false otherwise
      */
+    @nogc
     bool hasFocus() const
     {
         if (m_window is null)
@@ -309,7 +315,7 @@ class Window
      * Params:
      *      limit = Framerate limit, in frames per seconds (use 0 to disable limit).
      */
-    @property
+    @property @nogc
     void framerateLimit(uint limit)
     {
         if (m_window !is null)
@@ -329,6 +335,7 @@ class Window
      *      pixels = Array of pixels in memory. The pixels are copied, so you
      *               need not keep the source alive after calling this function.
      */
+    @nogc
     void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
         if (m_window !is null)
@@ -346,7 +353,7 @@ class Window
      * Params:
      *      threshold = New threshold, in the range [0, 100].
      */
-    @property
+    @property @nogc
     void joystickThreshold(float threshold)
     {
         if (m_window !is null)
@@ -365,7 +372,7 @@ class Window
      * Params:
      *      enabled = true to enable, false to disable.
      */
-    @property
+    @property @nogc
     void keyRepeatEnabled(bool enabled)
     {
         if (m_window !is null)
@@ -380,7 +387,7 @@ class Window
      * Params:
      *      visible = true to show the mouse cursor, false to hide it.
      */
-    @property
+    @property @nogc
     void mouseCursorVisible(bool visible)
     {
         if (m_window !is null)
@@ -393,7 +400,7 @@ class Window
      * Params:
      *      _title = New title
      */
-    @property
+    @property @nogc
     void title(const dstring _title)
     {
         if (m_window !is null)
@@ -408,7 +415,7 @@ class Window
      * Params:
      *      _visible = true to show the window, false to hide it
      */
-    @property
+    @property @nogc
     void visible(bool _visible)
     {
         if (m_window !is null)
@@ -428,7 +435,7 @@ class Window
      * Params:
      *      enabled = true to enable v-sync, false to deactivate it
      */
-    @property
+    @property @nogc
     void verticalSyncEnabled(bool enabled)
     {
         if (m_window !is null)
@@ -445,7 +452,7 @@ class Window
      * Returns:
      *      Structure containing the OpenGL context settings.
      */
-    @property
+    @property @nogc
     ContextSettings settings() const
     {
         if (m_window is null)
@@ -465,7 +472,7 @@ class Window
      * Returns:
      *      System handle of the window.
      */
-    @property
+    @property @nogc
     WindowHandle systemHandle() const
     {
         if (m_window is null)
@@ -481,6 +488,7 @@ class Window
      * `pollEvent()` or `display()` will still work (i.e. you don't have to test
      * `isOpen()` every time), and will have no effect on closed windows.
      */
+    @nogc
     void close()
     {
         if (m_window !is null)
@@ -536,6 +544,7 @@ class Window
      * This function is typically called after all OpenGL rendering has been
      * done for the current frame, in order to show it on screen.
      */
+    @nogc
     void display()
     {
         if (m_window !is null)
@@ -552,6 +561,7 @@ class Window
      * Returns:
      *      true if the window is open, false if it has been closed.
      */
+    @nogc
     bool isOpen() const
     {
         if (m_window is null)
@@ -582,6 +592,7 @@ class Window
      * See_Also:
      *      waitEvent
      */
+    @nogc
     bool pollEvent(ref Event event)
     {
         if (m_window is null)
@@ -614,6 +625,7 @@ class Window
      * See_Also:
      *      pollEvent
      */
+    @nogc
     bool waitEvent(ref Event event)
     {
         if (m_window is null)
@@ -633,7 +645,7 @@ class Window
      * Params:
      *      cursor = Native system cursor type to display
      */
-    @property
+    @property @nogc
     void mouseCursor(Cursor cursor)
     {
         if (m_window !is null)
@@ -650,6 +662,7 @@ class Window
      * Params:
      *      grabbed = true to enable, false to disable
      */
+    @nogc
     void mouseCursorGrabbeb(bool grabbed)
     {
         if (m_window !is null)
@@ -673,6 +686,7 @@ class Window
     protected void onResize() {}
 
     // Returns the C pointer
+    @property @nogc
     package(dsfml) sfWindow* ptr()
     {
         return m_window;
@@ -684,6 +698,7 @@ package(dsfml) extern(C)
     struct sfWindow;
 }
 
+@nogc
 private extern(C)
 {
     sfWindow* sfWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);

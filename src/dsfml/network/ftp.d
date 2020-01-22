@@ -488,6 +488,7 @@ class Ftp
         private sfFtpDirectoryResponse* m_directoryResponse;
 
         // Internally used constructor.
+        @nogc
         package this(sfFtpDirectoryResponse* directoryResponsePointer)
         {
             m_directoryResponse = directoryResponsePointer;
@@ -509,6 +510,7 @@ class Ftp
          * Returns:
          *      true if the status is a success, false if it is a failure
          */
+        @nogc
         override bool isOk() const
         {
             return sfFtpDirectoryResponse_isOk(m_directoryResponse);
@@ -520,6 +522,7 @@ class Ftp
          * Returns:
          *      Status code
          */
+        @nogc
         override Status status() const
         {
             return Status(sfFtpDirectoryResponse_getStatus(m_directoryResponse));
@@ -556,6 +559,7 @@ class Ftp
         private sfFtpListingResponse* m_listingResponse;
 
         // Internally used constructor.
+        @nogc
         package this(sfFtpListingResponse* listingResponsePointer)
         {
             m_listingResponse = listingResponsePointer;
@@ -577,6 +581,7 @@ class Ftp
          * Returns:
          *      true if the status is a success, false if it is a failure
          */
+        @nogc
         override bool isOk() const
         {
             return sfFtpListingResponse_isOk(m_listingResponse);
@@ -588,6 +593,7 @@ class Ftp
          * Returns:
          *      Status code
          */
+        @nogc
         override Status status() const
         {
             return sfFtpListingResponse_getStatus(m_listingResponse);
@@ -686,6 +692,7 @@ class Ftp
         private sfFtpResponse* m_response;
 
         // Internally used constructor.
+        @nogc
         package this(sfFtpResponse* responsePointer)
         {
             m_response = responsePointer;
@@ -714,6 +721,7 @@ class Ftp
          * Returns:
          *      Status code.
          */
+        @nogc
         Status status() const
         {
             return Status(sfFtpResponse_getStatus(m_response));
@@ -728,6 +736,7 @@ class Ftp
          * Returns:
          *      true if the status is a success, false if it is a failure.
          */
+        @nogc
         bool isOk() const
         {
             return sfFtpResponse_isOk(m_response);
@@ -735,6 +744,7 @@ class Ftp
     }
 }
 
+@nogc
 private extern(C)
 {
     struct sfFtp;

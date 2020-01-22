@@ -89,6 +89,7 @@ class VertexArray : Drawable
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfVertexArray* vertexArrayPointer)
     {
         m_vertexArray = sfVertexArray_copy(vertexArrayPointer);
@@ -109,7 +110,7 @@ class VertexArray : Drawable
      * Returns:
      *      Bounding rectangle of the vertex array.
      */
-    @property
+    @property @nogc
     FloatRect bounds() const
     {
         return sfVertexArray_getBounds(cast(sfVertexArray*) m_vertexArray);
@@ -130,7 +131,7 @@ class VertexArray : Drawable
      * Params:
      *      type = Type of primitive
      */
-    @property
+    @property @nogc
     void primitiveType(PrimitiveType type)
     {
         sfVertexArray_setPrimitiveType(m_vertexArray, type);
@@ -142,7 +143,7 @@ class VertexArray : Drawable
      * Returns:
      *      Primitive type
      */
-    @property
+    @property @nogc
     PrimitiveType primitiveType() const
     {
         return sfVertexArray_getPrimitiveType(cast(sfVertexArray*) m_vertexArray);
@@ -154,6 +155,7 @@ class VertexArray : Drawable
      * Returns:
      *      Number of vertices in the array
      */
+    @nogc
     ulong vertexCount() const
     {
         return sfVertexArray_getVertexCount(m_vertexArray);
@@ -165,6 +167,7 @@ class VertexArray : Drawable
      * Params:
      *      vertex = Vertex to add.
      */
+    @nogc
     void append(Vertex vertex)
     {
         sfVertexArray_append(m_vertexArray, vertex);
@@ -177,6 +180,7 @@ class VertexArray : Drawable
      * deallocate the corresponding memory, so that adding new vertices after
      * clearing doesn't involve reallocating all the memory.
      */
+    @nogc
     void clear()
     {
         sfVertexArray_clear(m_vertexArray);
@@ -205,6 +209,7 @@ class VertexArray : Drawable
      * Params:
      * 		vertexCount	= New size of the array (number of vertices).
      */
+    @nogc
     void resize(size_t vertexCount)
     {
         sfVertexArray_resize(m_vertexArray, vertexCount);
@@ -222,19 +227,21 @@ class VertexArray : Drawable
      * Returns:
      *      Reference to the index-th vertex.
      */
+    @nogc
     ref Vertex opIndex(size_t index)
     {
         return *sfVertexArray_getVertex(m_vertexArray, index);
     }
 
     /// Overrides the $ attribute.
-    @property
+    @property @nogc
     ulong opDollar(size_t dim)()
     {
         return vertexCount;
     }
 
     // Returns the C pointer.
+    @property @nogc
     package sfVertexArray* ptr()
     {
         return m_vertexArray;
@@ -253,6 +260,7 @@ package extern(C)
     struct sfVertexArray;
 }
 
+@nogc
 private extern(C)
 {
     sfVertexArray* sfVertexArray_create();

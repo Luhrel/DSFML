@@ -163,6 +163,7 @@ struct Vector2(T)
     }
 
     /// Compare two vectors for equality.
+    @nogc
     bool opEquals(E)(const Vector2!(E) otherVector) const
         if(isNumeric!(E) || is(E == bool))
     {

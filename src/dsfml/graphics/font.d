@@ -123,6 +123,7 @@ class Font
         // Nothing to do.
     }
 
+    @nogc
     package this(const sfFont* fontPointer)
     {
         m_font = sfFont_copy(fontPointer);
@@ -160,6 +161,7 @@ class Font
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
+    @nogc
     bool loadFromFile(const(string) filename)
     {
         m_font = sfFont_createFromFile(filename.ptr);
@@ -185,6 +187,7 @@ class Font
      * See_Also:
      *      loadFromFile, loadFromStream
      */
+    @nogc
     bool loadFromMemory(const(void)[] data)
     {
         m_font = sfFont_createFromMemory(data.ptr, data.sizeof);
@@ -209,6 +212,7 @@ class Font
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
+    @nogc
     bool loadFromStream(InputStream stream)
     {
         m_font = sfFont_createFromStream(stream.ptr);
@@ -247,6 +251,7 @@ class Font
      * Returns:
      *      The glyph corresponding to codePoint and characterSize.
      */
+    @nogc
     Glyph glyph(dchar codePoint, uint characterSize, bool bold, float outlineThickness = 0) const
     {
         if (m_font is null)
@@ -271,6 +276,7 @@ class Font
      * Returns:
      *      Kerning value for first and second, in pixels.
      */
+    @nogc
     float kerning(dchar first, dchar second, uint characterSize) const
     {
         if (m_font is null)
@@ -290,6 +296,7 @@ class Font
      * Returns:
      *      Line spacing, in pixels.
      */
+    @nogc
     float lineSpacing(uint characterSize) const
     {
         if (m_font is null)
@@ -312,6 +319,7 @@ class Font
      * See_Also:
      *      getUnderlineThickness
      */
+    @nogc
     float getUnderlinePosition(uint characterSize) const
     {
         if (m_font is null)
@@ -333,6 +341,7 @@ class Font
      * See_Also:
      *      getUnderlinePosition
      */
+    @nogc
     float getUnderlineThickness(uint characterSize) const
     {
         if (m_font is null)
@@ -373,6 +382,7 @@ class Font
     }
 
     // Returns the C pointer
+    @property @nogc
     package sfFont* ptr()
     {
         return m_font;
@@ -388,6 +398,7 @@ package extern(C)
     }
 }
 
+@nogc
 private extern(C)
 {
     sfFont* sfFont_createFromFile(const char* filename);

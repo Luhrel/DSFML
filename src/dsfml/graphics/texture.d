@@ -159,6 +159,7 @@ class Texture
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfTexture* texturePointer)
     {
         m_texture = sfTexture_copy(texturePointer);
@@ -232,6 +233,7 @@ class Texture
      * Returns:
      *      true if loading was successful, false otherwise.
      */
+    @nogc
     bool loadFromMemory(const(void)[] data, IntRect* area)
     {
         m_texture = sfTexture_createFromMemory(data.ptr, data.length, area);
@@ -264,6 +266,7 @@ class Texture
      * Returns:
      *      true if loading was successful, false otherwise.
      */
+    @nogc
     bool loadFromStream(InputStream stream, ref const IntRect area)
     {
         m_texture = sfTexture_createFromStream(stream.ptr, &area);
@@ -290,6 +293,7 @@ class Texture
      * Returns:
      *      true if loading was successful, false otherwise.
      */
+    @nogc
     bool loadFromImage(Image image, const IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromImage(image.ptr, &area);
@@ -306,7 +310,7 @@ class Texture
      * Returns:
      *      Maximum size allowed for textures, in pixels.
      */
-    @property
+    @property @nogc
     static uint maximumSize()
     {
         return sfTexture_getMaximumSize();
@@ -318,7 +322,7 @@ class Texture
      * Returns:
      *      Size in pixels.
      */
-    @property
+    @property @nogc
     Vector2u size() const
     {
         if (m_texture is null)
@@ -339,6 +343,7 @@ class Texture
          * Params:
          *      _smooth = true to enable smoothing, false to disable it
          */
+        @nogc
         void smooth(bool _smooth)
         {
             if (m_texture !is null)
@@ -352,6 +357,7 @@ class Texture
          * Returns:
          *      true if something is enabled, false if it is disabled.
          */
+        @nogc
         bool smooth() const
         {
             if (m_texture is null)
@@ -380,6 +386,7 @@ class Texture
          * Params:
          *      _repeated = true to repeat the texture, false to disable repeating
          */
+        @nogc
         void repeated(bool _repeated)
         {
             if (m_texture !is null)
@@ -392,6 +399,7 @@ class Texture
          * Returns:
          *      true if repeat mode is enabled, false if it is disabled.
          */
+        @nogc
         bool repeated() const
         {
             if (m_texture is null)
@@ -423,6 +431,7 @@ class Texture
      */
     // TODO: CoordinateType arg + desc update
     // Actually not implemented in CSFML
+    @nogc
     static void bind(ref Texture texture)
     {
         sfTexture_bind(texture.ptr);
@@ -440,6 +449,7 @@ class Texture
      * Returns:
      *      true if creation was successful, false otherwise.
      */
+    @nogc
     bool create(uint width, uint height)
     {
         m_texture = sfTexture_create(width, height);
@@ -488,6 +498,7 @@ class Texture
      * Returns:
      *      true if mipmap generation was successful, false if unsuccessful
      */
+    @nogc
     bool generateMipmap()
     {
         if (m_texture is null)
@@ -505,7 +516,7 @@ class Texture
      * Returns:
      *      OpenGL handle of the texture or 0 if not yet created
      */
-    @property
+    @property @nogc
     uint nativeHandle() const
     {
         if (m_texture is null)
@@ -521,6 +532,7 @@ class Texture
          * Returns:
          *      true if the texture source is converted from sRGB, false if not
          */
+        @nogc
         bool srgb()
         {
             if (m_texture is null)
@@ -549,6 +561,7 @@ class Texture
          * Params:
          *      sRGB = true to enable sRGB conversion, false to disable it
          */
+        @nogc
         void srgb(bool sRGB)
         {
             if (m_texture !is null)
@@ -562,6 +575,7 @@ class Texture
      * Params:
      *      right = Instance to swap with
      */
+    @nogc
     void swap(Texture right)
     {
         if (m_texture !is null && right.ptr !is null)
@@ -588,6 +602,7 @@ class Texture
      *      x      = X offset in the texture where to copy the source pixels
      *      y      = Y offset in the texture where to copy the source pixels
      */
+    @nogc
     void update(const(ubyte)[] pixels, uint width = size.x,
         uint height = size.y, uint x = 0, uint y = 0)
     {
@@ -609,6 +624,7 @@ class Texture
      *      x       = X offset in this texture where to copy the source texture
      *      y       = Y offset in this texture where to copy the source texture
      */
+    @nogc
     void update(Texture texture, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
@@ -629,6 +645,7 @@ class Texture
      *      y     = Y offset in the texture where to copy the source image.
      *      x     = X offset in the texture where to copy the source image.
      */
+    @nogc
     void update(Image image, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
@@ -651,6 +668,7 @@ class Texture
      *       y      = Y offset in the texture where to copy the source window
      *
      */
+    @nogc
     void update(Window window, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
@@ -673,6 +691,7 @@ class Texture
      *      y      = Y offset in the texture where to copy the source window
      *
      */
+    @nogc
     void update(RenderWindow window, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
@@ -687,6 +706,7 @@ class Texture
     }
 
     // Returns the C pointer.
+    @property @nogc
     package sfTexture* ptr()
     {
         return m_texture;
@@ -698,6 +718,7 @@ package extern(C)
     struct sfTexture;
 }
 
+@nogc
 private extern(C)
 {
     sfTexture* sfTexture_create(uint width, uint height);

@@ -95,6 +95,7 @@ class View
      *
      * This constructor creates a default view of (0, 0, 1000, 1000)
      */
+    @nogc
     this()
     {
         m_view = sfView_create();
@@ -106,6 +107,7 @@ class View
      * Params:
      *      rectangle = Rectangle defining the zone to display
      */
+    @nogc
     this(FloatRect rectangle)
     {
         m_view = sfView_createFromRect(rectangle);
@@ -126,6 +128,7 @@ class View
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfView* viewPointer)
     {
         m_view = sfView_copy(viewPointer);
@@ -148,6 +151,7 @@ class View
          * See_Also:
          *      size
          */
+        @nogc
         void center(Vector2f _center)
         {
             sfView_setCenter(m_view, _center);
@@ -161,6 +165,7 @@ class View
          *     y = Y coordinate of the new center
          * See_Also: size
          */
+        @nogc
         void center(float x, float y)
         {
             center(Vector2f(x, y));
@@ -175,6 +180,7 @@ class View
          * See_Also:
          *      size
          */
+        @nogc
         Vector2f center() const
         {
             return sfView_getCenter(m_view);
@@ -191,6 +197,7 @@ class View
          * Params:
          *      angle = New angle, in degrees
          */
+        @nogc
         void rotation(float angle)
         {
             sfView_setRotation(m_view, angle);
@@ -202,6 +209,7 @@ class View
          * Returns:
          *      Rotation angle of the view, in degrees
          */
+        @nogc
         float rotation() const
         {
             return sfView_getRotation(m_view);
@@ -218,6 +226,7 @@ class View
      * See_Also:
      *      rotation, move, zoom
      */
+    @nogc
     void rotate(float angle)
     {
         sfView_rotate(m_view, angle);
@@ -234,6 +243,7 @@ class View
          * See_Also:
          *      center
          */
+        @nogc
         void size(Vector2f _size)
         {
             sfView_setSize(m_view, _size);
@@ -249,6 +259,7 @@ class View
          * See_Also:
          *      center
          */
+        @nogc
         void size(float width, float height)
         {
             size(Vector2f(width, height));
@@ -263,6 +274,7 @@ class View
          * See_Also:
          *      center
          */
+        @nogc
         Vector2f size() const
         {
             return sfView_getSize(m_view);
@@ -284,6 +296,7 @@ class View
          * Params:
          *      _viewport = New viewport rectangle
          */
+        @nogc
         void viewport(FloatRect _viewport)
         {
             sfView_setViewport(m_view, _viewport);
@@ -295,6 +308,7 @@ class View
          * Returns:
          *      Viewport rectangle, expressed as a factor of the target size
          */
+        @nogc
         FloatRect viewport() const
         {
             return sfView_getViewport(m_view);
@@ -310,6 +324,7 @@ class View
      * See_Also:
      *      center, rotate, move
      */
+    @nogc
     void move(Vector2f offset)
     {
         sfView_move(m_view, offset);
@@ -325,6 +340,7 @@ class View
      * See_Also:
      *      center, rotate, move
      */
+    @nogc
     void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
@@ -341,6 +357,7 @@ class View
      * See_Also:
      *      center, size, rotation
      */
+    @nogc
     void reset(FloatRect rectangle)
     {
         sfView_reset(m_view, rectangle);
@@ -361,6 +378,7 @@ class View
      * See_Also:
      *      size, move, rotate
      */
+    @nogc
     void zoom(float factor)
     {
         sfView_zoom(m_view, factor);
@@ -420,7 +438,7 @@ class View
     }
 
     // Returns the C pointer
-    @property
+    @property @nogc
     package sfView* ptr()
     {
         return m_view;
@@ -439,6 +457,7 @@ package extern(C)
     struct sfView;
 }
 
+@nogc
 private extern(C)
 {
     sfView* sfView_create();

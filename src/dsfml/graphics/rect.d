@@ -161,6 +161,7 @@ struct Rect(T)
      * See_Also:
      *      intersects
      */
+    @nogc
     bool contains(E)(E x, E y) const
         if(isNumeric!(E))
     {
@@ -182,6 +183,7 @@ struct Rect(T)
      * See_Also:
      *      intersects
      */
+    @nogc
     bool contains(E)(Vector2!(E) point) const
         if(isNumeric!(E))
     {
@@ -200,8 +202,9 @@ struct Rect(T)
      * See_Also:
      *      contains
      */
+    // TODO: use `this` instead of `rect`
     bool intersects(E)(Rect!(E) rectangle) const
-    if(isNumeric!(E))
+        if(isNumeric!(E))
     {
         Rect!(T) rect;
         return intersects(rectangle, rect);
@@ -244,6 +247,7 @@ struct Rect(T)
     }
 
     /// Compare two rectangles for equality.
+    @nogc
     bool opEquals(E)(const Rect!(E) otherRect) const
         if(isNumeric!(E))
     {
@@ -260,11 +264,13 @@ struct Rect(T)
         return "Left: " ~ text(left) ~ " Top: " ~ text(top) ~ " Width: " ~ text(width) ~ " Height: " ~ text(height);
     }
 
+    @nogc
     private T max(T a, T b) const
     {
         return a>b?a:b;
     }
 
+    @nogc
     private T min(T a, T b) const
     {
         return a<b?a:b;

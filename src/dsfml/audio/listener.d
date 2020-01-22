@@ -79,6 +79,7 @@ final abstract class Listener
          * See_Also:
          *      upVector, position
          */
+        @nogc
         static void direction(Vector3f _direction)
         {
             sfListener_setDirection(_direction);
@@ -90,6 +91,7 @@ final abstract class Listener
          * Returns:
          *      Listener's forward vector (not normalized)
          */
+        @nogc
         static Vector3f direction()
         {
             return sfListener_getDirection();
@@ -113,6 +115,7 @@ final abstract class Listener
          * See_Also:
          *      direction, position
          */
+        @nogc
         static void upVector(Vector3f _upVector)
         {
             sfListener_setUpVector(_upVector);
@@ -124,6 +127,7 @@ final abstract class Listener
          * Returns:
          *      Listener's upward vector (not normalized)
          */
+        @nogc
         static Vector3f upVector()
         {
             return sfListener_getUpVector();
@@ -143,6 +147,7 @@ final abstract class Listener
          * Params:
          *      volume = New global volume, in the range [0, 100]
          */
+        @nogc
         static void globalVolume(float volume)
         {
             sfListener_setGlobalVolume(volume);
@@ -154,6 +159,7 @@ final abstract class Listener
          * Returns:
          *      Current global volume, in the range [0, 100]
          */
+        @nogc
         static float globalVolume()
         {
             return sfListener_getGlobalVolume();
@@ -173,6 +179,7 @@ final abstract class Listener
          * See_Also:
          *      direction
          */
+        @nogc
         static void position(Vector3f _position)
         {
             sfListener_setPosition(_position);
@@ -184,6 +191,7 @@ final abstract class Listener
          * Returns:
          *      Listener's position
          */
+        @nogc
         static Vector3f position()
         {
             return sfListener_getPosition();
@@ -192,6 +200,7 @@ final abstract class Listener
 }
 
 // CSFML's functions.
+@nogc
 private extern(C)
 {
     void sfListener_setGlobalVolume(float volume);

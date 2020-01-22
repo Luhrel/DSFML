@@ -88,6 +88,7 @@ final abstract class Touch
      * Returns:
      *      Current position of finger, or undefined if it's not down
      */
+    @nogc
     static Vector2i getPosition(uint finger)
     {
         return sfTouch_getPosition(finger, null);
@@ -106,6 +107,7 @@ final abstract class Touch
      * Returns:
      *      Current position of finger, or undefined if it's not down
      */
+    @nogc
     static Vector2i getPosition(uint finger, Window relativeTo)
     {
         return sfTouch_getPosition(finger, relativeTo.ptr);
@@ -124,6 +126,7 @@ final abstract class Touch
      * Returns:
      *      Current position of finger, or undefined if it's not down
      */
+    @nogc
     static Vector2i getPosition(uint finger, RenderWindow relativeTo)
     {
         return sfTouch_getPositionRenderWindow(finger, relativeTo.ptr);
@@ -138,12 +141,14 @@ final abstract class Touch
      * Returns:
      *      true if finger is currently touching the screen, false otherwise
      */
+    @nogc
     static bool isDown(uint finger)
     {
         return sfTouch_isDown(finger);
     }
 }
 
+@nogc
 private extern(C)
 {
     //Check if a touch event is currently down

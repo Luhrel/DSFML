@@ -107,6 +107,7 @@ class SoundBuffer
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfSoundBuffer* soundBufferPointer)
     {
         m_soundBuffer = sfSoundBuffer_copy(soundBufferPointer);
@@ -160,7 +161,7 @@ class SoundBuffer
      * See_Also:
      *      channelCount, duration
      */
-    @property
+    @property @nogc
     uint sampleRate() const
     {
         if (m_soundBuffer is null)
@@ -179,7 +180,7 @@ class SoundBuffer
      * See_Also:
      *      samples
      */
-    @property
+    @property @nogc
     ulong sampleCount() const
     {
         if (m_soundBuffer is null)
@@ -199,7 +200,7 @@ class SoundBuffer
      * See_Also:
      *      sampleRate, duration
      */
-    @property
+    @property @nogc
     uint channelCount() const
     {
         if (m_soundBuffer is null)
@@ -216,7 +217,7 @@ class SoundBuffer
      * See_Also:
      *      sampleRate, channelCount
      */
-    @property
+    @property @nogc
     Time duration() const
     {
         if (m_soundBuffer is null)
@@ -258,6 +259,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromStream, loadFromSamples
      */
+    @nogc
     bool loadFromMemory(const(void)[] data)
     {
         m_soundBuffer = sfSoundBuffer_createFromMemory(data.ptr, data.length);
@@ -278,6 +280,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, loadFromSamples
      */
+    @nogc
     bool loadFromStream(InputStream stream)
     {
         m_soundBuffer = sfSoundBuffer_createFromStream(stream.ptr);
@@ -300,6 +303,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, saveToFile
      */
+    @nogc
     bool loadFromSamples(const(short[]) samples, uint channelCount, uint sampleRate)
     {
         m_soundBuffer = sfSoundBuffer_createFromSamples(samples.ptr, samples.length, channelCount, sampleRate);
@@ -328,6 +332,7 @@ class SoundBuffer
     }
 
     // Returns de C pointer.
+    @property @nogc
     package sfSoundBuffer* ptr()
     {
         return m_soundBuffer;
@@ -347,6 +352,7 @@ package extern(C)
 }
 
 // CSFML's functions.
+@nogc
 private extern(C)
 {
     void sfSoundBuffer_destroy(sfSoundBuffer* soundBuffer);
