@@ -619,7 +619,10 @@ class Shader
     @nogc @safe
     static void bind(Shader shader)
     {
-        sfShader_bind(shader.ptr);
+        if (shader is null)
+            sfShader_bind(null);
+        else
+            sfShader_bind(shader.ptr);
     }
 
     /**
