@@ -203,7 +203,7 @@ class Texture
      * See_Also:
      *      loadFromMemory, loadFromStream, loadFromImage
      */
-    bool loadFromFile(string filename, ref IntRect area)
+    bool loadFromFile(string filename, IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromFile(filename.toStringz, &area);
         return m_texture != null;
@@ -236,9 +236,9 @@ class Texture
      *      true if loading was successful, false otherwise.
      */
     @nogc
-    bool loadFromMemory(const(void)[] data, IntRect* area)
+    bool loadFromMemory(const(void)[] data, IntRect area = IntRect.init)
     {
-        m_texture = sfTexture_createFromMemory(data.ptr, data.length, area);
+        m_texture = sfTexture_createFromMemory(data.ptr, data.sizeof, &area);
         return m_texture != null;
     }
 
@@ -269,7 +269,7 @@ class Texture
      *      true if loading was successful, false otherwise.
      */
     @nogc
-    bool loadFromStream(InputStream stream, ref const IntRect area)
+    bool loadFromStream(InputStream stream, IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromStream(stream.ptr, &area);
         return m_texture != null;
@@ -296,7 +296,7 @@ class Texture
      *      true if loading was successful, false otherwise.
      */
     @nogc
-    bool loadFromImage(Image image, const IntRect area = IntRect.init)
+    bool loadFromImage(Image image, IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromImage(image.ptr, &area);
         return m_texture != null;

@@ -126,9 +126,10 @@ class Music : SoundStream
      *      openFromMemory, openFromStream
      */
     @safe
-    void openFromFile(string filename)
+    bool openFromFile(string filename)
     {
         m_music = sfMusic_createFromFile(filename.toStringz);
+        return m_music != null;
     }
 
     /**
@@ -153,9 +154,10 @@ class Music : SoundStream
      *      openFromFile, openFromStream
      */
     @nogc
-    void openFromMemory(const(void)[] data)
+    bool openFromMemory(const(void)[] data)
     {
-        m_music = sfMusic_createFromMemory(data.ptr, data.length);
+        m_music = sfMusic_createFromMemory(data.ptr, data.sizeof);
+        return m_music != null;
     }
 
     /**
@@ -176,9 +178,10 @@ class Music : SoundStream
      *      true if loading succeeded, false if it failed
      */
     @nogc @safe
-    void openFromStream(InputStream stream)
+    bool openFromStream(InputStream stream)
     {
         m_music = sfMusic_createFromStream(stream.ptr);
+        return m_music != null;
     }
 
     @property

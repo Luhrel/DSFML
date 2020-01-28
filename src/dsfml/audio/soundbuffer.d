@@ -265,7 +265,7 @@ class SoundBuffer
     @nogc
     bool loadFromMemory(const(void)[] data)
     {
-        m_soundBuffer = sfSoundBuffer_createFromMemory(data.ptr, data.length);
+        m_soundBuffer = sfSoundBuffer_createFromMemory(data.ptr, data.sizeof);
         return m_soundBuffer != null;
     }
 

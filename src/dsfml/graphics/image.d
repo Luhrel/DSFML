@@ -186,7 +186,7 @@ class Image
     @nogc
     bool loadFromMemory(const(void)[] data)
     {
-        m_image = sfImage_createFromMemory(data.ptr, data.length);
+        m_image = sfImage_createFromMemory(data.ptr, data.sizeof);
         return m_image != null;
     }
 
