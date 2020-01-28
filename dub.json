@@ -71,6 +71,19 @@
             "importPaths": ["src/"],
             "sourcePaths": ["src/dsfml/system"],
             "libs": ["csfml-system", "sfml-system"]
-        }
+        },
+        {
+            "name": "extra",
+            "targetType": "library",
+            "targetPath": "lib",
+            "sourcePaths": ["src/dsfml/extra"],
+            "dependencies": {
+                "dsfml:audio": "~>2.5",
+                "dsfml:graphics": "~>2.5",
+                "dsfml:window": "~>2.5",
+                "dsfml:network": "~>2.5",
+                "dsfml:system": "~>2.5",
+            }
+        },
     ]
 }
