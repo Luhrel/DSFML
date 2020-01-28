@@ -78,6 +78,7 @@ class ConvexShape : Shape
      * Params:
      *      pointCount = Number of points of the polygon
      */
+    @nogc
     this(size_t pointCount = 0)
     {
         m_convexShape = sfConvexShape_create();
@@ -85,13 +86,14 @@ class ConvexShape : Shape
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfConvexShape* convexShapePointer)
     {
         m_convexShape = sfConvexShape_copy(convexShapePointer);
     }
 
     /// Virtual destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfConvexShape_destroy(m_convexShape);

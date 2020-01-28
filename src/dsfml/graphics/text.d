@@ -153,7 +153,7 @@ class Text : Transformable, Drawable
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfText_destroy(m_text);

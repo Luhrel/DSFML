@@ -164,7 +164,7 @@ class RenderWindow : Window, RenderTarget
      * This constructor doesn't actually create the window, use the other
      * constructors or call `create()` to do so.
      */
-    @safe
+    @nogc @safe
     this()
     {
         // Nothing to do.
@@ -224,7 +224,7 @@ class RenderWindow : Window, RenderTarget
      *
      * Closes the window and frees all the resources attached to it.
      */
-    @safe
+    @nogc @safe
     ~this()
     {
         sfRenderWindow_destroy(m_renderWindow);

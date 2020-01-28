@@ -81,7 +81,6 @@ module dsfml.graphics.blendmode;
 /**
  * Blending modes for drawing.
  */
-@nogc @safe
 struct BlendMode
 {
     /**
@@ -171,6 +170,7 @@ struct BlendMode
      *      blendEquation     = Specifies how to combine the source and
      *                          destination colors and alpha
      */
+    @nogc @safe
     this(Factor sourceFactor, Factor destinationFactor,
          Equation blendEquation = Equation.Add)
     {
@@ -199,6 +199,7 @@ struct BlendMode
      *      alphaBlendEquation     = Specifies how to combine the source and
      *                               destination alphas
      */
+    @nogc @safe
     this(Factor colorSourceFactor, Factor colorDestinationFactor,
               Equation colorBlendEquation, Factor alphaSourceFactor,
               Factor alphaDestinationFactor, Equation alphaBlendEquation)
@@ -212,6 +213,7 @@ struct BlendMode
         alphaEquation = alphaBlendEquation;
     }
 
+    @nogc @safe
     bool opEquals(BlendMode rhs) const
     {
         return colorSrcFactor == rhs.colorSrcFactor &&

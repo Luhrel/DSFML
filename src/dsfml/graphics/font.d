@@ -98,6 +98,7 @@ import dsfml.graphics.glyph;
 import dsfml.system.inputstream;
 
 import std.conv;
+import std.string;
 
 /**
  * Class for loading and manipulating character fonts.
@@ -118,7 +119,7 @@ class Font
      *
      * Defines an empty font.
      */
-    @safe
+    @nogc @safe
     this()
     {
         // Nothing to do.
@@ -135,7 +136,7 @@ class Font
      *
      * Cleans up all the internal resources used by the font
      */
-    @safe
+    @nogc @safe
     ~this()
     {
         sfFont_destroy(m_font);
@@ -163,10 +164,10 @@ class Font
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
-    @nogc
+    @safe
     bool loadFromFile(const(string) filename)
     {
-        m_font = sfFont_createFromFile(filename.ptr);
+        m_font = sfFont_createFromFile(filename.toStringz);
         return m_font != null;
     }
 

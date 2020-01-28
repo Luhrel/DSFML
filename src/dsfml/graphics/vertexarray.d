@@ -69,7 +69,7 @@ class VertexArray : Drawable
      *
      * Creates an empty vertex array.
      */
-    @safe
+    @nogc @safe
     this()
     {
         m_vertexArray = sfVertexArray_create();
@@ -82,7 +82,7 @@ class VertexArray : Drawable
      *      type        = Type of primitives
      *      vertexCount = Initial number of vertices in the array
      */
-    @safe
+    @nogc @safe
     this(PrimitiveType type, size_t vertexCount = 0)
     {
         this();
@@ -98,7 +98,7 @@ class VertexArray : Drawable
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfVertexArray_destroy(m_vertexArray);

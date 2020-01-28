@@ -70,6 +70,7 @@ class RectangleShape : Shape
      * Params:
      *      size = Size of the rectangle
      */
+    @nogc
     this(Vector2f size = Vector2f(0, 0))
     {
         m_rectangleShape = sfRectangleShape_create();
@@ -84,7 +85,7 @@ class RectangleShape : Shape
     }
 
     /// Destructor
-    @safe
+    @nogc @safe
     ~this()
     {
         sfRectangleShape_destroy(m_rectangleShape);

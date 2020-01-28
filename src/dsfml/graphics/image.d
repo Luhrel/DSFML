@@ -91,7 +91,7 @@ class Image
      *
      * Creates an empty image.
      */
-    @safe
+    @nogc @safe
     this()
     {
         m_image = sfImage_create(0, 0);
@@ -105,7 +105,7 @@ class Image
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfImage_destroy(m_image);

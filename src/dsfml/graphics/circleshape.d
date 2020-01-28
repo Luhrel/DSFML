@@ -76,6 +76,7 @@ class CircleShape : Shape
      *     radius     = Radius of the circle
      *     pointCount = Number of points composing the circle
      */
+    @nogc
     this(float radius = 0, size_t pointCount = 30)
     {
         m_circleShape = sfCircleShape_create();
@@ -84,13 +85,14 @@ class CircleShape : Shape
     }
 
     // Copy constructor.
+    @nogc
     package this(const sfCircleShape* circleShapePointer)
     {
         m_circleShape = sfCircleShape_copy(circleShapePointer);
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfCircleShape_destroy(m_circleShape);

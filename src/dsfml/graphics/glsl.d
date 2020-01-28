@@ -177,7 +177,7 @@ struct Vector4(T)
      *      Z = Component of the 4D vector
      *       W = Component of the 4D vector
      */
-    @safe
+    @nogc @safe
     this(T X, T Y, T Z, T W)
     {
         x = X;
@@ -192,7 +192,7 @@ struct Vector4(T)
      * Params:
      *      other = 4D vector of different type
      */
-    @safe
+    @nogc @safe
     this(U)(Vector!(U) other)
     {
         x = cast(T)other.x;
@@ -210,7 +210,7 @@ struct Vector4(T)
      * Params:
      *      source = The Color instance to create the vector from
      */
-    @safe
+    @nogc @safe
     this(Color source)
     {
         static if(is(T == float))

@@ -122,7 +122,7 @@ class VertexBuffer : Drawable
      * Params:
      *     usage = Usage specifier
      */
-    @safe
+    @nogc @safe
     this(Usage usage)
     {
         this(PrimitiveType.Points, usage);
@@ -156,7 +156,7 @@ class VertexBuffer : Drawable
     }
 
     /// Desructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfVertexBuffer_destroy(m_vertexBuffer);

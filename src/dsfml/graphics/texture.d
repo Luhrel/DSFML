@@ -167,7 +167,7 @@ class Texture
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfTexture_destroy(m_texture);

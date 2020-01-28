@@ -90,7 +90,7 @@ struct Color
      *      blue  = Blue component (in the range [0, 255])
      *      alpha = Alpha (opacity) component (in the range [0, 255])
      */
-    @safe
+    @nogc @safe
     this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255)
     {
         r = red;
@@ -105,7 +105,7 @@ struct Color
      * Params:
      *      color = Number containing the RGBA components (in that order)
      */
-    @safe
+    @nogc @safe
     this(uint color)
     {
         r = (color & 0xff000000) >> 24;
@@ -225,7 +225,7 @@ struct Color
      *      A reference to this color after performing the addition, subtraction,
      *      or multiplication.
      */
-    @safe
+    @nogc @safe
     ref Color opOpAssign(string op)(Color otherColor)
         if(op == "+" || op == "-" || op == "*" || op == "/")
     {
@@ -251,7 +251,7 @@ struct Color
      *      A reference to this color after performing the multiplication or
      *      division.
      */
-    @safe
+    @nogc @safe
     ref Color opOpAssign(string op, E)(E num)
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
@@ -297,13 +297,13 @@ struct Color
      * Returns:
      *      The number as a ubyte [0 .. 255]
      */
-    @safe
+    @nogc @safe
     private ubyte assure(int i) const
     {
         return cast(ubyte) min(max(i, 0), 255);
     }
 
-    @safe
+    @nogc @safe
     private ubyte assure(double d) const
     {
         return assure(cast(int) d);

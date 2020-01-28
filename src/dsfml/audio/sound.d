@@ -98,6 +98,7 @@ class Sound : SoundSource
     }
 
     /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfSound_destroy(m_sound);

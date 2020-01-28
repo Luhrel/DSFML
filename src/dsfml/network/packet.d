@@ -541,7 +541,7 @@ class Packet
 }
 
 // Shows a warning if the string exceed the max size for packets.
-@nogc @safe
+@safe
 private void checkPacketStringSize(T)(T str)
     if (is(T == string) || is(T == dstring) || is(T == wstring))
 {

@@ -153,7 +153,7 @@ class Transformable
     }
 
     /// Virtual destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfTransformable_destroy(m_transformable);

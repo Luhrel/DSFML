@@ -176,7 +176,6 @@ class Shader
      * Special type that can be passed to uniform(), and that represents the
      * texture of the object being drawn.
      */
-    @safe
     struct CurrentTextureType
     {
         // Nothing to declare.
@@ -191,14 +190,14 @@ class Shader
     static CurrentTextureType currentTexture;
 
     /// Default constructor.
-    @safe
+    @nogc @safe
     this()
     {
         // Nothing to do.
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfShader_destroy(m_shader);

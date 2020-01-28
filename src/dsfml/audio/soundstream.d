@@ -125,7 +125,7 @@ class SoundStream : SoundSource
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfSoundStream_destroy(m_soundStream);

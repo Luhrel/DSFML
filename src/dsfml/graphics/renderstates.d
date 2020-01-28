@@ -27,7 +27,7 @@ struct RenderStates
      * Params:
      *      blendMode = Blend mode to use
      */
-    @safe
+    @nogc @safe
     this(BlendMode blendMode)
     {
         this.blendMode = blendMode;
@@ -39,7 +39,7 @@ struct RenderStates
      * Params:
      *      transform = Transform to use
      */
-    @safe
+    @nogc @safe
     this(Transform transform)
     {
         this.transform = transform;
@@ -51,7 +51,7 @@ struct RenderStates
      * Params:
      *      texture = Texture to use
      */
-    @safe
+    @nogc @safe
     this(Texture texture)
     {
         this.texture = texture;
@@ -63,7 +63,7 @@ struct RenderStates
      * Params:
      *      shader = Shader to use
      */
-    @safe
+    @nogc @safe
     this(Shader shader)
     {
         this.shader = shader;
@@ -78,7 +78,7 @@ struct RenderStates
      *      texture   = Texture to use
      *      shader    = Shader to use
      */
-    @safe
+    @nogc @safe
     this(BlendMode blendMode, Transform transform, Texture texture, Shader shader)
     {
         this.blendMode = blendMode;

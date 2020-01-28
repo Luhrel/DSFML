@@ -103,7 +103,7 @@ struct Rect(T)
      *      rectWidth  = Width of the rectangle
      *      rectHeight = Height of the rectangle
      */
-    @safe
+    @nogc @safe
     this(T rectLeft, T rectTop, T rectWidth, T rectHeight)
     {
         left = rectLeft;
@@ -122,7 +122,7 @@ struct Rect(T)
      *      position = Position of the top-left corner of the rectangle
      *      size     = Size of the rectangle
      */
-    @safe
+    @nogc @safe
     this(Vector2!(T) position, Vector2!(T) size)
     {
         left = position.x;
@@ -141,7 +141,7 @@ struct Rect(T)
      * Params:
      *      rectangle = Rectangle to convert
      */
-    @safe
+    @nogc @safe
     this(U)(Rect!(U) rectangle)
     {
         left = cast(T) rectangle.left;

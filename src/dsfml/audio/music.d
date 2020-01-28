@@ -98,6 +98,7 @@ class Music : SoundStream
     private sfMusic* m_music;
 
     /// Destructor
+    @nogc @safe
     ~this()
     {
         //stop();

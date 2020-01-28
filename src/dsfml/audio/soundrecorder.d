@@ -152,7 +152,7 @@ class SoundRecorder
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfSoundRecorder_destroy(m_soundRecorder);

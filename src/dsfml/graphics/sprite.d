@@ -151,7 +151,7 @@ class Sprite : Transformable, Drawable
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfSprite_destroy(m_sprite);

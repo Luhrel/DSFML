@@ -82,7 +82,7 @@ class Shape : Transformable, Drawable
     }
 
     /// Virtual destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfShape_destroy(m_shape);

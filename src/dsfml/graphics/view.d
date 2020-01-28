@@ -136,7 +136,7 @@ class View
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfView_destroy(m_view);

@@ -126,14 +126,14 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      create
      */
-    @safe
+    @nogc @safe
     this()
     {
         // Nothing to do.
     }
 
     /// Desructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfRenderTexture_destroy(m_renderTexture);

@@ -115,7 +115,7 @@ class SoundBuffer
     }
 
     /// Destructor.
-    @safe
+    @nogc @safe
     ~this()
     {
         sfSoundBuffer_destroy(m_soundBuffer);
