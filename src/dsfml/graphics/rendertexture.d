@@ -428,7 +428,7 @@ class RenderTexture : RenderTarget
      *      drawable = Object to draw
      * 		states   = Render states to use for drawing
      */
-    void draw(Drawable drawable, ref RenderStates states)
+    void draw(Drawable drawable, RenderStates states = RenderStates.init)
     {
         drawable.draw(this, states);
     }
@@ -441,10 +441,12 @@ class RenderTexture : RenderTarget
      * 		type     = Type of primitives to draw
      * 		states   = Render states to use for drawing
      */
-    void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
+    void draw(const(Vertex)[] vertices, PrimitiveType type,
+        RenderStates states = RenderStates.init)
     {
         sfRenderStates sfStates = convertRenderStates(states);
-        sfRenderTexture_drawPrimitives(m_renderTexture, vertices.ptr, vertices.length, type, &sfStates);
+        sfRenderTexture_drawPrimitives(m_renderTexture, vertices.ptr,
+            vertices.length, type, &sfStates);
     }
 
     /**
@@ -457,10 +459,12 @@ class RenderTexture : RenderTarget
      *      states       = Render states to use for drawing
      */
     // TODO: implements firstVertex and vertexCount
-    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t vertexCount, ref RenderStates states)
+    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t vertexCount,
+        RenderStates states = RenderStates.init)
     {
         sfRenderStates sfStates = convertRenderStates(states);
-        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr, &sfStates);
+        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr,
+            &sfStates);
     }
 
     /**
@@ -470,7 +474,7 @@ class RenderTexture : RenderTarget
      *      vertexBuffer = Vertex buffer
      *      states       = Render states to use for drawing
      */
-    void draw(VertexBuffer vertexBuffer, ref RenderStates states)
+    void draw(VertexBuffer vertexBuffer, RenderStates states = RenderStates.init)
     {
         draw(vertexBuffer, 0, vertexBuffer.vertexCount, states);
     }

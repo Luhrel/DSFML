@@ -708,7 +708,7 @@ class RenderWindow : Window, RenderTarget
      *      drawable = Object to draw
      *      states   = Render states to use for drawing
      */
-    void draw(Drawable drawable, ref RenderStates states)
+    void draw(Drawable drawable, RenderStates states = RenderStates.init)
     {
         if (m_renderWindow is null)
             return;
@@ -757,7 +757,7 @@ class RenderWindow : Window, RenderTarget
      *      type     = Type of primitives to draw
      *      states   = Render states to use for drawing
      */
-    void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states)
+    void draw(const(Vertex)[] vertices, PrimitiveType type, RenderStates states = RenderStates.init)
     {
         if (m_renderWindow !is null)
         {
@@ -773,7 +773,7 @@ class RenderWindow : Window, RenderTarget
      *      vertexBuffer = Vertex buffer
      *      states       = Render states to use for drawing
      */
-    void draw(VertexBuffer vertexBuffer, ref RenderStates states)
+    void draw(VertexBuffer vertexBuffer, RenderStates states = RenderStates.init)
     {
         if (m_renderWindow !is null)
         {
@@ -794,7 +794,7 @@ class RenderWindow : Window, RenderTarget
     // TODO: Not yet implemented in CSFML
     @disable
     void draw(VertexBuffer vertexBuffer, size_t firstVertex,
-              size_t vertexCount, ref RenderStates states)
+              size_t vertexCount, RenderStates states = RenderStates.init)
     {
         if (m_renderWindow !is null)
         {

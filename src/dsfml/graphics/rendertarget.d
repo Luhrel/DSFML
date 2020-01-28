@@ -171,7 +171,7 @@ interface RenderTarget
      *      drawable = Object to draw
      *      states   = Render states to use for drawing
      */
-    void draw(Drawable drawable, ref RenderStates states);
+    void draw(Drawable drawable, RenderStates states = RenderStates.init);
 
     /**
      * Draw primitives defined by an array of vertices.
@@ -181,7 +181,7 @@ interface RenderTarget
      *      type     = Type of primitives to draw
      *      states   = Render states to use for drawing
      */
-    void draw(const(Vertex)[] vertices, PrimitiveType type, ref RenderStates states);
+    void draw(const(Vertex)[] vertices, PrimitiveType type, RenderStates states = RenderStates.init);
 
     /**
      * Draw primitives defined by a vertex buffer.
@@ -190,7 +190,7 @@ interface RenderTarget
      *      vertexBuffer = Vertex buffer
      *      states       = Render states to use for drawing
      */
-    void draw(VertexBuffer vertexBuffer, ref RenderStates states);
+    void draw(VertexBuffer vertexBuffer, RenderStates states = RenderStates.init);
 
     /**
      * Draw primitives defined by a vertex buffer.
@@ -201,7 +201,7 @@ interface RenderTarget
      *      vertexCount  = Number of vertices to render
      *      states       = Render states to use for drawing
      */
-    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t	vertexCount, ref RenderStates states);
+    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t	vertexCount, RenderStates states = RenderStates.init);
 
     /**
      * Convert a point from target coordinates to world coordinates, using the
