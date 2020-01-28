@@ -101,19 +101,21 @@ class SoundBuffer
     private sfSoundBuffer* m_soundBuffer = null;
 
     /// Default constructor.
+    @safe
     this()
     {
         // Nothing to do.
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfSoundBuffer* soundBufferPointer)
     {
         m_soundBuffer = sfSoundBuffer_copy(soundBufferPointer);
     }
 
     /// Destructor.
+    @safe
     ~this()
     {
         sfSoundBuffer_destroy(m_soundBuffer);
@@ -161,7 +163,7 @@ class SoundBuffer
      * See_Also:
      *      channelCount, duration
      */
-    @property @nogc
+    @property @nogc @safe
     uint sampleRate() const
     {
         if (m_soundBuffer is null)
@@ -180,7 +182,7 @@ class SoundBuffer
      * See_Also:
      *      samples
      */
-    @property @nogc
+    @property @nogc @safe
     ulong sampleCount() const
     {
         if (m_soundBuffer is null)
@@ -200,7 +202,7 @@ class SoundBuffer
      * See_Also:
      *      sampleRate, duration
      */
-    @property @nogc
+    @property @nogc @safe
     uint channelCount() const
     {
         if (m_soundBuffer is null)
@@ -217,7 +219,7 @@ class SoundBuffer
      * See_Also:
      *      sampleRate, channelCount
      */
-    @property @nogc
+    @property @nogc @safe
     Time duration() const
     {
         if (m_soundBuffer is null)
@@ -239,6 +241,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromMemory, loadFromStream, loadFromSamples, saveToFile
      */
+    @safe
     bool loadFromFile(string filename)
     {
         m_soundBuffer = sfSoundBuffer_createFromFile(filename.toStringz);
@@ -280,7 +283,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, loadFromSamples
      */
-    @nogc
+    @nogc @safe
     bool loadFromStream(InputStream stream)
     {
         m_soundBuffer = sfSoundBuffer_createFromStream(stream.ptr);
@@ -324,6 +327,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, loadFromSamples
      */
+    @safe
     bool saveToFile(string filename) const
     {
         if (m_soundBuffer != null)
@@ -332,14 +336,14 @@ class SoundBuffer
     }
 
     // Returns de C pointer.
-    @property @nogc
+    @property @nogc @safe
     package sfSoundBuffer* ptr()
     {
         return m_soundBuffer;
     }
 
     /// Duplicates this SoundBuffer.
-    @property
+    @property @safe
     SoundBuffer dup()
     {
         return new SoundBuffer(m_soundBuffer);
@@ -352,7 +356,7 @@ package extern(C)
 }
 
 // CSFML's functions.
-@nogc
+@nogc @safe
 private extern(C)
 {
     void sfSoundBuffer_destroy(sfSoundBuffer* soundBuffer);

@@ -152,6 +152,7 @@ class SoundRecorder
     }
 
     /// Destructor.
+    @safe
     ~this()
     {
         sfSoundRecorder_destroy(m_soundRecorder);
@@ -172,14 +173,14 @@ class SoundRecorder
      * Returns:
      *      true, if start of capture was successful
      */
-    @nogc
+    @nogc @safe
     bool start(uint sampleRate = 44100)
     {
         return sfSoundRecorder_start(m_soundRecorder, sampleRate);
     }
 
     /// Stop the capture.
-    @nogc
+    @nogc @safe
     void stop()
     {
         sfSoundRecorder_stop(m_soundRecorder);
@@ -197,7 +198,7 @@ class SoundRecorder
          * Returns:
          *      Sample rate, in samples per second
          */
-        @nogc
+        @nogc @safe
         uint sampleRate() const
         {
             return sfSoundRecorder_getSampleRate(m_soundRecorder);
@@ -233,6 +234,7 @@ class SoundRecorder
          * See_Also:
          *      availableDevices
          */
+        @safe
         bool device(string name)
         {
             return sfSoundRecorder_setDevice(m_soundRecorder, name.toStringz);
@@ -250,7 +252,7 @@ class SoundRecorder
          * Returns:
          *      Number of channels
          */
-        @nogc
+        @nogc @safe
         uint channelCount() const
         {
             return sfSoundRecorder_getChannelCount(m_soundRecorder);
@@ -265,7 +267,7 @@ class SoundRecorder
          * Params:
          *      _channelCount=Number of channels. Currently only mono (1) and stereo (2) are supported.
          */
-        @nogc
+        @nogc @safe
         void channelCount(uint _channelCount)
         {
             sfSoundRecorder_setChannelCount(m_soundRecorder, _channelCount);
@@ -330,7 +332,7 @@ class SoundRecorder
      * Returns:
      *      true if audio capture is supported, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool isAvailable()
     {
         return sfSoundRecorder_isAvailable();
@@ -353,7 +355,7 @@ class SoundRecorder
          * Params:
          *      interval = Processing interval
          */
-        @nogc
+        @nogc @safe
         void setProcessingInterval(Time interval)
         {
             sfSoundRecorder_setProcessingInterval(m_soundRecorder, interval);
@@ -448,7 +450,7 @@ private extern(C)
 
     struct sfSoundRecorder;
 
-    @nogc:
+    @nogc @safe:
 
     sfSoundRecorder* sfSoundRecorder_create(sfSoundRecorderStartCallback onStart,
         sfSoundRecorderProcessCallback onProcess,

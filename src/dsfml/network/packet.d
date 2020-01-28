@@ -148,19 +148,21 @@ class Packet
      *
      * Creates an empty packet.
      */
+    @nogc @safe
     this()
     {
         m_packet = sfPacket_create();
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfPacket* packetPointer)
     {
         m_packet = sfPacket_copy(packetPointer);
     }
 
     /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfPacket_destroy(m_packet);
@@ -201,7 +203,7 @@ class Packet
      * See_Also:
      *      append
      */
-    @nogc
+    @nogc @safe
     void clear()
     {
         sfPacket_clear(m_packet);
@@ -219,7 +221,7 @@ class Packet
      * See_Also:
      *      opCast
      */
-    @nogc
+    @nogc @safe
     bool endOfPacket() const
     {
         return sfPacket_endOfPacket(m_packet);
@@ -517,21 +519,21 @@ class Packet
      * See_Also:
      *      endOfPacket
      */
-    @nogc
+    @nogc @safe
     bool opCast(T : bool)()
     {
         // sfPacket_canRead calls the BoolType operator of SFML's sf::Packet
         return sfPacket_canRead(m_packet);
     }
 
-    @property @nogc
+    @property @nogc @safe
     package sfPacket* ptr()
     {
         return m_packet;
     }
 
     /// Duplicates this Packet.
-    @property
+    @property @safe
     Packet dup()
     {
         return new Packet(m_packet);
@@ -539,6 +541,7 @@ class Packet
 }
 
 // Shows a warning if the string exceed the max size for packets.
+@nogc @safe
 private void checkPacketStringSize(T)(T str)
     if (is(T == string) || is(T == dstring) || is(T == wstring))
 {
@@ -554,7 +557,7 @@ package extern(C)
     struct sfPacket;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfPacket* sfPacket_create();

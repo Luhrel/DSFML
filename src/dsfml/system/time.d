@@ -81,6 +81,7 @@ struct Time
     private long m_microseconds;
 
     //Internal constructor
+    @nogc @safe
     package this(long microseconds)
     {
         m_microseconds = microseconds;
@@ -92,7 +93,7 @@ struct Time
      * Returns:
      *      Time in seconds.
      */
-    @nogc
+    @nogc @safe
     float asSeconds() const
     {
         return m_microseconds / 1_000_000f;
@@ -104,7 +105,7 @@ struct Time
      * Returns:
      *      Time in milliseconds.
      */
-    @nogc
+    @nogc @safe
     int asMilliseconds() const
     {
         return cast(int)(m_microseconds / 1_000);
@@ -116,7 +117,7 @@ struct Time
      * Returns:
      *      Time in microseconds.
      */
-    @nogc
+    @nogc @safe
     long asMicroseconds() const
     {
         return m_microseconds;
@@ -128,7 +129,7 @@ struct Time
      * Returns:
      *      Time as `Duration`
      */
-    @nogc
+    @nogc @safe
     Duration asDuration() const
     {
         return usecs(m_microseconds);
@@ -140,13 +141,13 @@ struct Time
      */
     static immutable(Time) Zero;
 
-    @nogc
+    @nogc @safe
     bool opEquals(const Time rhs) const
     {
         return m_microseconds == rhs.m_microseconds;
     }
 
-    @nogc
+    @nogc @safe
     int opCmp(const ref Time rhs) const
     {
         if(opEquals(rhs))
@@ -166,7 +167,7 @@ struct Time
     /**
      * Overload of unary - operator to negate a time value.
      */
-    @nogc
+    @nogc @safe
     Time opUnary(string s)() const
         if (s == "-")
     {
@@ -177,6 +178,7 @@ struct Time
     /**
      * Overload of binary + and - operators toadd or subtract two time values.
      */
+    @nogc @safe
     Time opBinary(string op)(Time rhs) const
         if (op == "+" || op == "-")
     {
@@ -193,6 +195,7 @@ struct Time
     /**
      * Overload of += and -= assignment operators.
      */
+    @nogc @safe
     ref Time opOpAssign(string op)(Time rhs)
         if(op == "+" || op == "-")
     {
@@ -212,6 +215,7 @@ struct Time
     /**
      * Overload of binary * and / operators to scale a time value.
      */
+    @nogc @safe
     Time opBinary (string op, E)(E num) const
         if(isNumeric!(E) && (op == "*" || op == "/"))
     {
@@ -228,8 +232,9 @@ struct Time
     /**
      * Overload of *= and /= assignment operators.
      */
+    @nogc @safe
     ref Time opOpAssign(string op,E)(E num)
-    if(isNumeric!(E) && ((op == "*") || (op == "/")))
+        if(isNumeric!(E) && (op == "*" || op == "/"))
     {
         static if(op == "*")
         {
@@ -253,9 +258,10 @@ struct Time
  * Returns:
  *      Time value constructed from the amount of microseconds.
  */
+@nogc @safe
 Time seconds(float amount)
 {
-    return Time(cast(long)(amount * 1000000));
+    return Time(cast(long)(amount * 1_000_000));
 }
 /**
  * Construct a time value from a number of milliseconds.
@@ -266,6 +272,7 @@ Time seconds(float amount)
  * Returns:
  *      Time value constructed from the amount of microseconds.
  */
+@nogc @safe
 Time milliseconds(int amount)
 {
     return Time(amount * 1000);
@@ -280,6 +287,7 @@ Time milliseconds(int amount)
  * Returns:
  *      Time value constructed from the amount of microseconds.
  */
+@nogc @safe
 Time microseconds(long amount)
 {
     return Time(amount);
@@ -294,6 +302,7 @@ Time microseconds(long amount)
  * Returns:
  *      Time value constructed from the time duration.
  */
+@nogc @safe
 Time duration(Duration dur)
 {
     return Time(dur.total!"usecs"());

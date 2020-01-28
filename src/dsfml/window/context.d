@@ -72,12 +72,14 @@ class Context
      *
      * The constructor creates and activates the context.
      */
+    @nogc @safe
     this()
     {
         m_context = sfContext_create();
     }
 
     /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfContext_destroy(m_context);
@@ -92,7 +94,7 @@ class Context
      * Returns:
      *      true on success, false on failure.
      */
-    @property @nogc
+    @property @nogc @safe
     void active(bool _active)
     {
         sfContext_setActive(m_context, _active);
@@ -108,7 +110,7 @@ class Context
      * Returns:
      *      Structure containing the settings
      */
-    @property @nogc
+    @property @nogc @safe
     ContextSettings settings()
     {
         return sfContext_getSettings(m_context);
@@ -124,7 +126,7 @@ class Context
      * Returns:
      *      The active context's ID or 0 if no context is currently active
      */
-    @nogc
+    @nogc @safe
     static ulong activeContextId()
     {
         return sfContext_getActiveContextId();
@@ -140,7 +142,7 @@ class Context
      *      Address of the OpenGL function, 0 on failure
      */
     // TODO: Not yet implemented in CSFML
-    @disable @nogc
+    @disable @nogc @safe
     static GlFunctionPointer getFunction(const string name)
     {
         //return sfContext_getFunction(name.ptr);
@@ -157,7 +159,7 @@ class Context
      *      true if available, false if unavailable
      */
     // TODO: Not yet implemented in CSFML
-    @disable @nogc
+    @disable @nogc @safe
     static bool isExtensionAvailable(const string name)
     {
         //return sfContext_isExtensionAvailable(name.ptr);
@@ -165,7 +167,7 @@ class Context
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     struct sfContext;

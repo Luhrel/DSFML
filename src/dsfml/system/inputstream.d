@@ -173,7 +173,7 @@ abstract class InputStream
     }
 
     // Returns the C pointer.
-    @property @nogc
+    @property @nogc @safe
     package(dsfml) sfInputStream* ptr()
     {
         return m_inputstream;

@@ -27,6 +27,7 @@ struct RenderStates
      * Params:
      *      blendMode = Blend mode to use
      */
+    @safe
     this(BlendMode blendMode)
     {
         this.blendMode = blendMode;
@@ -38,6 +39,7 @@ struct RenderStates
      * Params:
      *      transform = Transform to use
      */
+    @safe
     this(Transform transform)
     {
         this.transform = transform;
@@ -49,6 +51,7 @@ struct RenderStates
      * Params:
      *      texture = Texture to use
      */
+    @safe
     this(Texture texture)
     {
         this.texture = texture;
@@ -60,6 +63,7 @@ struct RenderStates
      * Params:
      *      shader = Shader to use
      */
+    @safe
     this(Shader shader)
     {
         this.shader = shader;
@@ -74,6 +78,7 @@ struct RenderStates
      *      texture   = Texture to use
      *      shader    = Shader to use
      */
+    @safe
     this(BlendMode blendMode, Transform transform, Texture texture, Shader shader)
     {
         this.blendMode = blendMode;
@@ -83,7 +88,7 @@ struct RenderStates
     }
 }
 
-@nogc
+@nogc @safe
 package sfRenderStates convertRenderStates(ref RenderStates states)
 {
     if (states.texture !is null && states.shader !is null)

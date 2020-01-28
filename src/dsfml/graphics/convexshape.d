@@ -91,6 +91,7 @@ class ConvexShape : Shape
     }
 
     /// Virtual destructor.
+    @safe
     ~this()
     {
         sfConvexShape_destroy(m_convexShape);
@@ -116,7 +117,7 @@ class ConvexShape : Shape
          *      resetRect = Should the texture rect be reset to the size of the
          *                  new texture ?
          */
-        @nogc
+        @nogc @safe
         override void texture(Texture _texture, bool resetRect = false)
         {
             sfConvexShape_setTexture(m_convexShape, _texture.ptr, resetRect);
@@ -132,6 +133,7 @@ class ConvexShape : Shape
          * Returns:
          *      The shape's texture.
          */
+        @safe
         override const(Texture) texture() const
         {
             return new Texture(sfConvexShape_getTexture(m_convexShape));
@@ -153,7 +155,7 @@ class ConvexShape : Shape
          * See_Also:
          *      texture
          */
-        @nogc
+        @nogc @safe
         override void textureRect(IntRect rect)
         {
             sfConvexShape_setTextureRect(m_convexShape, rect);
@@ -165,7 +167,7 @@ class ConvexShape : Shape
          * Returns:
          *      Texture rectangle of the shape
          */
-        @nogc
+        @nogc @safe
         override IntRect textureRect() const
         {
             return sfConvexShape_getTextureRect(m_convexShape);
@@ -189,7 +191,7 @@ class ConvexShape : Shape
          * See_Also:
          *      outlineColor
          */
-        @nogc
+        @nogc @safe
         override void fillColor(Color color)
         {
             sfConvexShape_setFillColor(m_convexShape, color);
@@ -201,7 +203,7 @@ class ConvexShape : Shape
          * Returns:
          *      Fill color of the shape
          */
-        @nogc
+        @nogc @safe
         override Color fillColor() const
         {
             return sfConvexShape_getFillColor(m_convexShape);
@@ -221,7 +223,7 @@ class ConvexShape : Shape
          * See_Also:
          *      fillColor
          */
-        @nogc
+        @nogc @safe
         override void outlineColor(Color color)
         {
             sfConvexShape_setOutlineColor(m_convexShape, color);
@@ -236,7 +238,7 @@ class ConvexShape : Shape
          * See_Also:
          *      fillColor
          */
-        @nogc
+        @nogc @safe
         override Color outlineColor() const
         {
             return sfConvexShape_getOutlineColor(m_convexShape);
@@ -255,7 +257,7 @@ class ConvexShape : Shape
          * Params:
          *      thickness = New outline thickness
          */
-        @nogc
+        @nogc @safe
         override void outlineThickness(float thickness)
         {
             sfConvexShape_setOutlineThickness(m_convexShape, thickness);
@@ -267,7 +269,7 @@ class ConvexShape : Shape
          * Returns:
          *      Outline thickness of the shape
          */
-        @nogc
+        @nogc @safe
         override float outlineThickness() const
         {
             return sfConvexShape_getOutlineThickness(m_convexShape);
@@ -289,7 +291,7 @@ class ConvexShape : Shape
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc
+        @nogc @safe
         override void origin(float x, float y)
         {
             origin(Vector2f(x, y));
@@ -307,7 +309,7 @@ class ConvexShape : Shape
          * Params:
          *     _origin = New origin
          */
-        @nogc
+        @nogc @safe
         override void origin(Vector2f _origin)
         {
             sfConvexShape_setOrigin(m_convexShape, _origin);
@@ -319,7 +321,7 @@ class ConvexShape : Shape
          * Returns:
          *      Current origin
          */
-        @nogc
+        @nogc @safe
         override Vector2f origin() const
         {
             return sfConvexShape_getOrigin(m_convexShape);
@@ -336,7 +338,7 @@ class ConvexShape : Shape
          * Params:
          *      count = New number of points of the polygon
          */
-        @nogc
+        @nogc @safe
         void pointCount(size_t count)
         {
             sfConvexShape_setPointCount(m_convexShape, count);
@@ -348,7 +350,7 @@ class ConvexShape : Shape
          * Returns:
          *      Number of points of the polygon
          */
-        @nogc
+        @nogc @safe
         override size_t pointCount() const
         {
             return sfConvexShape_getPointCount(m_convexShape);
@@ -371,7 +373,7 @@ class ConvexShape : Shape
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         override void position(float x, float y)
         {
             position(Vector2f(x, y));
@@ -390,7 +392,7 @@ class ConvexShape : Shape
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         override void position(Vector2f _position)
         {
             sfConvexShape_setPosition(m_convexShape, _position);
@@ -402,7 +404,7 @@ class ConvexShape : Shape
          * Returns:
          *      Current position
          */
-        @nogc
+        @nogc @safe
         override Vector2f position() const
         {
             return sfConvexShape_getPosition(m_convexShape);
@@ -421,7 +423,7 @@ class ConvexShape : Shape
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc
+    @nogc @safe
     override void rotate(float angle)
     {
         sfConvexShape_rotate(m_convexShape, angle);
@@ -442,7 +444,7 @@ class ConvexShape : Shape
          * See_Also:
          *      rotate
          */
-        @nogc
+        @nogc @safe
         override void rotation(float angle)
         {
             sfConvexShape_setRotation(m_convexShape, angle);
@@ -456,7 +458,7 @@ class ConvexShape : Shape
          * Returns:
          *      Current rotation, in degrees
          */
-        @nogc
+        @nogc @safe
         override float rotation() const
         {
             return sfConvexShape_getRotation(m_convexShape);
@@ -476,7 +478,7 @@ class ConvexShape : Shape
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc
+        @nogc @safe
         override void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
@@ -492,7 +494,7 @@ class ConvexShape : Shape
          * Params:
          *      factors = New scale factors
          */
-        @nogc
+        @nogc @safe
         override void scale(Vector2f factors)
         {
             sfConvexShape_setScale(m_convexShape, factors);
@@ -504,7 +506,7 @@ class ConvexShape : Shape
          * Returns:
          *      Current scale factors
          */
-        @nogc
+        @nogc @safe
         override Vector2f scale() const
         {
             return sfConvexShape_getScale(m_convexShape);
@@ -527,7 +529,7 @@ class ConvexShape : Shape
      * Returns:
      *      Global bounding rectangle of the entity
      */
-    @property @nogc
+    @property @nogc @safe
     override FloatRect globalBounds() const
     {
         return sfConvexShape_getGlobalBounds(m_convexShape);
@@ -544,7 +546,7 @@ class ConvexShape : Shape
      * Returns:
      *      Local bounding rectangle of the entity.
      */
-    @property @nogc
+    @property @nogc @safe
     override FloatRect localBounds() const
     {
         return sfConvexShape_getLocalBounds(m_convexShape);
@@ -566,7 +568,7 @@ class ConvexShape : Shape
      * See_Also:
      *      setPoint
      */
-    @nogc
+    @nogc @safe
     override Vector2f getPoint(size_t index = 0) const
     {
         return sfConvexShape_getPoint(m_convexShape, index);
@@ -588,7 +590,7 @@ class ConvexShape : Shape
      * See_Also:
      *      getPoint
      */
-    @nogc
+    @nogc @safe
     void setPoint(size_t index, Vector2f point)
     {
         sfConvexShape_setPoint(m_convexShape, index, point);
@@ -603,7 +605,7 @@ class ConvexShape : Shape
      * convex[4] = Vector2f(4, 2);
      * ---
      */
-    @nogc
+    @nogc @safe
     void opIndexAssign(Vector2f vec, size_t index)
     {
         setPoint(index, vec);
@@ -617,6 +619,7 @@ class ConvexShape : Shape
      * convex[4] += Vector2f(1, 6);
      * ---
      */
+    @safe
     void opIndexOpAssign(string op)(Vector2f vec, size_t index)
     {
         mixin("Vector2f res = getPoint(index) " ~ op ~ " vec;");
@@ -631,6 +634,7 @@ class ConvexShape : Shape
      * convex[4] -= 3;
      * ---
      */
+    @safe
     void opIndexOpAssign(string op)(size_t num, size_t index)
     {
         mixin("Vector2f res = getPoint(index) " ~ op ~ " num;");
@@ -655,7 +659,7 @@ class ConvexShape : Shape
      * Returns:
      *      Inverse of the combined transformations applied to the object
      */
-    @nogc
+    @nogc @safe
     override Transform inverseTransform() const
     {
         return Transform(sfConvexShape_getInverseTransform(m_convexShape));
@@ -670,7 +674,7 @@ class ConvexShape : Shape
      * See_Also:
      *      inverseTransform
      */
-    @nogc
+    @nogc @safe
     override Transform transform()
     {
         return Transform(sfConvexShape_getTransform(m_convexShape));
@@ -693,7 +697,7 @@ class ConvexShape : Shape
      * See_Also:
      *      position
      */
-    @nogc
+    @nogc @safe
     override void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
@@ -711,14 +715,14 @@ class ConvexShape : Shape
      * Params:
      *     offset = Offset
      */
-    @nogc
+    @nogc @safe
     override void move(Vector2f offset)
     {
         sfConvexShape_move(m_convexShape, offset);
     }
 
     // Returns the C pointer.
-    @property @nogc
+    @property @nogc @safe
     package sfConvexShape* ptr()
     {
         return m_convexShape;
@@ -737,7 +741,7 @@ package extern(C)
     struct sfConvexShape;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfConvexShape* sfConvexShape_create();

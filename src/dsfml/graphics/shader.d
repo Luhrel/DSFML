@@ -176,6 +176,7 @@ class Shader
      * Special type that can be passed to uniform(), and that represents the
      * texture of the object being drawn.
      */
+    @safe
     struct CurrentTextureType
     {
         // Nothing to declare.
@@ -190,12 +191,14 @@ class Shader
     static CurrentTextureType currentTexture;
 
     /// Default constructor.
+    @safe
     this()
     {
         // Nothing to do.
     }
 
     /// Destructor.
+    @safe
     ~this()
     {
         sfShader_destroy(m_shader);
@@ -220,6 +223,7 @@ class Shader
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
+    @safe
     bool loadFromFile(const(string) filename, Type type)
     {
         if (type == Type.Vertex)
@@ -251,11 +255,12 @@ class Shader
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
+    @safe
     bool loadFromFile(const(string) vertexShaderFilename,
         const(string) fragmentShaderFilename)
     {
         m_shader = sfShader_createFromFile(vertexShaderFilename.toStringz, null,
-            fragmentShaderFilename.ptr);
+            fragmentShaderFilename.toStringz);
         return m_shader != null;
     }
 
@@ -277,6 +282,7 @@ class Shader
      * Returns: true if loading succeeded, false if it failed.
      * See_Also: loadFromMemory, loadFromStream
      */
+    @safe
     bool loadFromFile(const(string) vertexShaderFilename,
         const(string) geometryShaderFilename, const(string) fragmentShaderFilename)
     {
@@ -304,6 +310,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromStream
      */
+    @safe
     bool loadFromMemory(const(string) shader, Type type)
     {
         if (type == Type.Vertex)
@@ -335,6 +342,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromStream
      */
+    @safe
     bool loadFromMemory(const(string) vertexShader, const(string) fragmentShader)
     {
         m_shader =  sfShader_createFromMemory(vertexShader.toStringz, null, fragmentShader.toStringz);
@@ -362,6 +370,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromStream
      */
+    @safe
     bool loadFromMemory(const(string) vertexShader, const(string) geometryShader,
         const(string) fragmentShader)
     {
@@ -388,7 +397,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc
+    @nogc @safe
     bool loadFromStream(InputStream stream, Type type)
     {
         if (type == Type.Vertex)
@@ -419,7 +428,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc
+    @nogc @safe
     bool loadFromStream(InputStream vertexShaderStream, InputStream fragmentShaderStream)
     {
         m_shader = sfShader_createFromStream(vertexShaderStream.ptr, null, fragmentShaderStream.ptr);
@@ -446,7 +455,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc
+    @nogc @safe
     bool loadFromStream(InputStream vertexShaderStream, InputStream geometryShaderStream, InputStream fragmentShaderStream)
     {
         m_shader = sfShader_createFromStream(vertexShaderStream.ptr, geometryShaderStream.ptr, fragmentShaderStream.ptr);
@@ -608,7 +617,7 @@ class Shader
      * Params:
      *      shader = Shader to bind. Can be null to use no shader.
      */
-    @nogc
+    @nogc @safe
     static void bind(Shader shader)
     {
         sfShader_bind(shader.ptr);
@@ -623,7 +632,7 @@ class Shader
      * Returns:
      *      true if shaders are supported, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool isAvailable()
     {
         return sfShader_isAvailable();
@@ -646,7 +655,7 @@ class Shader
      * Returns:
      *      true if geometry shaders are supported, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool isGeometryAvailable()
     {
         return sfShader_isGeometryAvailable();
@@ -662,7 +671,7 @@ class Shader
      * Returns:
      *      OpenGL handle of the shader or 0 if not yet loaded
      */
-    @nogc
+    @nogc @safe
     uint nativeHandle() const
     {
         if (m_shader is null)
@@ -671,7 +680,7 @@ class Shader
     }
 
     // Retuns the C pointer
-    @property @nogc
+    @property @nogc @safe
     package sfShader* ptr()
     {
         return m_shader;
@@ -683,7 +692,7 @@ package extern(C)
     struct sfShader;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfShader* sfShader_createFromFile(const char* vertexShaderFilename, const char* geometryShaderFilename, const char* fragmentShaderFilename);

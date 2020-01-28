@@ -127,19 +127,21 @@ class SocketSelector
     private sfSocketSelector* m_socketSelector;
 
     /// Default constructor.
+    @nogc @safe
     this()
     {
         m_socketSelector = sfSocketSelector_create();
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfSocketSelector* socketSelectorPointer)
     {
         m_socketSelector = sfSocketSelector_copy(socketSelectorPointer);
     }
 
     /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfSocketSelector_destroy(m_socketSelector);
@@ -158,7 +160,7 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
-    @nogc
+    @nogc @safe
     void add(TcpListener listener)
     {
         sfSocketSelector_addTcpListener(m_socketSelector, listener.ptr);
@@ -177,7 +179,7 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
-    @nogc
+    @nogc @safe
     void add(TcpSocket socket)
     {
         sfSocketSelector_addTcpSocket(m_socketSelector, socket.ptr);
@@ -196,7 +198,7 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
-    @nogc
+    @nogc @safe
     void add(UdpSocket socket)
     {
         sfSocketSelector_addUdpSocket(m_socketSelector, socket.ptr);
@@ -211,7 +213,7 @@ class SocketSelector
      * See_Also:
      *      add, remove
      */
-    @nogc
+    @nogc @safe
     void clear()
     {
         sfSocketSelector_clear(m_socketSelector);
@@ -232,21 +234,21 @@ class SocketSelector
      * Returns:
      *      true if the socket is ready to read, false otherwise.
      */
-    @nogc
+    @nogc @safe
     bool isReady(TcpListener socket) const
     {
         return sfSocketSelector_isTcpListenerReady(m_socketSelector, socket.ptr);
     }
 
     /// ditto
-    @nogc
+    @nogc @safe
     bool isReady(TcpSocket socket) const
     {
         return sfSocketSelector_isTcpSocketReady(m_socketSelector, socket.ptr);
     }
 
     /// ditto
-    @nogc
+    @nogc @safe
     bool isReady(UdpSocket socket) const
     {
         return sfSocketSelector_isUdpSocketReady(m_socketSelector, socket.ptr);
@@ -264,7 +266,7 @@ class SocketSelector
      * See_Also:
      *      add, clear
      */
-    @nogc
+    @nogc @safe
     void remove(TcpListener socket)
     {
         sfSocketSelector_removeTcpListener(m_socketSelector, socket.ptr);
@@ -282,7 +284,7 @@ class SocketSelector
      * See_Also:
      *      add, clear
      */
-    @nogc
+    @nogc @safe
     void remove(TcpSocket socket)
     {
         sfSocketSelector_removeTcpSocket(m_socketSelector, socket.ptr);
@@ -300,7 +302,7 @@ class SocketSelector
      * See_Also:
      *      add, clear
      */
-    @nogc
+    @nogc @safe
     void remove(UdpSocket socket)
     {
         sfSocketSelector_removeUdpSocket(m_socketSelector, socket.ptr);
@@ -323,21 +325,21 @@ class SocketSelector
      * See_Also:
      *      isReady
      */
-    @nogc
+    @nogc @safe
     bool wait(Time timeout = Time.Zero)
     {
         return sfSocketSelector_wait(m_socketSelector, timeout);
     }
 
     /// Duplicates this SocketSelector.
-    @property
+    @property @safe
     SocketSelector dup()
     {
         return new SocketSelector(m_socketSelector);
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     struct sfSocketSelector;

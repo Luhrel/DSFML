@@ -79,7 +79,7 @@ final abstract class Listener
          * See_Also:
          *      upVector, position
          */
-        @nogc
+        @nogc @safe
         static void direction(Vector3f _direction)
         {
             sfListener_setDirection(_direction);
@@ -91,7 +91,7 @@ final abstract class Listener
          * Returns:
          *      Listener's forward vector (not normalized)
          */
-        @nogc
+        @nogc @safe
         static Vector3f direction()
         {
             return sfListener_getDirection();
@@ -115,7 +115,7 @@ final abstract class Listener
          * See_Also:
          *      direction, position
          */
-        @nogc
+        @nogc @safe
         static void upVector(Vector3f _upVector)
         {
             sfListener_setUpVector(_upVector);
@@ -127,7 +127,7 @@ final abstract class Listener
          * Returns:
          *      Listener's upward vector (not normalized)
          */
-        @nogc
+        @nogc @safe
         static Vector3f upVector()
         {
             return sfListener_getUpVector();
@@ -147,7 +147,7 @@ final abstract class Listener
          * Params:
          *      volume = New global volume, in the range [0, 100]
          */
-        @nogc
+        @nogc @safe
         static void globalVolume(float volume)
         {
             sfListener_setGlobalVolume(volume);
@@ -159,7 +159,7 @@ final abstract class Listener
          * Returns:
          *      Current global volume, in the range [0, 100]
          */
-        @nogc
+        @nogc @safe
         static float globalVolume()
         {
             return sfListener_getGlobalVolume();
@@ -179,7 +179,7 @@ final abstract class Listener
          * See_Also:
          *      direction
          */
-        @nogc
+        @nogc @safe
         static void position(Vector3f _position)
         {
             sfListener_setPosition(_position);
@@ -191,7 +191,7 @@ final abstract class Listener
          * Returns:
          *      Listener's position
          */
-        @nogc
+        @nogc @safe
         static Vector3f position()
         {
             return sfListener_getPosition();
@@ -200,7 +200,7 @@ final abstract class Listener
 }
 
 // CSFML's functions.
-@nogc
+@nogc @safe
 private extern(C)
 {
     void sfListener_setGlobalVolume(float volume);

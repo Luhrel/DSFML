@@ -122,12 +122,14 @@ class UdpSocket : Socket
     enum MaxDatagramSize = 65507;
 
     /// Default constructor.
+    @nogc @safe
     this()
     {
         m_udpSocket = sfUdpSocket_create();
     }
 
     /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfUdpSocket_destroy(m_udpSocket);
@@ -144,7 +146,7 @@ class UdpSocket : Socket
      * See_Also:
      *      bind
      */
-    @property @nogc
+    @property @nogc @safe
     ushort localPort() const
     {
         return sfUdpSocket_getLocalPort(m_udpSocket);
@@ -166,7 +168,7 @@ class UdpSocket : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property @nogc
+    @property @nogc @safe
     void blocking(bool _blocking)
     {
         sfUdpSocket_setBlocking(m_udpSocket, _blocking);
@@ -190,7 +192,7 @@ class UdpSocket : Socket
      * See_Also:
      *      unbind, localPort
      */
-    @nogc
+    @nogc @safe
     Status bind(ushort port, IpAddress address = IpAddress.Any)
     {
         return sfUdpSocket_bind(m_udpSocket, port, address.toc);
@@ -202,7 +204,7 @@ class UdpSocket : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property @nogc
+    @property @nogc @safe
     bool blocking() const
     {
         return sfUdpSocket_isBlocking(m_udpSocket);
@@ -329,13 +331,13 @@ class UdpSocket : Socket
      * See_Also:
      *      bind
      */
-    @nogc
+    @nogc @safe
     void unbind()
     {
         sfUdpSocket_unbind(m_udpSocket);
     }
 
-    @property @nogc
+    @property @nogc @safe
     package sfUdpSocket* ptr()
     {
         return m_udpSocket;
@@ -347,7 +349,7 @@ package extern(C)
     struct sfUdpSocket;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfUdpSocket* sfUdpSocket_create();

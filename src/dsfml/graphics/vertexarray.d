@@ -69,6 +69,7 @@ class VertexArray : Drawable
      *
      * Creates an empty vertex array.
      */
+    @safe
     this()
     {
         m_vertexArray = sfVertexArray_create();
@@ -81,6 +82,7 @@ class VertexArray : Drawable
      *      type        = Type of primitives
      *      vertexCount = Initial number of vertices in the array
      */
+    @safe
     this(PrimitiveType type, size_t vertexCount = 0)
     {
         this();
@@ -89,13 +91,14 @@ class VertexArray : Drawable
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfVertexArray* vertexArrayPointer)
     {
         m_vertexArray = sfVertexArray_copy(vertexArrayPointer);
     }
 
     /// Destructor.
+    @safe
     ~this()
     {
         sfVertexArray_destroy(m_vertexArray);
@@ -110,10 +113,10 @@ class VertexArray : Drawable
      * Returns:
      *      Bounding rectangle of the vertex array.
      */
-    @property @nogc
-    FloatRect bounds() const
+    @property @nogc @safe
+    FloatRect bounds()
     {
-        return sfVertexArray_getBounds(cast(sfVertexArray*) m_vertexArray);
+        return sfVertexArray_getBounds(m_vertexArray);
     }
 
     /**
@@ -131,7 +134,7 @@ class VertexArray : Drawable
      * Params:
      *      type = Type of primitive
      */
-    @property @nogc
+    @property @nogc @safe
     void primitiveType(PrimitiveType type)
     {
         sfVertexArray_setPrimitiveType(m_vertexArray, type);
@@ -143,10 +146,10 @@ class VertexArray : Drawable
      * Returns:
      *      Primitive type
      */
-    @property @nogc
-    PrimitiveType primitiveType() const
+    @property @nogc @safe
+    PrimitiveType primitiveType()
     {
-        return sfVertexArray_getPrimitiveType(cast(sfVertexArray*) m_vertexArray);
+        return sfVertexArray_getPrimitiveType(m_vertexArray);
     }
 
     /**
@@ -155,7 +158,7 @@ class VertexArray : Drawable
      * Returns:
      *      Number of vertices in the array
      */
-    @nogc
+    @nogc @safe
     ulong vertexCount() const
     {
         return sfVertexArray_getVertexCount(m_vertexArray);
@@ -167,7 +170,7 @@ class VertexArray : Drawable
      * Params:
      *      vertex = Vertex to add.
      */
-    @nogc
+    @nogc @safe
     void append(Vertex vertex)
     {
         sfVertexArray_append(m_vertexArray, vertex);
@@ -180,7 +183,7 @@ class VertexArray : Drawable
      * deallocate the corresponding memory, so that adding new vertices after
      * clearing doesn't involve reallocating all the memory.
      */
-    @nogc
+    @nogc @safe
     void clear()
     {
         sfVertexArray_clear(m_vertexArray);
@@ -209,7 +212,7 @@ class VertexArray : Drawable
      * Params:
      * 		vertexCount	= New size of the array (number of vertices).
      */
-    @nogc
+    @nogc @safe
     void resize(size_t vertexCount)
     {
         sfVertexArray_resize(m_vertexArray, vertexCount);
@@ -234,21 +237,21 @@ class VertexArray : Drawable
     }
 
     /// Overrides the $ attribute.
-    @property @nogc
+    @property @nogc @safe
     ulong opDollar(size_t dim)()
     {
         return vertexCount;
     }
 
     // Returns the C pointer.
-    @property @nogc
+    @property @nogc @safe
     package sfVertexArray* ptr()
     {
         return m_vertexArray;
     }
 
     /// Duplicates this VertexArray.
-    @property
+    @property @safe
     VertexArray dup()
     {
         return new VertexArray(m_vertexArray);
@@ -260,7 +263,7 @@ package extern(C)
     struct sfVertexArray;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfVertexArray* sfVertexArray_create();

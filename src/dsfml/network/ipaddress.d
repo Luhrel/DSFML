@@ -101,6 +101,7 @@ struct IpAddress
      * Params:
      * 	    address = IP address or network name.
      */
+    @safe
     this(const(string) address)
     {
         m_address = htonl(sfIpAddress_toInteger(
@@ -121,6 +122,7 @@ struct IpAddress
      * 	    byte2 = Third byte of the address.
      * 	    byte3 = Fourth byte of the address.
      */
+    @safe
     this(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3)
     {
         m_address = htonl((byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3);
@@ -140,6 +142,7 @@ struct IpAddress
      * See_Also:
      *      toInteger
      */
+    @safe
     this(uint address)
     {
         m_address = htonl(address);
@@ -147,6 +150,7 @@ struct IpAddress
     }
 
     // Internally used constructor.
+    @safe
     package this(sfIpAddress ipAddress)
     {
         this(ipAddress.address.to!string);
@@ -166,7 +170,7 @@ struct IpAddress
      * See_Also:
      *      toString
      */
-    @nogc
+    @nogc @safe
     uint toInteger() const
     {
         return ntohl(m_address);
@@ -187,7 +191,8 @@ struct IpAddress
      * See_Also:
      *      toInteger
      */
-    const(string) toString() const @trusted
+    @trusted
+    const(string) toString() const
     {
         import core.stdc.stdio : sprintf;
 
@@ -197,7 +202,7 @@ struct IpAddress
         ubyte* bytes = cast(ubyte*) &m_address;
         int length = sprintf(m_string.ptr, "%d.%d.%d.%d", bytes[0], bytes[1],
                                                           bytes[2], bytes[3]);
-        return m_string[0..length].to!string;
+        return m_string[0 .. length].to!string;
     }
 
     /**
@@ -214,6 +219,7 @@ struct IpAddress
      * See_Also:
      *      publicAddress
      */
+    @safe
     static IpAddress localAddress()
     {
         return IpAddress(sfIpAddress_getLocalAddress().address.to!string);
@@ -244,12 +250,14 @@ struct IpAddress
      * See_Also:
      *      localAddress
      */
+    @safe
     static IpAddress publicAddress(Time timeout = Time.Zero)
     {
         return IpAddress(sfIpAddress_getPublicAddress(timeout).address.to!string);
     }
 
     // Overloads the == operator.
+    @nogc @safe
     bool opEquals(IpAddress otherIpAddress)
     {
         return m_valid == otherIpAddress.m_valid &&
@@ -257,6 +265,7 @@ struct IpAddress
     }
 
     // Overloads the < > <= >= operators.
+    @nogc @safe
     int opCmp(ref const IpAddress otherIpAddress) const
     {
         if (m_valid < otherIpAddress.m_valid)
@@ -271,13 +280,14 @@ struct IpAddress
     /*
      * Allow to declare (e.g.): IpAddress address = "192.168.0.124";
      */
+    @safe
     IpAddress opAssign(string address)
     {
         return IpAddress(address);
     }
 
     // Returns the C struct.
-    @property @nogc
+    @property @nogc @safe
     package sfIpAddress toc()
     {
         return sfIpAddress_fromInteger(ntohl(m_address));
@@ -312,7 +322,7 @@ package extern(C)
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfIpAddress sfIpAddress_fromString(const char* address);

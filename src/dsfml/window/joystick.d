@@ -136,7 +136,7 @@ final abstract class Joystick
      * Returns:
      *      Number of buttons supported by the joystick.
      */
-    @nogc
+    @nogc @safe
     static uint getButtonCount(uint joystick)
     {
         return sfJoystick_getButtonCount(joystick);
@@ -154,7 +154,7 @@ final abstract class Joystick
      * Returns:
      *      Current position of the axis, in range [-100 .. 100].
      */
-    @nogc
+    @nogc @safe
     static float getAxisPosition(uint joystick, Axis axis)
     {
         return sfJoystick_getAxisPosition(joystick, axis);
@@ -169,7 +169,7 @@ final abstract class Joystick
      * Returns:
      *      Structure containing the joystick information.
      */
-    @nogc
+    @nogc @safe
     static Identification getIdentification(uint joystick)
     {
         if (isConnected(joystick))
@@ -189,7 +189,7 @@ final abstract class Joystick
      * Returns:
      *      true if the joystick supports the axis, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool hasAxis(uint joystick, Axis axis)
     {
         return sfJoystick_hasAxis(joystick, axis);
@@ -207,7 +207,7 @@ final abstract class Joystick
      * Returns:
      *      true if the button is pressed, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool isButtonPressed(uint joystick, uint button)
     {
         return sfJoystick_isButtonPressed(joystick, button);
@@ -222,7 +222,7 @@ final abstract class Joystick
      * Returns:
      *      true if the joystick is connected, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool isConnected(uint joystick)
     {
         return sfJoystick_isConnected(joystick);
@@ -237,14 +237,14 @@ final abstract class Joystick
      * However, you may need to call it if you have no window yet (or no window
      * at all): in this case the joysticks states are not updated automatically.
      */
-    @nogc
+    @nogc @safe
     static void update()
     {
         sfJoystick_update();
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     bool sfJoystick_isConnected(uint joystick);

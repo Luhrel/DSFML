@@ -117,6 +117,7 @@ class Window
      * This constructor doesn't actually create the window, use the other
      * constructors or call `create()` to do so.
      */
+    @nogc @safe
     this()
     {
         // Nothing to do
@@ -170,6 +171,7 @@ class Window
      *
      * Closes the window and frees all the resources attached to it.
      */
+    @nogc @safe
     ~this()
     {
         sfWindow_destroy(m_window);
@@ -186,7 +188,7 @@ class Window
          * Params:
          *      _position = New position, in pixels
          */
-        @nogc
+        @nogc @safe
         void position(Vector2i _position)
         {
             if (m_window !is null)
@@ -199,7 +201,7 @@ class Window
          * Returns:
          *      Position of the window, in pixels
          */
-        @nogc
+        @nogc @safe
         Vector2i position() const
         {
             if (m_window is null)
@@ -233,7 +235,7 @@ class Window
          * Returns:
          *      Size in pixels
          */
-        @nogc
+        @nogc @safe
         Vector2u size() const
         {
             if (m_window is null)
@@ -258,7 +260,7 @@ class Window
      * Returns:
      *      true if operation was successful, false otherwise.
      */
-    @nogc
+    @nogc @safe
     bool active(bool _active = true)
     {
         if (m_window is null)
@@ -278,7 +280,7 @@ class Window
      * See_Also:
      *      hasFocus
      */
-    @nogc
+    @nogc @safe
     void requestFocus()
     {
         if (m_window !is null)
@@ -294,7 +296,7 @@ class Window
      * Returns:
      *      true if the window has focus, false otherwise
      */
-    @nogc
+    @nogc @safe
     bool hasFocus() const
     {
         if (m_window is null)
@@ -315,7 +317,7 @@ class Window
      * Params:
      *      limit = Framerate limit, in frames per seconds (use 0 to disable limit).
      */
-    @property @nogc
+    @property @nogc @safe
     void framerateLimit(uint limit)
     {
         if (m_window !is null)
@@ -353,7 +355,7 @@ class Window
      * Params:
      *      threshold = New threshold, in the range [0, 100].
      */
-    @property @nogc
+    @property @nogc @safe
     void joystickThreshold(float threshold)
     {
         if (m_window !is null)
@@ -372,7 +374,7 @@ class Window
      * Params:
      *      enabled = true to enable, false to disable.
      */
-    @property @nogc
+    @property @nogc @safe
     void keyRepeatEnabled(bool enabled)
     {
         if (m_window !is null)
@@ -387,7 +389,7 @@ class Window
      * Params:
      *      visible = true to show the mouse cursor, false to hide it.
      */
-    @property @nogc
+    @property @nogc @safe
     void mouseCursorVisible(bool visible)
     {
         if (m_window !is null)
@@ -415,7 +417,7 @@ class Window
      * Params:
      *      _visible = true to show the window, false to hide it
      */
-    @property @nogc
+    @property @nogc @safe
     void visible(bool _visible)
     {
         if (m_window !is null)
@@ -435,7 +437,7 @@ class Window
      * Params:
      *      enabled = true to enable v-sync, false to deactivate it
      */
-    @property @nogc
+    @property @nogc @safe
     void verticalSyncEnabled(bool enabled)
     {
         if (m_window !is null)
@@ -452,7 +454,7 @@ class Window
      * Returns:
      *      Structure containing the OpenGL context settings.
      */
-    @property @nogc
+    @property @nogc @safe
     ContextSettings settings() const
     {
         if (m_window is null)
@@ -472,7 +474,7 @@ class Window
      * Returns:
      *      System handle of the window.
      */
-    @property @nogc
+    @property @nogc @safe
     WindowHandle systemHandle() const
     {
         if (m_window is null)
@@ -488,7 +490,7 @@ class Window
      * `pollEvent()` or `display()` will still work (i.e. you don't have to test
      * `isOpen()` every time), and will have no effect on closed windows.
      */
-    @nogc
+    @nogc @safe
     void close()
     {
         if (m_window !is null)
@@ -544,7 +546,7 @@ class Window
      * This function is typically called after all OpenGL rendering has been
      * done for the current frame, in order to show it on screen.
      */
-    @nogc
+    @nogc @safe
     void display()
     {
         if (m_window !is null)
@@ -561,7 +563,7 @@ class Window
      * Returns:
      *      true if the window is open, false if it has been closed.
      */
-    @nogc
+    @nogc @safe
     bool isOpen() const
     {
         if (m_window is null)
@@ -645,7 +647,7 @@ class Window
      * Params:
      *      cursor = Native system cursor type to display
      */
-    @property @nogc
+    @property @nogc @safe
     void mouseCursor(Cursor cursor)
     {
         if (m_window !is null)
@@ -662,7 +664,7 @@ class Window
      * Params:
      *      grabbed = true to enable, false to disable
      */
-    @nogc
+    @nogc @safe
     void mouseCursorGrabbeb(bool grabbed)
     {
         if (m_window !is null)
@@ -686,7 +688,7 @@ class Window
     protected void onResize() {}
 
     // Returns the C pointer
-    @property @nogc
+    @property @nogc @safe
     package(dsfml) sfWindow* ptr()
     {
         return m_window;
@@ -698,7 +700,7 @@ package(dsfml) extern(C)
     struct sfWindow;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfWindow* sfWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);

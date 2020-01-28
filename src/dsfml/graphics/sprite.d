@@ -104,7 +104,7 @@ class Sprite : Transformable, Drawable
      *
      * Creates an empty sprite with no source texture.
      */
-    @nogc
+    @nogc @safe
     this()
     {
         m_sprite = sfSprite_create();
@@ -119,6 +119,7 @@ class Sprite : Transformable, Drawable
      * See_Also:
      *      texture
      */
+    @safe
     this(Texture texture)
     {
         this();
@@ -135,6 +136,7 @@ class Sprite : Transformable, Drawable
      * See_Also:
      *      texture, textureRect
      */
+    @safe
     this(Texture texture, IntRect rectangle)
     {
         this(texture);
@@ -142,13 +144,14 @@ class Sprite : Transformable, Drawable
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfSprite* spritePointer)
     {
         m_sprite = sfSprite_copy(spritePointer);
     }
 
     /// Destructor.
+    @safe
     ~this()
     {
         sfSprite_destroy(m_sprite);
@@ -169,7 +172,7 @@ class Sprite : Transformable, Drawable
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc
+        @nogc @safe
         override void origin(float x, float y)
         {
             origin(Vector2f(x, y));
@@ -187,7 +190,7 @@ class Sprite : Transformable, Drawable
          * Params:
          *      _origin = New origin
          */
-        @nogc
+        @nogc @safe
         override void origin(Vector2f _origin)
         {
             sfSprite_setOrigin(m_sprite, _origin);
@@ -199,7 +202,7 @@ class Sprite : Transformable, Drawable
          * Returns:
          *      Current origin
          */
-        @nogc
+        @nogc @safe
         override Vector2f origin() const
         {
             return sfSprite_getOrigin(m_sprite);
@@ -222,7 +225,7 @@ class Sprite : Transformable, Drawable
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         override void position(float x, float y)
         {
             position(Vector2f(x, y));
@@ -241,7 +244,7 @@ class Sprite : Transformable, Drawable
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         override void position(Vector2f _position)
         {
             sfSprite_setPosition(m_sprite, _position);
@@ -253,7 +256,7 @@ class Sprite : Transformable, Drawable
          * Returns:
          *      Current position
          */
-        @nogc
+        @nogc @safe
         override Vector2f position() const
         {
             return sfSprite_getPosition(m_sprite);
@@ -273,7 +276,7 @@ class Sprite : Transformable, Drawable
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc
+    @nogc @safe
     override void rotate(float angle)
     {
         sfSprite_rotate(m_sprite, angle);
@@ -294,7 +297,7 @@ class Sprite : Transformable, Drawable
          * See_Also:
          *      rotate
          */
-        @nogc
+        @nogc @safe
         override void rotation(float angle)
         {
             sfSprite_setRotation(m_sprite, angle);
@@ -308,7 +311,7 @@ class Sprite : Transformable, Drawable
          * Returns:
          *      Current rotation, in degrees
          */
-        @nogc
+        @nogc @safe
         override float rotation() const
         {
             return sfSprite_getRotation(m_sprite);
@@ -328,7 +331,7 @@ class Sprite : Transformable, Drawable
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc
+        @nogc @safe
         override void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
@@ -344,7 +347,7 @@ class Sprite : Transformable, Drawable
          * Params:
          *      factors = New scale factors
          */
-        @nogc
+        @nogc @safe
         override void scale(Vector2f factors)
         {
             sfSprite_setScale(m_sprite, factors);
@@ -356,7 +359,7 @@ class Sprite : Transformable, Drawable
          * Returns:
          *      Current scale factors
          */
-        @nogc
+        @nogc @safe
         override Vector2f scale() const
         {
             return sfSprite_getScale(m_sprite);
@@ -378,7 +381,7 @@ class Sprite : Transformable, Drawable
          * See_Also:
          *      texture
          */
-        @nogc
+        @nogc @safe
         void textureRect(IntRect rectangle)
         {
             sfSprite_setTextureRect(m_sprite, rectangle);
@@ -389,7 +392,7 @@ class Sprite : Transformable, Drawable
          * Returns:
          *      Texture rectangle of the sprite
          */
-        @nogc
+        @nogc @safe
         IntRect textureRect() const
         {
             return sfSprite_getTextureRect(m_sprite);
@@ -408,7 +411,7 @@ class Sprite : Transformable, Drawable
          * Params:
          *      _color = New color of the sprite
          */
-        @nogc
+        @nogc @safe
         void color(Color _color)
         {
             sfSprite_setColor(m_sprite, _color);
@@ -420,7 +423,7 @@ class Sprite : Transformable, Drawable
          * Returns:
          *      Global color of the sprite
          */
-        @nogc
+        @nogc @safe
         Color color() const
         {
             return sfSprite_getColor(m_sprite);
@@ -446,7 +449,7 @@ class Sprite : Transformable, Drawable
      * See_Also:
      *      position
      */
-    @nogc
+    @nogc @safe
     override void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
@@ -468,7 +471,7 @@ class Sprite : Transformable, Drawable
      * See_Also:
      *      position
      */
-    @nogc
+    @nogc @safe
     override void move(Vector2f offset)
     {
         sfSprite_move(m_sprite, offset);
@@ -485,7 +488,7 @@ class Sprite : Transformable, Drawable
      * Returns:
      *      Global bounding rectangle of the entity.
      */
-    @nogc
+    @nogc @safe
     FloatRect globalBounds() const
     {
         return sfSprite_getGlobalBounds(m_sprite);
@@ -502,7 +505,7 @@ class Sprite : Transformable, Drawable
      * Returns:
      *      Local bounding rectangle of the entity.
      */
-    @nogc
+    @nogc @safe
     FloatRect localBounds() const
     {
         return sfSprite_getLocalBounds(m_sprite);
@@ -518,6 +521,7 @@ class Sprite : Transformable, Drawable
      * Returns:
      *      The sprite's texture.
      */
+    @safe
     Texture texture() const
     {
         return new Texture(sfSprite_getTexture(m_sprite));
@@ -543,7 +547,7 @@ class Sprite : Transformable, Drawable
      * See_Also:
      *      texture, textureRect
      */
-    @nogc
+    @nogc @safe
     void texture(Texture texture, bool rectReset = false)
     {
         sfSprite_setTexture(m_sprite, texture.ptr, rectReset);
@@ -555,7 +559,7 @@ class Sprite : Transformable, Drawable
      * Returns:
      *      Transform combining the position/rotation/scale/origin of the object
      */
-    @nogc
+    @nogc @safe
     override const(Transform) transform() const
     {
         return Transform(sfSprite_getTransform(m_sprite));
@@ -570,7 +574,7 @@ class Sprite : Transformable, Drawable
      * See_Also:
      *      transform
      */
-    @nogc
+    @nogc @safe
     override const(Transform) inverseTransform() const
     {
         return Transform(sfSprite_getInverseTransform(m_sprite));
@@ -594,14 +598,14 @@ class Sprite : Transformable, Drawable
      * Returns:
      *      A new Sprite object with the same data.
      */
-    @property
+    @property @safe
     override Sprite dup() const
     {
         return new Sprite(m_sprite);
     }
 
     // Returns the C pointer.
-    @property @nogc
+    @property @nogc @safe
     package sfSprite* ptr()
     {
         return m_sprite;
@@ -613,7 +617,7 @@ package extern(C)
     struct sfSprite;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfSprite* sfSprite_create();

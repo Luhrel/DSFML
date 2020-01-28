@@ -294,7 +294,7 @@ final abstract class Keyboard
      * Returns:
      *      true if the key is pressed, false otherwise.
      */
-    @nogc
+    @nogc @safe
     static bool isKeyPressed(Key key)
     {
         return sfKeyboard_isKeyPressed(key);
@@ -313,14 +313,14 @@ final abstract class Keyboard
      * Params:
      *      visible = true to show, false to hide
      */
-    @nogc
+    @nogc @safe
     static void setVirtualKeyboardVisible(bool visible)
     {
         sfKeyboard_setVirtualKeyboardVisible(visible);
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     bool sfKeyboard_isKeyPressed(int key);

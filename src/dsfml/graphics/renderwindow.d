@@ -164,6 +164,7 @@ class RenderWindow : Window, RenderTarget
      * This constructor doesn't actually create the window, use the other
      * constructors or call `create()` to do so.
      */
+    @safe
     this()
     {
         // Nothing to do.
@@ -223,6 +224,7 @@ class RenderWindow : Window, RenderTarget
      *
      * Closes the window and frees all the resources attached to it.
      */
+    @safe
     ~this()
     {
         sfRenderWindow_destroy(m_renderWindow);
@@ -240,7 +242,7 @@ class RenderWindow : Window, RenderTarget
          * Params:
          *      _position = New position, in pixels
          */
-        @nogc
+        @nogc @safe
         override void position(Vector2i _position)
         {
             if (m_renderWindow !is null)
@@ -253,7 +255,7 @@ class RenderWindow : Window, RenderTarget
          * Returns:
          *      Position of the window, in pixels
          */
-        @nogc
+        @nogc @safe
         override Vector2i position() const
         {
             if (m_renderWindow is null)
@@ -287,7 +289,7 @@ class RenderWindow : Window, RenderTarget
          * Returns:
          *      Size in pixels
          */
-        @nogc
+        @nogc @safe
         override Vector2u size() const
         {
             if (m_renderWindow is null)
@@ -316,7 +318,7 @@ class RenderWindow : Window, RenderTarget
          * See_Also:
          *      defaultView
          */
-        @nogc
+        @nogc @safe
         void view(View _view)
         {
             if (m_renderWindow !is null)
@@ -332,6 +334,7 @@ class RenderWindow : Window, RenderTarget
          * See_Also:
          *      defaultView
          */
+        @safe
         View view() const
         {
             if (m_renderWindow is null)
@@ -352,7 +355,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      view
      */
-    @property
+    @property @safe
     View defaultView() const
     {
         if (m_renderWindow is null)
@@ -370,7 +373,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      Structure containing the OpenGL context settings
      */
-    @property @nogc
+    @property @nogc @safe
     override ContextSettings settings() const
     {
         if (m_renderWindow is null)
@@ -390,7 +393,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      System handle of the window
      */
-    @property @nogc
+    @property @nogc @safe
     override WindowHandle systemHandle() const
     {
         if (m_renderWindow is null)
@@ -408,7 +411,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      view = The view for which we want to compute the viewport
      */
-    @property @nogc
+    @property @nogc @safe
     IntRect viewport(View view) const
     {
         if (m_renderWindow is null)
@@ -417,7 +420,7 @@ class RenderWindow : Window, RenderTarget
     }
 
     /**
-     * Activate or deactivate the window as the current target for OpenGL rendering.
+     * Activate or deactivate the window@safe as the current target for OpenGL rendering.
      *
      * A window is active only on the current thread, if you want to make it
      * active on another thread you have to deactivate it on the previous thread
@@ -431,7 +434,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      true if operation was successful, false otherwise
      */
-    @property @nogc
+    @property @nogc @safe
     override bool active(bool _active = true)
     {
         if (m_renderWindow is null)
@@ -454,7 +457,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      limit = Framerate limit, in frames per seconds (use 0 to disable limit)
      */
-    @property @nogc
+    @property @nogc @safe
     override void framerateLimit(uint limit)
     {
         if (m_renderWindow !is null)
@@ -494,7 +497,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      threshold = New threshold, in the range [0, 100]
      */
-    @property @nogc
+    @property @nogc @safe
     override void joystickThreshold(float threshold)
     {
         if (m_renderWindow !is null)
@@ -513,7 +516,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      enabled = true to enable, false to disable
      */
-    @property @nogc
+    @property @nogc @safe
     override void keyRepeatEnabled(bool enabled)
     {
         if (m_renderWindow !is null)
@@ -528,7 +531,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      visible = true show the mouse cursor, false to hide it
      */
-    @property @nogc
+    @property @nogc @safe
     override void mouseCursorVisible(bool visible)
     {
         if (m_renderWindow !is null)
@@ -562,7 +565,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      enabled = true to enable v-sync, false to deactivate it
      */
-    @property @nogc
+    @property @nogc @safe
     override void verticalSyncEnabled(bool enabled)
     {
         if (m_renderWindow !is null)
@@ -577,7 +580,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      _visible = true to show the window, false to hide it
      */
-    @property @nogc
+    @property @nogc @safe
     override void visible(bool _visible)
     {
         if (m_renderWindow !is null)
@@ -593,7 +596,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      color = Fill color to use to clear the render target
      */
-    @nogc
+    @nogc @safe
     void clear(Color color = Color.Black)
     {
         if (m_renderWindow !is null)
@@ -677,6 +680,7 @@ class RenderWindow : Window, RenderTarget
      *      An Image containing the captured contents.
      */
     deprecated("Use a Texture, its update function, and copy its contents into an Image instead.")
+    @safe
     Image capture()
     {
         if (m_renderWindow is null)
@@ -690,7 +694,7 @@ class RenderWindow : Window, RenderTarget
      * This function is typically called after all OpenGL rendering has been
      * done for the current frame, in order to show it on screen.
      */
-    @nogc
+    @nogc @safe
     override void display()
     {
         if (m_renderWindow !is null)
@@ -809,7 +813,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      true if the window is open, false if it has been closed
      */
-    @nogc
+    @nogc @safe
     override bool isOpen() const
     {
         if (m_renderWindow is null)
@@ -826,7 +830,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      pushGLStates
      */
-    @nogc
+    @nogc @safe
     void popGLStates()
     {
         if (m_renderWindow !is null)
@@ -862,7 +866,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      popGLStates
      */
-    @nogc
+    @nogc @safe
     void pushGLStates()
     {
         if (m_renderWindow !is null)
@@ -888,7 +892,7 @@ class RenderWindow : Window, RenderTarget
      * // OpenGL code here...
      * ---
      */
-    @nogc
+    @nogc @safe
     void resetGLStates()
     {
         if (m_renderWindow !is null)
@@ -972,7 +976,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      requestFocus
      */
-    @nogc
+    @nogc @safe
     override bool hasFocus() const
     {
         if (m_renderWindow is null)
@@ -992,7 +996,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      hasFocus
      */
-    @nogc
+    @nogc @safe
     override void requestFocus()
     {
         if (m_renderWindow !is null)
@@ -1018,7 +1022,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
-    @nogc
+    @nogc @safe
     Vector2i mapCoordsToPixel(Vector2f point) inout
     {
         if (m_renderWindow is null)
@@ -1052,7 +1056,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
-    @nogc
+    @nogc @safe
     Vector2i mapCoordsToPixel(Vector2f point, View view) inout
     {
         if (m_renderWindow is null)
@@ -1079,7 +1083,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
-    @nogc
+    @nogc @safe
     Vector2f mapPixelToCoords(Vector2i point) inout
     {
         if (m_renderWindow is null)
@@ -1116,7 +1120,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
-    @nogc
+    @nogc @safe
     Vector2f mapPixelToCoords(Vector2i point, View view) inout
     {
         if (m_renderWindow is null)
@@ -1155,7 +1159,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      Cursor.loadFromSystem, Cursor.loadFromPixels
      */
-    @property @nogc
+    @property @nogc @safe
     override void mouseCursor(Cursor cursor)
     {
         if (m_renderWindow !is null)
@@ -1172,7 +1176,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      grabbed = true to enable, false to disable
      */
-    @property @nogc
+    @property @nogc @safe
     override void mouseCursorGrabbeb(bool grabbed)
     {
         if (m_renderWindow !is null)
@@ -1180,7 +1184,7 @@ class RenderWindow : Window, RenderTarget
     }
 
     // Returns the C pointer
-    @property @nogc
+    @property @nogc @safe
     package(dsfml) sfRenderWindow* ptr()
     {
         return m_renderWindow;
@@ -1192,7 +1196,7 @@ package(dsfml) extern(C)
     struct sfRenderWindow;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfRenderWindow* sfRenderWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);

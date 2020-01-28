@@ -11,6 +11,7 @@ public import dsfml.system.time;
  * Params:
  *      duration = The length of time to sleep for
  */
+@nogc
 void sleep(Time duration)
 {
     import core.thread : Thread;

@@ -71,7 +71,7 @@ class Sound : SoundSource
     private sfSound* m_sound;
 
     /// Default constructor.
-    @nogc
+    @nogc @safe
     this()
     {
         m_sound = sfSound_create();
@@ -83,7 +83,7 @@ class Sound : SoundSource
      * Params:
      *      soundBuffer = Sound buffer containing the audio data to play with the sound
      */
-    @nogc
+    @nogc @safe
     this(SoundBuffer soundBuffer)
     {
         this();
@@ -91,7 +91,7 @@ class Sound : SoundSource
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfSound* soundPointer)
     {
         m_sound = sfSound_copy(soundPointer);
@@ -116,7 +116,7 @@ class Sound : SoundSource
          * Params:
          *      _loop = true to play in loop, false to play once
          */
-        @nogc
+        @nogc @safe
         void loop(bool _loop)
         {
             sfSound_setLoop(m_sound, _loop);
@@ -128,7 +128,7 @@ class Sound : SoundSource
          * Returns:
          *      true if the sound is looping, false otherwise
          */
-        @nogc
+        @nogc @safe
         bool loop() const
         {
             return sfSound_getLoop(m_sound);
@@ -147,7 +147,7 @@ class Sound : SoundSource
          * Params:
          *      offset = New playing position, from the beginning of the sound
          */
-        @nogc
+        @nogc @safe
         void playingOffset(Time offset)
         {
             sfSound_setPlayingOffset(m_sound, offset);
@@ -159,7 +159,7 @@ class Sound : SoundSource
          * Returns:
          *      Current playing position, from the beginning of the sound
          */
-        @nogc
+        @nogc @safe
         Time playingOffset() const
         {
             return sfSound_getPlayingOffset(m_sound);
@@ -174,7 +174,7 @@ class Sound : SoundSource
          * Returns:
          *      Current status of the sound
          */
-        @nogc
+        @nogc @safe
         Status status() const
         {
             return cast(Status) sfSound_getStatus(m_sound);
@@ -194,7 +194,7 @@ class Sound : SoundSource
          * Params:
          *      _pitch = New pitch to apply to the sound
          */
-        @nogc
+        @nogc @safe
         void pitch(float _pitch)
         {
             sfSound_setPitch(m_sound, _pitch);
@@ -206,7 +206,7 @@ class Sound : SoundSource
          * Returns:
          *      Pitch of the sound
          */
-        @nogc
+        @nogc @safe
         float pitch() const
         {
             return sfSound_getPitch(m_sound);
@@ -224,7 +224,7 @@ class Sound : SoundSource
          * Params:
          *      _volume = Volume of the sound
          */
-        @nogc
+        @nogc @safe
         void volume(float _volume)
         {
             sfSound_setVolume(m_sound, _volume);
@@ -235,7 +235,7 @@ class Sound : SoundSource
          *
          * Returns: Volume of the sound, in the range [0, 100]
          */
-        @nogc
+        @nogc @safe
         float volume() const
         {
             return sfSound_getVolume(m_sound);
@@ -253,7 +253,7 @@ class Sound : SoundSource
          * Params:
          *      _position = Position of the sound in the scene
          */
-        @nogc
+        @nogc @safe
         void position(Vector3f _position)
         {
             sfSound_setPosition(m_sound, _position);
@@ -265,7 +265,7 @@ class Sound : SoundSource
          * Returns:
          *      Position of the sound
          */
-        @nogc
+        @nogc @safe
         Vector3f position() const
         {
             return cast(Vector3f) sfSound_getPosition(m_sound);
@@ -286,7 +286,7 @@ class Sound : SoundSource
          * Params:
          *      relative=True to set the position relative, false to set it absolute
          */
-        @nogc
+        @nogc @safe
         void relativeToListener(bool relative)
         {
             sfSound_setRelativeToListener(m_sound, relative);
@@ -298,7 +298,7 @@ class Sound : SoundSource
          * Returns:
          *      true if the position is relative, false if it's absolute
          */
-        @nogc
+        @nogc @safe
         bool relativeToListener() const
         {
             return sfSound_isRelativeToListener(m_sound);
@@ -322,7 +322,7 @@ class Sound : SoundSource
          * See_Also:
          *      attenuation
          */
-        @nogc
+        @nogc @safe
         void minDistance(float distance)
         {
             sfSound_setMinDistance(m_sound, distance);
@@ -337,7 +337,7 @@ class Sound : SoundSource
          * See_Also:
          *      attenuation
          */
-        @nogc
+        @nogc @safe
         float minDistance() const
         {
             return sfSound_getMinDistance(m_sound);
@@ -364,7 +364,7 @@ class Sound : SoundSource
          * See_Also:
          *      minDistance
          */
-        @nogc
+        @nogc @safe
         void attenuation(float _attenuation)
         {
             sfSound_setAttenuation(m_sound, _attenuation);
@@ -379,7 +379,7 @@ class Sound : SoundSource
          * See_Also:
          *      minDistance
          */
-        @nogc
+        @nogc @safe
         float attenuation() const
         {
             return sfSound_getAttenuation(m_sound);
@@ -398,7 +398,7 @@ class Sound : SoundSource
          * Params:
          *      _buffer = Sound buffer to attach to the sound
          */
-        @nogc
+        @nogc @safe
         void buffer(SoundBuffer _buffer)
         {
             sfSound_setBuffer(m_sound, _buffer.ptr);
@@ -410,6 +410,7 @@ class Sound : SoundSource
          * Returns:
          *      Sound buffer attached to the sound (can be null)
          */
+        @safe
         SoundBuffer buffer()
         {
             return new SoundBuffer(sfSound_getBuffer(m_sound));
@@ -425,7 +426,7 @@ class Sound : SoundSource
      * See_Also:
      *      play, pause
      */
-    @nogc
+    @nogc @safe
     void pause()
     {
         sfSound_pause(m_sound);
@@ -443,7 +444,7 @@ class Sound : SoundSource
      * See_Also:
      *      pause, stop
      */
-    @nogc
+    @nogc @safe
     void play()
     {
         sfSound_play(m_sound);
@@ -459,14 +460,14 @@ class Sound : SoundSource
      * See_Also:
      *      play, pause
      */
-    @nogc
+    @nogc @safe
     void stop()
     {
         sfSound_stop(m_sound);
     }
 
     /// Duplicates this Sound.
-    @property
+    @property @safe
     Sound dup()
     {
         return new Sound(m_sound);
@@ -474,7 +475,7 @@ class Sound : SoundSource
 }
 
 // CSFML's functions.
-@nogc
+@nogc @safe
 private extern(C)
 {
     struct sfSound;

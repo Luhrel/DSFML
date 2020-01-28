@@ -92,6 +92,7 @@ class Http
     private sfHttp* m_http;
 
     /// Default constructor.
+    @nogc @safe
     this()
     {
         m_http = sfHttp_create();
@@ -110,13 +111,15 @@ class Http
      * 	    host = Web server to connect to
      * 	    port = Port to use for connection
      */
+    @safe
     this(const string host, ushort port = 0)
     {
         this();
         this.setHost(host, port);
     }
 
-    ///Destructor
+    /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfHttp_destroy(m_http);
@@ -136,6 +139,7 @@ class Http
      * 	    host = Web server to connect to
      * 	    port = Port to use for connection
      */
+    @safe
     void setHost(const string host, ushort port = 0)
     {
         sfHttp_setHost(m_http, host.toStringz, port);
@@ -159,6 +163,7 @@ class Http
      * Returns:
      *      Server's response.
      */
+    @safe
     Response sendRequest(Request request, Time timeout = Time.Zero)
     {
         return new Response(sfHttp_sendRequest(m_http, request.ptr,
@@ -198,6 +203,7 @@ class Http
          * 	    method = Method to use for the request
          * 	    body   = Content of the request's body
          */
+        @safe
         this(const string uri = "/", Method method = Method.Get,
             const string body = "")
         {
@@ -208,6 +214,7 @@ class Http
         }
 
         /// Destructor.
+        @safe
         ~this()
         {
             sfHttpRequest_destroy(m_httpRequest);
@@ -223,6 +230,7 @@ class Http
          * Params:
          * 	    requestBody = Content of the body
          */
+        @safe
         void body(const string requestBody)
         {
             sfHttpRequest_setBody(m_httpRequest, requestBody.toStringz);
@@ -240,6 +248,7 @@ class Http
          * 	    field = Name of the field to set
          *      value = Value of the field
          */
+        @safe
         void field(const string field, const string value)
         {
             sfHttpRequest_setField(m_httpRequest, field.toStringz, value.toStringz);
@@ -254,7 +263,7 @@ class Http
          * 	    major = Major HTTP version number
          * 	    minor = Minor HTTP version number
          */
-        @nogc
+        @nogc @safe
         void httpVersion(uint major, uint minor)
         {
             sfHttpRequest_setHttpVersion(m_httpRequest, major, minor);
@@ -269,7 +278,7 @@ class Http
          * Params:
          * 	    method = Method to use for the request
          */
-        @nogc
+        @nogc @safe
         void method(Method method)
         {
             sfHttpRequest_setMethod(m_httpRequest, method);
@@ -284,12 +293,13 @@ class Http
          * Params:
          * 	    uri = URI to request, relative to the host
          */
+        @safe
         void uri(const string uri)
         {
             sfHttpRequest_setUri(m_httpRequest, uri.toStringz);
         }
 
-        @property @nogc
+        @property @nogc @safe
         package sfHttpRequest* ptr()
         {
             return m_httpRequest;
@@ -341,7 +351,7 @@ class Http
         private sfHttpResponse* m_httpResponse;
 
         // Internally used constructor
-        @nogc
+        @nogc @safe
         package this(sfHttpResponse* httpResponsePointer)
         {
             m_httpResponse = httpResponsePointer;
@@ -378,8 +388,8 @@ class Http
          */
         string field(const string field) const
         {
-            return sfHttpResponse_getField(m_httpResponse, field.toStringz).
-                fromStringz.to!string;
+            return sfHttpResponse_getField(m_httpResponse, field.toStringz)
+                .fromStringz.to!string;
         }
 
         /**
@@ -391,7 +401,7 @@ class Http
          * See_Also:
          *      minorHttpVersion
          */
-        @nogc
+        @nogc @safe
         uint majorHttpVersion() const
         {
             return sfHttpResponse_getMajorVersion(m_httpResponse);
@@ -406,7 +416,7 @@ class Http
          * See_Also:
          *      majorHttpVersion
          */
-        @nogc
+        @nogc @safe
         uint minorHttpVersion() const
         {
             return sfHttpResponse_getMinorVersion(m_httpResponse);
@@ -422,7 +432,7 @@ class Http
          * Returns:
          *      Status code of the response.
          */
-        @nogc
+        @nogc @safe
         Status status() const
         {
             return sfHttpResponse_getStatus(m_httpResponse);
@@ -430,7 +440,7 @@ class Http
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     struct sfHttp;

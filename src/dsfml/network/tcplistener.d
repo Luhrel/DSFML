@@ -79,12 +79,14 @@ class TcpListener : Socket
     private sfTcpListener* m_tcpListener;
 
     /// Default constructor.
+    @nogc @safe
     this()
     {
         m_tcpListener = sfTcpListener_create();
     }
 
     /// Destructor.
+    @nogc @safe
     ~this()
     {
         sfTcpListener_destroy(m_tcpListener);
@@ -101,7 +103,7 @@ class TcpListener : Socket
      * See_Also:
      *      listen
      */
-    @nogc
+    @nogc @safe
     ushort localPort() const
     {
         return sfTcpListener_getLocalPort(m_tcpListener);
@@ -121,7 +123,7 @@ class TcpListener : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property @nogc
+    @property @nogc @safe
     void blocking(bool _blocking)
     {
         sfTcpListener_setBlocking(m_tcpListener, _blocking);
@@ -164,7 +166,7 @@ class TcpListener : Socket
      * See_Also:
      *      accept, close
      */
-    @nogc
+    @nogc @safe
     Status listen(ushort port, IpAddress address = IpAddress.Any)
     {
         return sfTcpListener_listen(m_tcpListener, port, address.toc);
@@ -176,13 +178,13 @@ class TcpListener : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property @nogc
+    @property @nogc @safe
     bool blocking() const
     {
         return sfTcpListener_isBlocking(m_tcpListener);
     }
 
-    @property @nogc
+    @property @nogc @safe
     package sfTcpListener* ptr()
     {
         return m_tcpListener;
@@ -194,7 +196,7 @@ package extern(C)
     struct sfTcpListener;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfTcpListener* sfTcpListener_create();

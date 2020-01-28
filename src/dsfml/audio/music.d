@@ -124,6 +124,7 @@ class Music : SoundStream
      * See_Also:
      *      openFromMemory, openFromStream
      */
+    @safe
     void openFromFile(string filename)
     {
         m_music = sfMusic_createFromFile(filename.toStringz);
@@ -173,7 +174,7 @@ class Music : SoundStream
      * Returns:
      *      true if loading succeeded, false if it failed
      */
-    @nogc
+    @nogc @safe
     void openFromStream(InputStream stream)
     {
         m_music = sfMusic_createFromStream(stream.ptr);
@@ -192,7 +193,7 @@ class Music : SoundStream
          * Params:
          *      _pitch = New pitch to apply to the sound
          */
-        @nogc
+        @nogc @safe
         override void pitch(float _pitch)
         {
             sfMusic_setPitch(m_music, _pitch);
@@ -204,7 +205,7 @@ class Music : SoundStream
          * Returns:
          *      Pitch of the sound
          */
-        @nogc
+        @nogc @safe
         override float pitch() const
         {
             return sfMusic_getPitch(m_music);
@@ -222,7 +223,7 @@ class Music : SoundStream
          * Params:
          *      _volume = Volume of the sound
          */
-        @nogc
+        @nogc @safe
         override void volume(float _volume)
         {
             sfMusic_setVolume(m_music, _volume);
@@ -234,7 +235,7 @@ class Music : SoundStream
          * Returns:
          *      Volume of the sound, in the range [0, 100]
          */
-        @nogc
+        @nogc @safe
         override float volume() const
         {
             return sfMusic_getVolume(m_music);
@@ -252,7 +253,7 @@ class Music : SoundStream
          * Params:
          *      _position = Position of the sound in the scene
          */
-        @nogc
+        @nogc @safe
         override void position(Vector3f _position)
         {
             sfMusic_setPosition(m_music, _position);
@@ -264,7 +265,7 @@ class Music : SoundStream
          * Returns:
          *      Position of the sound
          */
-        @nogc
+        @nogc @safe
         override Vector3f position() const
         {
             return sfMusic_getPosition(m_music);
@@ -283,7 +284,7 @@ class Music : SoundStream
          * Params:
          *      _loop = true to play in loop, false to play once
          */
-        @nogc
+        @nogc @safe
         override void loop(bool _loop)
         {
             sfMusic_setLoop(m_music, _loop);
@@ -295,7 +296,7 @@ class Music : SoundStream
          * Returns:
          *      true if the stream is looping, false otherwise
          */
-        @nogc
+        @nogc @safe
         override bool loop() const
         {
             return sfMusic_getLoop(m_music);
@@ -314,7 +315,7 @@ class Music : SoundStream
          * Params:
          *      offset = New playing position, from the beginning of the stream
          */
-        @nogc
+        @nogc @safe
         override void playingOffset(Time offset)
         {
             sfMusic_setPlayingOffset(m_music, offset);
@@ -327,7 +328,7 @@ class Music : SoundStream
          * Returns:
          *      Current playing position, from the beginning of the stream
          */
-        @nogc
+        @nogc @safe
         override Time playingOffset() const
         {
             return sfMusic_getPlayingOffset(m_music);
@@ -348,7 +349,7 @@ class Music : SoundStream
          * Params:
          *      relative = true to set the position relative, false to set it absolute
          */
-        @nogc
+        @nogc @safe
         override void relativeToListener(bool relative)
         {
             sfMusic_setRelativeToListener(m_music, relative);
@@ -360,7 +361,7 @@ class Music : SoundStream
          * Returns:
          *      true if the position is relative, false if it's absolute
          */
-        @nogc
+        @nogc @safe
         override bool relativeToListener() const
         {
             return sfMusic_isRelativeToListener(m_music);
@@ -384,7 +385,7 @@ class Music : SoundStream
          * See_Also:
          *      attenuation
          */
-        @nogc
+        @nogc @safe
         override void minDistance(float distance)
         {
             sfMusic_setMinDistance(m_music, distance);
@@ -396,7 +397,7 @@ class Music : SoundStream
          * Returns:
          *      Minimum distance of the sound
          */
-        @nogc
+        @nogc @safe
         override float minDistance() const
         {
             return sfMusic_getMinDistance(m_music);
@@ -423,7 +424,7 @@ class Music : SoundStream
          * See_Also:
          *      minDistance
          */
-        @nogc
+        @nogc @safe
         override void attenuation(float _attenuation)
         {
             sfMusic_setAttenuation(m_music, _attenuation);
@@ -435,7 +436,7 @@ class Music : SoundStream
          * Returns:
          *      Attenuation factor of the sound
          */
-        @nogc
+        @nogc @safe
         override float attenuation() const
         {
             return sfMusic_getAttenuation(m_music);
@@ -453,7 +454,7 @@ class Music : SoundStream
          * Returns:
          *      Number of channels
          */
-        @nogc
+        @nogc @safe
         override uint channelCount() const
         {
             return sfMusic_getChannelCount(m_music);
@@ -471,7 +472,7 @@ class Music : SoundStream
          * Returns:
          *      Sample rate, in number of samples per second
          */
-        @nogc
+        @nogc @safe
         override uint sampleRate() const
         {
             return sfMusic_getSampleRate(m_music);
@@ -485,7 +486,7 @@ class Music : SoundStream
          *
          * Returns: Current status
          */
-        @nogc
+        @nogc @safe
         override Status status() const
         {
             return cast(Status) sfMusic_getStatus(m_music);
@@ -500,7 +501,7 @@ class Music : SoundStream
          * Returns:
          *      Music duration
          */
-        @nogc
+        @nogc @safe
         Time duration()
         {
             return cast(Time) sfMusic_getDuration(m_music);
@@ -531,7 +532,7 @@ class Music : SoundStream
          *      timePoints = The definition of the loop.
          *          Can be any time points within the sound's length
          */
-        @nogc
+        @nogc @safe
         void loopPoints(TimeSpan timePoints)
         {
             sfMusic_setLoopPoints(m_music, timePoints);
@@ -553,7 +554,7 @@ class Music : SoundStream
          * Returns:
          *       Loop Time position class.
          */
-        @nogc
+        @nogc @safe
         TimeSpan loopPoints()
         {
             return cast(TimeSpan) sfMusic_getLoopPoints(m_music);
@@ -571,7 +572,7 @@ class Music : SoundStream
      * See_Also:
      *      pause, stop
      */
-    @nogc
+    @nogc @safe
     override void play()
     {
         sfMusic_play(m_music);
@@ -586,7 +587,7 @@ class Music : SoundStream
      * See_Also:
      *      play, stop
      */
-    @nogc
+    @nogc @safe
     override void pause()
     {
         sfMusic_pause(m_music);
@@ -602,7 +603,7 @@ class Music : SoundStream
      * See_Also:
      *      play, pause
      */
-    @nogc
+    @nogc @safe
     override void stop()
     {
         sfMusic_stop(m_music);
@@ -620,7 +621,7 @@ class Music : SoundStream
 }
 
 // CSFML's functions.
-@nogc
+@nogc @safe
 private extern(C)
 {
     struct sfMusic;

@@ -103,6 +103,7 @@ struct Rect(T)
      *      rectWidth  = Width of the rectangle
      *      rectHeight = Height of the rectangle
      */
+    @safe
     this(T rectLeft, T rectTop, T rectWidth, T rectHeight)
     {
         left = rectLeft;
@@ -121,6 +122,7 @@ struct Rect(T)
      *      position = Position of the top-left corner of the rectangle
      *      size     = Size of the rectangle
      */
+    @safe
     this(Vector2!(T) position, Vector2!(T) size)
     {
         left = position.x;
@@ -139,6 +141,7 @@ struct Rect(T)
      * Params:
      *      rectangle = Rectangle to convert
      */
+    @safe
     this(U)(Rect!(U) rectangle)
     {
         left = cast(T) rectangle.left;
@@ -161,7 +164,7 @@ struct Rect(T)
      * See_Also:
      *      intersects
      */
-    @nogc
+    @nogc @safe
     bool contains(E)(E x, E y) const
         if(isNumeric!(E))
     {
@@ -183,7 +186,7 @@ struct Rect(T)
      * See_Also:
      *      intersects
      */
-    @nogc
+    @nogc @safe
     bool contains(E)(Vector2!(E) point) const
         if(isNumeric!(E))
     {
@@ -203,6 +206,7 @@ struct Rect(T)
      *      contains
      */
     // TODO: use `this` instead of `rect`
+    @safe
     bool intersects(E)(Rect!(E) rectangle) const
         if(isNumeric!(E))
     {
@@ -226,6 +230,7 @@ struct Rect(T)
      * See_Also:
      *      contains
      */
+    @safe
     bool intersects(E,O)(Rect!(E) rectangle, out Rect!(O) intersection) const
         if(isNumeric!(E) && isNumeric!(O))
     {
@@ -247,7 +252,7 @@ struct Rect(T)
     }
 
     /// Compare two rectangles for equality.
-    @nogc
+    @nogc @safe
     bool opEquals(E)(const Rect!(E) otherRect) const
         if(isNumeric!(E))
     {
@@ -258,19 +263,20 @@ struct Rect(T)
     }
 
     /// Output the string representation of the Rect.
+   @safe
     string toString() const
     {
         import std.conv;
         return "Left: " ~ text(left) ~ " Top: " ~ text(top) ~ " Width: " ~ text(width) ~ " Height: " ~ text(height);
     }
 
-    @nogc
+    @nogc @safe
     private T max(T a, T b) const
     {
         return a>b?a:b;
     }
 
-    @nogc
+    @nogc @safe
     private T min(T a, T b) const
     {
         return a<b?a:b;

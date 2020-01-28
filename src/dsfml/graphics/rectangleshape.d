@@ -69,7 +69,7 @@ class RectangleShape : Shape
      *
      * Params:
      *      size = Size of the rectangle
-    */
+     */
     this(Vector2f size = Vector2f(0, 0))
     {
         m_rectangleShape = sfRectangleShape_create();
@@ -84,6 +84,7 @@ class RectangleShape : Shape
     }
 
     /// Destructor
+    @safe
     ~this()
     {
         sfRectangleShape_destroy(m_rectangleShape);
@@ -109,7 +110,7 @@ class RectangleShape : Shape
          *      resetRect = Should the texture rect be reset to the size of the
          *                  new texture?
          */
-        @nogc
+        @nogc @safe
         override void texture(Texture _texture, bool resetRect = false)
         {
             sfRectangleShape_setTexture(m_rectangleShape, _texture.ptr, resetRect);
@@ -125,6 +126,7 @@ class RectangleShape : Shape
          * Returns:
          *      The shape's texture.
          */
+        @safe
         override const(Texture) texture() const
         {
             return new Texture(sfRectangleShape_getTexture(m_rectangleShape));
@@ -146,7 +148,7 @@ class RectangleShape : Shape
          * See_Also:
          *      texture
          */
-        @nogc
+        @nogc @safe
         override void textureRect(IntRect rect)
         {
             sfRectangleShape_setTextureRect(m_rectangleShape, rect);
@@ -158,7 +160,7 @@ class RectangleShape : Shape
          * Returns:
          *      Texture rectangle of the shape
          */
-        @nogc
+        @nogc @safe
         override IntRect textureRect() const
         {
             return sfRectangleShape_getTextureRect(m_rectangleShape);
@@ -182,7 +184,7 @@ class RectangleShape : Shape
          * See_Also:
          *      outlineColor
          */
-        @nogc
+        @nogc @safe
         override void fillColor(Color color)
         {
             sfRectangleShape_setFillColor(m_rectangleShape, color);
@@ -194,7 +196,7 @@ class RectangleShape : Shape
          * Returns:
          *      Fill color of the shape
          */
-        @nogc
+        @nogc @safe
         override Color fillColor() const
         {
             return sfRectangleShape_getFillColor(m_rectangleShape);
@@ -214,7 +216,7 @@ class RectangleShape : Shape
          * See_Also:
          *      fillColor
          */
-        @nogc
+        @nogc @safe
         override void outlineColor(Color color)
         {
             sfRectangleShape_setOutlineColor(m_rectangleShape, color);
@@ -229,7 +231,7 @@ class RectangleShape : Shape
          * See_Also:
          *      fillColor
          */
-        @nogc
+        @nogc @safe
         override Color outlineColor() const
         {
             return sfRectangleShape_getOutlineColor(m_rectangleShape);
@@ -248,7 +250,7 @@ class RectangleShape : Shape
          * Params:
          *      thickness = New outline thickness
          */
-        @nogc
+        @nogc @safe
         override void outlineThickness(float thickness)
         {
             sfRectangleShape_setOutlineThickness(m_rectangleShape, thickness);
@@ -260,7 +262,7 @@ class RectangleShape : Shape
          * Returns:
          *      Outline thickness of the shape
          */
-        @nogc
+        @nogc @safe
         override float outlineThickness() const
         {
             return sfRectangleShape_getOutlineThickness(m_rectangleShape);
@@ -282,7 +284,7 @@ class RectangleShape : Shape
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc
+        @nogc @safe
         override void origin(float x, float y)
         {
             origin(Vector2f(x, y));
@@ -300,7 +302,7 @@ class RectangleShape : Shape
          * Params:
          *      _origin = New origin
          */
-        @nogc
+        @nogc @safe
         override void origin(Vector2f _origin)
         {
             sfRectangleShape_setOrigin(m_rectangleShape, _origin);
@@ -312,7 +314,7 @@ class RectangleShape : Shape
          * Returns:
          *      Current origin
          */
-        @nogc
+        @nogc @safe
         override Vector2f origin() const
         {
             return sfRectangleShape_getOrigin(m_rectangleShape);
@@ -328,7 +330,7 @@ class RectangleShape : Shape
          *      Number of points of the shape. For rectangle shapes, this number
          *      is always 4.
          */
-        @nogc
+        @nogc @safe
         override size_t pointCount() const
         {
             return sfRectangleShape_getPointCount(m_rectangleShape);
@@ -351,7 +353,7 @@ class RectangleShape : Shape
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         override void position(float x, float y)
         {
             position(Vector2f(x, y));
@@ -370,7 +372,7 @@ class RectangleShape : Shape
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         override void position(Vector2f _position)
         {
             sfRectangleShape_setPosition(m_rectangleShape, _position);
@@ -382,7 +384,7 @@ class RectangleShape : Shape
          * Returns:
          *      Current position
          */
-        @nogc
+        @nogc @safe
         override Vector2f position() const
         {
             return sfRectangleShape_getPosition(m_rectangleShape);
@@ -401,7 +403,7 @@ class RectangleShape : Shape
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc
+    @nogc @safe
     override void rotate(float angle)
     {
         sfRectangleShape_rotate(m_rectangleShape, angle);
@@ -422,7 +424,7 @@ class RectangleShape : Shape
          * See_Also:
          *      rotate
          */
-        @nogc
+        @nogc @safe
         override void rotation(float angle)
         {
             sfRectangleShape_setRotation(m_rectangleShape, angle);
@@ -436,7 +438,7 @@ class RectangleShape : Shape
          * Returns:
          *      Current rotation, in degrees
          */
-        @nogc
+        @nogc @safe
         override float rotation() const
         {
             return sfRectangleShape_getRotation(m_rectangleShape);
@@ -456,7 +458,7 @@ class RectangleShape : Shape
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc
+        @nogc @safe
         override void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
@@ -472,7 +474,7 @@ class RectangleShape : Shape
          * Params:
          *      factors = New scale factors
          */
-        @nogc
+        @nogc @safe
         override void scale(Vector2f factors)
         {
             sfRectangleShape_setScale(m_rectangleShape, factors);
@@ -484,7 +486,7 @@ class RectangleShape : Shape
          * Returns:
          *      Current scale factors
          */
-        @nogc
+        @nogc @safe
         override Vector2f scale() const
         {
             return sfRectangleShape_getScale(m_rectangleShape);
@@ -499,7 +501,7 @@ class RectangleShape : Shape
          * Params:
          *      _size = New size of the rectangle
          */
-        @nogc
+        @nogc @safe
         void size(Vector2f _size)
         {
             sfRectangleShape_setSize(m_rectangleShape, _size);
@@ -511,7 +513,7 @@ class RectangleShape : Shape
          * Returns:
          *      Size of the rectangle
          */
-        @nogc
+        @nogc @safe
         Vector2f size()
         {
             return sfRectangleShape_getSize(m_rectangleShape);
@@ -534,7 +536,7 @@ class RectangleShape : Shape
      * Returns:
      *      Global bounding rectangle of the entity
      */
-    @property @nogc
+    @property @nogc @safe
     override FloatRect globalBounds() const
     {
         return sfRectangleShape_getGlobalBounds(m_rectangleShape);
@@ -551,7 +553,7 @@ class RectangleShape : Shape
      * Returns:
      *      Local bounding rectangle of the entity.
      */
-    @property @nogc
+    @property @nogc @safe
     override FloatRect localBounds() const
     {
         return sfRectangleShape_getLocalBounds(m_rectangleShape);
@@ -570,7 +572,7 @@ class RectangleShape : Shape
      * Returns:
      *      Index-th point of the shape.
      */
-    @nogc
+    @nogc @safe
     override Vector2f getPoint(size_t index = 0) const
     {
         return sfRectangleShape_getPoint(m_rectangleShape, index);
@@ -594,7 +596,7 @@ class RectangleShape : Shape
      * Returns:
      *      Inverse of the combined transformations applied to the object
      */
-    @nogc
+    @nogc @safe
     override Transform inverseTransform() const
     {
         return Transform(sfRectangleShape_getInverseTransform(m_rectangleShape));
@@ -609,7 +611,7 @@ class RectangleShape : Shape
      * See_Also:
      *      inverseTransform
      */
-    @nogc
+    @nogc @safe
     override Transform transform()
     {
         return Transform(sfRectangleShape_getTransform(m_rectangleShape));
@@ -632,7 +634,7 @@ class RectangleShape : Shape
      * See_Also:
      *      position
      */
-    @nogc
+    @nogc @safe
     override void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
@@ -650,7 +652,7 @@ class RectangleShape : Shape
      * Params:
      *      offset = Offset
      */
-    @nogc
+    @nogc @safe
     override void move(Vector2f offset)
     {
         sfRectangleShape_move(m_rectangleShape, offset);
@@ -664,7 +666,7 @@ class RectangleShape : Shape
     }
 
     // Returns the C Pointer.
-    @property @nogc
+    @property @nogc @safe
     package sfRectangleShape* ptr()
     {
         return m_rectangleShape;
@@ -676,7 +678,7 @@ package extern(C)
     struct sfRectangleShape;
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfRectangleShape* sfRectangleShape_create();

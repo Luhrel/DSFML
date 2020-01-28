@@ -81,6 +81,7 @@ module dsfml.graphics.blendmode;
 /**
  * Blending modes for drawing.
  */
+@nogc @safe
 struct BlendMode
 {
     /**
@@ -211,7 +212,6 @@ struct BlendMode
         alphaEquation = alphaBlendEquation;
     }
 
-    @nogc
     bool opEquals(BlendMode rhs) const
     {
         return colorSrcFactor == rhs.colorSrcFactor &&

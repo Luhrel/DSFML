@@ -87,6 +87,7 @@ struct Vertex
      * Params:
      *      position = Vertex position
      */
+    @safe
     this(Vector2f position)
     {
         this.position = position;
@@ -101,6 +102,7 @@ struct Vertex
      *      position = Vertex position
      *      color    = Vertex color
      */
+    @safe
     this(Vector2f position, Color color)
     {
         this.position = position;
@@ -116,6 +118,7 @@ struct Vertex
      *      position  = Vertex position
      *      texCoords = Vertex texture coordinates
      */
+    @safe
     this(Vector2f position, Vector2f texCoords)
     {
         this.position = position;
@@ -130,6 +133,7 @@ struct Vertex
      *      color     = Vertex color
      *      texCoords = Vertex texture coordinates
      */
+    @safe
     this(Vector2f position, Color color, Vector2f texCoords)
     {
         this.position = position;

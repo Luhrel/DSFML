@@ -62,6 +62,7 @@ class Clock
     private alias currTime = MonoTime.currTime;
 
     /// Default constructor.
+    @nogc @safe
     this()
     {
         m_startTime = currTime;
@@ -76,6 +77,7 @@ class Clock
      * Returns:
      *      Time elapsed.
      */
+    @nogc @safe
     Time getElapsedTime() const
     {
         return microseconds((currTime - m_startTime).total!"usecs");
@@ -90,6 +92,7 @@ class Clock
      * Returns:
      *      Time elapsed.
      */
+    @safe
     Time restart()
     {
         MonoTime now = currTime;

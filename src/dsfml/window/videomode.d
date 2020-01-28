@@ -84,6 +84,7 @@ struct VideoMode
      *      modeHeight       = Height in pixels
      *      modeBitsPerPixel = Pixel depths in bits per pixel
      */
+    @nogc @safe
     this(uint modeWidth, uint modeHeight, uint modeBitsPerPixel= 32)
     {
         width = modeWidth;
@@ -97,7 +98,7 @@ struct VideoMode
      * Returns:
      *      Current desktop video mode.
      */
-    @nogc
+    @nogc @safe
     static VideoMode getDesktopMode()
     {
         return sfVideoMode_getDesktopMode();
@@ -141,12 +142,13 @@ struct VideoMode
      * Returns:
      *      true if the video mode is valid for fullscreen mode.
      */
-    @nogc
+    @nogc @safe
     bool isValid() const
     {
         return sfVideoMode_isValid(this);
     }
 
+    @safe
     string toString() const
     {
         import std.conv : text;
@@ -155,7 +157,7 @@ struct VideoMode
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     VideoMode sfVideoMode_getDesktopMode();

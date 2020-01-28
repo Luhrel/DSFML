@@ -84,6 +84,7 @@ struct Vector2(T)
      *      x = X coordinate
      *      y = Y coordinate
      */
+    @nogc @safe
     this(T x,T y)
     {
         this.x = x;
@@ -96,6 +97,7 @@ struct Vector2(T)
      * Params:
      *      otherVector = Vector to convert
      */
+    @nogc @safe
     this(E)(Vector2!(E) otherVector)
     {
         x = cast(T) otherVector.x;
@@ -103,6 +105,7 @@ struct Vector2(T)
     }
 
     /// Invert the members of the vector.
+    @nogc @safe
     Vector2!(T) opUnary(string s)() const
         if (s == "-")
     {
@@ -110,6 +113,7 @@ struct Vector2(T)
     }
 
     /// Overload of the `+`, `-`, `*` and `/` operators.
+    @nogc @safe
     Vector2!(T) opBinary(string op, E)(Vector2!(E) otherVector) const
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
@@ -119,6 +123,7 @@ struct Vector2(T)
     }
 
     /// Overload of the `+` , `-`, `*` and `/` operators.
+    @nogc @safe
     Vector2!(T) opBinary(string op, E)(E num) const
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
@@ -128,6 +133,7 @@ struct Vector2(T)
     }
 
     /// Overload of the `+` , `-`, `*` and `/` operators.
+    @nogc @safe
     Vector2!(T) opBinaryRight(string op, E)(E num) const
     if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
@@ -137,6 +143,7 @@ struct Vector2(T)
     }
 
     /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
+    @nogc @safe
     ref Vector2!(T) opOpAssign(string op, E)(Vector2!(E) otherVector)
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
@@ -146,6 +153,7 @@ struct Vector2(T)
     }
 
     /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
+    @nogc @safe
     ref Vector2!(T) opOpAssign(string op,E)(E num)
         if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
@@ -155,6 +163,7 @@ struct Vector2(T)
     }
 
     /// Assign the value of another vector whose type can be converted to T.
+    @nogc @safe
     ref Vector2!(T) opAssign(E)(Vector2!(E) otherVector)
     {
         x = cast(T) otherVector.x;
@@ -163,7 +172,7 @@ struct Vector2(T)
     }
 
     /// Compare two vectors for equality.
-    @nogc
+    @nogc @safe
     bool opEquals(E)(const Vector2!(E) otherVector) const
         if(isNumeric!(E) || is(E == bool))
     {
@@ -171,6 +180,7 @@ struct Vector2(T)
     }
 
     /// Output the string representation of the Vector2.
+    @safe
     string toString() const
     {
         import std.conv;

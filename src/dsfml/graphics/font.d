@@ -118,12 +118,13 @@ class Font
      *
      * Defines an empty font.
      */
+    @safe
     this()
     {
         // Nothing to do.
     }
 
-    @nogc
+    @nogc @safe
     package this(const sfFont* fontPointer)
     {
         m_font = sfFont_copy(fontPointer);
@@ -134,6 +135,7 @@ class Font
      *
      * Cleans up all the internal resources used by the font
      */
+    @safe
     ~this()
     {
         sfFont_destroy(m_font);
@@ -212,7 +214,7 @@ class Font
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc
+    @nogc @safe
     bool loadFromStream(InputStream stream)
     {
         m_font = sfFont_createFromStream(stream.ptr);
@@ -251,7 +253,7 @@ class Font
      * Returns:
      *      The glyph corresponding to codePoint and characterSize.
      */
-    @nogc
+    @nogc @safe
     Glyph glyph(dchar codePoint, uint characterSize, bool bold, float outlineThickness = 0) const
     {
         if (m_font is null)
@@ -276,7 +278,7 @@ class Font
      * Returns:
      *      Kerning value for first and second, in pixels.
      */
-    @nogc
+    @nogc @safe
     float kerning(dchar first, dchar second, uint characterSize) const
     {
         if (m_font is null)
@@ -296,7 +298,7 @@ class Font
      * Returns:
      *      Line spacing, in pixels.
      */
-    @nogc
+    @nogc @safe
     float lineSpacing(uint characterSize) const
     {
         if (m_font is null)
@@ -319,7 +321,7 @@ class Font
      * See_Also:
      *      getUnderlineThickness
      */
-    @nogc
+    @nogc @safe
     float getUnderlinePosition(uint characterSize) const
     {
         if (m_font is null)
@@ -341,7 +343,7 @@ class Font
      * See_Also:
      *      getUnderlinePosition
      */
-    @nogc
+    @nogc @safe
     float getUnderlineThickness(uint characterSize) const
     {
         if (m_font is null)
@@ -362,6 +364,7 @@ class Font
      * Returns:
      *      Texture containing the glyphs of the requested size.
      */
+    @safe
     const(Texture) texture(uint characterSize)
     {
         if (m_font is null)
@@ -375,14 +378,14 @@ class Font
      * Returns:
      *      The duplicated font.
      */
-    @property
+    @property @safe
     Font dup() const
     {
         return new Font(m_font);
     }
 
     // Returns the C pointer
-    @property @nogc
+    @property @nogc @safe
     package sfFont* ptr()
     {
         return m_font;
@@ -398,7 +401,7 @@ package extern(C)
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     sfFont* sfFont_createFromFile(const char* filename);

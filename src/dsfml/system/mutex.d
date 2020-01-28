@@ -91,6 +91,7 @@ class Mutex
     private core.Mutex m_mutex;
 
     /// Default Constructor
+    @safe
     this()
     {
         m_mutex = new core.Mutex();
@@ -102,12 +103,14 @@ class Mutex
      * If the mutex is already locked in another thread, this call will block
      * the execution until the mutex is released.
      */
+    @safe
     void lock()
     {
         m_mutex.lock();
     }
 
     /// Unlock the mutex.
+    @safe
     void unlock()
     {
         m_mutex.unlock();

@@ -139,20 +139,21 @@ class Transformable
     private sfTransformable* m_transformable;
 
     /// Default constructor.
-    @nogc
+    @nogc @safe
     this()
     {
         m_transformable = sfTransformable_create();
     }
 
     // Copy constructor.
-    @nogc
+    @nogc @safe
     package this(const sfTransformable* transformablePointer)
     {
         m_transformable = sfTransformable_copy(transformablePointer);
     }
 
     /// Virtual destructor.
+    @safe
     ~this()
     {
         sfTransformable_destroy(m_transformable);
@@ -173,7 +174,7 @@ class Transformable
          * Params:
          *      _origin = New origin
          */
-        @nogc
+        @nogc @safe
         void origin(Vector2f _origin)
         {
             sfTransformable_setOrigin(m_transformable, _origin);
@@ -192,7 +193,7 @@ class Transformable
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc
+        @nogc @safe
         void origin(float x, float y)
         {
             origin(Vector2f(x, y));
@@ -204,7 +205,7 @@ class Transformable
          * Returns:
          *      Current origin
          */
-        @nogc
+        @nogc @safe
         Vector2f origin() const
         {
             return sfTransformable_getOrigin(m_transformable);
@@ -226,7 +227,7 @@ class Transformable
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         void position(Vector2f _position)
         {
             sfTransformable_setPosition(m_transformable, _position);
@@ -246,7 +247,7 @@ class Transformable
          * See_Also:
          *      move
          */
-        @nogc
+        @nogc @safe
         void position(float x, float y)
         {
             position(Vector2f(x, y));
@@ -258,7 +259,7 @@ class Transformable
          * Returns:
          *      Current position
          */
-        @nogc
+        @nogc @safe
         Vector2f position() const
         {
             return sfTransformable_getPosition(m_transformable);
@@ -278,7 +279,7 @@ class Transformable
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc
+    @nogc @safe
     void rotate(float angle)
     {
         sfTransformable_rotate(m_transformable, angle);
@@ -299,7 +300,7 @@ class Transformable
          * See_Also:
          *      rotate
          */
-        @nogc
+        @nogc @safe
         void rotation(float angle)
         {
             sfTransformable_setRotation(m_transformable, angle);
@@ -316,7 +317,7 @@ class Transformable
          * See_Also:
          *      rotate
          */
-        @nogc
+        @nogc @safe
         float rotation() const
         {
             return sfTransformable_getRotation(m_transformable);
@@ -335,7 +336,7 @@ class Transformable
          * Params:
          *      factors = New scale factors
          */
-        @nogc
+        @nogc @safe
         void scale(Vector2f factors)
         {
             sfTransformable_setScale(m_transformable, factors);
@@ -352,7 +353,7 @@ class Transformable
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc
+        @nogc @safe
         void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
@@ -364,7 +365,7 @@ class Transformable
          * Returns:
          *      Current scale factors
          */
-        @nogc
+        @nogc @safe
         Vector2f scale() const
         {
             return sfTransformable_getScale(m_transformable);
@@ -380,7 +381,7 @@ class Transformable
      * See_Also:
      *      inverseTransform
      */
-    @nogc
+    @nogc @safe
     const(Transform) transform()
     {
         return Transform(sfTransformable_getTransform(m_transformable));
@@ -395,7 +396,7 @@ class Transformable
      * See_Also:
      *      transform
      */
-    @nogc
+    @nogc @safe
     const(Transform) inverseTransform()
     {
         return Transform(sfTransformable_getInverseTransform(m_transformable));
@@ -417,7 +418,7 @@ class Transformable
      * See_Also:
      *      position
      */
-    @nogc
+    @nogc @safe
     void move(Vector2f offset)
     {
         sfTransformable_move(m_transformable, offset);
@@ -441,7 +442,7 @@ class Transformable
      * See_Also:
      *      position
      */
-    @nogc
+    @nogc @safe
     void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
@@ -455,7 +456,7 @@ class Transformable
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     struct sfTransformable;

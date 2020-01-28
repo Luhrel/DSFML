@@ -107,7 +107,7 @@ struct Clipboard
     }
 }
 
-@nogc
+@nogc @safe
 private extern(C)
 {
     //const(char)* sfClipboard_getString();

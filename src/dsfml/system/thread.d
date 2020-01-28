@@ -83,6 +83,7 @@ class Thread
      *      fn = The function to use as the entry point of the thread
      *      sz = The size of the stack
      */
+    @safe
     this(void function() fn, size_t sz = 0)
     {
         m_thread = new core.Thread(fn,sz);
@@ -95,6 +96,7 @@ class Thread
      *      dg = The delegate to use as the entry point of the thread
      *      sz = The size of the stack
      */
+    @safe
     this(void delegate() dg, size_t sz = 0)
     {
         m_thread = new core.Thread(dg, sz);
