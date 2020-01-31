@@ -151,6 +151,60 @@ struct Mat3
 struct Mat4
 {
     float[4 * 4] array;
+
+
+    /**
+     * Overwrite the `*` operator.
+     */
+    @safe
+    Mat4 opBinary(string op)(Mat4 other)
+        if (op == "*")
+    {
+        return dot(other);
+    }
+
+    /**
+     * Performs a scalar operation between two matrices.
+     *
+     * Returns: dot product.
+     */
+    @safe
+    Mat4 dot(Mat4 other)
+    {
+        float[4 * 4] result;
+
+        // Every line/column combination
+        for (ubyte u = 0; u < 16; u += 4)
+        {
+            // index of `result`
+            ubyte index = u;
+
+            // Dot loop : Multiply the line and the column
+            for (ubyte b = 0; b < 4; b++)
+            {
+                float dot_result = 0; // represents aXX
+                ubyte column = b;
+
+                /*
+                 * Multiply "a line and a column".
+                 *
+                 * Once done, `dot_result` contains the dot of the line and the
+                 * column.
+                 */
+                for (ubyte line = u; line < u + 4; line++)
+                {
+                    dot_result += array[line] * other.array[column];
+                    // The column index is always 4 more
+                    // line[0, 1, 2, 3] -> column[0, 4, 8, 12]
+                    column += 4;
+                }
+                result[index] = dot_result;
+                // increment index because `u` make 4 steps (`u += 4`)
+                index++;
+            }
+        }
+        return Mat4(result);
+    }
 }
 
 /**
@@ -246,4 +300,19 @@ unittest
     assert(iv.y == 0);
     assert(iv.z == 0);
     assert(iv.w == 255);
+
+    Mat4 matrix1 = Mat4([5, 7, 9, 10,
+                         2, 3, 3, 8,
+                         8, 10, 2, 3,
+                         3, 3, 4, 8]);
+
+    Mat4 matrix2 = Mat4([3, 10, 12, 18,
+                         12, 1, 4, 9,
+                         9, 10, 12, 2,
+                         3, 12, 4, 10]);
+
+    assert(matrix1 * matrix2 == Mat4([210, 267, 236, 271,
+                                      93, 149, 104, 149,
+                                      171, 146, 172, 268,
+                                      105, 169, 128, 169]));
 }
