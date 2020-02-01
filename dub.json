@@ -83,7 +83,11 @@
                 "dsfml:window": "~>2.5",
                 "dsfml:network": "~>2.5",
                 "dsfml:system": "~>2.5",
+                "bindbc-opengl": "~>0.10.0"
             }
-        },
+        }
+    ],
+    "versions": [
+        "GL_40"
     ]
 }
