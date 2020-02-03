@@ -3,6 +3,8 @@ module dsfml.extra.graphics.transform3;
 import dsfml.graphics.glsl;
 import dsfml.system.vector3;
 
+import std.math;
+
 struct Transform3
 {
     private Mat4 m_matrix;
@@ -31,6 +33,12 @@ struct Transform3
               a10, a11, a12, a13,
               a20, a21, a22, a23,
               a30, a31, a32, a33]);
+    }
+
+    @nogc @safe
+    float[4 * 4] matrix() const
+    {
+        return m_matrix.array;
     }
 
     /**
@@ -86,6 +94,119 @@ struct Transform3
         m_matrix = Mat4(result);
         return this;
     }
+
+    // Copy from https://github.com/Dav1dde/gl3n/blob/master/gl3n/linalg.d
+    // and https://github.com/g-truc/glm/blob/1498e094b95d1d89164c6442c632d775a2a1bab5/glm/ext/matrix_transform.inl
+    ref Transform3 rotate(float angle, Vector3f axis)
+    {
+        // TODO: normalize vector
+
+        float rad = angle * 3.141592654f / 180.0f;
+        float cosr = cos(rad);
+        float sinr = sin(rad);
+
+        float[4 * 4] m = Transform3.identity.m_matrix.array;
+
+        float x = axis.x;
+        float y = axis.y;
+        float z = axis.z;
+
+        Vector3f mc = (1 - cosr) * axis;
+
+        // https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glRotate.xml
+
+        m[0] = mc.x * x + cosr;
+        m[1] = mc.x * y * mc - z * sinr;
+        m[2] = mc.x * z * mc + y * sinr;
+
+        m[4] = mc.y * x + z * sinr;
+        m[5] = mc.y * y + cosr;
+        m[6] = mc.y * z - x * sinr;
+
+        m[8] = mc.z * mc.x - y * sinr;
+        m[9] = mc.z * mc.y + x * sinr;
+        m[10] = mc.z * mc.z + cosr;
+
+        combine(Transform3(m));
+        return this;
+    }
+
+    ref Transform3 rotateX(float angle)
+    {
+        float rad = angle * 3.141592654f / 180.0f;
+        float cosr = cos(rad);
+        float sinr = sin(rad);
+
+        float[4 * 4] rotx = Transform3.identity.m_matrix.array;
+
+        rotx[5] = cosr;
+        rotx[6] = sinr;
+        rotx[9] = -sinr;
+        rotx[10] = cosr;
+
+        combine(Transform3(rotx));
+        return this;
+    }
+
+    ref Transform3 rotateY(float angle)
+    {
+        float rad = angle * 3.141592654f / 180.0f;
+        float cosr = cos(rad);
+        float sinr = sin(rad);
+
+        float[4 * 4] roty = Transform3.identity.m_matrix.array;
+
+        roty[0] = cosr;
+        roty[2] = -sinr;
+        roty[8] = sinr;
+        roty[10] = cosr;
+
+        combine(Transform3(roty));
+        return this;
+    }
+
+    ref Transform3 rotateZ(float angle)
+    {
+        float rad = angle * 3.141592654f / 180.0f;
+        float cosr = cos(rad);
+        float sinr = sin(rad);
+
+        float[4 * 4] rotz = Transform3.identity.m_matrix.array;
+
+        rotz[0] = cosr;
+        rotz[1] = -sinr;
+        rotz[4] = sinr;
+        rotz[5] = cosr;
+
+        combine(Transform3(rotz));
+        return this;
+    }
+
+    ref Transform3 translate(Vec3 vector)
+    {
+        Transform3 transform = Transform3.identity;
+
+        transform.m_matrix.array[3] = vector.x;
+        transform.m_matrix.array[7] = vector.y;
+        transform.m_matrix.array[11] = vector.z;
+
+        combine(transform);
+
+        return this;
+    }
+
+    ref Transform3 scale(Vec3 vector)
+    {
+        Transform3 transform = Transform3.identity;
+
+        transform.m_matrix.array[0] = vector.x;
+        transform.m_matrix.array[5] = vector.y;
+        transform.m_matrix.array[10] = vector.z;
+
+        combine(transform);
+
+        return this;
+    }
 }
 
 unittest
@@ -94,18 +215,19 @@ unittest
     writeln("Running Transform3 unittest...");
 
 
-    auto matrix1 = new Transform3([5, 7, 9, 10,
-                                   2, 3, 3, 8,
-                                   8, 10, 2, 3,
-                                   3, 3, 4, 8]);
+    auto matrix1 = Transform3([5, 7, 9, 10,
+                               2, 3, 3, 8,
+                               8, 10, 2, 3,
+                               3, 3, 4, 8]);
 
-    auto matrix2 = new Transform3([3, 10, 12, 18,
-                                   12, 1, 4, 9,
-                                   9, 10, 12, 2,
-                                   3, 12, 4, 10]);
+    auto matrix2 = Transform3([3, 10, 12, 18,
+                               12, 1, 4, 9,
+                               9, 10, 12, 2,
+                               3, 12, 4, 10]);
 
     assert(matrix1 * matrix2 == Transform3([210, 267, 236, 271,
                                             93, 149, 104, 149,
                                             171, 146, 172, 268,
                                             105, 169, 128, 169]));
+
 }
