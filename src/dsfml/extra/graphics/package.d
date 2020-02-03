@@ -30,5 +30,7 @@ module dsfml.extra.graphics;
 
 public
 {
-
+    import dsfml.extra.graphics.transform3;
+    import dsfml.extra.graphics.transformable3;
+    import dsfml.extra.graphics.vertex3;
 }
