@@ -1,13 +1,25 @@
 module dsfml.extra.graphics.transform3;
 
-import dsfml.graphics.glsl;
 import dsfml.system.vector3;
 
 import std.math;
 
 struct Transform3
 {
-    private Mat4 m_matrix;
+    /*
+     * <---- axis ---->
+     *  X     Y     Z     T
+     * --- | --- | --- | ---
+     * a00 | a01 | a02 | a03
+     * a10 | a11 | a12 | a13
+     * a20 | a21 | a22 | a23
+     * a30 | a31 | a32 | a33
+     *
+     * T = Translation
+     * a30, a31 and a32 are always 0.
+     * a33 is always 1.
+     */
+    private float[4 * 4] m_matrix;
 
     /// The identity transform (does nothing).
     static const Transform3 identity = Transform3([1.0f, 0.0f, 0.0f, 0.0f,
@@ -19,7 +31,7 @@ struct Transform3
     @nogc @safe
     this(float[4 * 4] matrix)
     {
-        m_matrix = Mat4(matrix);
+        m_matrix = matrix;
     }
 
     /// ditto
@@ -38,7 +50,7 @@ struct Transform3
     @nogc @safe
     float[4 * 4] matrix() const
     {
-        return m_matrix.array;
+        return m_matrix;
     }
 
     /**
@@ -81,7 +93,7 @@ struct Transform3
                  */
                 for (ubyte line = u; line < u + 4; line++)
                 {
-                    dot_result += m_matrix.array[line] * other.m_matrix.array[column];
+                    dot_result += m_matrix[line] * other.m_matrix[column];
                     // The column index is always 4 more
                     // line[0, 1, 2, 3] -> column[0, 4, 8, 12]
                     column += 4;
@@ -91,7 +103,7 @@ struct Transform3
                 index++;
             }
         }
-        m_matrix = Mat4(result);
+        m_matrix = result;
         return this;
     }
 
@@ -105,7 +117,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] m = Transform3.identity.m_matrix.array;
+        float[4 * 4] m = Transform3.identity.m_matrix;
 
         float x = axis.x;
         float y = axis.y;
@@ -116,16 +128,16 @@ struct Transform3
         // https://www.khronos.org/registry/OpenGL-Refpages/gl2.1/xhtml/glRotate.xml
 
         m[0] = mc.x * x + cosr;
-        m[1] = mc.x * y * mc - z * sinr;
-        m[2] = mc.x * z * mc + y * sinr;
+        m[1] = mc.x * y - z * sinr;
+        m[2] = mc.x * z + y * sinr;
 
         m[4] = mc.y * x + z * sinr;
         m[5] = mc.y * y + cosr;
         m[6] = mc.y * z - x * sinr;
 
-        m[8] = mc.z * mc.x - y * sinr;
-        m[9] = mc.z * mc.y + x * sinr;
-        m[10] = mc.z * mc.z + cosr;
+        m[8] = mc.z * x - y * sinr;
+        m[9] = mc.z * y + x * sinr;
+        m[10] = mc.z * z + cosr;
 
         combine(Transform3(m));
         return this;
@@ -137,7 +149,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] rotx = Transform3.identity.m_matrix.array;
+        float[4 * 4] rotx = Transform3.identity.m_matrix;
 
         rotx[5] = cosr;
         rotx[6] = sinr;
@@ -154,7 +166,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] roty = Transform3.identity.m_matrix.array;
+        float[4 * 4] roty = Transform3.identity.m_matrix;
 
         roty[0] = cosr;
         roty[2] = -sinr;
@@ -171,7 +183,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] rotz = Transform3.identity.m_matrix.array;
+        float[4 * 4] rotz = Transform3.identity.m_matrix;
 
         rotz[0] = cosr;
         rotz[1] = -sinr;
@@ -182,26 +194,26 @@ struct Transform3
         return this;
     }
 
-    ref Transform3 translate(Vec3 vector)
+    ref Transform3 translate(Vector3f vector)
     {
         Transform3 transform = Transform3.identity;
 
-        transform.m_matrix.array[3] = vector.x;
-        transform.m_matrix.array[7] = vector.y;
-        transform.m_matrix.array[11] = vector.z;
+        transform.m_matrix[3] = vector.x;
+        transform.m_matrix[7] = vector.y;
+        transform.m_matrix[11] = vector.z;
 
         combine(transform);
 
         return this;
     }
 
-    ref Transform3 scale(Vec3 vector)
+    ref Transform3 scale(Vector3f vector)
     {
         Transform3 transform = Transform3.identity;
 
-        transform.m_matrix.array[0] = vector.x;
-        transform.m_matrix.array[5] = vector.y;
-        transform.m_matrix.array[10] = vector.z;
+        transform.m_matrix[0] = vector.x;
+        transform.m_matrix[5] = vector.y;
+        transform.m_matrix[10] = vector.z;
 
         combine(transform);
 
