@@ -7,13 +7,13 @@ import std.math;
 struct Transform3
 {
     /*
-     * <---- axis ---->
-     *  X     Y     Z     T
-     * --- | --- | --- | ---
-     * a00 | a01 | a02 | a03
-     * a10 | a11 | a12 | a13
-     * a20 | a21 | a22 | a23
-     * a30 | a31 | a32 | a33
+     *    <---- axis ---->
+     *   |  X  |  Y  |  Z  |  T
+     *   | --- | --- | --- | ---
+     * X | a00 | a01 | a02 | a03
+     * Y | a10 | a11 | a12 | a13
+     * Z | a20 | a21 | a22 | a23
+     *   | a30 | a31 | a32 | a33
      *
      * T = Translation
      * a30, a31 and a32 are always 0.
@@ -51,16 +51,6 @@ struct Transform3
     float[4 * 4] matrix() const
     {
         return m_matrix;
-    }
-
-    /**
-     * Overwrite the `*` operator.
-     */
-    @safe
-    Transform3 opBinary(string op)(Transform3 other)
-        if (op == "*")
-    {
-        return combine(other);
     }
 
     /**
@@ -312,10 +302,36 @@ struct Transform3
 
         for (ubyte b = 0; b < 16; b++)
         {
-            result[i] = inv[b] * odet;
+            result[b] = inv[b] * odet;
         }
 
         return Transform3(result);
+    }
+
+    /**
+     * Overwrite the `*` and `/` operators.
+     */
+    @safe
+    Transform3 opBinary(string op)(Transform3 other)
+        if (op == "*" || op == "/")
+    {
+        static if (op == "*")
+            return Transform3(m_matrix).combine(other);
+        else static if (op == "/")
+            return Transform3(m_matrix).combine(other.inverse());
+    }
+
+    /**
+     * Overwrite the `*=` and `/=` operators.
+     */
+    @safe
+    Transform3 opOpAssign(string op)(Transform3 other)
+        if (op == "*" || op == "/")
+    {
+        static if (op == "*")
+            return combine(other);
+        else static if (op == "/")
+            return combine(other.inverse());
     }
 }
 
