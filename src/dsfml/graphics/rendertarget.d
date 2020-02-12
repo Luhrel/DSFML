@@ -44,17 +44,16 @@
  */
 module dsfml.graphics.rendertarget;
 
-import dsfml.graphics.renderwindow;
-import dsfml.graphics.rendertexture;
+import dsfml.graphics.color;
 import dsfml.graphics.drawable;
-import dsfml.graphics.renderstates;
-
 import dsfml.graphics.primitivetype;
+import dsfml.graphics.rect;
+import dsfml.graphics.renderstates;
+import dsfml.graphics.rendertexture;
+import dsfml.graphics.renderwindow;
 import dsfml.graphics.vertex;
 import dsfml.graphics.vertexbuffer;
 import dsfml.graphics.view;
-import dsfml.graphics.color;
-import dsfml.graphics.rect;
 
 import dsfml.system.vector2;
 
@@ -82,8 +81,7 @@ interface RenderTarget
      * Returns:
      *      true if operation was successful, false otherwise
      */
-    @property
-    bool active(bool active = true);
+    @property bool active(bool active = true);
 
     /**
      * The current active view.
@@ -97,8 +95,7 @@ interface RenderTarget
      * To restore the original view of the target, you can pass the result
      * of `defaultView()` to this function.
      */
-    @property
-    void view(View newView);
+    @property void view(View newView);
 
     /**
      * Get the view currently in use in the render target.
@@ -109,8 +106,7 @@ interface RenderTarget
      * See_Also:
      *      defaultView
      */
-    @property
-    View view() const;
+    @property View view() const;
 
     /**
      * Get the default view of the render target.
@@ -124,8 +120,7 @@ interface RenderTarget
      * See_Also:
      *      view
      */
-    @property
-    View defaultView() const;
+    @property View defaultView() const;
 
     /**
      * Return the size of the rendering region of the target.
@@ -133,8 +128,7 @@ interface RenderTarget
      * Returns:
      *      Size in pixels.
      */
-    @property
-    Vector2u size() const;
+    @property Vector2u size() const;
 
     /**
      * Get the viewport of a view, applied to this render target.
@@ -150,8 +144,7 @@ interface RenderTarget
      * Returns:
      *      Viewport rectangle, expressed in pixels.
      */
-    @property
-    IntRect viewport(View view) const;
+    @property IntRect viewport(View view) const;
 
     /**
      * Clear the entire target with a single color.
@@ -201,7 +194,8 @@ interface RenderTarget
      *      vertexCount  = Number of vertices to render
      *      states       = Render states to use for drawing
      */
-    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t	vertexCount, RenderStates states = RenderStates.init);
+    void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t vertexCount,
+            RenderStates states = RenderStates.init);
 
     /**
      * Convert a point from target coordinates to world coordinates, using the

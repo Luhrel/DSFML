@@ -83,10 +83,9 @@ class Thread
      *      fn = The function to use as the entry point of the thread
      *      sz = The size of the stack
      */
-    @safe
-    this(void function() fn, size_t sz = 0)
+    @safe this(void function() fn, size_t sz = 0)
     {
-        m_thread = new core.Thread(fn,sz);
+        m_thread = new core.Thread(fn, sz);
     }
 
     /**
@@ -96,8 +95,7 @@ class Thread
      *      dg = The delegate to use as the entry point of the thread
      *      sz = The size of the stack
      */
-    @safe
-    this(void delegate() dg, size_t sz = 0)
+    @safe this(void delegate() dg, size_t sz = 0)
     {
         m_thread = new core.Thread(dg, sz);
     }
@@ -122,7 +120,7 @@ class Thread
     /// Wait until the thread finishes.
     void wait()
     {
-        if(m_thread.isRunning())
+        if (m_thread.isRunning())
         {
             m_thread.join(true);
         }
@@ -131,15 +129,15 @@ class Thread
 
 unittest
 {
-    import std.stdio;
-    import dsfml.system.sleep;
-    import dsfml.system.time;
+    import dsfml.system.sleep : sleep;
+    import dsfml.system.time : seconds;
+    import std.stdio : writeln;
 
     writeln("Running Thread unittest...");
 
     void thread1()
     {
-        for(int i = 0; i < 10; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             writeln("\tThread 1");
             sleep(seconds(0.01));
@@ -148,7 +146,7 @@ unittest
 
     void thread2()
     {
-        for(int i = 0; i < 10; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             writeln("\tThread 2");
             sleep(seconds(0.02));

@@ -67,9 +67,9 @@
  */
 module dsfml.window.touch;
 
+import dsfml.graphics.renderwindow;
 import dsfml.system.vector2;
 import dsfml.window.window;
-import dsfml.graphics.renderwindow;
 
 /**
  * Give access to the real-time state of the touches.
@@ -88,8 +88,7 @@ final abstract class Touch
      * Returns:
      *      Current position of finger, or undefined if it's not down
      */
-    @nogc @safe
-    static Vector2i getPosition(uint finger)
+    @nogc @safe static Vector2i getPosition(uint finger)
     {
         return sfTouch_getPosition(finger, null);
     }
@@ -107,8 +106,7 @@ final abstract class Touch
      * Returns:
      *      Current position of finger, or undefined if it's not down
      */
-    @nogc @safe
-    static Vector2i getPosition(uint finger, Window relativeTo)
+    @nogc @safe static Vector2i getPosition(uint finger, Window relativeTo)
     {
         return sfTouch_getPosition(finger, relativeTo.ptr);
     }
@@ -126,8 +124,7 @@ final abstract class Touch
      * Returns:
      *      Current position of finger, or undefined if it's not down
      */
-    @nogc @safe
-    static Vector2i getPosition(uint finger, RenderWindow relativeTo)
+    @nogc @safe static Vector2i getPosition(uint finger, RenderWindow relativeTo)
     {
         return sfTouch_getPositionRenderWindow(finger, relativeTo.ptr);
     }
@@ -141,15 +138,13 @@ final abstract class Touch
      * Returns:
      *      true if finger is currently touching the screen, false otherwise
      */
-    @nogc @safe
-    static bool isDown(uint finger)
+    @nogc @safe static bool isDown(uint finger)
     {
         return sfTouch_isDown(finger);
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     //Check if a touch event is currently down
     bool sfTouch_isDown(uint finger);
@@ -163,8 +158,8 @@ unittest
 {
     version (Android)
     {
-        import std.stdio;
-        import std.conv;
+        import std.stdio : writefln, writeln;
+
         writeln("Running Touch unittest...");
         writeln("\tPlease touch the screen.");
 

@@ -30,8 +30,7 @@ version (Android)
 {
     struct ANativeActivity;
 
-    @nogc @safe
-    extern(C++, sf)
+    @nogc @safe extern (C++,sf)
     {
         /**
          *

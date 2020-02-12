@@ -73,9 +73,9 @@ module dsfml.graphics.image;
 import dsfml.graphics.color;
 import dsfml.graphics.rect;
 
+import dsfml.system.err;
 import dsfml.system.inputstream;
 import dsfml.system.vector2;
-import dsfml.system.err;
 
 import std.string;
 
@@ -91,22 +91,19 @@ class Image
      *
      * Creates an empty image.
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_image = sfImage_create(0, 0);
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfImage* image)
+    @nogc @safe package this(const sfImage* image)
     {
         m_image = sfImage_copy(image);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfImage_destroy(m_image);
     }
@@ -120,8 +117,7 @@ class Image
      *      color  = Fill color
      *
      */
-    @nogc @safe
-    void create(uint width, uint height, Color color = Color.init)
+    @nogc @safe void create(uint width, uint height, Color color = Color.init)
     {
         m_image = sfImage_createFromColor(width, height, color);
     }
@@ -138,8 +134,7 @@ class Image
      *      height = Height of the image
      *      pixels = Array of pixels to copy to the image
      */
-    @nogc
-    void create(uint width, uint height, const(ubyte)[] pixels)
+    @nogc void create(uint width, uint height, const(ubyte)[] pixels)
     {
         m_image = sfImage_createFromPixels(width, height, pixels.ptr);
     }
@@ -160,8 +155,7 @@ class Image
      * See_Also:
      *      loadFromMemory, loadFromStream, saveToFile
      */
-    @safe
-    bool loadFromFile(string filename)
+    @safe bool loadFromFile(string filename)
     {
         m_image = sfImage_createFromFile(filename.toStringz);
         return m_image != null;
@@ -183,8 +177,7 @@ class Image
      * See_Also:
      *      loadFromFile, loadFromStream
      */
-    @nogc
-    bool loadFromMemory(const(void)[] data)
+    @nogc bool loadFromMemory(const(void)[] data)
     {
         m_image = sfImage_createFromMemory(data.ptr, data.sizeof);
         return m_image != null;
@@ -206,8 +199,7 @@ class Image
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc @safe
-    bool loadFromStream(InputStream stream)
+    @nogc @safe bool loadFromStream(InputStream stream)
     {
         m_image = sfImage_createFromStream(stream.ptr);
         return m_image != null;
@@ -229,8 +221,8 @@ class Image
      */
     const(ubyte[]) pixelArray() const
     {
-        int length = size.x * size.y * 4;
-        if(length > 0)
+        const int length = size.x * size.y * 4;
+        if (length > 0)
             return sfImage_getPixelsPtr(m_image)[0 .. length];
         err.writeln("Trying to access the pixels of an empty image");
         return [];
@@ -242,8 +234,7 @@ class Image
      * Returns:
      *      Size of the image, in pixels.
      */
-    @property @nogc @safe
-    Vector2u size() const
+    @property @nogc @safe Vector2u size() const
     {
         return sfImage_getSize(m_image);
     }
@@ -261,8 +252,7 @@ class Image
      * Returns:
      *      Color of the pixel at coordinates (x, y)
      */
-    @nogc @safe
-    Color pixel(uint x, uint y) const
+    @nogc @safe Color pixel(uint x, uint y) const
     {
         return sfImage_getPixel(m_image, x, y);
     }
@@ -278,8 +268,7 @@ class Image
      *      y     = Y coordinate of pixel to change
      *      color = New color of the pixel
      */
-    @nogc @safe
-    void pixel(uint x, uint y, Color color)
+    @nogc @safe void pixel(uint x, uint y, Color color)
     {
         sfImage_setPixel(m_image, x, y, color);
     }
@@ -293,8 +282,7 @@ class Image
      * image[2, 3] = Color.Red;
      * ---
      */
-    @nogc @safe
-    void opIndexAssign(Color color, uint x, uint y)
+    @nogc @safe void opIndexAssign(Color color, uint x, uint y)
     {
         pixel(x, y, color);
     }
@@ -307,8 +295,7 @@ class Image
      * image[2, 3] += Color.Green;
      * ---
      */
-    @safe
-    void opIndexOpAssign(string op)(Color color, uint x, uint y)
+    @safe void opIndexOpAssign(string op)(Color color, uint x, uint y)
     {
         mixin("Color res = pixel(x, y) " ~ op ~ " color;");
         pixel(x, y, res);
@@ -322,8 +309,7 @@ class Image
      * image[2, 3] += 50;
      * ---
      */
-    @safe
-    void opIndexOpAssign(string op)(size_t num, uint x, uint y)
+    @safe void opIndexOpAssign(string op)(size_t num, uint x, uint y)
     {
         mixin("Color res = pixel(x, y) " ~ op ~ " num;");
         pixel(x, y, res);
@@ -338,8 +324,7 @@ class Image
      * Color pixelX2Y3 = convex[2, 3];
      * ---
      */
-    @nogc @safe
-    Color opIndex(uint x, uint y) const
+    @nogc @safe Color opIndex(uint x, uint y) const
     {
         return pixel(x, y);
     }
@@ -363,8 +348,8 @@ class Image
      *      sourceRect = Sub-rectangle of the source image to copy
      *      applyAlpha = Should the copy take the source transparency into account?
      */
-    @nogc @safe
-    void copy(Image source, uint destX, uint destY, IntRect sourceRect = IntRect.init, bool applyAlpha = false)
+    @nogc @safe void copy(Image source, uint destX, uint destY,
+            IntRect sourceRect = IntRect.init, bool applyAlpha = false)
     {
         sfImage_copyImage(m_image, source.ptr, destX, destY, sourceRect, applyAlpha);
     }
@@ -379,22 +364,19 @@ class Image
      *      color = Color to make transparent
      *      alpha = Alpha value to assign to transparent pixels
      */
-    @nogc @safe
-    void createMaskFromColor(Color color, ubyte alpha = 0)
+    @nogc @safe void createMaskFromColor(Color color, ubyte alpha = 0)
     {
         sfImage_createMaskFromColor(m_image, color, alpha);
     }
 
     /// Flip the image horizontally (left <-> right)
-    @nogc @safe
-    void flipHorizontally()
+    @nogc @safe void flipHorizontally()
     {
         sfImage_flipHorizontally(m_image);
     }
 
     /// Flip the image vertically (top <-> bottom)
-    @nogc @safe
-    void flipVertically()
+    @nogc @safe void flipVertically()
     {
         sfImage_flipVertically(m_image);
     }
@@ -416,34 +398,30 @@ class Image
      * See_Also:
      *      create, loadFromFile, loadFromMemory
      */
-    @safe
-    bool saveToFile(string filename) const
+    @safe bool saveToFile(string filename) const
     {
         return sfImage_saveToFile(m_image, filename.toStringz);
     }
 
     // Returns the C pointer.
-    @property @nogc @safe
-    package sfImage* ptr()
+    @property @nogc @safe package sfImage* ptr()
     {
         return m_image;
     }
 
     /// Duplicates this Image.
-    @property @safe
-    Image dup() const
+    @property @safe Image dup() const
     {
         return new Image(m_image);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfImage;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfImage* sfImage_create(uint width, uint height);
     sfImage* sfImage_createFromColor(uint width, uint height, Color color);
@@ -456,7 +434,8 @@ private extern(C)
     bool sfImage_saveToFile(const sfImage* image, const char* filename);
     Vector2u sfImage_getSize(const sfImage* image);
     void sfImage_createMaskFromColor(sfImage* image, Color color, ubyte alpha);
-    void sfImage_copyImage(sfImage* image, const sfImage* source, uint destX, uint destY, IntRect sourceRect, bool applyAlpha);
+    void sfImage_copyImage(sfImage* image, const sfImage* source, uint destX,
+            uint destY, IntRect sourceRect, bool applyAlpha);
     void sfImage_setPixel(sfImage* image, uint x, uint y, Color color);
     Color sfImage_getPixel(const sfImage* image, uint x, uint y);
     const(ubyte*) sfImage_getPixelsPtr(const sfImage* image);
@@ -466,7 +445,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Image unittest...");
 
     auto image = new Image();
@@ -488,12 +468,10 @@ unittest
     const(ubyte[]) pixels = image.pixelArray();
     assert(image[0, 0] == Color(pixels[0], pixels[1], pixels[2], pixels[3]));
 
-
     auto image2 = new Image();
-    image2.create(2, 2, [255, 0, 0, 255,
-                         0, 255, 0, 255,
-                         0, 0, 255, 255,
-                         127, 127, 127, 255]);
+    image2.create(2, 2, [
+            255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 127, 127, 127, 255
+            ]);
     assert(image2[0, 0] == Color.Red);
     assert(image2[1, 0] == Color.Green);
     assert(image2[0, 1] == Color.Blue);

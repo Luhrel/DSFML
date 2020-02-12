@@ -11,17 +11,17 @@ public import dsfml.system.time;
  * Params:
  *      duration = The length of time to sleep for
  */
-@nogc
-void sleep(Time duration)
+@nogc void sleep(Time duration)
 {
     import core.thread : Thread;
     import core.time : usecs;
+
     Thread.sleep(usecs(duration.asMicroseconds()));
 }
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running sleep() unittest...");
 

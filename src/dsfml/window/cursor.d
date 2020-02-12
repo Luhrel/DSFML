@@ -68,8 +68,7 @@ class Cursor
      * instance is invalid and must not be used until either `loadFromPixels()`
      * or `loadFromSystem()` is called and successfully created a cursor.
     */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         // Nothing to do
     }
@@ -80,8 +79,7 @@ class Cursor
      * This destructor releases the system resources associated with this cursor, if
      * any.
      */
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         if (m_cursor != null)
             sfCursor_destroy(m_cursor);
@@ -134,8 +132,7 @@ class Cursor
      *      true if and only if the corresponding cursor is natively supported
      *      by the operating system; false otherwise
      */
-    @safe
-    bool loadFromSystem(Cursor.Type type)
+    @safe bool loadFromSystem(Cursor.Type type)
     {
         m_cursor = sfCursor_createFromSystem(type);
         return m_cursor != null;
@@ -167,38 +164,36 @@ class Cursor
      */
     enum Type
     {
-        Arrow,                  /// Arrow cursor (default)
-        ArrowWait,              /// Busy arrow cursor
-        Wait,                   /// Busy cursor
-        Text,                   /// I-beam, cursor when hovering over a field allowing text entry
-        Hand,                   /// Pointing hand cursor
-        SizeHorizontal,         /// Horizontal double arrow cursor
-        SizeVertical,           /// Vertical double arrow cursor
+        Arrow, /// Arrow cursor (default)
+        ArrowWait, /// Busy arrow cursor
+        Wait, /// Busy cursor
+        Text, /// I-beam, cursor when hovering over a field allowing text entry
+        Hand, /// Pointing hand cursor
+        SizeHorizontal, /// Horizontal double arrow cursor
+        SizeVertical, /// Vertical double arrow cursor
         SizeTopLeftBottomRight, /// Double arrow cursor going from top-left to bottom-right
         SizeBottomLeftTopRight, /// Double arrow cursor going from bottom-left to top-right
-        SizeAll,                /// Combination of SizeHorizontal and SizeVertical
-        Cross,                  /// Crosshair cursor
-        Help,                   /// Help cursor
-        NotAllowed              /// Action not allowed cursor
+        SizeAll, /// Combination of SizeHorizontal and SizeVertical
+        Cross, /// Crosshair cursor
+        Help, /// Help cursor
+        NotAllowed /// Action not allowed cursor
     }
 
     alias Type this;
 
     // Retuns the C pointer
-    @property @nogc @safe
-    package(dsfml) sfCursor* ptr()
+    @property @nogc @safe package(dsfml) sfCursor* ptr()
     {
         return m_cursor;
     }
 }
 
-package(dsfml) extern(C)
+package(dsfml) extern (C)
 {
     struct sfCursor;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfCursor* sfCursor_createFromPixels(const ubyte* pixels, Vector2u size, Vector2u hotspot);
     sfCursor* sfCursor_createFromSystem(Cursor.Type type);

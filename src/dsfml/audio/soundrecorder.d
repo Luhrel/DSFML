@@ -132,7 +132,6 @@ import dsfml.system.time;
 import std.conv;
 import std.string;
 
-
 /**
  * Abstract base class for capturing sound data.
  */
@@ -148,12 +147,11 @@ class SoundRecorder
     this()
     {
         m_soundRecorder = sfSoundRecorder_create(&onStartCallback,
-            &onProcessSamplesCallback, &onStopCallback, cast(void*) this);
+                &onProcessSamplesCallback, &onStopCallback, cast(void*) this);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfSoundRecorder_destroy(m_soundRecorder);
     }
@@ -173,15 +171,13 @@ class SoundRecorder
      * Returns:
      *      true, if start of capture was successful
      */
-    @nogc @safe
-    bool start(uint sampleRate = 44100)
+    @nogc @safe bool start(uint sampleRate = 44_100)
     {
         return sfSoundRecorder_start(m_soundRecorder, sampleRate);
     }
 
     /// Stop the capture.
-    @nogc @safe
-    void stop()
+    @nogc @safe void stop()
     {
         sfSoundRecorder_stop(m_soundRecorder);
     }
@@ -198,8 +194,7 @@ class SoundRecorder
          * Returns:
          *      Sample rate, in samples per second
          */
-        @nogc @safe
-        uint sampleRate() const
+        @nogc @safe uint sampleRate() const
         {
             return sfSoundRecorder_getSampleRate(m_soundRecorder);
         }
@@ -234,8 +229,7 @@ class SoundRecorder
          * See_Also:
          *      availableDevices
          */
-        @safe
-        bool device(string name)
+        @safe bool device(string name)
         {
             return sfSoundRecorder_setDevice(m_soundRecorder, name.toStringz);
         }
@@ -252,8 +246,7 @@ class SoundRecorder
          * Returns:
          *      Number of channels
          */
-        @nogc @safe
-        uint channelCount() const
+        @nogc @safe uint channelCount() const
         {
             return sfSoundRecorder_getChannelCount(m_soundRecorder);
         }
@@ -267,8 +260,7 @@ class SoundRecorder
          * Params:
          *      _channelCount=Number of channels. Currently only mono (1) and stereo (2) are supported.
          */
-        @nogc @safe
-        void channelCount(uint _channelCount)
+        @nogc @safe void channelCount(uint _channelCount)
         {
             sfSoundRecorder_setChannelCount(m_soundRecorder, _channelCount);
         }
@@ -289,7 +281,7 @@ class SoundRecorder
         static string[] availableDevices;
 
         // if getAvailableDevices hasn't been called yet
-        if(availableDevices.length == 0)
+        if (availableDevices.length == 0)
         {
             char** devices;
             size_t counts;
@@ -300,7 +292,7 @@ class SoundRecorder
             availableDevices.length = counts;
 
             //populate availableDevices
-            for(uint i = 0; i < counts; i++)
+            for (uint i = 0; i < counts; i++)
             {
                 availableDevices[i] = devices[i].to!string;
             }
@@ -332,8 +324,7 @@ class SoundRecorder
      * Returns:
      *      true if audio capture is supported, false otherwise.
      */
-    @nogc @safe
-    static bool isAvailable()
+    @nogc @safe static bool isAvailable()
     {
         return sfSoundRecorder_isAvailable();
     }
@@ -355,8 +346,7 @@ class SoundRecorder
          * Params:
          *      interval = Processing interval
          */
-        @nogc @safe
-        void setProcessingInterval(Time interval)
+        @nogc @safe void setProcessingInterval(Time interval)
         {
             sfSoundRecorder_setProcessingInterval(m_soundRecorder, interval);
         }
@@ -412,7 +402,8 @@ class SoundRecorder
      * CSFML's "sfBool" is a byte of 0 or 1.
      * Passing a bool func to CSFML will simply fail.
      */
-    private extern(C) static byte onProcessSamplesCallback(const short* samples, size_t sampleCount, void* userData)
+    private extern (C) static byte onProcessSamplesCallback(const short* samples,
+            size_t sampleCount, void* userData)
     {
         SoundRecorder sr = cast(SoundRecorder) userData;
         return sr.onProcessSamples(samples[0 .. sampleCount]);
@@ -424,7 +415,7 @@ class SoundRecorder
      * CSFML's "sfBool" is a byte of 0 or 1.
      * That's why we return a byte and not a bool.
      */
-    private extern(C) static byte onStartCallback(void* userData)
+    private extern (C) static byte onStartCallback(void* userData)
     {
         SoundRecorder sr = cast(SoundRecorder) userData;
         return sr.onStart();
@@ -433,7 +424,7 @@ class SoundRecorder
     /**
      * This function is called by CSFML.
      */
-    private extern(C) static void onStopCallback(void* userData)
+    private extern (C) static void onStopCallback(void* userData)
     {
         SoundRecorder sr = cast(SoundRecorder) userData;
         sr.onStop();
@@ -441,7 +432,7 @@ class SoundRecorder
 }
 
 // CSFML's functions.
-private extern(C)
+private extern (C)
 {
     // C Callbacks
     alias sfSoundRecorderStartCallback = byte function(void*);
@@ -450,11 +441,11 @@ private extern(C)
 
     struct sfSoundRecorder;
 
-    @nogc @safe:
+@nogc @safe:
 
     sfSoundRecorder* sfSoundRecorder_create(sfSoundRecorderStartCallback onStart,
-        sfSoundRecorderProcessCallback onProcess,
-        sfSoundRecorderStopCallback onStop, void* userData);
+            sfSoundRecorderProcessCallback onProcess,
+            sfSoundRecorderStopCallback onStop, void* userData);
     void sfSoundRecorder_destroy(sfSoundRecorder* soundRecorder);
     bool sfSoundRecorder_start(sfSoundRecorder* soundRecorder, uint sampleRate);
     void sfSoundRecorder_stop(sfSoundRecorder* soundRecorder);

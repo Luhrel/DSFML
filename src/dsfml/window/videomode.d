@@ -84,8 +84,7 @@ struct VideoMode
      *      modeHeight       = Height in pixels
      *      modeBitsPerPixel = Pixel depths in bits per pixel
      */
-    @nogc @safe
-    this(uint modeWidth, uint modeHeight, uint modeBitsPerPixel= 32)
+    @nogc @safe this(uint modeWidth, uint modeHeight, uint modeBitsPerPixel = 32)
     {
         width = modeWidth;
         height = modeHeight;
@@ -98,8 +97,7 @@ struct VideoMode
      * Returns:
      *      Current desktop video mode.
      */
-    @nogc @safe
-    static VideoMode getDesktopMode()
+    @nogc @safe static VideoMode getDesktopMode()
     {
         return sfVideoMode_getDesktopMode();
     }
@@ -123,7 +121,7 @@ struct VideoMode
         static VideoMode[] videoModes;
 
         // if getFullscreenModes hasn't been called yet
-        if(videoModes.length == 0)
+        if (videoModes.length == 0)
         {
             size_t counts;
             const(VideoMode*) modes = sfVideoMode_getFullscreenModes(&counts);
@@ -142,23 +140,21 @@ struct VideoMode
      * Returns:
      *      true if the video mode is valid for fullscreen mode.
      */
-    @nogc @safe
-    bool isValid() const
+    @nogc @safe bool isValid() const
     {
         return sfVideoMode_isValid(this);
     }
 
-    @safe
-    string toString() const
+    @safe string toString() const
     {
         import std.conv : text;
-        return "Width: " ~ text(width) ~ "\tHeight: " ~ text(height) ~
-            "\tBits per pixel: " ~ text(bitsPerPixel);
+
+        return "Width: " ~ text(width) ~ "\tHeight: " ~ text(
+                height) ~ "\tBits per pixel: " ~ text(bitsPerPixel);
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     VideoMode sfVideoMode_getDesktopMode();
     const(VideoMode*) sfVideoMode_getFullscreenModes(size_t* count);
@@ -167,7 +163,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running VideoMode unittest...");
 
     VideoMode[] modes = VideoMode.getFullscreenModes();
@@ -175,7 +172,7 @@ unittest
     assert(modes.length != 0);
 
     //writeln("\tList of Fullscreen modes:");
-    foreach(VideoMode m; modes)
+    foreach (VideoMode m; modes)
     {
         //writeln("\t", m.toString());
         assert(m.isValid());

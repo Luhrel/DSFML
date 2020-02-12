@@ -71,6 +71,8 @@ struct Transform
 {
     private sfTransform m_transform;
 
+    // https://github.com/dlang-community/dfmt#disabling-formatting
+    // dfmt off
     /**
      * Construct a transform from a 3x3 matrix.
      *
@@ -85,10 +87,9 @@ struct Transform
      *      a21 = Element (2, 1) of the matrix
      *      a22 = Element (2, 2) of the matrix
      */
-    @nogc @safe
-    this(float a00, float a01, float a02,
-         float a10, float a11, float a12,
-         float a20, float a21, float a22)
+    @nogc @safe this(float a00, float a01, float a02,
+                     float a10, float a11, float a12,
+                     float a20, float a21, float a22)
     {
         m_transform = sfTransform_fromMatrix(a00, a01, a02,
                                              a10, a11, a12,
@@ -104,8 +105,9 @@ struct Transform
              matrix[6], matrix[7], matrix[8]);
     }
 
-    @nogc @safe
-    package this(sfTransform transform)
+    // dfmt on
+
+    @nogc @safe package this(sfTransform transform)
     {
         m_transform = transform;
     }
@@ -118,8 +120,7 @@ struct Transform
      * Returns:
      *      A new transform which is the inverse of self.
      */
-    @property @nogc @safe
-    Transform inverse() const
+    @property @nogc @safe Transform inverse() const
     {
         return Transform(sfTransform_getInverse(&m_transform));
     }
@@ -140,13 +141,12 @@ struct Transform
      * Returns:
      *      A 4x4 matrix.
      */
-    @property
-    const(float)[] matrix() const
+    @property const(float)[] matrix() const
     {
         float[] mx;
         sfTransform_getMatrix(&m_transform, mx.ptr);
         return mx;
-    };
+    }
 
     /**
      * Combine the current transform with another one.
@@ -160,8 +160,7 @@ struct Transform
      * Returns:
      *      Reference to this.
      */
-    @nogc @safe
-    ref Transform combine(Transform other)
+    @nogc @safe ref Transform combine(Transform other)
     {
         sfTransform_combine(&m_transform, &other.m_transform);
         return this;
@@ -177,8 +176,7 @@ struct Transform
      * Returns:
      *      Transformed point.
      */
-    @nogc @safe
-    Vector2f transformPoint(float x, float y) const
+    @nogc @safe Vector2f transformPoint(float x, float y) const
     {
         return transformPoint(Vector2f(x, y));
     }
@@ -192,8 +190,7 @@ struct Transform
      * Returns:
      *      Transformed point.
      */
-    @nogc @safe
-    Vector2f transformPoint(Vector2f point) const
+    @nogc @safe Vector2f transformPoint(Vector2f point) const
     {
         return sfTransform_transformPoint(&m_transform, point);
     }
@@ -212,8 +209,7 @@ struct Transform
      * Returns:
      *      Transformed rectangle.
      */
-    @nogc @safe
-    FloatRect transformRect(const(FloatRect) rectangle) const
+    @nogc @safe FloatRect transformRect(const(FloatRect) rectangle) const
     {
         return sfTransform_transformRect(&m_transform, rectangle);
     }
@@ -236,8 +232,7 @@ struct Transform
      * See_Also:
      *      rotate, scale
      */
-    @nogc @safe
-    ref Transform translate(Vector2f offset)
+    @nogc @safe ref Transform translate(Vector2f offset)
     {
         return translate(offset.x, offset.y);
     }
@@ -261,8 +256,7 @@ struct Transform
      * See_Also:
      *      rotate, scale
      */
-    @nogc @safe
-    ref Transform translate(float x, float y)
+    @nogc @safe ref Transform translate(float x, float y)
     {
         sfTransform_translate(&m_transform, x, y);
         return this;
@@ -285,8 +279,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
-    @nogc @safe
-    ref Transform rotate(float angle)
+    @nogc @safe ref Transform rotate(float angle)
     {
         sfTransform_rotate(&m_transform, angle);
         return this;
@@ -317,8 +310,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
-    @nogc @safe
-    ref Transform rotate(float angle, float centerX, float centerY)
+    @nogc @safe ref Transform rotate(float angle, float centerX, float centerY)
     {
         sfTransform_rotateWithCenter(&m_transform, angle, centerX, centerY);
         return this;
@@ -348,8 +340,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
-    @nogc @safe
-    ref Transform rotate(float angle, Vector2f center)
+    @nogc @safe ref Transform rotate(float angle, Vector2f center)
     {
         return rotate(angle, center.x, center.y);
     }
@@ -373,8 +364,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
-    @nogc @safe
-    ref Transform scale(float scaleX, float scaleY)
+    @nogc @safe ref Transform scale(float scaleX, float scaleY)
     {
         sfTransform_scale(&m_transform, scaleX, scaleY);
         return this;
@@ -398,8 +388,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
-    @nogc @safe
-    ref Transform scale(Vector2f factors)
+    @nogc @safe ref Transform scale(Vector2f factors)
     {
         return scale(factors.x, factors.y);
     }
@@ -430,8 +419,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
-    @nogc @safe
-    ref Transform scale(float scaleX, float scaleY, float centerX, float centerY)
+    @nogc @safe ref Transform scale(float scaleX, float scaleY, float centerX, float centerY)
     {
         sfTransform_scaleWithCenter(&m_transform, scaleX, scaleY, centerX, centerY);
         return this;
@@ -454,8 +442,7 @@ struct Transform
      * Returns:
      *      Reference to this
      */
-    @nogc @safe
-    ref Transform scale(Vector2f factors, Vector2f center)
+    @nogc @safe ref Transform scale(Vector2f factors, Vector2f center)
     {
         return scale(factors.x, factors.y, center.x, center.y);
     }
@@ -480,9 +467,7 @@ struct Transform
      * Returns:
      *      New combined transform.
      */
-    @nogc @safe
-    Transform opBinary(string op)(Transform rhs)
-        if(op == "*" || op == "/")
+    @nogc @safe Transform opBinary(string op)(Transform rhs) if (op == "*" || op == "/")
     {
         static if (op == "*")
             return this.combine(rhs);
@@ -501,9 +486,8 @@ struct Transform
      * Returns:
      *      The combined transform.
      */
-    @nogc @safe
-    ref Transform opOpAssign(string op)(Transform rhs)
-        if(op == "*" || op == "/")
+    @nogc @safe ref Transform opOpAssign(string op)(Transform rhs)
+            if (op == "*" || op == "/")
     {
         static if (op == "*")
             return this.combine(rhs);
@@ -522,41 +506,36 @@ struct Transform
      * Returns:
      *      New transformed point.
      */
-    @nogc @safe
-    Vextor2f opBinary(string op)(Vector2f vector)
-        if(op == "*")
+    @nogc @safe Vextor2f opBinary(string op)(Vector2f vector) if (op == "*")
     {
         return transformPoint(vector);
     }
 
     /// The identity transform (does nothing).
-    @nogc @safe
-    static const(Transform) identity()
+    @nogc @safe static const(Transform) identity()
     {
-        return Transform([1, 0, 0,
-                          0, 1, 0,
-                          0, 0, 1]);
+        return Transform([1, 0, 0, 0, 1, 0, 0, 0, 1]);
     }
-
-    @safe
-    string toString()
+    // dfmt off
+    @safe string toString()
     {
-        import std.conv;
+        import std.conv : text;
+
         const float[9] mx = m_transform.matrix;
         return text(mx[0]) ~ ", " ~ text(mx[1]) ~ ", " ~ text(mx[2]) ~ "\n" ~
                text(mx[3]) ~ ", " ~ text(mx[4]) ~ ", " ~ text(mx[5]) ~ "\n" ~
                text(mx[6]) ~ ", " ~ text(mx[7]) ~ ", " ~ text(mx[8]);
     }
+    // dfmt on
 
     // Returns the C struct.
-    @nogc @safe
-    sfTransform toc()
+    @nogc @safe sfTransform toc()
     {
         return m_transform;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfTransform
     {
@@ -564,13 +543,14 @@ package extern(C)
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     //const sfTransform sfTransform_Identity;
+    // dfmt off
     sfTransform sfTransform_fromMatrix(float a00, float a01, float a02,
-                                                      float a10, float a11, float a12,
-                                                      float a20, float a21, float a22);
+                                       float a10, float a11, float a12,
+                                       float a20, float a21, float a22);
+    // dfmt on
     void sfTransform_getMatrix(const sfTransform* transform, float* matrix);
     sfTransform sfTransform_getInverse(const sfTransform* transform);
     Vector2f sfTransform_transformPoint(const sfTransform* transform, Vector2f point);
@@ -578,21 +558,26 @@ private extern(C)
     void sfTransform_combine(sfTransform* transform, const sfTransform* other);
     void sfTransform_translate(sfTransform* transform, float x, float y);
     void sfTransform_rotate(sfTransform* transform, float angle);
-    void sfTransform_rotateWithCenter(sfTransform* transform, float angle, float centerX, float centerY);
+    void sfTransform_rotateWithCenter(sfTransform* transform, float angle,
+            float centerX, float centerY);
     void sfTransform_scale(sfTransform* transform, float scaleX, float scaleY);
-    void sfTransform_scaleWithCenter(sfTransform* transform, float scaleX, float scaleY, float centerX, float centerY);
+    void sfTransform_scaleWithCenter(sfTransform* transform, float scaleX,
+            float scaleY, float centerX, float centerY);
     bool sfTransform_equal(sfTransform* left, sfTransform* right);
 }
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Transform unittest...");
 
+    // dfmt off
     float[9] mx = [1, 2, 3,
                    2, 4, 3,
                    4, 4, 6];
-    auto t = Transform(mx);
+    // dfmt on
+    const auto t = Transform(mx);
 
     assert(t == Transform(mx));
     // PR #10200
@@ -608,12 +593,12 @@ unittest
     // A matrix multiplicated by its inverse gives the identity
     assert(t * t.inverse == Transform.identity);
 
-    Vector2f vec = Vector2f(2, 2);
+    //const Vector2f vec = Vector2f(2, 2);
     // PR #10200
-    auto vv = t.transformPoint(vec);
+    //const auto vv = t.transformPoint(vec);
     //assert(t.transformPoint(vec) == Vector2f(9, 15));
 
-    FloatRect fr = FloatRect(1, 2, 3, 4);
+    //const FloatRect fr = FloatRect(1, 2, 3, 4);
     // PR #10200
     //assert(t.transformRect(fr) == FloatRect(8, 13, 11, 22));
 }

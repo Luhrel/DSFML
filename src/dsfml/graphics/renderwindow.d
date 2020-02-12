@@ -124,8 +124,8 @@ import dsfml.graphics.color;
 import dsfml.graphics.convexshape;
 import dsfml.graphics.drawable;
 import dsfml.graphics.image;
-import dsfml.graphics.rect;
 import dsfml.graphics.primitivetype;
+import dsfml.graphics.rect;
 import dsfml.graphics.rectangleshape;
 import dsfml.graphics.renderstates;
 import dsfml.graphics.rendertarget;
@@ -139,15 +139,15 @@ import dsfml.graphics.vertexarray;
 import dsfml.graphics.vertexbuffer;
 import dsfml.graphics.view;
 
+import dsfml.system.err;
+import dsfml.system.vector2;
+
 import dsfml.window.contextsettings;
 import dsfml.window.cursor;
 import dsfml.window.event;
 import dsfml.window.videomode;
 import dsfml.window.window;
 import dsfml.window.windowhandle;
-
-import dsfml.system.err;
-import dsfml.system.vector2;
 
 import std.string;
 
@@ -164,8 +164,7 @@ class RenderWindow : Window, RenderTarget
      * This constructor doesn't actually create the window, use the other
      * constructors or call `create()` to do so.
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         // Nothing to do.
     }
@@ -191,7 +190,7 @@ class RenderWindow : Window, RenderTarget
      */
     // TODO: Should settings be a ref ?
     this(VideoMode mode, const(dstring) title, Style style = Style.DefaultStyle,
-        ContextSettings settings = ContextSettings.init)
+            ContextSettings settings = ContextSettings.init)
     {
         this();
         create(mode, title, style, settings);
@@ -224,8 +223,7 @@ class RenderWindow : Window, RenderTarget
      *
      * Closes the window and frees all the resources attached to it.
      */
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfRenderWindow_destroy(m_renderWindow);
     }
@@ -242,8 +240,7 @@ class RenderWindow : Window, RenderTarget
          * Params:
          *      _position = New position, in pixels
          */
-        @nogc @safe
-        override void position(Vector2i _position)
+        @nogc @safe override void position(Vector2i _position)
         {
             if (m_renderWindow !is null)
                 sfRenderWindow_setPosition(m_renderWindow, _position);
@@ -255,8 +252,7 @@ class RenderWindow : Window, RenderTarget
          * Returns:
          *      Position of the window, in pixels
          */
-        @nogc @safe
-        override Vector2i position() const
+        @nogc @safe override Vector2i position() const
         {
             if (m_renderWindow is null)
                 return Vector2i(0, 0);
@@ -289,8 +285,7 @@ class RenderWindow : Window, RenderTarget
          * Returns:
          *      Size in pixels
          */
-        @nogc @safe
-        override Vector2u size() const
+        @nogc @safe override Vector2u size() const
         {
             if (m_renderWindow is null)
                 return Vector2u(0, 0);
@@ -318,8 +313,7 @@ class RenderWindow : Window, RenderTarget
          * See_Also:
          *      defaultView
          */
-        @nogc @safe
-        void view(View _view)
+        @nogc @safe void view(View _view)
         {
             if (m_renderWindow !is null)
                 sfRenderWindow_setView(m_renderWindow, _view.ptr);
@@ -334,8 +328,7 @@ class RenderWindow : Window, RenderTarget
          * See_Also:
          *      defaultView
          */
-        @safe
-        View view() const
+        @safe View view() const
         {
             if (m_renderWindow is null)
                 return null;
@@ -355,8 +348,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      view
      */
-    @property @safe
-    View defaultView() const
+    @property @safe View defaultView() const
     {
         if (m_renderWindow is null)
             return null;
@@ -373,8 +365,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      Structure containing the OpenGL context settings
      */
-    @property @nogc @safe
-    override ContextSettings settings() const
+    @property @nogc @safe override ContextSettings settings() const
     {
         if (m_renderWindow is null)
             return ContextSettings.init;
@@ -393,8 +384,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      System handle of the window
      */
-    @property @nogc @safe
-    override WindowHandle systemHandle() const
+    @property @nogc @safe override WindowHandle systemHandle() const
     {
         if (m_renderWindow is null)
             return WindowHandle.init;
@@ -411,8 +401,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      view = The view for which we want to compute the viewport
      */
-    @property @nogc @safe
-    IntRect viewport(View view) const
+    @property @nogc @safe IntRect viewport(View view) const
     {
         if (m_renderWindow is null)
             return IntRect(0, 0, 0, 0);
@@ -434,8 +423,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      true if operation was successful, false otherwise
      */
-    @property @nogc @safe
-    override bool active(bool _active = true)
+    @property @nogc @safe override bool active(bool _active = true)
     {
         if (m_renderWindow is null)
             return false;
@@ -457,8 +445,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      limit = Framerate limit, in frames per seconds (use 0 to disable limit)
      */
-    @property @nogc @safe
-    override void framerateLimit(uint limit)
+    @property @nogc @safe override void framerateLimit(uint limit)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setFramerateLimit(m_renderWindow, limit);
@@ -479,8 +466,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      title
      */
-    @nogc
-    override void setIcon(uint width, uint height, const(ubyte[]) pixels)
+    @nogc override void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setIcon(m_renderWindow, width, height, pixels.ptr);
@@ -497,8 +483,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      threshold = New threshold, in the range [0, 100]
      */
-    @property @nogc @safe
-    override void joystickThreshold(float threshold)
+    @property @nogc @safe override void joystickThreshold(float threshold)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setJoystickThreshold(m_renderWindow, threshold);
@@ -516,8 +501,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      enabled = true to enable, false to disable
      */
-    @property @nogc @safe
-    override void keyRepeatEnabled(bool enabled)
+    @property @nogc @safe override void keyRepeatEnabled(bool enabled)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setKeyRepeatEnabled(m_renderWindow, enabled);
@@ -531,8 +515,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      visible = true show the mouse cursor, false to hide it
      */
-    @property @nogc @safe
-    override void mouseCursorVisible(bool visible)
+    @property @nogc @safe override void mouseCursorVisible(bool visible)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setMouseCursorVisible(m_renderWindow, visible);
@@ -545,8 +528,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      _title = New title
      */
-    @property @nogc
-    override void title(const dstring _title)
+    @property @nogc override void title(const dstring _title)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setUnicodeTitle(m_renderWindow, representation(_title).ptr);
@@ -565,8 +547,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      enabled = true to enable v-sync, false to deactivate it
      */
-    @property @nogc @safe
-    override void verticalSyncEnabled(bool enabled)
+    @property @nogc @safe override void verticalSyncEnabled(bool enabled)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setVerticalSyncEnabled(m_renderWindow, enabled);
@@ -580,8 +561,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      _visible = true to show the window, false to hide it
      */
-    @property @nogc @safe
-    override void visible(bool _visible)
+    @property @nogc @safe override void visible(bool _visible)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setVisible(m_renderWindow, _visible);
@@ -596,8 +576,7 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      color = Fill color to use to clear the render target
      */
-    @nogc @safe
-    void clear(Color color = Color.Black)
+    @nogc @safe void clear(Color color = Color.Black)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_clear(m_renderWindow, color);
@@ -611,8 +590,7 @@ class RenderWindow : Window, RenderTarget
      * `pollEvent()` or `display()` will still work (i.e. you don't have to test
      * `isOpen()` every time), and will have no effect on closed windows.
      */
-    @nogc
-    override void close()
+    @nogc override void close()
     {
         if (m_renderWindow !is null)
             sfRenderWindow_close(m_renderWindow);
@@ -634,10 +612,11 @@ class RenderWindow : Window, RenderTarget
      *      style    = Window style, a bitwise OR combination of Style enumerators
      *      settings = Additional settings for the underlying OpenGL context
      */
-    override void create(VideoMode mode, const dstring title, Style style = Style.DefaultStyle,
-        ContextSettings settings = ContextSettings.init)
+    override void create(VideoMode mode, const dstring title,
+            Style style = Style.DefaultStyle, ContextSettings settings = ContextSettings.init)
     {
-        m_renderWindow = sfRenderWindow_createUnicode(mode, representation(title).ptr, style, &settings);
+        m_renderWindow = sfRenderWindow_createUnicode(mode,
+                representation(title).ptr, style, &settings);
         onCreate();
     }
 
@@ -679,9 +658,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      An Image containing the captured contents.
      */
-    deprecated("Use a Texture, its update function, and copy its contents into an Image instead.")
-    @safe
-    Image capture()
+    deprecated("Use a Texture, its update function, and copy its contents into an Image instead.") @safe Image capture()
     {
         if (m_renderWindow is null)
             return null;
@@ -694,8 +671,7 @@ class RenderWindow : Window, RenderTarget
      * This function is typically called after all OpenGL rendering has been
      * done for the current frame, in order to show it on screen.
      */
-    @nogc @safe
-    override void display()
+    @nogc @safe override void display()
     {
         if (m_renderWindow !is null)
             sfRenderWindow_display(m_renderWindow);
@@ -725,15 +701,18 @@ class RenderWindow : Window, RenderTarget
         }
         else if (is(drawable == CircleShape))
         {
-            sfRenderWindow_drawCircleShape(m_renderWindow, (cast(CircleShape) drawable).ptr, &sfStates);
+            sfRenderWindow_drawCircleShape(m_renderWindow,
+                    (cast(CircleShape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == ConvexShape))
         {
-            sfRenderWindow_drawConvexShape(m_renderWindow, (cast(ConvexShape) drawable).ptr, &sfStates);
+            sfRenderWindow_drawConvexShape(m_renderWindow,
+                    (cast(ConvexShape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == RectangleShape))
         {
-            sfRenderWindow_drawRectangleShape(m_renderWindow, (cast(RectangleShape) drawable).ptr, &sfStates);
+            sfRenderWindow_drawRectangleShape(m_renderWindow,
+                    (cast(RectangleShape) drawable).ptr, &sfStates);
         }
         else if (is(drawable == Shape))
         {
@@ -741,7 +720,8 @@ class RenderWindow : Window, RenderTarget
         }
         else if (is(drawable == VertexArray))
         {
-            sfRenderWindow_drawVertexArray(m_renderWindow, (cast(VertexArray) drawable).ptr, &sfStates);
+            sfRenderWindow_drawVertexArray(m_renderWindow,
+                    (cast(VertexArray) drawable).ptr, &sfStates);
         }
         else
         {
@@ -762,7 +742,8 @@ class RenderWindow : Window, RenderTarget
         if (m_renderWindow !is null)
         {
             sfRenderStates sfStates = convertRenderStates(states);
-            sfRenderWindow_drawPrimitives(m_renderWindow, vertices.ptr, vertices.length, type, &sfStates);
+            sfRenderWindow_drawPrimitives(m_renderWindow, vertices.ptr,
+                    vertices.length, type, &sfStates);
         }
     }
 
@@ -792,9 +773,8 @@ class RenderWindow : Window, RenderTarget
      *      states       = Render states to use for drawing
      */
     // TODO: Not yet implemented in CSFML
-    @disable
-    void draw(VertexBuffer vertexBuffer, size_t firstVertex,
-              size_t vertexCount, RenderStates states = RenderStates.init)
+    @disable void draw(VertexBuffer vertexBuffer, size_t firstVertex,
+            size_t vertexCount, RenderStates states = RenderStates.init)
     {
         if (m_renderWindow !is null)
         {
@@ -813,8 +793,7 @@ class RenderWindow : Window, RenderTarget
      * Returns:
      *      true if the window is open, false if it has been closed
      */
-    @nogc @safe
-    override bool isOpen() const
+    @nogc @safe override bool isOpen() const
     {
         if (m_renderWindow is null)
             return false;
@@ -830,8 +809,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      pushGLStates
      */
-    @nogc @safe
-    void popGLStates()
+    @nogc @safe void popGLStates()
     {
         if (m_renderWindow !is null)
             sfRenderWindow_popGLStates(m_renderWindow);
@@ -866,8 +844,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      popGLStates
      */
-    @nogc @safe
-    void pushGLStates()
+    @nogc @safe void pushGLStates()
     {
         if (m_renderWindow !is null)
             sfRenderWindow_pushGLStates(m_renderWindow);
@@ -892,8 +869,7 @@ class RenderWindow : Window, RenderTarget
      * // OpenGL code here...
      * ---
      */
-    @nogc @safe
-    void resetGLStates()
+    @nogc @safe void resetGLStates()
     {
         if (m_renderWindow !is null)
             sfRenderWindow_resetGLStates(m_renderWindow);
@@ -922,8 +898,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      waitEvent
      */
-    @nogc
-    override bool pollEvent(ref Event event)
+    @nogc override bool pollEvent(ref Event event)
     {
         if (m_renderWindow is null)
             return false;
@@ -956,8 +931,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      pollEvent
      */
-    @nogc
-    override bool waitEvent(ref Event event)
+    @nogc override bool waitEvent(ref Event event)
     {
         if (m_renderWindow is null)
             return false;
@@ -976,8 +950,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      requestFocus
      */
-    @nogc @safe
-    override bool hasFocus() const
+    @nogc @safe override bool hasFocus() const
     {
         if (m_renderWindow is null)
             return false;
@@ -996,8 +969,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      hasFocus
      */
-    @nogc @safe
-    override void requestFocus()
+    @nogc @safe override void requestFocus()
     {
         if (m_renderWindow !is null)
             sfRenderWindow_requestFocus(m_renderWindow);
@@ -1022,8 +994,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
-    @nogc @safe
-    Vector2i mapCoordsToPixel(Vector2f point) inout
+    @nogc @safe Vector2i mapCoordsToPixel(Vector2f point) inout
     {
         if (m_renderWindow is null)
             return Vector2i(0, 0);
@@ -1056,8 +1027,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
-    @nogc @safe
-    Vector2i mapCoordsToPixel(Vector2f point, View view) inout
+    @nogc @safe Vector2i mapCoordsToPixel(Vector2f point, View view) inout
     {
         if (m_renderWindow is null)
             return Vector2i(0, 0);
@@ -1083,8 +1053,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
-    @nogc @safe
-    Vector2f mapPixelToCoords(Vector2i point) inout
+    @nogc @safe Vector2f mapPixelToCoords(Vector2i point) inout
     {
         if (m_renderWindow is null)
             return Vector2f(0, 0);
@@ -1120,8 +1089,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
-    @nogc @safe
-    Vector2f mapPixelToCoords(Vector2i point, View view) inout
+    @nogc @safe Vector2f mapPixelToCoords(Vector2i point, View view) inout
     {
         if (m_renderWindow is null)
             return Vector2f(0, 0);
@@ -1159,8 +1127,7 @@ class RenderWindow : Window, RenderTarget
      * See_Also:
      *      Cursor.loadFromSystem, Cursor.loadFromPixels
      */
-    @property @nogc @safe
-    override void mouseCursor(Cursor cursor)
+    @property @nogc @safe override void mouseCursor(Cursor cursor)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setMouseCursor(m_renderWindow, cursor.ptr);
@@ -1176,32 +1143,32 @@ class RenderWindow : Window, RenderTarget
      * Params:
      *      grabbed = true to enable, false to disable
      */
-    @property @nogc @safe
-    override void mouseCursorGrabbeb(bool grabbed)
+    @property @nogc @safe override void mouseCursorGrabbeb(bool grabbed)
     {
         if (m_renderWindow !is null)
             sfRenderWindow_setMouseCursorGrabbed(m_renderWindow, grabbed);
     }
 
     // Returns the C pointer
-    @property @nogc @safe
-    package(dsfml) sfRenderWindow* ptr()
+    @property @nogc @safe package(dsfml) sfRenderWindow* ptr()
     {
         return m_renderWindow;
     }
 }
 
-package(dsfml) extern(C)
+package(dsfml) extern (C)
 {
     struct sfRenderWindow;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
-    sfRenderWindow* sfRenderWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);
-    sfRenderWindow* sfRenderWindow_createUnicode(VideoMode mode, const uint* title, uint style, const ContextSettings* settings);
-    sfRenderWindow* sfRenderWindow_createFromHandle(WindowHandle handle, const ContextSettings* settings);
+    sfRenderWindow* sfRenderWindow_create(VideoMode mode, const char* title,
+            uint style, const ContextSettings* settings);
+    sfRenderWindow* sfRenderWindow_createUnicode(VideoMode mode,
+            const uint* title, uint style, const ContextSettings* settings);
+    sfRenderWindow* sfRenderWindow_createFromHandle(WindowHandle handle,
+            const ContextSettings* settings);
     void sfRenderWindow_destroy(sfRenderWindow* renderWindow);
     void sfRenderWindow_close(sfRenderWindow* renderWindow);
     bool sfRenderWindow_isOpen(const sfRenderWindow* renderWindow);
@@ -1214,7 +1181,8 @@ private extern(C)
     void sfRenderWindow_setSize(sfRenderWindow* renderWindow, Vector2u size);
     void sfRenderWindow_setTitle(sfRenderWindow* renderWindow, const char* title);
     void sfRenderWindow_setUnicodeTitle(sfRenderWindow* renderWindow, const uint* title);
-    void sfRenderWindow_setIcon(sfRenderWindow* renderWindow, uint width, uint height, const ubyte* pixels);
+    void sfRenderWindow_setIcon(sfRenderWindow* renderWindow, uint width,
+            uint height, const ubyte* pixels);
     void sfRenderWindow_setVisible(sfRenderWindow* renderWindow, bool visible);
     void sfRenderWindow_setVerticalSyncEnabled(sfRenderWindow* renderWindow, bool enabled);
     void sfRenderWindow_setMouseCursorVisible(sfRenderWindow* renderWindow, bool show);
@@ -1233,24 +1201,29 @@ private extern(C)
     const(sfView)* sfRenderWindow_getView(const sfRenderWindow* renderWindow);
     const(sfView)* sfRenderWindow_getDefaultView(const sfRenderWindow* renderWindow);
     IntRect sfRenderWindow_getViewport(const sfRenderWindow* renderWindow, const sfView* view);
-    Vector2f sfRenderWindow_mapPixelToCoords(const sfRenderWindow* renderWindow, Vector2i point, const sfView* view);
-    Vector2i sfRenderWindow_mapCoordsToPixel(const sfRenderWindow* renderWindow, Vector2f point, const sfView* view);
+    Vector2f sfRenderWindow_mapPixelToCoords(const sfRenderWindow* renderWindow,
+            Vector2i point, const sfView* view);
+    Vector2i sfRenderWindow_mapCoordsToPixel(const sfRenderWindow* renderWindow,
+            Vector2f point, const sfView* view);
 
-    void sfRenderWindow_drawSprite(sfRenderWindow* renderWindow, const sfSprite* object, const sfRenderStates* states);
-    void sfRenderWindow_drawText(sfRenderWindow* renderWindow, const sfText* object, const sfRenderStates* states);
-    void sfRenderWindow_drawShape(sfRenderWindow* renderWindow, const sfShape* object, const sfRenderStates* states);
-    void sfRenderWindow_drawCircleShape(sfRenderWindow* renderWindow, const sfCircleShape* object,
-        const sfRenderStates* states);
-    void sfRenderWindow_drawConvexShape(sfRenderWindow* renderWindow, const sfConvexShape* object,
-        const sfRenderStates* states);
-    void sfRenderWindow_drawRectangleShape(sfRenderWindow* renderWindow, const sfRectangleShape* object,
-        const sfRenderStates* states);
-    void sfRenderWindow_drawVertexArray(sfRenderWindow* renderWindow, const sfVertexArray* object,
-        const sfRenderStates* states);
-    void sfRenderWindow_drawVertexBuffer(sfRenderWindow* renderWindow, const sfVertexBuffer* object,
-        const sfRenderStates* states);
+    void sfRenderWindow_drawSprite(sfRenderWindow* renderWindow,
+            const sfSprite* object, const sfRenderStates* states);
+    void sfRenderWindow_drawText(sfRenderWindow* renderWindow,
+            const sfText* object, const sfRenderStates* states);
+    void sfRenderWindow_drawShape(sfRenderWindow* renderWindow,
+            const sfShape* object, const sfRenderStates* states);
+    void sfRenderWindow_drawCircleShape(sfRenderWindow* renderWindow,
+            const sfCircleShape* object, const sfRenderStates* states);
+    void sfRenderWindow_drawConvexShape(sfRenderWindow* renderWindow,
+            const sfConvexShape* object, const sfRenderStates* states);
+    void sfRenderWindow_drawRectangleShape(sfRenderWindow* renderWindow,
+            const sfRectangleShape* object, const sfRenderStates* states);
+    void sfRenderWindow_drawVertexArray(sfRenderWindow* renderWindow,
+            const sfVertexArray* object, const sfRenderStates* states);
+    void sfRenderWindow_drawVertexBuffer(sfRenderWindow* renderWindow,
+            const sfVertexBuffer* object, const sfRenderStates* states);
     void sfRenderWindow_drawPrimitives(sfRenderWindow* renderWindow, const Vertex* vertices,
-        size_t vertexCount, PrimitiveType type, const sfRenderStates* states);
+            size_t vertexCount, PrimitiveType type, const sfRenderStates* states);
 
     void sfRenderWindow_pushGLStates(sfRenderWindow* renderWindow);
     void sfRenderWindow_popGLStates(sfRenderWindow* renderWindow);
@@ -1265,8 +1238,9 @@ unittest
 {
     version (DSFML_Unittest_with_interaction)
     {
-        import std.stdio;
-        import dsfml.window.keyboard;
+        import dsfml.window.keyboard : Keyboard;
+        import std.stdio : writeln;
+
         writeln("Running RenderWindow unittest...");
 
         auto window = new RenderWindow(VideoMode(200, 300), "DSFML test");

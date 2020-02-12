@@ -84,12 +84,12 @@
  */
 module dsfml.window.window;
 
+import dsfml.system.vector2;
+import dsfml.window.contextsettings;
+import dsfml.window.cursor;
 import dsfml.window.event;
 import dsfml.window.videomode;
-import dsfml.window.contextsettings;
 import dsfml.window.windowhandle;
-import dsfml.system.vector2;
-import dsfml.window.cursor;
 
 import std.string;
 
@@ -111,14 +111,13 @@ class Window
         DefaultStyle = Titlebar | Resize | Close
     }
 
-    /*
+    /**
      * Default constructor.
      *
      * This constructor doesn't actually create the window, use the other
      * constructors or call `create()` to do so.
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         // Nothing to do
     }
@@ -143,7 +142,7 @@ class Window
      *      settings = Additional settings for the underlying OpenGL context
      */
     this(VideoMode mode, const(dstring) title, Style style = Style.DefaultStyle,
-        ContextSettings settings = ContextSettings.init)
+            ContextSettings settings = ContextSettings.init)
     {
         create(mode, title, style, settings);
     }
@@ -171,8 +170,7 @@ class Window
      *
      * Closes the window and frees all the resources attached to it.
      */
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfWindow_destroy(m_window);
     }
@@ -188,8 +186,7 @@ class Window
          * Params:
          *      _position = New position, in pixels
          */
-        @nogc @safe
-        void position(Vector2i _position)
+        @nogc @safe void position(Vector2i _position)
         {
             if (m_window !is null)
                 sfWindow_setPosition(m_window, _position);
@@ -201,8 +198,7 @@ class Window
          * Returns:
          *      Position of the window, in pixels
          */
-        @nogc @safe
-        Vector2i position() const
+        @nogc @safe Vector2i position() const
         {
             if (m_window is null)
                 return Vector2i(0, 0);
@@ -235,8 +231,7 @@ class Window
          * Returns:
          *      Size in pixels
          */
-        @nogc @safe
-        Vector2u size() const
+        @nogc @safe Vector2u size() const
         {
             if (m_window is null)
                 return Vector2u(0, 0);
@@ -260,8 +255,7 @@ class Window
      * Returns:
      *      true if operation was successful, false otherwise.
      */
-    @nogc @safe
-    bool active(bool _active = true)
+    @nogc @safe bool active(bool _active = true)
     {
         if (m_window is null)
             return false;
@@ -280,8 +274,7 @@ class Window
      * See_Also:
      *      hasFocus
      */
-    @nogc @safe
-    void requestFocus()
+    @nogc @safe void requestFocus()
     {
         if (m_window !is null)
             sfWindow_requestFocus(m_window);
@@ -296,8 +289,7 @@ class Window
      * Returns:
      *      true if the window has focus, false otherwise
      */
-    @nogc @safe
-    bool hasFocus() const
+    @nogc @safe bool hasFocus() const
     {
         if (m_window is null)
             return false;
@@ -317,8 +309,7 @@ class Window
      * Params:
      *      limit = Framerate limit, in frames per seconds (use 0 to disable limit).
      */
-    @property @nogc @safe
-    void framerateLimit(uint limit)
+    @property @nogc @safe void framerateLimit(uint limit)
     {
         if (m_window !is null)
             sfWindow_setFramerateLimit(m_window, limit);
@@ -337,8 +328,7 @@ class Window
      *      pixels = Array of pixels in memory. The pixels are copied, so you
      *               need not keep the source alive after calling this function.
      */
-    @nogc
-    void setIcon(uint width, uint height, const(ubyte[]) pixels)
+    @nogc void setIcon(uint width, uint height, const(ubyte[]) pixels)
     {
         if (m_window !is null)
             sfWindow_setIcon(m_window, width, height, pixels.ptr);
@@ -355,8 +345,7 @@ class Window
      * Params:
      *      threshold = New threshold, in the range [0, 100].
      */
-    @property @nogc @safe
-    void joystickThreshold(float threshold)
+    @property @nogc @safe void joystickThreshold(float threshold)
     {
         if (m_window !is null)
             sfWindow_setJoystickThreshold(m_window, threshold);
@@ -374,8 +363,7 @@ class Window
      * Params:
      *      enabled = true to enable, false to disable.
      */
-    @property @nogc @safe
-    void keyRepeatEnabled(bool enabled)
+    @property @nogc @safe void keyRepeatEnabled(bool enabled)
     {
         if (m_window !is null)
             sfWindow_setKeyRepeatEnabled(m_window, enabled);
@@ -389,8 +377,7 @@ class Window
      * Params:
      *      visible = true to show the mouse cursor, false to hide it.
      */
-    @property @nogc @safe
-    void mouseCursorVisible(bool visible)
+    @property @nogc @safe void mouseCursorVisible(bool visible)
     {
         if (m_window !is null)
             sfWindow_setMouseCursorVisible(m_window, visible);
@@ -402,8 +389,7 @@ class Window
      * Params:
      *      _title = New title
      */
-    @property @nogc
-    void title(const dstring _title)
+    @property @nogc void title(const dstring _title)
     {
         if (m_window !is null)
             sfWindow_setUnicodeTitle(m_window, representation(_title).ptr);
@@ -417,8 +403,7 @@ class Window
      * Params:
      *      _visible = true to show the window, false to hide it
      */
-    @property @nogc @safe
-    void visible(bool _visible)
+    @property @nogc @safe void visible(bool _visible)
     {
         if (m_window !is null)
             sfWindow_setVisible(m_window, _visible);
@@ -437,8 +422,7 @@ class Window
      * Params:
      *      enabled = true to enable v-sync, false to deactivate it
      */
-    @property @nogc @safe
-    void verticalSyncEnabled(bool enabled)
+    @property @nogc @safe void verticalSyncEnabled(bool enabled)
     {
         if (m_window !is null)
             sfWindow_setVerticalSyncEnabled(m_window, enabled);
@@ -454,8 +438,7 @@ class Window
      * Returns:
      *      Structure containing the OpenGL context settings.
      */
-    @property @nogc @safe
-    ContextSettings settings() const
+    @property @nogc @safe ContextSettings settings() const
     {
         if (m_window is null)
             return ContextSettings.init;
@@ -474,8 +457,7 @@ class Window
      * Returns:
      *      System handle of the window.
      */
-    @property @nogc @safe
-    WindowHandle systemHandle() const
+    @property @nogc @safe WindowHandle systemHandle() const
     {
         if (m_window is null)
             return WindowHandle.init;
@@ -490,8 +472,7 @@ class Window
      * `pollEvent()` or `display()` will still work (i.e. you don't have to test
      * `isOpen()` every time), and will have no effect on closed windows.
      */
-    @nogc @safe
-    void close()
+    @nogc @safe void close()
     {
         if (m_window !is null)
             sfWindow_close(m_window);
@@ -515,7 +496,7 @@ class Window
      *      settings = Additional settings for the underlying OpenGL context
      */
     void create(VideoMode mode, const dstring title, Style style = Style.DefaultStyle,
-        ContextSettings settings = ContextSettings.init)
+            ContextSettings settings = ContextSettings.init)
     {
         m_window = sfWindow_createUnicode(mode, representation(title).ptr, style, &settings);
         onCreate();
@@ -546,8 +527,7 @@ class Window
      * This function is typically called after all OpenGL rendering has been
      * done for the current frame, in order to show it on screen.
      */
-    @nogc @safe
-    void display()
+    @nogc @safe void display()
     {
         if (m_window !is null)
             sfWindow_display(m_window);
@@ -563,8 +543,7 @@ class Window
      * Returns:
      *      true if the window is open, false if it has been closed.
      */
-    @nogc @safe
-    bool isOpen() const
+    @nogc @safe bool isOpen() const
     {
         if (m_window is null)
             return false;
@@ -594,8 +573,7 @@ class Window
      * See_Also:
      *      waitEvent
      */
-    @nogc
-    bool pollEvent(ref Event event)
+    @nogc bool pollEvent(ref Event event)
     {
         if (m_window is null)
             return false;
@@ -627,8 +605,7 @@ class Window
      * See_Also:
      *      pollEvent
      */
-    @nogc
-    bool waitEvent(ref Event event)
+    @nogc bool waitEvent(ref Event event)
     {
         if (m_window is null)
             return false;
@@ -647,8 +624,7 @@ class Window
      * Params:
      *      cursor = Native system cursor type to display
      */
-    @property @nogc @safe
-    void mouseCursor(Cursor cursor)
+    @property @nogc @safe void mouseCursor(Cursor cursor)
     {
         if (m_window !is null)
             sfWindow_setMouseCursor(m_window, cursor.ptr);
@@ -664,8 +640,7 @@ class Window
      * Params:
      *      grabbed = true to enable, false to disable
      */
-    @nogc @safe
-    void mouseCursorGrabbeb(bool grabbed)
+    @nogc @safe void mouseCursorGrabbeb(bool grabbed)
     {
         if (m_window !is null)
             sfWindow_setMouseCursorGrabbed(m_window, grabbed);
@@ -677,7 +652,9 @@ class Window
      * This function is called so that derived classes can perform their own
      * specific initialization as soon as the window is created.
      */
-    protected void onCreate() {}
+    protected void onCreate()
+    {
+    }
 
     /**
      * Function called after the window has been resized.
@@ -685,26 +662,28 @@ class Window
      * This function is called so that derived classes can perform custom
      * actions when the size of the window changes.
      */
-    protected void onResize() {}
+    protected void onResize()
+    {
+    }
 
     // Returns the C pointer
-    @property @nogc @safe
-    package(dsfml) sfWindow* ptr()
+    @property @nogc @safe package(dsfml) sfWindow* ptr()
     {
         return m_window;
     }
 }
 
-package(dsfml) extern(C)
+package(dsfml) extern (C)
 {
     struct sfWindow;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
-    sfWindow* sfWindow_create(VideoMode mode, const char* title, uint style, const ContextSettings* settings);
-    sfWindow* sfWindow_createUnicode(VideoMode mode, const uint* title, uint style, const ContextSettings* settings);
+    sfWindow* sfWindow_create(VideoMode mode, const char* title, uint style,
+            const ContextSettings* settings);
+    sfWindow* sfWindow_createUnicode(VideoMode mode, const uint* title,
+            uint style, const ContextSettings* settings);
     sfWindow* sfWindow_createFromHandle(WindowHandle handle, const ContextSettings* settings);
     void sfWindow_destroy(sfWindow* window);
     void sfWindow_close(sfWindow* window);
@@ -738,8 +717,9 @@ unittest
 {
     version (DSFML_Unittest_with_interaction)
     {
-        import std.stdio;
-        import dsfml.window.keyboard;
+        import dsfml.window.keyboard : Keyboard;
+        import std.stdio : writeln;
+
         writeln("Running Window unittest...");
 
         class MyWindow : Window

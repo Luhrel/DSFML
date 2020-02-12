@@ -1,4 +1,3 @@
-
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
@@ -119,18 +118,16 @@ class UdpSocket : Socket
     private sfUdpSocket* m_udpSocket;
 
     /// The maximum number of bytes that can be sent in a single UDP datagram.
-    enum MaxDatagramSize = 65507;
+    enum MaxDatagramSize = 65_507;
 
     /// Default constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_udpSocket = sfUdpSocket_create();
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfUdpSocket_destroy(m_udpSocket);
     }
@@ -146,8 +143,7 @@ class UdpSocket : Socket
      * See_Also:
      *      bind
      */
-    @property @nogc @safe
-    ushort localPort() const
+    @property @nogc @safe ushort localPort() const
     {
         return sfUdpSocket_getLocalPort(m_udpSocket);
     }
@@ -168,8 +164,7 @@ class UdpSocket : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property @nogc @safe
-    void blocking(bool _blocking)
+    @property @nogc @safe void blocking(bool _blocking)
     {
         sfUdpSocket_setBlocking(m_udpSocket, _blocking);
     }
@@ -192,8 +187,7 @@ class UdpSocket : Socket
      * See_Also:
      *      unbind, localPort
      */
-    @nogc @safe
-    Status bind(ushort port, IpAddress address = IpAddress.Any)
+    @nogc @safe Status bind(ushort port, IpAddress address = IpAddress.Any)
     {
         return sfUdpSocket_bind(m_udpSocket, port, address.toc);
     }
@@ -204,8 +198,7 @@ class UdpSocket : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property @nogc @safe
-    bool blocking() const
+    @property @nogc @safe bool blocking() const
     {
         return sfUdpSocket_isBlocking(m_udpSocket);
     }
@@ -227,11 +220,9 @@ class UdpSocket : Socket
      * See_Also:
      *      receive
      */
-    @nogc
-    Status send(const(void)[] data, IpAddress address, ushort port)
+    @nogc Status send(const(void)[] data, IpAddress address, ushort port)
     {
-        return sfUdpSocket_send(m_udpSocket, data.ptr, data.length,
-            address.toc, port);
+        return sfUdpSocket_send(m_udpSocket, data.ptr, data.length, address.toc, port);
     }
 
     /**
@@ -280,12 +271,11 @@ class UdpSocket : Socket
      * See_Also:
      *      send
      */
-    Status receive(void[] data, out size_t sizeReceived, out IpAddress address,
-        out ushort port)
+    Status receive(void[] data, out size_t sizeReceived, out IpAddress address, out ushort port)
     {
         sfIpAddress ia;
         Status status = sfUdpSocket_receive(m_udpSocket, data.ptr, data.length,
-            &sizeReceived, &ia, &port);
+                &sizeReceived, &ia, &port);
         address = IpAddress(ia);
         return status;
     }
@@ -312,8 +302,7 @@ class UdpSocket : Socket
         // Temporary packet that will be filled.
         auto tmp = new Packet();
         sfIpAddress ia;
-        Status status = sfUdpSocket_receivePacket(m_udpSocket, tmp.ptr, &ia,
-            &port);
+        Status status = sfUdpSocket_receivePacket(m_udpSocket, tmp.ptr, &ia, &port);
         address = IpAddress(ia);
 
         // Put the temporary data into the packet so that it can process it first if it wants.
@@ -331,26 +320,23 @@ class UdpSocket : Socket
      * See_Also:
      *      bind
      */
-    @nogc @safe
-    void unbind()
+    @nogc @safe void unbind()
     {
         sfUdpSocket_unbind(m_udpSocket);
     }
 
-    @property @nogc @safe
-    package sfUdpSocket* ptr()
+    @property @nogc @safe package sfUdpSocket* ptr()
     {
         return m_udpSocket;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfUdpSocket;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfUdpSocket* sfUdpSocket_create();
     void sfUdpSocket_destroy(sfUdpSocket* socket);
@@ -359,17 +345,22 @@ private extern(C)
     ushort sfUdpSocket_getLocalPort(const sfUdpSocket* socket);
     Socket.Status sfUdpSocket_bind(sfUdpSocket* socket, ushort port, sfIpAddress address);
     void sfUdpSocket_unbind(sfUdpSocket* socket);
-    Socket.Status sfUdpSocket_send(sfUdpSocket* socket, const void* data, size_t size, sfIpAddress remoteAddress, ushort remotePort);
-    Socket.Status sfUdpSocket_receive(sfUdpSocket* socket, void* data, size_t size, size_t* received, sfIpAddress* remoteAddress, ushort* remotePort);
-    Socket.Status sfUdpSocket_sendPacket(sfUdpSocket* socket, sfPacket* packet, sfIpAddress remoteAddress, ushort remotePort);
-    Socket.Status sfUdpSocket_receivePacket(sfUdpSocket* socket, sfPacket* packet, sfIpAddress* remoteAddress, ushort* remotePort);
+    Socket.Status sfUdpSocket_send(sfUdpSocket* socket, const void* data,
+            size_t size, sfIpAddress remoteAddress, ushort remotePort);
+    Socket.Status sfUdpSocket_receive(sfUdpSocket* socket, void* data, size_t size,
+            size_t* received, sfIpAddress* remoteAddress, ushort* remotePort);
+    Socket.Status sfUdpSocket_sendPacket(sfUdpSocket* socket, sfPacket* packet,
+            sfIpAddress remoteAddress, ushort remotePort);
+    Socket.Status sfUdpSocket_receivePacket(sfUdpSocket* socket,
+            sfPacket* packet, sfIpAddress* remoteAddress, ushort* remotePort);
     uint sfUdpSocket_maxDatagramSize();
 }
 
 unittest
 {
-    import std.stdio;
-    import dsfml.system.thread;
+    import std.stdio : writeln;
+    import dsfml.system.thread : Thread;
+
     writeln("Running UdpSocket unittest...");
 
     // May change in the future
@@ -384,14 +375,14 @@ unittest
         socket.blocking = false;
         assert(!socket.blocking);
 
-        ushort port = 55000;
+        const ushort port = 55_000;
         auto status = socket.bind(port);
         assert(status == Socket.Status.Done);
         assert(socket.localPort == port);
 
         auto packet = new Packet();
         packet << 1.24f << 56 << "bc";
-        status = socket.send(packet, IpAddress.LocalHost, 55001);
+        status = socket.send(packet, IpAddress.LocalHost, 55_001);
         assert(status == Socket.Status.Done);
 
         socket.unbind();
@@ -401,18 +392,18 @@ unittest
     {
         auto socket = new UdpSocket();
 
-        ushort port = 55001;
+        const ushort port = 55_001;
         auto status = socket.bind(port);
         assert(status == Socket.Status.Done);
         assert(socket.localPort == port);
 
         Packet packet = new Packet();
         IpAddress address;
-        ushort client_port;
+        const ushort client_port;
         status = socket.receive(packet, address, client_port);
         assert(status == Socket.Status.Done);
         assert(address == IpAddress.LocalHost);
-        assert(client_port == 55000);
+        assert(client_port == 55_000);
 
         float f;
         int i;

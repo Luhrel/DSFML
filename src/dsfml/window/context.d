@@ -57,7 +57,6 @@ module dsfml.window.context;
 
 import dsfml.window.contextsettings;
 
-
 alias GlFunctionPointer = void*;
 
 /**
@@ -72,15 +71,13 @@ class Context
      *
      * The constructor creates and activates the context.
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_context = sfContext_create();
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfContext_destroy(m_context);
     }
@@ -94,8 +91,7 @@ class Context
      * Returns:
      *      true on success, false on failure.
      */
-    @property @nogc @safe
-    void active(bool _active)
+    @property @nogc @safe void active(bool _active)
     {
         sfContext_setActive(m_context, _active);
     }
@@ -110,8 +106,7 @@ class Context
      * Returns:
      *      Structure containing the settings
      */
-    @property @nogc @safe
-    ContextSettings settings()
+    @property @nogc @safe ContextSettings settings()
     {
         return sfContext_getSettings(m_context);
     }
@@ -126,8 +121,7 @@ class Context
      * Returns:
      *      The active context's ID or 0 if no context is currently active
      */
-    @nogc @safe
-    static ulong activeContextId()
+    @nogc @safe static ulong activeContextId()
     {
         return sfContext_getActiveContextId();
     }
@@ -142,8 +136,7 @@ class Context
      *      Address of the OpenGL function, 0 on failure
      */
     // TODO: Not yet implemented in CSFML
-    @disable @nogc @safe
-    static GlFunctionPointer getFunction(const string name)
+    @disable @nogc @safe static GlFunctionPointer getFunction(const string name)
     {
         //return sfContext_getFunction(name.ptr);
         return null;
@@ -159,16 +152,14 @@ class Context
      *      true if available, false if unavailable
      */
     // TODO: Not yet implemented in CSFML
-    @disable @nogc @safe
-    static bool isExtensionAvailable(const string name)
+    @disable @nogc @safe static bool isExtensionAvailable(const string name)
     {
         //return sfContext_isExtensionAvailable(name.ptr);
         return false;
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     struct sfContext;
 
@@ -181,7 +172,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Context unittest...");
 
     //TODO: find a way to test this

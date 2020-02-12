@@ -95,9 +95,9 @@ import dsfml.system.mutex;
 */
 struct Lock
 {
-	private Mutex m_mutex;
+    private Mutex m_mutex;
 
-	/**
+    /**
 	 * Construct the lock with a target mutex.
 	 *
 	 * The mutex passed to Lock is automatically locked.
@@ -105,63 +105,64 @@ struct Lock
 	 * Params:
 	 *     mutex = Mutex to lock
 	 */
-	this(Mutex mutex)
-	{
-		m_mutex = mutex;
+    this(Mutex mutex)
+    {
+        m_mutex = mutex;
 
-		m_mutex.lock();
-	}
+        m_mutex.lock();
+    }
 
-	/// Destructor
-	~this()
-	{
-		m_mutex.unlock();
-	}
+    /// Destructor
+    ~this()
+    {
+        m_mutex.unlock();
+    }
 }
 
 unittest
 {
-	version(DSFML_Unittest_System)
-	{
-		import dsfml.system.thread;
-		import dsfml.system.mutex;
-		import dsfml.system.sleep;
-		import std.stdio;
+    version (DSFML_Unittest_System)
+    {
+        import dsfml.system.thread;
+        import dsfml.system.mutex;
+        import dsfml.system.sleep;
+        import std.stdio;
 
-		Mutex mutex = new Mutex();
+        Mutex mutex = new Mutex();
 
-		void mainThreadHello()
-		{
-			auto lock = Lock(mutex);
-			for(int i = 0; i < 10; ++i)
-			{
-				writeln("Hello from the main thread!");
-			}
-			//unlock auto happens here
-		}
-		void secondThreadHello()
-		{
-			auto lock = Lock(mutex);
-			for(int i = 0; i < 10; ++i)
-			{
-				writeln("Hello from the second thread!");
-			}
-			//unlock auto happens here
-		}
+        void mainThreadHello()
+        {
+            auto lock = Lock(mutex);
+            for (int i = 0; i < 10; ++i)
+            {
+                writeln("Hello from the main thread!");
+            }
+            //unlock auto happens here
+        }
 
-		writeln("Unit test for Lock struct");
-		writeln();
+        void secondThreadHello()
+        {
+            auto lock = Lock(mutex);
+            for (int i = 0; i < 10; ++i)
+            {
+                writeln("Hello from the second thread!");
+            }
+            //unlock auto happens here
+        }
 
-		writeln("Using a lock in the main and second thread.");
+        writeln("Unit test for Lock struct");
+        writeln();
 
-		auto secondThread = new Thread(&secondThreadHello);
+        writeln("Using a lock in the main and second thread.");
 
-		secondThread.launch();
+        auto secondThread = new Thread(&secondThreadHello);
 
-		mainThreadHello();
+        secondThread.launch();
 
-		//let this unit test finish before moving on to the next one
-		sleep(seconds(1));
-		writeln();
-	}
+        mainThreadHello();
+
+        //let this unit test finish before moving on to the next one
+        sleep(seconds(1));
+        writeln();
+    }
 }

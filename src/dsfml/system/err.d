@@ -100,17 +100,16 @@ unittest
         noTexture.loadFromFile("nonexistantTexture1.png");
         noTexture.loadFromFile("nonexistantTexture2.png");
 
-
-        err.detach();//need to detach before being able to read the contents of the file(it's in use while open)
+        err.detach(); //need to detach before being able to read the contents of the file(it's in use while open)
 
         writeln("Reading log.txt to confirm its contents.");
 
-        auto contents = cast(string)read("log.txt");
+        auto contents = cast(string) read("log.txt");
 
         writeln("The contents of the text file are as follows: ", contents);
 
         writeln("Routing err back to the console.");
-        err = stderr;//in this case, stderr is still writing to the console, but I could have used stdout as well.
+        err = stderr; //in this case, stderr is still writing to the console, but I could have used stdout as well.
 
         writeln("And writing to err one final time.");
         err.writeln("This is the last line in the unit test to be written to err!");

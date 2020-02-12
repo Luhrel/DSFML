@@ -73,11 +73,11 @@ import dsfml.system.vector2;
 struct Vertex
 {
     /// 2D position of the vertex
-    Vector2f position = Vector2f(0,0);
+    Vector2f position = Vector2f(0, 0);
     /// Color of the vertex. Default is White.
     Color color = Color.White;
     /// 2D coordinates of the texture's pixel map to the vertex.
-    Vector2f texCoords = Vector2f(0,0);
+    Vector2f texCoords = Vector2f(0, 0);
 
     /**
      * Construct the vertex from its position
@@ -87,8 +87,7 @@ struct Vertex
      * Params:
      *      position = Vertex position
      */
-    @nogc @safe
-    this(Vector2f position)
+    @nogc @safe this(Vector2f position)
     {
         this.position = position;
     }
@@ -102,8 +101,7 @@ struct Vertex
      *      position = Vertex position
      *      color    = Vertex color
      */
-    @nogc @safe
-    this(Vector2f position, Color color)
+    @nogc @safe this(Vector2f position, Color color)
     {
         this.position = position;
         this.color = color;
@@ -118,8 +116,7 @@ struct Vertex
      *      position  = Vertex position
      *      texCoords = Vertex texture coordinates
      */
-    @nogc @safe
-    this(Vector2f position, Vector2f texCoords)
+    @nogc @safe this(Vector2f position, Vector2f texCoords)
     {
         this.position = position;
         this.texCoords = texCoords;
@@ -133,8 +130,7 @@ struct Vertex
      *      color     = Vertex color
      *      texCoords = Vertex texture coordinates
      */
-    @nogc @safe
-    this(Vector2f position, Color color, Vector2f texCoords)
+    @nogc @safe this(Vector2f position, Color color, Vector2f texCoords)
     {
         this.position = position;
         this.color = color;
@@ -145,21 +141,21 @@ struct Vertex
 unittest
 {
     //not really needed, but implemented for code coverage later.
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running Vertex unittest...");
 
     auto vertex = Vertex();
 
-    auto pos = Vector2f(1,1);
+    const auto pos = Vector2f(1, 1);
     vertex.position = pos;
     assert(vertex.position == pos);
 
-    auto blue = Color.Blue;
+    const auto blue = Color.Blue;
     vertex.color = blue;
     assert(vertex.color == blue);
 
-    auto tcoords = Vector2f(20,10);
+    const auto tcoords = Vector2f(20, 10);
     vertex.texCoords = tcoords;
     assert(vertex.texCoords == tcoords);
 }

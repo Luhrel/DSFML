@@ -79,15 +79,13 @@ class TcpListener : Socket
     private sfTcpListener* m_tcpListener;
 
     /// Default constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_tcpListener = sfTcpListener_create();
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfTcpListener_destroy(m_tcpListener);
     }
@@ -103,8 +101,7 @@ class TcpListener : Socket
      * See_Also:
      *      listen
      */
-    @nogc @safe
-    ushort localPort() const
+    @nogc @safe ushort localPort() const
     {
         return sfTcpListener_getLocalPort(m_tcpListener);
     }
@@ -123,8 +120,7 @@ class TcpListener : Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property @nogc @safe
-    void blocking(bool _blocking)
+    @property @nogc @safe void blocking(bool _blocking)
     {
         sfTcpListener_setBlocking(m_tcpListener, _blocking);
     }
@@ -166,8 +162,7 @@ class TcpListener : Socket
      * See_Also:
      *      accept, close
      */
-    @nogc @safe
-    Status listen(ushort port, IpAddress address = IpAddress.Any)
+    @nogc @safe Status listen(ushort port, IpAddress address = IpAddress.Any)
     {
         return sfTcpListener_listen(m_tcpListener, port, address.toc);
     }
@@ -178,26 +173,23 @@ class TcpListener : Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property @nogc @safe
-    bool blocking() const
+    @property @nogc @safe bool blocking() const
     {
         return sfTcpListener_isBlocking(m_tcpListener);
     }
 
-    @property @nogc @safe
-    package sfTcpListener* ptr()
+    @property @nogc @safe package sfTcpListener* ptr()
     {
         return m_tcpListener;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfTcpListener;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfTcpListener* sfTcpListener_create();
     void sfTcpListener_destroy(sfTcpListener* listener);
@@ -210,10 +202,11 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
-    import dsfml.network.packet;
-    import dsfml.system.thread;
-    import dsfml.system.sleep;
+    import std.stdio : writeln;
+    import dsfml.network.packet : Packet;
+    import dsfml.system.thread : Thread;
+    import dsfml.system.sleep : sleep;
+
     writeln("Running TcpListener unittest...");
 
     int clientPort;
@@ -222,7 +215,7 @@ unittest
     {
         // Connect the client to the server
         auto socket = new TcpSocket();
-        auto status = socket.connect(IpAddress.LocalHost, 53000);
+        auto status = socket.connect(IpAddress.LocalHost, 53_000);
         assert(status == Socket.Status.Done);
 
         clientPort = socket.localPort;
@@ -249,7 +242,7 @@ unittest
         assert(!listener.blocking);
 
         // Listen to the port
-        ushort port = 53000;
+        const ushort port = 53_000;
         auto status = listener.listen(port);
         assert(status == Socket.Status.Done);
         assert(listener.localPort == port);

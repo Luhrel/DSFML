@@ -72,15 +72,13 @@
  */
 module dsfml.graphics.rect;
 
-import std.traits;
-
 import dsfml.system.vector2;
+import std.traits;
 
 /**
  * Utility structure for manipulating 2D axis aligned rectangles.
  */
-struct Rect(T)
-    if(isNumeric!(T))
+struct Rect(T) if (isNumeric!(T))
 {
     /// Left coordinate of the rectangle.
     T left = 0;
@@ -103,8 +101,7 @@ struct Rect(T)
      *      rectWidth  = Width of the rectangle
      *      rectHeight = Height of the rectangle
      */
-    @nogc @safe
-    this(T rectLeft, T rectTop, T rectWidth, T rectHeight)
+    @nogc @safe this(T rectLeft, T rectTop, T rectWidth, T rectHeight)
     {
         left = rectLeft;
         top = rectTop;
@@ -122,8 +119,7 @@ struct Rect(T)
      *      position = Position of the top-left corner of the rectangle
      *      size     = Size of the rectangle
      */
-    @nogc @safe
-    this(Vector2!(T) position, Vector2!(T) size)
+    @nogc @safe this(Vector2!(T) position, Vector2!(T) size)
     {
         left = position.x;
         top = position.y;
@@ -141,8 +137,7 @@ struct Rect(T)
      * Params:
      *      rectangle = Rectangle to convert
      */
-    @nogc @safe
-    this(U)(Rect!(U) rectangle)
+    @nogc @safe this(U)(Rect!(U) rectangle)
     {
         left = cast(T) rectangle.left;
         top = cast(T) rectangle.top;
@@ -164,14 +159,9 @@ struct Rect(T)
      * See_Also:
      *      intersects
      */
-    @nogc @safe
-    bool contains(E)(E x, E y) const
-        if(isNumeric!(E))
+    @nogc @safe bool contains(E)(E x, E y) const if (isNumeric!(E))
     {
-        return left <= x &&
-               x <= (left + width) &&
-               top <= y &&
-               y <= (top + height);
+        return left <= x && x <= (left + width) && top <= y && y <= (top + height);
     }
 
     /**
@@ -186,9 +176,7 @@ struct Rect(T)
      * See_Also:
      *      intersects
      */
-    @nogc @safe
-    bool contains(E)(Vector2!(E) point) const
-        if(isNumeric!(E))
+    @nogc @safe bool contains(E)(Vector2!(E) point) const if (isNumeric!(E))
     {
         return contains(point.x, point.y);
     }
@@ -206,9 +194,7 @@ struct Rect(T)
      *      contains
      */
     // TODO: use `this` instead of `rect`
-    @safe
-    bool intersects(E)(Rect!(E) rectangle) const
-        if(isNumeric!(E))
+    @safe bool intersects(E)(Rect!(E) rectangle) const if (isNumeric!(E))
     {
         Rect!(T) rect;
         return intersects(rectangle, rect);
@@ -230,9 +216,8 @@ struct Rect(T)
      * See_Also:
      *      contains
      */
-    @safe
-    bool intersects(E,O)(Rect!(E) rectangle, out Rect!(O) intersection) const
-        if(isNumeric!(E) && isNumeric!(O))
+    @safe bool intersects(E, O)(Rect!(E) rectangle, out Rect!(O) intersection) const
+            if (isNumeric!(E) && isNumeric!(O))
     {
         O interLeft = intersection.max(left, rectangle.left);
         O interTop = intersection.max(top, rectangle.top);
@@ -241,7 +226,8 @@ struct Rect(T)
 
         if ((interLeft < interRight) && (interTop < interBottom))
         {
-            intersection = Rect!(O)(interLeft, interTop, interRight - interLeft, interBottom - interTop);
+            intersection = Rect!(O)(interLeft, interTop, interRight - interLeft,
+                    interBottom - interTop);
             return true;
         }
         else
@@ -252,34 +238,29 @@ struct Rect(T)
     }
 
     /// Compare two rectangles for equality.
-    @nogc @safe
-    bool opEquals(E)(const Rect!(E) otherRect) const
-        if(isNumeric!(E))
+    @nogc @safe bool opEquals(E)(const Rect!(E) otherRect) const if (isNumeric!(E))
     {
-        return left == otherRect.left &&
-               top == otherRect.top &&
-               width == otherRect.width &&
-               height == otherRect.height;
+        return left == otherRect.left && top == otherRect.top
+            && width == otherRect.width && height == otherRect.height;
     }
 
     /// Output the string representation of the Rect.
-   @safe
-    string toString() const
+    @safe string toString() const
     {
-        import std.conv;
-        return "Left: " ~ text(left) ~ " Top: " ~ text(top) ~ " Width: " ~ text(width) ~ " Height: " ~ text(height);
+        import std.conv : text;
+
+        return "Left: " ~ text(left) ~ " Top: " ~ text(top) ~ " Width: " ~ text(
+                width) ~ " Height: " ~ text(height);
     }
 
-    @nogc @safe
-    private T max(T a, T b) const
+    @nogc @safe private T max(T a, T b) const
     {
-        return a>b?a:b;
+        return a > b ? a : b;
     }
 
-    @nogc @safe
-    private T min(T a, T b) const
+    @nogc @safe private T min(T a, T b) const
     {
-        return a<b?a:b;
+        return a < b ? a : b;
     }
 }
 
@@ -290,7 +271,7 @@ alias FloatRect = Rect!(float);
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running Rect unittest...");
 
@@ -320,7 +301,6 @@ unittest
     assert(!rect1.contains(5, 4));
     assert(!rect1.contains(6, 5));
 
-
     auto rect2 = IntRect(0, 2, 10, 10);
     FloatRect interRect;
 
@@ -335,7 +315,7 @@ unittest
     assert(rect1 == FloatRect(1, 1, 3, 4));
     assert(rect1 != FloatRect(1, 2, 3, 4));
 
-    auto rect3 = Rect!(ubyte)(IntRect(-1, 1, 46, 256));
+    const auto rect3 = Rect!(ubyte)(IntRect(-1, 1, 46, 256));
     assert(rect3.left == 255);
     assert(rect3.top == 1);
     assert(rect3.width == 46);

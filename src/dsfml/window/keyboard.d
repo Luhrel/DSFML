@@ -294,8 +294,7 @@ final abstract class Keyboard
      * Returns:
      *      true if the key is pressed, false otherwise.
      */
-    @nogc @safe
-    static bool isKeyPressed(Key key)
+    @nogc @safe static bool isKeyPressed(Key key)
     {
         return sfKeyboard_isKeyPressed(key);
     }
@@ -313,15 +312,13 @@ final abstract class Keyboard
      * Params:
      *      visible = true to show, false to hide
      */
-    @nogc @safe
-    static void setVirtualKeyboardVisible(bool visible)
+    @nogc @safe static void setVirtualKeyboardVisible(bool visible)
     {
         sfKeyboard_setVirtualKeyboardVisible(visible);
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     bool sfKeyboard_isKeyPressed(int key);
     void sfKeyboard_setVirtualKeyboardVisible(byte visible);
@@ -333,19 +330,20 @@ unittest
 {
     version (DSFML_Unittest_with_interaction)
     {
-        import std.stdio;
-        import std.conv;
+        import std.stdio : writeln;
+        import std.conv : to;
+
         writeln("Running Keyboard unittest...");
         writeln("Press any key for real time input. Press ESC to exit.");
 
         bool running = true;
 
-        while(running)
+        while (running)
         {
-            for(int i = -1; i < Keyboard.Key.Count; ++i)
+            for (int i = -1; i < Keyboard.Key.Count; ++i)
             {
                 Keyboard.Key k = cast(Keyboard.Key) i;
-                if(Keyboard.isKeyPressed(k))
+                if (Keyboard.isKeyPressed(k))
                 {
                     writeln("Key " ~ k.to!string ~ " was pressed.");
                     if (k == Keyboard.Key.Escape)

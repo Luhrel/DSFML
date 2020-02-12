@@ -77,12 +77,12 @@
  * }
  * ---
  */
- module dsfml.network.http;
+module dsfml.network.http;
 
- import dsfml.system.time;
+import dsfml.system.time;
 
- import std.string;
- import std.conv;
+import std.conv;
+import std.string;
 
 /**
  * An HTTP client.
@@ -92,8 +92,7 @@ class Http
     private sfHttp* m_http;
 
     /// Default constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_http = sfHttp_create();
     }
@@ -111,16 +110,14 @@ class Http
      * 	    host = Web server to connect to
      * 	    port = Port to use for connection
      */
-    @safe
-    this(const string host, ushort port = 0)
+    @safe this(const string host, ushort port = 0)
     {
         this();
         this.setHost(host, port);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfHttp_destroy(m_http);
     }
@@ -139,8 +136,7 @@ class Http
      * 	    host = Web server to connect to
      * 	    port = Port to use for connection
      */
-    @safe
-    void setHost(const string host, ushort port = 0)
+    @safe void setHost(const string host, ushort port = 0)
     {
         sfHttp_setHost(m_http, host.toStringz, port);
     }
@@ -163,11 +159,9 @@ class Http
      * Returns:
      *      Server's response.
      */
-    @safe
-    Response sendRequest(Request request, Time timeout = Time.Zero)
+    @safe Response sendRequest(Request request, Time timeout = Time.Zero)
     {
-        return new Response(sfHttp_sendRequest(m_http, request.ptr,
-            timeout));
+        return new Response(sfHttp_sendRequest(m_http, request.ptr, timeout));
     }
 
     /// Define a HTTP request.
@@ -203,9 +197,7 @@ class Http
          * 	    method = Method to use for the request
          * 	    body   = Content of the request's body
          */
-        @safe
-        this(const string uri = "/", Method method = Method.Get,
-            const string body = "")
+        @safe this(const string uri = "/", Method method = Method.Get, const string body = "")
         {
             m_httpRequest = sfHttpRequest_create();
             this.uri = uri;
@@ -214,8 +206,7 @@ class Http
         }
 
         /// Destructor.
-        @safe
-        ~this()
+        @safe ~this()
         {
             sfHttpRequest_destroy(m_httpRequest);
         }
@@ -230,8 +221,7 @@ class Http
          * Params:
          * 	    requestBody = Content of the body
          */
-        @safe
-        void body(const string requestBody)
+        @safe void body(const string requestBody)
         {
             sfHttpRequest_setBody(m_httpRequest, requestBody.toStringz);
         }
@@ -248,8 +238,7 @@ class Http
          * 	    field = Name of the field to set
          *      value = Value of the field
          */
-        @safe
-        void field(const string field, const string value)
+        @safe void field(const string field, const string value)
         {
             sfHttpRequest_setField(m_httpRequest, field.toStringz, value.toStringz);
         }
@@ -263,8 +252,7 @@ class Http
          * 	    major = Major HTTP version number
          * 	    minor = Minor HTTP version number
          */
-        @nogc @safe
-        void httpVersion(uint major, uint minor)
+        @nogc @safe void httpVersion(uint major, uint minor)
         {
             sfHttpRequest_setHttpVersion(m_httpRequest, major, minor);
         }
@@ -278,8 +266,7 @@ class Http
          * Params:
          * 	    method = Method to use for the request
          */
-        @nogc @safe
-        void method(Method method)
+        @nogc @safe void method(Method method)
         {
             sfHttpRequest_setMethod(m_httpRequest, method);
         }
@@ -293,14 +280,12 @@ class Http
          * Params:
          * 	    uri = URI to request, relative to the host
          */
-        @safe
-        void uri(const string uri)
+        @safe void uri(const string uri)
         {
             sfHttpRequest_setUri(m_httpRequest, uri.toStringz);
         }
 
-        @property @nogc @safe
-        package sfHttpRequest* ptr()
+        @property @nogc @safe package sfHttpRequest* ptr()
         {
             return m_httpRequest;
         }
@@ -351,8 +336,7 @@ class Http
         private sfHttpResponse* m_httpResponse;
 
         // Internally used constructor
-        @nogc @safe
-        package this(sfHttpResponse* httpResponsePointer)
+        @nogc @safe package this(sfHttpResponse* httpResponsePointer)
         {
             m_httpResponse = httpResponsePointer;
         }
@@ -388,8 +372,7 @@ class Http
          */
         string field(const string field) const
         {
-            return sfHttpResponse_getField(m_httpResponse, field.toStringz)
-                .fromStringz.to!string;
+            return sfHttpResponse_getField(m_httpResponse, field.toStringz).fromStringz.to!string;
         }
 
         /**
@@ -401,8 +384,7 @@ class Http
          * See_Also:
          *      minorHttpVersion
          */
-        @nogc @safe
-        uint majorHttpVersion() const
+        @nogc @safe uint majorHttpVersion() const
         {
             return sfHttpResponse_getMajorVersion(m_httpResponse);
         }
@@ -416,8 +398,7 @@ class Http
          * See_Also:
          *      majorHttpVersion
          */
-        @nogc @safe
-        uint minorHttpVersion() const
+        @nogc @safe uint minorHttpVersion() const
         {
             return sfHttpResponse_getMinorVersion(m_httpResponse);
         }
@@ -432,16 +413,14 @@ class Http
          * Returns:
          *      Status code of the response.
          */
-        @nogc @safe
-        Status status() const
+        @nogc @safe Status status() const
         {
             return sfHttpResponse_getStatus(m_httpResponse);
         }
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     struct sfHttp;
     struct sfHttpRequest;
@@ -470,7 +449,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Http unittest...");
 
     auto http = new Http();

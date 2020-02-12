@@ -80,8 +80,8 @@
 module dsfml.graphics.view;
 
 import dsfml.graphics.rect;
-import dsfml.system.vector2;
 import dsfml.graphics.transform;
+import dsfml.system.vector2;
 
 /**
  * 2D camera that defines what region is shown on screen.
@@ -95,8 +95,7 @@ class View
      *
      * This constructor creates a default view of (0, 0, 1000, 1000)
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_view = sfView_create();
     }
@@ -107,8 +106,7 @@ class View
      * Params:
      *      rectangle = Rectangle defining the zone to display
      */
-    @nogc @safe
-    this(FloatRect rectangle)
+    @nogc @safe this(FloatRect rectangle)
     {
         m_view = sfView_createFromRect(rectangle);
     }
@@ -120,8 +118,7 @@ class View
      *      center = Center of the zone to display
      *      size   = Size of zone to display
      */
-    @safe
-    this(Vector2f center, Vector2f size)
+    @safe this(Vector2f center, Vector2f size)
     {
         this();
         this.center = center;
@@ -129,15 +126,13 @@ class View
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfView* viewPointer)
+    @nogc @safe package this(const sfView* viewPointer)
     {
         m_view = sfView_copy(viewPointer);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfView_destroy(m_view);
     }
@@ -153,8 +148,7 @@ class View
          * See_Also:
          *      size
          */
-        @nogc @safe
-        void center(Vector2f _center)
+        @nogc @safe void center(Vector2f _center)
         {
             sfView_setCenter(m_view, _center);
         }
@@ -167,8 +161,7 @@ class View
          *     y = Y coordinate of the new center
          * See_Also: size
          */
-        @nogc @safe
-        void center(float x, float y)
+        @nogc @safe void center(float x, float y)
         {
             center(Vector2f(x, y));
         }
@@ -182,8 +175,7 @@ class View
          * See_Also:
          *      size
          */
-        @nogc @safe
-        Vector2f center() const
+        @nogc @safe Vector2f center() const
         {
             return sfView_getCenter(m_view);
         }
@@ -199,8 +191,7 @@ class View
          * Params:
          *      angle = New angle, in degrees
          */
-        @nogc @safe
-        void rotation(float angle)
+        @nogc @safe void rotation(float angle)
         {
             sfView_setRotation(m_view, angle);
         }
@@ -211,8 +202,7 @@ class View
          * Returns:
          *      Rotation angle of the view, in degrees
          */
-        @nogc @safe
-        float rotation() const
+        @nogc @safe float rotation() const
         {
             return sfView_getRotation(m_view);
 
@@ -228,8 +218,7 @@ class View
      * See_Also:
      *      rotation, move, zoom
      */
-    @nogc @safe
-    void rotate(float angle)
+    @nogc @safe void rotate(float angle)
     {
         sfView_rotate(m_view, angle);
     }
@@ -245,8 +234,7 @@ class View
          * See_Also:
          *      center
          */
-        @nogc @safe
-        void size(Vector2f _size)
+        @nogc @safe void size(Vector2f _size)
         {
             sfView_setSize(m_view, _size);
         }
@@ -261,8 +249,7 @@ class View
          * See_Also:
          *      center
          */
-        @nogc @safe
-        void size(float width, float height)
+        @nogc @safe void size(float width, float height)
         {
             size(Vector2f(width, height));
         }
@@ -276,8 +263,7 @@ class View
          * See_Also:
          *      center
          */
-        @nogc @safe
-        Vector2f size() const
+        @nogc @safe Vector2f size() const
         {
             return sfView_getSize(m_view);
         }
@@ -298,8 +284,7 @@ class View
          * Params:
          *      _viewport = New viewport rectangle
          */
-        @nogc @safe
-        void viewport(FloatRect _viewport)
+        @nogc @safe void viewport(FloatRect _viewport)
         {
             sfView_setViewport(m_view, _viewport);
         }
@@ -310,8 +295,7 @@ class View
          * Returns:
          *      Viewport rectangle, expressed as a factor of the target size
          */
-        @nogc @safe
-        FloatRect viewport() const
+        @nogc @safe FloatRect viewport() const
         {
             return sfView_getViewport(m_view);
         }
@@ -326,8 +310,7 @@ class View
      * See_Also:
      *      center, rotate, move
      */
-    @nogc @safe
-    void move(Vector2f offset)
+    @nogc @safe void move(Vector2f offset)
     {
         sfView_move(m_view, offset);
     }
@@ -342,8 +325,7 @@ class View
      * See_Also:
      *      center, rotate, move
      */
-    @nogc @safe
-    void move(float offsetX, float offsetY)
+    @nogc @safe void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
     }
@@ -359,8 +341,7 @@ class View
      * See_Also:
      *      center, size, rotation
      */
-    @nogc @safe
-    void reset(FloatRect rectangle)
+    @nogc @safe void reset(FloatRect rectangle)
     {
         sfView_reset(m_view, rectangle);
     }
@@ -380,8 +361,7 @@ class View
      * See_Also:
      *      size, move, rotate
      */
-    @nogc @safe
-    void zoom(float factor)
+    @nogc @safe void zoom(float factor)
     {
         sfView_zoom(m_view, factor);
     }
@@ -398,27 +378,26 @@ class View
      *      inverseTransform
      */
     // Disabled: This function is meant for internal use only.
-    @disable @safe
-    const(Transform) transform()
+    @disable @safe const(Transform) transform()
     {
-        import std.math;
+        import std.math : cos, sin;
+
         // Rotation components
-        float angle  = rotation() * 3.141592654f / 180.0f; // Not using constant PI, because it's too large
-        float cosine = cos(angle);
-        float sine   = sin(angle);
-        float tx     = -center.x * cosine - center.y * sine + center.x;
-        float ty     =  center.x * sine - center.y * cosine + center.y;
+        const float angle = rotation() * 3.141592654f / 180.0f; // Not using constant PI, because it's too large
+        const float cosine = cos(angle);
+        const float sine = sin(angle);
+        const float tx = -center.x * cosine - center.y * sine + center.x;
+        const float ty = center.x * sine - center.y * cosine + center.y;
 
         // Projection components
-        float a =  2.0f / size.x;
-        float b = -2.0f / size.y;
-        float c = -a * center.x;
-        float d = -b * center.y;
+        const float a = 2.0f / size.x;
+        const float b = -2.0f / size.y;
+        const float c = -a * center.x;
+        const float d = -b * center.y;
 
         // Rebuild the projection matrix
-        return Transform( a * cosine, a * sine,   a * tx + c,
-                         -b * sine,   b * cosine, b * ty + d,
-                          0.0f,       0.0f,       1.0f);
+        return Transform(a * cosine, a * sine, a * tx + c, -b * sine, b * cosine,
+                b * ty + d, 0.0f, 0.0f, 1.0f);
     }
 
     /**
@@ -433,34 +412,30 @@ class View
      *      transform
      */
     // Disabled: This function is meant for internal use only.
-    @disable @safe
-    const(Transform) inverseTransform()
+    @disable @safe const(Transform) inverseTransform()
     {
         return transform().inverse();
     }
 
     // Returns the C pointer
-    @property @nogc  @safe
-    package sfView* ptr()
+    @property @nogc @safe package sfView* ptr()
     {
         return m_view;
     }
 
     /// Duplicates this View.
-    @property @safe
-    View dup()
+    @property @safe View dup()
     {
         return new View(m_view);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfView;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfView* sfView_create();
     sfView* sfView_createFromRect(FloatRect rectangle);
@@ -482,26 +457,27 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running View unittest...");
 
     View v = new View();
 
-    int cx = 10;
-    int cy = 20;
+    const int cx = 10;
+    const int cy = 20;
     v.center(cx, cy);
     assert(v.center == Vector2f(cx, cy));
 
-    int sx = 600;
-    int sy = 800;
+    const int sx = 600;
+    const int sy = 800;
     v.size(sx, sy);
     assert(v.size == Vector2f(sx, sy));
 
-    int angle = 90;
+    const int angle = 90;
     v.rotation = angle;
     assert(v.rotation == angle);
     v.rotate(angle);
-    assert(v.rotation == 2*angle);
+    assert(v.rotation == 2 * angle);
 
     FloatRect vp = FloatRect(100, 100, 200, 200);
     v.viewport = vp;

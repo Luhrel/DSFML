@@ -61,8 +61,8 @@ import dsfml.system.vector2;
 import dsfml.graphics.color;
 import dsfml.graphics.drawable;
 import dsfml.graphics.rect;
-import dsfml.graphics.rendertarget;
 import dsfml.graphics.renderstates;
+import dsfml.graphics.rendertarget;
 import dsfml.graphics.texture;
 import dsfml.graphics.transform;
 import dsfml.graphics.transformable;
@@ -75,15 +75,13 @@ class Shape : Transformable, Drawable
     private sfShape* m_shape;
 
     /// Default constructor.
-    @nogc
-    this()
+    @nogc this()
     {
         m_shape = sfShape_create(&getPointCountCallback, &getPointCallback, cast(void*) this);
     }
 
     /// Virtual destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfShape_destroy(m_shape);
     }
@@ -108,8 +106,7 @@ class Shape : Transformable, Drawable
          *      resetRect = Should the texture rect be reset to the size of the new
          *                  texture?
          */
-        @nogc @safe
-        void texture(Texture _texture, bool resetRect = false)
+        @nogc @safe void texture(Texture _texture, bool resetRect = false)
         {
             sfShape_setTexture(m_shape, _texture.ptr, resetRect);
         }
@@ -124,8 +121,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      The shape's texture.
          */
-        @safe
-        const(Texture) texture() const
+        @safe const(Texture) texture() const
         {
             return new Texture(sfShape_getTexture(m_shape));
         }
@@ -146,8 +142,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      texture
          */
-        @nogc @safe
-        void textureRect(IntRect rect)
+        @nogc @safe void textureRect(IntRect rect)
         {
             sfShape_setTextureRect(m_shape, rect);
         }
@@ -158,8 +153,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Texture rectangle of the shape
          */
-        @nogc @safe
-        IntRect textureRect() const
+        @nogc @safe IntRect textureRect() const
         {
             return sfShape_getTextureRect(m_shape);
         }
@@ -182,8 +176,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      outlineColor
          */
-        @nogc @safe
-        void fillColor(Color color)
+        @nogc @safe void fillColor(Color color)
         {
             sfShape_setFillColor(m_shape, color);
         }
@@ -194,8 +187,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Fill color of the shape
          */
-        @nogc @safe
-        Color fillColor() const
+        @nogc @safe Color fillColor() const
         {
             return sfShape_getFillColor(m_shape);
         }
@@ -214,8 +206,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      fillColor
          */
-        @nogc @safe
-        void outlineColor(Color color)
+        @nogc @safe void outlineColor(Color color)
         {
             sfShape_setOutlineColor(m_shape, color);
         }
@@ -229,8 +220,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      fillColor
          */
-        @nogc @safe
-        Color outlineColor() const
+        @nogc @safe Color outlineColor() const
         {
             return sfShape_getOutlineColor(m_shape);
         }
@@ -248,8 +238,7 @@ class Shape : Transformable, Drawable
          * Params:
          *      thickness = New outline thickness
          */
-        @nogc @safe
-        void outlineThickness(float thickness)
+        @nogc @safe void outlineThickness(float thickness)
         {
             sfShape_setOutlineThickness(m_shape, thickness);
         }
@@ -260,8 +249,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Outline thickness of the shape
          */
-        @nogc @safe
-        float outlineThickness() const
+        @nogc @safe float outlineThickness() const
         {
             return sfShape_getOutlineThickness(m_shape);
         }
@@ -282,8 +270,7 @@ class Shape : Transformable, Drawable
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc @safe
-        override void origin(float x, float y)
+        @nogc @safe override void origin(float x, float y)
         {
             origin(Vector2f(x, y));
         }
@@ -300,8 +287,7 @@ class Shape : Transformable, Drawable
          * Params:
          *      _origin = New origin
          */
-        @nogc @safe
-        override void origin(Vector2f _origin)
+        @nogc @safe override void origin(Vector2f _origin)
         {
             sfShape_setOrigin(m_shape, _origin);
         }
@@ -312,8 +298,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Current origin
          */
-        @nogc @safe
-        override Vector2f origin() const
+        @nogc @safe override Vector2f origin() const
         {
             return sfShape_getOrigin(m_shape);
         }
@@ -349,8 +334,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      move
          */
-        @nogc @safe
-        override void position(float x, float y)
+        @nogc @safe override void position(float x, float y)
         {
             position(Vector2f(x, y));
         }
@@ -368,8 +352,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      move
          */
-        @nogc @safe
-        override void position(Vector2f _position)
+        @nogc @safe override void position(Vector2f _position)
         {
             sfShape_setPosition(m_shape, _position);
         }
@@ -380,8 +363,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Current position
          */
-        @nogc @safe
-        override Vector2f position() const
+        @nogc @safe override Vector2f position() const
         {
             return sfShape_getPosition(m_shape);
         }
@@ -399,8 +381,7 @@ class Shape : Transformable, Drawable
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc @safe
-    override void rotate(float angle)
+    @nogc @safe override void rotate(float angle)
     {
         sfShape_rotate(m_shape, angle);
     }
@@ -420,8 +401,7 @@ class Shape : Transformable, Drawable
          * See_Also:
          *      rotate
          */
-        @nogc @safe
-        override void rotation(float angle)
+        @nogc @safe override void rotation(float angle)
         {
             sfShape_setRotation(m_shape, angle);
         }
@@ -434,8 +414,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Current rotation, in degrees
          */
-        @nogc @safe
-        override float rotation() const
+        @nogc @safe override float rotation() const
         {
             return sfShape_getRotation(m_shape);
         }
@@ -454,8 +433,7 @@ class Shape : Transformable, Drawable
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc @safe
-        override void scale(float factorX, float factorY)
+        @nogc @safe override void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
         }
@@ -470,8 +448,7 @@ class Shape : Transformable, Drawable
          * Params:
          *      factors = New scale factors
          */
-        @nogc @safe
-        override void scale(Vector2f factors)
+        @nogc @safe override void scale(Vector2f factors)
         {
             sfShape_setScale(m_shape, factors);
         }
@@ -482,8 +459,7 @@ class Shape : Transformable, Drawable
          * Returns:
          *      Current scale factors
          */
-        @nogc @safe
-        override Vector2f scale() const
+        @nogc @safe override Vector2f scale() const
         {
             return sfShape_getScale(m_shape);
         }
@@ -505,8 +481,7 @@ class Shape : Transformable, Drawable
      * Returns:
      *      Global bounding rectangle of the entity
      */
-    @property @nogc @safe
-    FloatRect globalBounds() const
+    @property @nogc @safe FloatRect globalBounds() const
     {
         return sfShape_getGlobalBounds(m_shape);
     }
@@ -522,8 +497,7 @@ class Shape : Transformable, Drawable
      * Returns:
      *      Local bounding rectangle of the entity.
      */
-    @property @nogc @safe
-    FloatRect localBounds() const
+    @property @nogc @safe FloatRect localBounds() const
     {
         return sfShape_getLocalBounds(m_shape);
     }
@@ -564,8 +538,7 @@ class Shape : Transformable, Drawable
      * Returns:
      *      Inverse of the combined transformations applied to the object
      */
-    @nogc @safe
-    override Transform inverseTransform() const
+    @nogc @safe override Transform inverseTransform() const
     {
         return Transform(sfShape_getInverseTransform(m_shape));
     }
@@ -579,8 +552,7 @@ class Shape : Transformable, Drawable
      * See_Also:
      *      inverseTransform
      */
-    @nogc @safe
-    override Transform transform()
+    @nogc @safe override Transform transform()
     {
         return Transform(sfShape_getTransform(m_shape));
     }
@@ -602,8 +574,7 @@ class Shape : Transformable, Drawable
      * See_Also:
      *      position
      */
-    @nogc @safe
-    override void move(float offsetX, float offsetY)
+    @nogc @safe override void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
     }
@@ -620,8 +591,7 @@ class Shape : Transformable, Drawable
      * Params:
      *      offset = Offset
      */
-    @nogc @safe
-    override void move(Vector2f offset)
+    @nogc @safe override void move(Vector2f offset)
     {
         sfShape_move(m_shape, offset);
     }
@@ -633,8 +603,7 @@ class Shape : Transformable, Drawable
      * points change (i.e. the result of either `pointCount` or `getPoint` is
      * different).
      */
-    @nogc @safe
-    protected void update()
+    @nogc @safe protected void update()
     {
         sfShape_update(m_shape);
     }
@@ -656,7 +625,7 @@ class Shape : Transformable, Drawable
     /*
      * Called by CSFML when sfShape_getPointCount() is called.
      */
-    private extern(C) static size_t getPointCountCallback(void* userData)
+    private extern (C) static size_t getPointCountCallback(void* userData)
     {
         Shape shape = cast(Shape) userData;
         return shape.pointCount();
@@ -665,36 +634,33 @@ class Shape : Transformable, Drawable
     /*
      * Called by CSFML when sfShape_getPoint(index) is called.
      */
-    private extern(C) static Vector2f getPointCallback(size_t index, void* userData)
+    private extern (C) static Vector2f getPointCallback(size_t index, void* userData)
     {
         Shape shape = cast(Shape) userData;
         return shape.getPoint(index);
     }
 
     // Returns the C pointer.
-    @property @nogc @safe
-    package sfShape* ptr()
+    @property @nogc @safe package sfShape* ptr()
     {
         return m_shape;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfShape;
 }
 
-
-private extern(C)
+private extern (C)
 {
     alias sfShapeGetPointCountCallback = size_t function(void*);
     alias sfShapeGetPointCallback = Vector2f function(size_t, void*);
 
-    @nogc @safe:
+@nogc @safe:
 
     sfShape* sfShape_create(sfShapeGetPointCountCallback getPointCount,
-                                           sfShapeGetPointCallback getPoint,
-                                           void* userData);
+            sfShapeGetPointCallback getPoint, void* userData);
     void sfShape_destroy(sfShape* shape);
     void sfShape_setPosition(sfShape* shape, Vector2f position);
     void sfShape_setRotation(sfShape* shape, float angle);
@@ -728,16 +694,19 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Shape unittest...");
 
     class MyShape : Shape
     {
-        this() { super(); }
+        this()
+        {
+            super();
+        }
 
         // Dummy implementation
-        @property
-        override size_t pointCount() const
+        @property override size_t pointCount() const
         {
             return 1;
         }
@@ -751,7 +720,7 @@ unittest
 
     auto shape = new MyShape();
 
-    auto pos = Vector2f(2.945, 6.1);
+    const auto pos = Vector2f(2.945, 6.1);
     shape.position = pos;
     assert(shape.position == pos);
     shape.move(1.055, 0.9);
@@ -761,18 +730,18 @@ unittest
     shape.rotation = rot;
     assert(shape.rotation == rot);
     shape.rotate(rot);
-    assert(shape.rotation == 2*rot);
+    assert(shape.rotation == 2 * rot);
 
-    auto scl = Vector2f(1, 2);
+    const auto scl = Vector2f(1, 2);
     shape.scale = scl;
     assert(shape.scale == scl);
 
-    auto orgn = Vector2f(5, 6);
+    const auto orgn = Vector2f(5, 6);
     shape.origin = orgn;
     assert(shape.origin == orgn);
 
-    auto t = shape.transform;
-    auto it = shape.inverseTransform;
+    const auto t = shape.transform;
+    const auto it = shape.inverseTransform;
     // TODO:
     // assert(t == Transform());
     assert(t.inverse == it);
@@ -780,19 +749,19 @@ unittest
     // TODO:
     // assert(shape.texture == );
 
-    auto texR = IntRect(2, 4, 6, 8);
+    const auto texR = IntRect(2, 4, 6, 8);
     shape.textureRect = texR;
     assert(shape.textureRect == texR);
 
-    auto fc = Color.Red;
+    const auto fc = Color.Red;
     shape.fillColor = fc;
     assert(shape.fillColor == fc);
 
-    auto oc = Color.Green;
+    const auto oc = Color.Green;
     shape.outlineColor = oc;
     assert(shape.outlineColor == oc);
 
-    float thck = 18;
+    const float thck = 18;
     shape.outlineThickness = thck;
     assert(shape.outlineThickness == thck);
 

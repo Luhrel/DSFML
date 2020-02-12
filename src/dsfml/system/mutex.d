@@ -91,8 +91,7 @@ class Mutex
     private core.Mutex m_mutex;
 
     /// Default Constructor
-    @safe
-    this()
+    @safe this()
     {
         m_mutex = new core.Mutex();
     }
@@ -103,15 +102,13 @@ class Mutex
      * If the mutex is already locked in another thread, this call will block
      * the execution until the mutex is released.
      */
-    @safe
-    void lock()
+    @safe void lock()
     {
         m_mutex.lock();
     }
 
     /// Unlock the mutex.
-    @safe
-    void unlock()
+    @safe void unlock()
     {
         m_mutex.unlock();
     }
@@ -119,10 +116,10 @@ class Mutex
 
 unittest
 {
-    import dsfml.system.thread;
-    import dsfml.system.sleep;
-    import dsfml.system.time;
-    import std.stdio;
+    import dsfml.system.thread : Thread;
+    import dsfml.system.sleep : sleep;
+    import dsfml.system.time : seconds;
+    import std.stdio : writeln;
 
     writeln("Running Mutex unittest...");
 
@@ -132,7 +129,7 @@ unittest
     void thread1()
     {
         mutex.lock();
-        for(int i = 0; i < 10; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             sleep(seconds(0.01));
             result ~= "1";
@@ -143,7 +140,7 @@ unittest
     void thread2()
     {
         mutex.lock();
-        for(int i = 0; i < 10; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             sleep(seconds(0.01));
             result ~= "2";

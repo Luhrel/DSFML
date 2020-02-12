@@ -33,16 +33,16 @@ import dsfml.system.err;
 //Check to confirm compiler is at least v2.067
 static if (__VERSION__ < 2067L)
 {
-	static assert(0, "Please upgrade your compiler to v2.067 or later");
+    static assert(0, "Please upgrade your compiler to v2.067 or later");
 }
 
 /// DSFML version enum
 enum
 {
-	/// DSFML's major version number.
-	DSFML_VERSION_MAJOR = 2,
-	/// DSFML's minor version number.
-	DSFML_VERSION_MINOR = 5
+    /// DSFML's major version number.
+    DSFML_VERSION_MAJOR = 2,
+    /// DSFML's minor version number.
+    DSFML_VERSION_MINOR = 5
 }
 
 // Defines the maximum size for a string passed to a packet.

@@ -73,15 +73,15 @@
  */
 module dsfml.graphics.text;
 
-import dsfml.graphics.font;
 import dsfml.graphics.color;
+import dsfml.graphics.drawable;
+import dsfml.graphics.font;
 import dsfml.graphics.rect;
+import dsfml.graphics.renderstates;
+import dsfml.graphics.rendertarget;
 import dsfml.graphics.transform;
 import dsfml.graphics.transformable;
-import dsfml.graphics.drawable;
 import dsfml.graphics.vertex;
-import dsfml.graphics.rendertarget;
-import dsfml.graphics.renderstates;
 
 import dsfml.system.vector2;
 
@@ -116,8 +116,7 @@ class Text : Transformable, Drawable
      *
      * Creates an empty text.
      */
-    @safe
-    this()
+    @safe this()
     {
         m_text = sfText_create();
     }
@@ -146,15 +145,13 @@ class Text : Transformable, Drawable
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfText* textPointer)
+    @nogc @safe package this(const sfText* textPointer)
     {
         m_text = sfText_copy(textPointer);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfText_destroy(m_text);
     }
@@ -175,8 +172,7 @@ class Text : Transformable, Drawable
          * Params:
          *      size = New character size, in pixels
          */
-        @nogc @safe
-        void characterSize(uint size)
+        @nogc @safe void characterSize(uint size)
         {
             sfText_setCharacterSize(m_text, size);
         }
@@ -187,8 +183,7 @@ class Text : Transformable, Drawable
          * Returns:
          *      Size of the characters, in pixels
          */
-        @nogc @safe
-        uint characterSize() const
+        @nogc @safe uint characterSize() const
         {
             return sfText_getCharacterSize(m_text);
         }
@@ -207,8 +202,7 @@ class Text : Transformable, Drawable
      *      x = X coordinate of the new origin
      *      y = Y coordinate of the new origin
      */
-    @property @nogc @safe
-    override void origin(float x, float y)
+    @property @nogc @safe override void origin(float x, float y)
     {
         origin(Vector2f(x, y));
     }
@@ -225,8 +219,7 @@ class Text : Transformable, Drawable
      * Params:
      *      _origin = New origin
      */
-    @property @nogc @safe
-    override void origin(Vector2f _origin)
+    @property @nogc @safe override void origin(Vector2f _origin)
     {
         sfText_setOrigin(m_text, _origin);
     }
@@ -237,8 +230,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Current origin
      */
-    @property @nogc @safe
-    override Vector2f origin() const
+    @property @nogc @safe override Vector2f origin() const
     {
         return sfText_getOrigin(m_text);
     }
@@ -256,9 +248,8 @@ class Text : Transformable, Drawable
      * See_Also:
      *      fillColor
      */
-    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.")
-    @property @nogc @safe
-    void color(Color _color)
+    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.") @property @nogc @safe void color(
+            Color _color)
     {
         sfText_setColor(m_text, _color);
     }
@@ -272,9 +263,7 @@ class Text : Transformable, Drawable
      * See_Also:
      *      fillColor
      */
-    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.")
-    @property @nogc @safe
-    Color color()
+    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.") @property @nogc @safe Color color()
     {
         return sfText_getColor(m_text);
     }
@@ -291,8 +280,7 @@ class Text : Transformable, Drawable
          * Params:
          *      color = New fill color of the text
          */
-        @nogc @safe
-        void fillColor(Color color)
+        @nogc @safe void fillColor(Color color)
         {
             sfText_setFillColor(m_text, color);
         }
@@ -303,8 +291,7 @@ class Text : Transformable, Drawable
          * Returns:
          *      Fill color of the text
          */
-        @nogc @safe
-        Color fillColor() const
+        @nogc @safe Color fillColor() const
         {
             return sfText_getFillColor(m_text);
         }
@@ -320,8 +307,7 @@ class Text : Transformable, Drawable
          * Params:
          *      color = New outline color of the text
          */
-        @nogc @safe
-        void outlineColor(Color color)
+        @nogc @safe void outlineColor(Color color)
         {
             sfText_setOutlineColor(m_text, color);
         }
@@ -332,8 +318,7 @@ class Text : Transformable, Drawable
          * Returns:
          *      Outline color of the text
          */
-        @nogc @safe
-        Color outlineColor() const
+        @nogc @safe Color outlineColor() const
         {
             return sfText_getOutlineColor(m_text);
         }
@@ -352,8 +337,7 @@ class Text : Transformable, Drawable
          * Params:
          *      thickness = New outline thickness, in pixels
          */
-        @nogc @safe
-        void outlineThickness(float thickness)
+        @nogc @safe void outlineThickness(float thickness)
         {
             sfText_setOutlineThickness(m_text, thickness);
         }
@@ -364,8 +348,7 @@ class Text : Transformable, Drawable
          * Returns:
          *      Outline thickness of the text, in pixels
          */
-        @nogc @safe
-        float outlineThickness() const
+        @nogc @safe float outlineThickness() const
         {
             return sfText_getOutlineThickness(m_text);
         }
@@ -385,8 +368,7 @@ class Text : Transformable, Drawable
          * Params:
          *      _font = New font
          */
-        @nogc @safe
-        void font(Font _font)
+        @nogc @safe void font(Font _font)
         {
             sfText_setFont(m_text, _font.ptr);
         }
@@ -401,8 +383,7 @@ class Text : Transformable, Drawable
          * Returns:
          *      Text's font
          */
-        @safe
-        const(Font) font() const
+        @safe const(Font) font() const
         {
             return new Font(sfText_getFont(m_text));
         }
@@ -419,8 +400,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Global bounding rectangle of the entity.
      */
-    @property @nogc @safe
-    FloatRect globalBounds()
+    @property @nogc @safe FloatRect globalBounds()
     {
         return sfText_getGlobalBounds(m_text);
     }
@@ -436,8 +416,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Local bounding rectangle of the entity.
      */
-    @property @nogc @safe
-    FloatRect localBounds() const
+    @property @nogc @safe FloatRect localBounds() const
     {
         return sfText_getLocalBounds(m_text);
     }
@@ -460,8 +439,7 @@ class Text : Transformable, Drawable
      * See_Also:
      *      position
      */
-    @nogc @safe
-    override void move(float offsetX, float offsetY)
+    @nogc @safe override void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
     }
@@ -482,8 +460,7 @@ class Text : Transformable, Drawable
      * See_Also:
      *      position
      */
-    @nogc @safe
-    override void move(Vector2f offset)
+    @nogc @safe override void move(Vector2f offset)
     {
         sfText_move(m_text, offset);
     }
@@ -501,8 +478,7 @@ class Text : Transformable, Drawable
          * Params:
          *      _style = New style
          */
-        @nogc @safe
-        void style(Style _style)
+        @nogc @safe void style(Style _style)
         {
             sfText_setStyle(m_text, _style);
         }
@@ -513,8 +489,7 @@ class Text : Transformable, Drawable
          * Returns:
          *      Text's style
          */
-        @nogc @safe
-        Style style() const
+        @nogc @safe Style style() const
         {
             return sfText_getStyle(m_text);
         }
@@ -530,8 +505,7 @@ class Text : Transformable, Drawable
          * Params:
          *      text = New string
          */
-        @nogc
-        void str(dstring text)
+        @nogc void str(dstring text)
         {
             sfText_setUnicodeString(m_text, representation(text).ptr);
         }
@@ -578,8 +552,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Position of the character.
      */
-    @nogc @safe
-    Vector2f findCharacterPos(size_t index)
+    @nogc @safe Vector2f findCharacterPos(size_t index)
     {
         return sfText_findCharacterPos(m_text, index);
     }
@@ -597,8 +570,7 @@ class Text : Transformable, Drawable
      * Params:
      *      spacingFactor = New letter spacing factor
      */
-    @property @nogc @safe
-    void letterSpacing(float spacingFactor)
+    @property @nogc @safe void letterSpacing(float spacingFactor)
     {
         sfText_setLetterSpacing(m_text, spacingFactor);
     }
@@ -609,8 +581,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Size of the letter spacing factor
      */
-    @property @nogc @safe
-    float letterSpacing() const
+    @property @nogc @safe float letterSpacing() const
     {
         return sfText_getLetterSpacing(m_text);
     }
@@ -625,8 +596,7 @@ class Text : Transformable, Drawable
      * Params:
      *      spacingFactor = New line spacing factor
      */
-    @property @nogc @safe
-    void lineSpacing(float spacingFactor)
+    @property @nogc @safe void lineSpacing(float spacingFactor)
     {
         sfText_setLineSpacing(m_text, spacingFactor);
     }
@@ -637,8 +607,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Size of the line spacing factor
      */
-    @property @nogc @safe
-    float lineSpacing()
+    @property @nogc @safe float lineSpacing()
     {
         return sfText_getLineSpacing(m_text);
     }
@@ -655,8 +624,7 @@ class Text : Transformable, Drawable
      *      y = Y coordinate of the new position
      * See_Also: move
      */
-    @property @nogc @safe
-    override void position(float x, float y)
+    @property @nogc @safe override void position(float x, float y)
     {
         position(Vector2f(x, y));
     }
@@ -674,8 +642,7 @@ class Text : Transformable, Drawable
      * See_Also:
      *      move
      */
-    @property @nogc @safe
-    override void position(Vector2f _position)
+    @property @nogc @safe override void position(Vector2f _position)
     {
         sfText_setPosition(m_text, _position);
     }
@@ -686,8 +653,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Current position
      */
-    @property @nogc @safe
-    override Vector2f position() const
+    @property @nogc @safe override Vector2f position() const
     {
         return sfText_getPosition(m_text);
     }
@@ -705,8 +671,7 @@ class Text : Transformable, Drawable
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc @safe
-    override void rotate(float angle)
+    @nogc @safe override void rotate(float angle)
     {
         sfText_rotate(m_text, angle);
     }
@@ -721,8 +686,7 @@ class Text : Transformable, Drawable
      * Params:
      *      angle = New rotation, in degrees
      */
-    @property @nogc @safe
-    override void rotation(float angle)
+    @property @nogc @safe override void rotation(float angle)
     {
         sfText_setRotation(m_text, angle);
     }
@@ -735,8 +699,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Current rotation, in degrees
      */
-    @property @nogc @safe
-    override float rotation() const
+    @property @nogc @safe override float rotation() const
     {
         return sfText_getRotation(m_text);
     }
@@ -752,8 +715,7 @@ class Text : Transformable, Drawable
      *      factorX = New horizontal scale factor
      *      factorY = New vertical scale factor
      */
-    @property @nogc @safe
-    override void scale(float factorX, float factorY)
+    @property @nogc @safe override void scale(float factorX, float factorY)
     {
         scale(Vector2f(factorX, factorY));
     }
@@ -768,8 +730,7 @@ class Text : Transformable, Drawable
      * Params:
      *      factors = New scale factors
      */
-    @property @nogc @safe
-    override void scale(Vector2f factors)
+    @property @nogc @safe override void scale(Vector2f factors)
     {
         sfText_setScale(m_text, factors);
     }
@@ -780,8 +741,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Current scale factors
      */
-    @property @nogc @safe
-    override Vector2f scale() const
+    @property @nogc @safe override Vector2f scale() const
     {
         return sfText_getScale(m_text);
     }
@@ -792,8 +752,7 @@ class Text : Transformable, Drawable
      * Returns:
      *      Transform combining the position/rotation/scale/origin of the object
      */
-    @nogc @safe
-    override const(Transform) transform() const
+    @nogc @safe override const(Transform) transform() const
     {
         return Transform(sfText_getTransform(m_text));
     }
@@ -804,34 +763,30 @@ class Text : Transformable, Drawable
      * Returns:
      *      Inverse of the combined transformations applied to the object
      */
-    @nogc @safe
-    override const(Transform) inverseTransform() const
+    @nogc @safe override const(Transform) inverseTransform() const
     {
         return Transform(sfText_getInverseTransform(m_text));
     }
 
     // Returns the C pointer.
-    @property @nogc @safe
-    package sfText* ptr()
+    @property @nogc @safe package sfText* ptr()
     {
         return m_text;
     }
 
     /// Duplicates this Text.
-    @property @safe
-    override Text dup()
+    @property @safe override Text dup()
     {
         return new Text(m_text);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfText;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfText* sfText_create();
     sfText* sfText_copy(const sfText* text);
@@ -878,7 +833,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Text unittest...");
 
     auto font = new Font();
@@ -889,7 +845,7 @@ unittest
     Text text = new Text(str, font, csize);
 
     assert(text.str == str);
-    dstring utf32 = "å ø ∑ 😦";
+    const dstring utf32 = "å ø ∑ 😦";
     text.str = utf32;
     assert(text.str == utf32);
 
@@ -901,7 +857,7 @@ unittest
     // text.font is const
     assert(text.font != font);
 
-    auto pos = Vector2f(20, 30);
+    const auto pos = Vector2f(20, 30);
     text.position = pos;
     assert(text.position == pos);
     text.move(30, 20);
@@ -909,27 +865,27 @@ unittest
 
     assert(text.findCharacterPos(1) == Vector2f(56, 50));
 
-    float rot = 44.5;
+    const float rot = 44.5;
     text.rotation = rot;
     assert(text.rotation == rot);
     text.rotate(rot);
-    assert(text.rotation == 2*rot);
+    assert(text.rotation == 2 * rot);
 
-    auto scl = Vector2f(2, 5);
+    const auto scl = Vector2f(2, 5);
     text.scale = scl;
     assert(text.scale == scl);
 
-    auto orgn = Vector2f(123.456, 456.789);
+    const auto orgn = Vector2f(123.456, 456.789);
     text.origin = orgn;
     assert(text.origin == orgn);
 
-    auto t = text.transform;
-    auto it = text.inverseTransform;
+    const auto t = text.transform;
+    const auto it = text.inverseTransform;
     // TODO:
     //assert(t == Transform());
     assert(t.inverse == it);
 
-    float ls = 10;
+    const float ls = 10;
     text.lineSpacing = ls;
     assert(text.lineSpacing == ls);
 
@@ -950,7 +906,7 @@ unittest
     text.outlineColor = color;
     assert(text.outlineColor == color);
 
-    float thck = 10;
+    const float thck = 10;
     text.outlineThickness = thck;
     assert(text.outlineThickness == thck);
 

@@ -1,4 +1,3 @@
-
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
@@ -72,8 +71,8 @@ module dsfml.network.ipaddress;
 
 import dsfml.system.time;
 
-import std.string;
 import std.conv;
+import std.string;
 
 /**
  * Encapsulate an IPv4 network address.
@@ -83,11 +82,11 @@ struct IpAddress
     /// Value representing an empty/invalid address.
     static immutable(IpAddress) None;
     /// Value representing any address (0.0.0.0)
-    static immutable(IpAddress) Any = IpAddress(0,0,0,0);
+    static immutable(IpAddress) Any = IpAddress(0, 0, 0, 0);
     /// The "localhost" address (for connecting a computer to itself locally)
-    static immutable(IpAddress) LocalHost = IpAddress(127,0,0,1);
+    static immutable(IpAddress) LocalHost = IpAddress(127, 0, 0, 1);
     /// The "broadcast" address (for sending UDP messages to everyone on a local network)
-    static immutable(IpAddress) Broadcast = IpAddress(255,255,255,255);
+    static immutable(IpAddress) Broadcast = IpAddress(255, 255, 255, 255);
 
     private uint m_address;
     private bool m_valid;
@@ -101,11 +100,9 @@ struct IpAddress
      * Params:
      * 	    address = IP address or network name.
      */
-    @safe
-    this(const(string) address)
+    @safe this(const(string) address)
     {
-        m_address = htonl(sfIpAddress_toInteger(
-            sfIpAddress_fromString(address.toStringz)));
+        m_address = htonl(sfIpAddress_toInteger(sfIpAddress_fromString(address.toStringz)));
         m_valid = true;
     }
 
@@ -122,8 +119,7 @@ struct IpAddress
      * 	    byte2 = Third byte of the address.
      * 	    byte3 = Fourth byte of the address.
      */
-    @safe
-    this(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3)
+    @safe this(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3)
     {
         m_address = htonl((byte0 << 24) | (byte1 << 16) | (byte2 << 8) | byte3);
         m_valid = true;
@@ -142,16 +138,14 @@ struct IpAddress
      * See_Also:
      *      toInteger
      */
-    @safe
-    this(uint address)
+    @safe this(uint address)
     {
         m_address = htonl(address);
         m_valid = true;
     }
 
     // Internally used constructor.
-    @safe
-    package this(sfIpAddress ipAddress)
+    @safe package this(sfIpAddress ipAddress)
     {
         this(ipAddress.address.to!string);
     }
@@ -170,8 +164,7 @@ struct IpAddress
      * See_Also:
      *      toString
      */
-    @nogc @safe
-    uint toInteger() const
+    @nogc @safe uint toInteger() const
     {
         return ntohl(m_address);
     }
@@ -191,8 +184,8 @@ struct IpAddress
      * See_Also:
      *      toInteger
      */
-    @trusted
-    const(string) toString() const
+    // dfmt off
+    @trusted const(string) toString() const
     {
         import core.stdc.stdio : sprintf;
 
@@ -200,10 +193,11 @@ struct IpAddress
         static char[16] m_string;
 
         ubyte* bytes = cast(ubyte*) &m_address;
-        int length = sprintf(m_string.ptr, "%d.%d.%d.%d", bytes[0], bytes[1],
-                                                          bytes[2], bytes[3]);
+        const int length = sprintf(m_string.ptr, "%d.%d.%d.%d",
+                bytes[0], bytes[1], bytes[2], bytes[3]);
         return m_string[0 .. length].to!string;
     }
+    // dfmt on
 
     /**
      * Get the computer's local address.
@@ -219,8 +213,7 @@ struct IpAddress
      * See_Also:
      *      publicAddress
      */
-    @safe
-    static IpAddress localAddress()
+    @safe static IpAddress localAddress()
     {
         return IpAddress(sfIpAddress_getLocalAddress().address.to!string);
     }
@@ -250,23 +243,19 @@ struct IpAddress
      * See_Also:
      *      localAddress
      */
-    @safe
-    static IpAddress publicAddress(Time timeout = Time.Zero)
+    @safe static IpAddress publicAddress(Time timeout = Time.Zero)
     {
         return IpAddress(sfIpAddress_getPublicAddress(timeout).address.to!string);
     }
 
     // Overloads the == operator.
-    @nogc @safe
-    bool opEquals(IpAddress otherIpAddress)
+    @nogc @safe bool opEquals(IpAddress otherIpAddress)
     {
-        return m_valid == otherIpAddress.m_valid &&
-            m_address == otherIpAddress.m_address;
+        return m_valid == otherIpAddress.m_valid && m_address == otherIpAddress.m_address;
     }
 
     // Overloads the < > <= >= operators.
-    @nogc @safe
-    int opCmp(ref const IpAddress otherIpAddress) const
+    @nogc @safe int opCmp(ref const IpAddress otherIpAddress) const
     {
         if (m_valid < otherIpAddress.m_valid)
             return -1;
@@ -280,15 +269,13 @@ struct IpAddress
     /*
      * Allow to declare (e.g.): IpAddress address = "192.168.0.124";
      */
-    @safe
-    IpAddress opAssign(string address)
+    @safe IpAddress opAssign(string address)
     {
         return IpAddress(address);
     }
 
     // Returns the C struct.
-    @property @nogc @safe
-    package sfIpAddress toc()
+    @property @nogc @safe package sfIpAddress toc()
     {
         return sfIpAddress_fromInteger(ntohl(m_address));
     }
@@ -298,12 +285,12 @@ struct IpAddress
  * `htonl` and `ntohle` have the same implementation, but use different names
  * for readability
  */
-@nogc @safe
-private uint htonl(uint host) nothrow
+@nogc @safe private uint htonl(uint host) nothrow
 {
-    version(LittleEndian)
+    version (LittleEndian)
     {
-        import core.bitop;
+        import core.bitop : bswap;
+
         return bswap(host);
     }
     else
@@ -314,7 +301,7 @@ private uint htonl(uint host) nothrow
 
 private alias ntohl = htonl;
 
-package extern(C)
+package extern (C)
 {
     struct sfIpAddress
     {
@@ -322,8 +309,7 @@ package extern(C)
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfIpAddress sfIpAddress_fromString(const char* address);
     sfIpAddress sfIpAddress_fromBytes(ubyte byte0, ubyte byte1, ubyte byte2, ubyte byte3);
@@ -336,11 +322,12 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running IpAddress unittest...");
 
-    auto ia1 = IpAddress(192,168,0,55);
-    auto ia2 = IpAddress(192,168,0,54);
+    const auto ia1 = IpAddress(192, 168, 0, 55);
+    const auto ia2 = IpAddress(192, 168, 0, 54);
 
     assert(ia1 != ia2);
     assert(ia1 == ia1);
@@ -349,8 +336,8 @@ unittest
     assert(ia1 >= ia2);
     assert(ia2 <= ia1);
 
-    assert(ia2.toInteger == 3232235574);
-    assert(ia1.toInteger == 3232235575);
+    assert(ia2.toInteger == 3_232_235_574);
+    assert(ia1.toInteger == 3_232_235_575);
 
     version (DSFML_Unittest_with_interaction)
     {
@@ -358,6 +345,6 @@ unittest
         writeln("\nYour public address: %s", IpAddress.publicAddress);
     }
 
-    IpAddress myIp = "192.168.0.124";
-    assert(myIp == IpAddress(192,168,0,124));
+    const IpAddress myIp = "192.168.0.124";
+    assert(myIp == IpAddress(192, 168, 0, 124));
 }

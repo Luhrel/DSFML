@@ -25,7 +25,6 @@
  * DSFML is based on SFML (Copyright Laurent Gomila)
  */
 
-
 /// Provides OpenGL-based windows, and abstractions for events and input handling.
 module dsfml.window;
 

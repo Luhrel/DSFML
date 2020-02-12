@@ -1,9 +1,9 @@
 module dsfml.graphics.renderstates;
 
 import dsfml.graphics.blendmode;
-import dsfml.graphics.transform;
-import dsfml.graphics.texture;
 import dsfml.graphics.shader;
+import dsfml.graphics.texture;
+import dsfml.graphics.transform;
 
 import std.typecons : Rebindable;
 
@@ -27,8 +27,7 @@ struct RenderStates
      * Params:
      *      blendMode = Blend mode to use
      */
-    @nogc @safe
-    this(BlendMode blendMode)
+    @nogc @safe this(BlendMode blendMode)
     {
         this.blendMode = blendMode;
     }
@@ -39,8 +38,7 @@ struct RenderStates
      * Params:
      *      transform = Transform to use
      */
-    @nogc @safe
-    this(Transform transform)
+    @nogc @safe this(Transform transform)
     {
         this.transform = transform;
     }
@@ -51,8 +49,7 @@ struct RenderStates
      * Params:
      *      texture = Texture to use
      */
-    @nogc @safe
-    this(Texture texture)
+    @nogc @safe this(Texture texture)
     {
         this.texture = texture;
     }
@@ -63,8 +60,7 @@ struct RenderStates
      * Params:
      *      shader = Shader to use
      */
-    @nogc @safe
-    this(Shader shader)
+    @nogc @safe this(Shader shader)
     {
         this.shader = shader;
     }
@@ -78,8 +74,7 @@ struct RenderStates
      *      texture   = Texture to use
      *      shader    = Shader to use
      */
-    @nogc @safe
-    this(BlendMode blendMode, Transform transform, Texture texture, Shader shader)
+    @nogc @safe this(BlendMode blendMode, Transform transform, Texture texture, Shader shader)
     {
         this.blendMode = blendMode;
         this.transform = transform;
@@ -88,8 +83,7 @@ struct RenderStates
     }
 }
 
-@nogc @safe
-package sfRenderStates convertRenderStates(ref RenderStates states)
+@nogc @safe package sfRenderStates convertRenderStates(ref RenderStates states)
 {
     if (states.texture is null && states.shader is null)
         return sfRenderStates(states.blendMode, states.transform.toc, null, null);
@@ -98,17 +92,18 @@ package sfRenderStates convertRenderStates(ref RenderStates states)
     else if (states.texture is null)
         return sfRenderStates(states.blendMode, states.transform.toc, null, states.shader.ptr);
     else
-        return sfRenderStates(states.blendMode, states.transform.toc, states.texture.ptr, states.shader.ptr);
+        return sfRenderStates(states.blendMode, states.transform.toc,
+                states.texture.ptr, states.shader.ptr);
 
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfRenderStates
     {
-        BlendMode blendMode;      // Blending mode
-        sfTransform transform;    // Transform
+        BlendMode blendMode; // Blending mode
+        sfTransform transform; // Transform
         const sfTexture* texture; // Texture
-        const sfShader* shader;   // Shader
+        const sfShader* shader; // Shader
     }
 }

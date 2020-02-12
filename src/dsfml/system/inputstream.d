@@ -134,7 +134,7 @@ abstract class InputStream
     /**
      * C Callback for the read function.
      */
-    private extern(C) static long readCallback(void* data, long size, void* userData)
+    private extern (C) static long readCallback(void* data, long size, void* userData)
     {
         version (X86)
             void[] data_array = data[0 .. cast(uint) size];
@@ -148,7 +148,7 @@ abstract class InputStream
     /**
      * C Callback for the seek function.
      */
-    private extern(C) static long seekCallback(long position, void* userData)
+    private extern (C) static long seekCallback(long position, void* userData)
     {
         InputStream inputstream = cast(InputStream) userData;
         return inputstream.seek(position);
@@ -157,7 +157,7 @@ abstract class InputStream
     /**
      * C Callback for the tell function.
      */
-    private extern(C) static long tellCallback(void* userData)
+    private extern (C) static long tellCallback(void* userData)
     {
         InputStream inputstream = cast(InputStream) userData;
         return inputstream.tell();
@@ -166,33 +166,32 @@ abstract class InputStream
     /**
      * C Callback for the getSize function.
      */
-    private extern(C) static long getSizeCallback(void* userData)
+    private extern (C) static long getSizeCallback(void* userData)
     {
         InputStream inputstream = cast(InputStream) userData;
         return inputstream.size();
     }
 
     // Returns the C pointer.
-    @property @nogc @safe
-    package(dsfml) sfInputStream* ptr()
+    @property @nogc @safe package(dsfml) sfInputStream* ptr()
     {
         return m_inputstream;
     }
 }
 
-package(dsfml) extern(C)
+package(dsfml) extern (C)
 {
     struct sfInputStream
     {
-        sfInputStreamReadFunc    read;
-        sfInputStreamSeekFunc    seek;
-        sfInputStreamTellFunc    tell;
+        sfInputStreamReadFunc read;
+        sfInputStreamSeekFunc seek;
+        sfInputStreamTellFunc tell;
         sfInputStreamGetSizeFunc getSize;
-        void*                    userData;
+        void* userData;
     }
 }
 
-private extern(C)
+private extern (C)
 {
     alias sfInputStreamReadFunc = long function(void* data, long size, void* userData);
     alias sfInputStreamSeekFunc = long function(long position, void* userData);

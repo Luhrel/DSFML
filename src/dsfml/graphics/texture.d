@@ -119,14 +119,12 @@
  */
 module dsfml.graphics.texture;
 
-import dsfml.graphics.rect;
 import dsfml.graphics.image;
+import dsfml.graphics.rect;
 import dsfml.graphics.renderwindow;
-
-import dsfml.window.window;
-
 import dsfml.system.inputstream;
 import dsfml.system.vector2;
+import dsfml.window.window;
 
 import std.string;
 
@@ -153,22 +151,19 @@ class Texture
      *
      * Creates an empty texture.
      */
-    @safe
-    this()
+    @safe this()
     {
         // Nothing to do.
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfTexture* texturePointer)
+    @nogc @safe package this(const sfTexture* texturePointer)
     {
         m_texture = sfTexture_copy(texturePointer);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfTexture_destroy(m_texture);
     }
@@ -235,8 +230,7 @@ class Texture
      * Returns:
      *      true if loading was successful, false otherwise.
      */
-    @nogc
-    bool loadFromMemory(const(void)[] data, IntRect area = IntRect.init)
+    @nogc bool loadFromMemory(const(void)[] data, IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromMemory(data.ptr, data.sizeof, &area);
         return m_texture != null;
@@ -268,8 +262,7 @@ class Texture
      * Returns:
      *      true if loading was successful, false otherwise.
      */
-    @nogc
-    bool loadFromStream(InputStream stream, IntRect area = IntRect.init)
+    @nogc bool loadFromStream(InputStream stream, IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromStream(stream.ptr, &area);
         return m_texture != null;
@@ -295,8 +288,7 @@ class Texture
      * Returns:
      *      true if loading was successful, false otherwise.
      */
-    @nogc
-    bool loadFromImage(Image image, IntRect area = IntRect.init)
+    @nogc bool loadFromImage(Image image, IntRect area = IntRect.init)
     {
         m_texture = sfTexture_createFromImage(image.ptr, &area);
         return m_texture != null;
@@ -312,8 +304,7 @@ class Texture
      * Returns:
      *      Maximum size allowed for textures, in pixels.
      */
-    @property @nogc @safe
-    static uint maximumSize()
+    @property @nogc @safe static uint maximumSize()
     {
         return sfTexture_getMaximumSize();
     }
@@ -324,8 +315,7 @@ class Texture
      * Returns:
      *      Size in pixels.
      */
-    @property @nogc @safe
-    Vector2u size() const
+    @property @nogc @safe Vector2u size() const
     {
         if (m_texture is null)
             return Vector2u(0, 0);
@@ -345,13 +335,11 @@ class Texture
          * Params:
          *      _smooth = true to enable smoothing, false to disable it
          */
-        @nogc @safe
-        void smooth(bool _smooth)
+        @nogc @safe void smooth(bool _smooth)
         {
             if (m_texture !is null)
                 sfTexture_setSmooth(m_texture, _smooth);
         }
-
 
         /**
          * Tell whether the smooth filter is enabled or not.
@@ -359,8 +347,7 @@ class Texture
          * Returns:
          *      true if something is enabled, false if it is disabled.
          */
-        @nogc @safe
-        bool smooth() const
+        @nogc @safe bool smooth() const
         {
             if (m_texture is null)
                 return false;
@@ -388,8 +375,7 @@ class Texture
          * Params:
          *      _repeated = true to repeat the texture, false to disable repeating
          */
-        @nogc @safe
-        void repeated(bool _repeated)
+        @nogc @safe void repeated(bool _repeated)
         {
             if (m_texture !is null)
                 sfTexture_setRepeated(m_texture, _repeated);
@@ -401,8 +387,7 @@ class Texture
          * Returns:
          *      true if repeat mode is enabled, false if it is disabled.
          */
-        @nogc @safe
-        bool repeated() const
+        @nogc @safe bool repeated() const
         {
             if (m_texture is null)
                 return false;
@@ -433,8 +418,7 @@ class Texture
      */
     // TODO: CoordinateType arg + desc update
     // Actually not implemented in CSFML
-    @nogc @safe
-    static void bind(ref Texture texture)
+    @nogc @safe static void bind(ref Texture texture)
     {
         sfTexture_bind(texture.ptr);
     }
@@ -451,8 +435,7 @@ class Texture
      * Returns:
      *      true if creation was successful, false otherwise.
      */
-    @nogc @safe
-    bool create(uint width, uint height)
+    @nogc @safe bool create(uint width, uint height)
     {
         m_texture = sfTexture_create(width, height);
         return m_texture != null;
@@ -472,8 +455,7 @@ class Texture
      * See_Also:
      *      loadFromImage
      */
-    @safe
-    Image copyToImage() const
+    @safe Image copyToImage() const
     {
         if (m_texture is null)
             return null;
@@ -501,8 +483,7 @@ class Texture
      * Returns:
      *      true if mipmap generation was successful, false if unsuccessful
      */
-    @nogc @safe
-    bool generateMipmap()
+    @nogc @safe bool generateMipmap()
     {
         if (m_texture is null)
             return false;
@@ -519,8 +500,7 @@ class Texture
      * Returns:
      *      OpenGL handle of the texture or 0 if not yet created
      */
-    @property @nogc @safe
-    uint nativeHandle() const
+    @property @nogc @safe uint nativeHandle() const
     {
         if (m_texture is null)
             return 0;
@@ -535,8 +515,7 @@ class Texture
          * Returns:
          *      true if the texture source is converted from sRGB, false if not
          */
-        @nogc @safe
-        bool srgb()
+        @nogc @safe bool srgb()
         {
             if (m_texture is null)
                 return false;
@@ -564,8 +543,7 @@ class Texture
          * Params:
          *      sRGB = true to enable sRGB conversion, false to disable it
          */
-        @nogc @safe
-        void srgb(bool sRGB)
+        @nogc @safe void srgb(bool sRGB)
         {
             if (m_texture !is null)
                 sfTexture_setSrgb(m_texture, sRGB ? 1 : 0);
@@ -578,8 +556,7 @@ class Texture
      * Params:
      *      right = Instance to swap with
      */
-    @nogc @safe
-    void swap(Texture right)
+    @nogc @safe void swap(Texture right)
     {
         if (m_texture !is null && right.ptr !is null)
             sfTexture_swap(m_texture, right.ptr);
@@ -605,15 +582,14 @@ class Texture
      *      x      = X offset in the texture where to copy the source pixels
      *      y      = Y offset in the texture where to copy the source pixels
      */
-    @nogc
-    void update(const(ubyte)[] pixels, uint width = size.x,
-        uint height = size.y, uint x = 0, uint y = 0)
+    @nogc void update(const(ubyte)[] pixels, uint width = size.x,
+            uint height = size.y, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
             sfTexture_updateFromPixels(m_texture, pixels.ptr, width, height, x, y);
     }
 
-    /*
+    /**
      * Update a part of this texture from another texture.
      *
      * No additional check is performed on the size of the texture, passing an
@@ -627,8 +603,7 @@ class Texture
      *      x       = X offset in this texture where to copy the source texture
      *      y       = Y offset in this texture where to copy the source texture
      */
-    @nogc @safe
-    void update(Texture texture, uint x = 0, uint y = 0)
+    @nogc @safe void update(Texture texture, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
             sfTexture_updateFromTexture(m_texture, texture.ptr, x, y);
@@ -648,8 +623,7 @@ class Texture
      *      y     = Y offset in the texture where to copy the source image.
      *      x     = X offset in the texture where to copy the source image.
      */
-    @nogc @safe
-    void update(Image image, uint x = 0, uint y = 0)
+    @nogc @safe void update(Image image, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
             sfTexture_updateFromImage(m_texture, image.ptr, x, y);
@@ -671,8 +645,7 @@ class Texture
      *       y      = Y offset in the texture where to copy the source window
      *
      */
-    @nogc @safe
-    void update(Window window, uint x = 0, uint y = 0)
+    @nogc @safe void update(Window window, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
             sfTexture_updateFromWindow(m_texture, window.ptr, x, y);
@@ -694,35 +667,31 @@ class Texture
      *      y      = Y offset in the texture where to copy the source window
      *
      */
-    @nogc @safe
-    void update(RenderWindow window, uint x = 0, uint y = 0)
+    @nogc @safe void update(RenderWindow window, uint x = 0, uint y = 0)
     {
         if (m_texture !is null)
             sfTexture_updateFromRenderWindow(m_texture, window.ptr, x, y);
     }
 
     /// Duplicates this Texture.
-    @property @safe
-    Texture dup() const
+    @property @safe Texture dup() const
     {
         return new Texture(m_texture);
     }
 
     // Returns the C pointer.
-    @property @nogc @safe
-    package sfTexture* ptr()
+    @property @nogc @safe package sfTexture* ptr()
     {
         return m_texture;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfTexture;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfTexture* sfTexture_create(uint width, uint height);
     sfTexture* sfTexture_createFromFile(const char* filename, const IntRect* area);
@@ -733,11 +702,14 @@ private extern(C)
     void sfTexture_destroy(sfTexture* texture);
     Vector2u sfTexture_getSize(const sfTexture* texture);
     sfImage* sfTexture_copyToImage(const sfTexture* texture);
-    void sfTexture_updateFromPixels(sfTexture* texture, const ubyte* pixels, uint width, uint height, uint x, uint y);
-    void sfTexture_updateFromTexture(sfTexture* destination, const sfTexture* texture, uint x, uint y);
+    void sfTexture_updateFromPixels(sfTexture* texture, const ubyte* pixels,
+            uint width, uint height, uint x, uint y);
+    void sfTexture_updateFromTexture(sfTexture* destination, const sfTexture* texture, uint x,
+            uint y);
     void sfTexture_updateFromImage(sfTexture* texture, const sfImage* image, uint x, uint y);
     void sfTexture_updateFromWindow(sfTexture* texture, const sfWindow* window, uint x, uint y);
-    void sfTexture_updateFromRenderWindow(sfTexture* texture, const sfRenderWindow* renderWindow, uint x, uint y);
+    void sfTexture_updateFromRenderWindow(sfTexture* texture,
+            const sfRenderWindow* renderWindow, uint x, uint y);
     void sfTexture_setSmooth(sfTexture* texture, bool smooth);
     bool sfTexture_isSmooth(const sfTexture* texture);
     void sfTexture_setSrgb(sfTexture* texture, byte sRgb);
@@ -753,25 +725,26 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writefln, writeln;
+
     writeln("Running Texture unittest...");
 
     Texture t = new Texture();
 
-    int width = 20;
-    int height = 20;
+    const int width = 20;
+    const int height = 20;
     assert(t.create(width, height));
     assert(t.size == Vector2u(width, height));
 
-    bool smo = true;
+    const bool smo = true;
     t.smooth = smo;
     assert(t.smooth == smo);
 
-    bool rgb = true;
+    const bool rgb = true;
     t.srgb = rgb;
     assert(t.srgb == rgb);
 
-    bool r = true;
+    const bool r = true;
     t.repeated = r;
     assert(t.repeated == r);
 
@@ -779,9 +752,9 @@ unittest
 
     version (DSFML_Unittest_with_interaction)
     {
-        int nh = t.nativeHandle();
+        const int nh = t.nativeHandle();
         writefln("\tOpenGL native handle: %s", nh);
-        int ms = t.maximumSize();
+        const int ms = t.maximumSize();
         writefln("\tmaximum size supported by the graphic card: %s", ms);
     }
     Texture t2 = new Texture();

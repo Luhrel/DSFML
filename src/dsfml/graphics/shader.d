@@ -143,15 +143,15 @@
  */
 module dsfml.graphics.shader;
 
-import dsfml.graphics.texture;
-import dsfml.graphics.transform;
 import dsfml.graphics.color;
 import dsfml.graphics.glsl;
+import dsfml.graphics.texture;
+import dsfml.graphics.transform;
 
+import dsfml.system.err;
 import dsfml.system.inputstream;
 import dsfml.system.vector2;
 import dsfml.system.vector3;
-import dsfml.system.err;
 
 import std.string;
 
@@ -163,8 +163,8 @@ class Shader
     /// Types of shaders.
     enum Type
     {
-        Vertex,  /// Vertex shader
-        Geometry,/// Geometry shader
+        Vertex, /// Vertex shader
+        Geometry, /// Geometry shader
         Fragment /// Fragment (pixel) shader.
     }
 
@@ -190,15 +190,13 @@ class Shader
     static CurrentTextureType currentTexture;
 
     /// Default constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         // Nothing to do.
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfShader_destroy(m_shader);
     }
@@ -222,8 +220,7 @@ class Shader
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
-    @safe
-    bool loadFromFile(const(string) filename, Type type)
+    @safe bool loadFromFile(const(string) filename, Type type)
     {
         if (type == Type.Vertex)
             m_shader = sfShader_createFromFile(filename.toStringz, null, null);
@@ -254,12 +251,10 @@ class Shader
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
-    @safe
-    bool loadFromFile(const(string) vertexShaderFilename,
-        const(string) fragmentShaderFilename)
+    @safe bool loadFromFile(const(string) vertexShaderFilename, const(string) fragmentShaderFilename)
     {
-        m_shader = sfShader_createFromFile(vertexShaderFilename.toStringz, null,
-            fragmentShaderFilename.toStringz);
+        m_shader = sfShader_createFromFile(vertexShaderFilename.toStringz,
+                null, fragmentShaderFilename.toStringz);
         return m_shader != null;
     }
 
@@ -281,12 +276,11 @@ class Shader
      * Returns: true if loading succeeded, false if it failed.
      * See_Also: loadFromMemory, loadFromStream
      */
-    @safe
-    bool loadFromFile(const(string) vertexShaderFilename,
-        const(string) geometryShaderFilename, const(string) fragmentShaderFilename)
+    @safe bool loadFromFile(const(string) vertexShaderFilename,
+            const(string) geometryShaderFilename, const(string) fragmentShaderFilename)
     {
         m_shader = sfShader_createFromFile(vertexShaderFilename.toStringz,
-            geometryShaderFilename.toStringz, fragmentShaderFilename.toStringz);
+                geometryShaderFilename.toStringz, fragmentShaderFilename.toStringz);
         return m_shader != null;
     }
 
@@ -309,8 +303,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromStream
      */
-    @safe
-    bool loadFromMemory(const(string) shader, Type type)
+    @safe bool loadFromMemory(const(string) shader, Type type)
     {
         if (type == Type.Vertex)
             m_shader = sfShader_createFromMemory(shader.toStringz, null, null);
@@ -341,10 +334,10 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromStream
      */
-    @safe
-    bool loadFromMemory(const(string) vertexShader, const(string) fragmentShader)
+    @safe bool loadFromMemory(const(string) vertexShader, const(string) fragmentShader)
     {
-        m_shader =  sfShader_createFromMemory(vertexShader.toStringz, null, fragmentShader.toStringz);
+        m_shader = sfShader_createFromMemory(vertexShader.toStringz, null,
+                fragmentShader.toStringz);
         return m_shader != null;
     }
 
@@ -369,12 +362,11 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromStream
      */
-    @safe
-    bool loadFromMemory(const(string) vertexShader, const(string) geometryShader,
-        const(string) fragmentShader)
+    @safe bool loadFromMemory(const(string) vertexShader,
+            const(string) geometryShader, const(string) fragmentShader)
     {
         m_shader = sfShader_createFromMemory(vertexShader.toStringz,
-            geometryShader.toStringz, fragmentShader.toStringz);
+                geometryShader.toStringz, fragmentShader.toStringz);
         return m_shader != null;
     }
     /**
@@ -396,8 +388,7 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc @safe
-    bool loadFromStream(InputStream stream, Type type)
+    @nogc @safe bool loadFromStream(InputStream stream, Type type)
     {
         if (type == Type.Vertex)
             m_shader = sfShader_createFromStream(stream.ptr, null, null);
@@ -427,10 +418,10 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc @safe
-    bool loadFromStream(InputStream vertexShaderStream, InputStream fragmentShaderStream)
+    @nogc @safe bool loadFromStream(InputStream vertexShaderStream, InputStream fragmentShaderStream)
     {
-        m_shader = sfShader_createFromStream(vertexShaderStream.ptr, null, fragmentShaderStream.ptr);
+        m_shader = sfShader_createFromStream(vertexShaderStream.ptr, null,
+                fragmentShaderStream.ptr);
         return m_shader != null;
     }
 
@@ -454,10 +445,11 @@ class Shader
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc @safe
-    bool loadFromStream(InputStream vertexShaderStream, InputStream geometryShaderStream, InputStream fragmentShaderStream)
+    @nogc @safe bool loadFromStream(InputStream vertexShaderStream,
+            InputStream geometryShaderStream, InputStream fragmentShaderStream)
     {
-        m_shader = sfShader_createFromStream(vertexShaderStream.ptr, geometryShaderStream.ptr, fragmentShaderStream.ptr);
+        m_shader = sfShader_createFromStream(vertexShaderStream.ptr,
+                geometryShaderStream.ptr, fragmentShaderStream.ptr);
         return m_shader != null;
     }
 
@@ -479,42 +471,43 @@ class Shader
         if (m_shader is null)
             return;
 
-        static if(is(T == float))
+        static if (is(T == float))
             sfShader_setFloatUniform(m_shader, name.toStringz, cast(float) x);
-        else static if(is(T == Vec2))
+        else static if (is(T == Vec2))
             sfShader_setVec2Uniform(m_shader, name.toStringz, cast(Vec2) x);
-        else static if(is(T == Vec3))
+        else static if (is(T == Vec3))
             sfShader_setVec3Uniform(m_shader, name.toStringz, cast(Vec3) x);
-        else static if(is(T == Vec4))
+        else static if (is(T == Vec4))
             sfShader_setVec4Uniform(m_shader, name.toStringz, cast(Vec4) x);
-        else static if(is(T == Color))
+        else static if (is(T == Color))
             sfShader_setColorUniform(m_shader, name.toStringz, cast(Color) x);
-        else static if(is(T == int))
+        else static if (is(T == int))
             sfShader_setIntUniform(m_shader, name.toStringz, cast(int) x);
-        else static if(is(T == Ivec2))
+        else static if (is(T == Ivec2))
             sfShader_setIvec2Uniform(m_shader, name.toStringz, cast(Ivec2) x);
-        else static if(is(T == Ivec3))
+        else static if (is(T == Ivec3))
             sfShader_setIvec3Uniform(m_shader, name.toStringz, cast(Ivec3) x);
-        else static if(is(T == Ivec4))
+        else static if (is(T == Ivec4))
             sfShader_setIvec4Uniform(m_shader, name.toStringz, cast(Ivec4) x);
-        else static if(is(T == bool))
+        else static if (is(T == bool))
             sfShader_setBoolUniform(m_shader, name.toStringz, cast(bool) x);
-        else static if(is(T == Bvec2))
+        else static if (is(T == Bvec2))
             sfShader_setBvec2Uniform(m_shader, name.toStringz, cast(Bvec2) x);
-        else static if(is(T == Bvec3))
+        else static if (is(T == Bvec3))
             sfShader_setBvec3Uniform(m_shader, name.toStringz, cast(Bvec3) x);
-        else static if(is(T == Bvec4))
+        else static if (is(T == Bvec4))
             sfShader_setBvec4Uniform(m_shader, name.toStringz, cast(Bvec4) x);
-        else static if(is(T == Mat3))
+        else static if (is(T == Mat3))
             sfShader_setMat3Uniform(m_shader, name.toStringz, &(cast(Mat3) x));
-        else static if(is(T == Mat4))
+        else static if (is(T == Mat4))
             sfShader_setMat4Uniform(m_shader, name.toStringz, &(cast(Mat4) x));
-        else static if(is(T == Texture))
+        else static if (is(T == Texture))
             sfShader_setTextureUniform(m_shader, name.toStringz, (cast(Texture) x).ptr);
-        else static if(is(T == CurrentTextureType))
+        else static if (is(T == CurrentTextureType))
             sfShader_setCurrentTextureUniform(m_shader, name.toStringz);
         else
-            err.writefln("Template uniform(T)(const(string) name, T x) doesn't support type %s.", T);
+            err.writefln("Template uniform(T)(const(string) name, T x) doesn't support type %s.",
+                    T);
     }
 
     /**
@@ -529,20 +522,21 @@ class Shader
         if (m_shader is null)
             return;
 
-        static if(is(T == float))
+        static if (is(T == float))
             sfShader_setFloatUniformArray(m_shader, name.toStringz, &array, array.length);
-        else static if(is(T == Vec2))
+        else static if (is(T == Vec2))
             sfShader_setVec2UniformArray(m_shader, name.toStringz, &array, array.length);
-        else static if(is(T == Vec3))
+        else static if (is(T == Vec3))
             sfShader_setVec3UniformArray(m_shader, name.toStringz, &array, array.length);
-        else static if(is(T == Vec4))
+        else static if (is(T == Vec4))
             sfShader_setVec4UniformArray(m_shader, name.toStringz, &array, array.length);
-        else static if(is(T == Mat3))
+        else static if (is(T == Mat3))
             sfShader_setMat3UniformArray(m_shader, name.toStringz, &array, array.length);
-        else static if(is(T == Mat4))
+        else static if (is(T == Mat4))
             sfShader_setMat4UniformArray(m_shader, name.toStringz, &array, array.length);
         else
-            err.writefln("Template uniformArray(T)(const(string) name, ref T[] array) doesn't support type %s.", T);
+            err.writefln("Template uniformArray(T)(const(string) name, ref T[] array) doesn't support type %s.",
+                    T);
     }
 
     deprecated("Please use uniform(T)(const(string) name, T x) template instead.")
@@ -561,24 +555,25 @@ class Shader
             if (m_shader is null)
                 return;
 
-            static if(is(T == Vector2f))
+            static if (is(T == Vector2f))
                 sfShader_setVector2Parameter(m_shader, name.ptr, cast(Vector2f) x);
-            else static if(is(T == Vector3f))
+            else static if (is(T == Vector3f))
                 sfShader_setVector3Parameter(m_shader, name.ptr, cast(Vector3f) x);
-            else static if(is(T == Color))
+            else static if (is(T == Color))
                 sfShader_setColorParameter(m_shader, name.ptr, cast(Color) x);
-            else static if(is(T == Transform))
+            else static if (is(T == Transform))
                 sfShader_setTransformParameter(m_shader, name.ptr, (cast(Transform) x).marshal);
-            else static if(is(T == Texture))
+            else static if (is(T == Texture))
                 sfShader_setTextureParameter(m_shader, name.ptr, (cast(Texture) x).ptr);
-            else static if(is(T == CurrentTextureType))
+            else static if (is(T == CurrentTextureType))
                 sfShader_setCurrentTextureParameter(m_shader, name.ptr);
-            else static if(is(T == float))
+            else static if (is(T == float))
                 sfShader_setFloatParameter(m_shader, name.ptr, cast(float) x);
             else
-                err.writefln("Template setParameter(T)(const(string) name, ref T[] array) doesn't support type %s.", T);
+                err.writefln("Template setParameter(T)(const(string) name, ref T[] array) doesn't support type %s.",
+                        T);
         }
-/*
+        /*
         void setParameter(const(string) name, float x, float y)
         {
             sfShader_setFloat2Parameter(m_shader, name.ptr, x, y);
@@ -616,8 +611,7 @@ class Shader
      * Params:
      *      shader = Shader to bind. Can be null to use no shader.
      */
-    @nogc @safe
-    static void bind(Shader shader)
+    @nogc @safe static void bind(Shader shader)
     {
         if (shader is null)
             sfShader_bind(null);
@@ -634,8 +628,7 @@ class Shader
      * Returns:
      *      true if shaders are supported, false otherwise.
      */
-    @nogc @safe
-    static bool isAvailable()
+    @nogc @safe static bool isAvailable()
     {
         return sfShader_isAvailable();
     }
@@ -657,8 +650,7 @@ class Shader
      * Returns:
      *      true if geometry shaders are supported, false otherwise.
      */
-    @nogc @safe
-    static bool isGeometryAvailable()
+    @nogc @safe static bool isGeometryAvailable()
     {
         return sfShader_isGeometryAvailable();
     }
@@ -673,8 +665,7 @@ class Shader
      * Returns:
      *      OpenGL handle of the shader or 0 if not yet loaded
      */
-    @nogc @safe
-    uint nativeHandle() const
+    @nogc @safe uint nativeHandle() const
     {
         if (m_shader is null)
             return 0;
@@ -682,24 +673,25 @@ class Shader
     }
 
     // Retuns the C pointer
-    @property @nogc @safe
-    package sfShader* ptr()
+    @property @nogc @safe package sfShader* ptr()
     {
         return m_shader;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfShader;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
-    sfShader* sfShader_createFromFile(const char* vertexShaderFilename, const char* geometryShaderFilename, const char* fragmentShaderFilename);
-    sfShader* sfShader_createFromMemory(const char* vertexShader, const char* geometryShader, const char* fragmentShader);
-    sfShader* sfShader_createFromStream(sfInputStream* vertexShaderStream, sfInputStream* geometryShaderStream, sfInputStream* fragmentShaderStream);
+    sfShader* sfShader_createFromFile(const char* vertexShaderFilename,
+            const char* geometryShaderFilename, const char* fragmentShaderFilename);
+    sfShader* sfShader_createFromMemory(const char* vertexShader,
+            const char* geometryShader, const char* fragmentShader);
+    sfShader* sfShader_createFromStream(sfInputStream* vertexShaderStream,
+            sfInputStream* geometryShaderStream, sfInputStream* fragmentShaderStream);
     void sfShader_destroy(sfShader* shader);
 
     void sfShader_setFloatUniform(sfShader* shader, const char* name, float x);
@@ -722,12 +714,18 @@ private extern(C)
     void sfShader_setTextureUniform(sfShader* shader, const char* name, const sfTexture* texture);
     void sfShader_setCurrentTextureUniform(sfShader* shader, const char* name);
 
-    void sfShader_setFloatUniformArray(sfShader* shader, const char* name, const float* scalarArray, size_t length);
-    void sfShader_setVec2UniformArray(sfShader* shader, const char* name, const Vec2* vectorArray, size_t length);
-    void sfShader_setVec3UniformArray(sfShader* shader, const char* name, const Vec3* vectorArray, size_t length);
-    void sfShader_setVec4UniformArray(sfShader* shader, const char* name, const Vec4* vectorArray, size_t length);
-    void sfShader_setMat3UniformArray(sfShader* shader, const char* name, const Mat3* matrixArray, size_t length);
-    void sfShader_setMat4UniformArray(sfShader* shader, const char* name, const Mat4* matrixArray, size_t length);
+    void sfShader_setFloatUniformArray(sfShader* shader, const char* name,
+            const float* scalarArray, size_t length);
+    void sfShader_setVec2UniformArray(sfShader* shader, const char* name,
+            const Vec2* vectorArray, size_t length);
+    void sfShader_setVec3UniformArray(sfShader* shader, const char* name,
+            const Vec3* vectorArray, size_t length);
+    void sfShader_setVec4UniformArray(sfShader* shader, const char* name,
+            const Vec4* vectorArray, size_t length);
+    void sfShader_setMat3UniformArray(sfShader* shader, const char* name,
+            const Mat3* matrixArray, size_t length);
+    void sfShader_setMat4UniformArray(sfShader* shader, const char* name,
+            const Mat4* matrixArray, size_t length);
 
     uint sfShader_getNativeHandle(const sfShader* shader);
     void sfShader_bind(const sfShader* shader);
@@ -739,7 +737,8 @@ private extern(C)
     void sfShader_setFloatParameter(sfShader* shader, const char* name, float x);
     void sfShader_setFloat2Parameter(sfShader* shader, const char* name, float x, float y);
     void sfShader_setFloat3Parameter(sfShader* shader, const char* name, float x, float y, float z);
-    void sfShader_setFloat4Parameter(sfShader* shader, const char* name, float x, float y, float z, float w);
+    void sfShader_setFloat4Parameter(sfShader* shader, const char* name, float x,
+            float y, float z, float w);
     void sfShader_setVector2Parameter(sfShader* shader, const char* name, Vector2f vector);
     void sfShader_setVector3Parameter(sfShader* shader, const char* name, Vector3f vector);
     void sfShader_setColorParameter(sfShader* shader, const char* name, Color color);
@@ -750,11 +749,12 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
-    import dsfml.graphics.glsl;
+    import std.stdio : writeln;
+    import dsfml.graphics.glsl : Mat3, Mat4;
+
     //writeln("Running Shader unittest...");
 
-    auto shader = new Shader();
+    //auto shader = new Shader();
 
     // 10200 ? segfault
     /*

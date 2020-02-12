@@ -63,8 +63,7 @@ import std.traits;
 /**
  * Utility template struct for manipulating 3-dimensional vectors.
  */
-struct Vector3(T)
-    if(isNumeric!(T) || is(T == bool))
+struct Vector3(T) if (isNumeric!(T) || is(T == bool))
 {
     /// X coordinate of the vector.
     T x;
@@ -83,8 +82,7 @@ struct Vector3(T)
      *      y = Y coordinate
      *      z = Z coordinate
      */
-    @nogc @safe
-    this(T x,T y,T z)
+    @nogc @safe this(T x, T y, T z)
     {
 
         this.x = x;
@@ -99,8 +97,7 @@ struct Vector3(T)
      * Params:
      *      otherVector = Vector to convert.
      */
-    @nogc @safe
-    this(E)(Vector3!(E) otherVector)
+    @nogc @safe this(E)(Vector3!(E) otherVector)
     {
         x = cast(T) otherVector.x;
         y = cast(T) otherVector.y;
@@ -108,17 +105,14 @@ struct Vector3(T)
     }
 
     /// Invert the members of the vector.
-    @nogc @safe
-    Vector3!(T) opUnary(string s)() const
-        if(s == "-")
+    @nogc @safe Vector3!(T) opUnary(string s)() const if (s == "-")
     {
         return Vector3!(T)(-x, -y, -z);
     }
 
     /// Overload of the `+`, `-`, `*` and `/` operators.
-    @nogc @safe
-    Vector3!(T) opBinary(string op, E)(Vector3!(E) otherVector) const
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe Vector3!(T) opBinary(string op, E)(Vector3!(E) otherVector) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("T axeX = x" ~ op ~ "otherVector.x;");
         mixin("T axeY = y" ~ op ~ "otherVector.y;");
@@ -127,9 +121,8 @@ struct Vector3(T)
     }
 
     /// Overload of the `+` , `-`, `*` and `/` operators.
-    @nogc @safe
-    Vector3!(T) opBinary(string op, E)(E num) const
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe Vector3!(T) opBinary(string op, E)(E num) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("T axeX = x" ~ op ~ "num;");
         mixin("T axeY = y" ~ op ~ "num;");
@@ -138,9 +131,8 @@ struct Vector3(T)
     }
 
     /// Overload of the `+` , `-`, `*` and `/` operators.
-    @nogc @safe
-    Vector3!(T) opBinaryRight(string op, E)(E num) const
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe Vector3!(T) opBinaryRight(string op, E)(E num) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("T axeX = num" ~ op ~ "x;");
         mixin("T axeY = num" ~ op ~ "y;");
@@ -149,9 +141,8 @@ struct Vector3(T)
     }
 
     /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
-    @nogc @safe
-    ref Vector3!(T) opOpAssign(string op, E)(Vector3!(E) otherVector)
-        if(isNumeric!(E) &&  (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe ref Vector3!(T) opOpAssign(string op, E)(Vector3!(E) otherVector)
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("x " ~ op ~ "= otherVector.x;");
         mixin("y " ~ op ~ "= otherVector.y;");
@@ -160,9 +151,8 @@ struct Vector3(T)
     }
 
     /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
-    @nogc @safe
-    ref Vector3!(T) opOpAssign(string op, E)(E num)
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe ref Vector3!(T) opOpAssign(string op, E)(E num)
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("x " ~ op ~ "= num;");
         mixin("y " ~ op ~ "= num;");
@@ -171,8 +161,7 @@ struct Vector3(T)
     }
 
     /// Assign the value of another vector whose type can be converted to T.
-    @nogc @safe
-    ref Vector3!(T) opAssign(E)(Vector3!(E) otherVector)
+    @nogc @safe ref Vector3!(T) opAssign(E)(Vector3!(E) otherVector)
     {
         x = cast(T) otherVector.x;
         y = cast(T) otherVector.y;
@@ -181,20 +170,17 @@ struct Vector3(T)
     }
 
     /// Compare two vectors for equality.
-    @nogc @safe
-    bool opEquals(E)(const Vector3!(E) otherVector) const
-        if(isNumeric!(E) || is(E == bool))
+    @nogc @safe bool opEquals(E)(const Vector3!(E) otherVector) const
+            if (isNumeric!(E) || is(E == bool))
     {
-        return x == otherVector.x &&
-               y == otherVector.y &&
-               z == otherVector.z;
+        return x == otherVector.x && y == otherVector.y && z == otherVector.z;
     }
 
     /// Output the string representation of the Vector3.
-    @safe
-    string toString() const
+    @safe string toString() const
     {
-        import std.conv;
+        import std.conv : text;
+
         return "X: " ~ text(x) ~ " Y: " ~ text(y) ~ " Z: " ~ text(z);
     }
 }
@@ -208,7 +194,7 @@ alias Vector3f = Vector3!(float);
 unittest
 {
 
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running Vector3 unittest...");
 
@@ -235,7 +221,6 @@ unittest
 
     floatVector3 /= 2;
     assert(floatVector3 == Vector3f(120, 120, 120));
-
 
     floatVector3 += Vector3f(50, 0, 100);
     assert(floatVector3 == Vector3f(170, 120, 220));

@@ -92,8 +92,7 @@ interface Socket
      * Params:
      *      _blocking = true to set the socket as blocking, false for non-blocking
      */
-    @property
-    void blocking(bool _blocking);
+    @property void blocking(bool _blocking);
 
     /**
      * Tell whether the socket is in blocking or non-blocking mode.
@@ -101,6 +100,5 @@ interface Socket
      * Returns:
      *      true if the socket is blocking, false otherwise.
      */
-    @property
-    bool blocking() const;
+    @property bool blocking() const;
 }

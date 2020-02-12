@@ -53,12 +53,12 @@ module dsfml.graphics.circleshape;
 
 import dsfml.graphics.circleshape;
 import dsfml.graphics.color;
-import dsfml.graphics.texture;
-import dsfml.graphics.rendertarget;
-import dsfml.graphics.renderstates;
-import dsfml.graphics.transform;
 import dsfml.graphics.rect;
+import dsfml.graphics.renderstates;
+import dsfml.graphics.rendertarget;
 import dsfml.graphics.shape;
+import dsfml.graphics.texture;
+import dsfml.graphics.transform;
 
 import dsfml.system.vector2;
 
@@ -76,8 +76,7 @@ class CircleShape : Shape
      *     radius     = Radius of the circle
      *     pointCount = Number of points composing the circle
      */
-    @nogc
-    this(float radius = 0, size_t pointCount = 30)
+    @nogc this(float radius = 0, size_t pointCount = 30)
     {
         m_circleShape = sfCircleShape_create();
         this.radius = radius;
@@ -85,15 +84,13 @@ class CircleShape : Shape
     }
 
     // Copy constructor.
-    @nogc
-    package this(const sfCircleShape* circleShapePointer)
+    @nogc package this(const sfCircleShape* circleShapePointer)
     {
         m_circleShape = sfCircleShape_copy(circleShapePointer);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfCircleShape_destroy(m_circleShape);
     }
@@ -118,8 +115,7 @@ class CircleShape : Shape
          *     resetRect = Should the texture rect be reset to the size of the
          *                 new texture?
          */
-        @nogc @safe
-        override void texture(Texture _texture, bool resetRect = false)
+        @nogc @safe override void texture(Texture _texture, bool resetRect = false)
         {
             sfCircleShape_setTexture(m_circleShape, _texture.ptr, resetRect);
         }
@@ -134,8 +130,7 @@ class CircleShape : Shape
          * Returns:
          *      The shape's texture.
          */
-        @safe
-        override const(Texture) texture() const
+        @safe override const(Texture) texture() const
         {
             const sfTexture* t = sfCircleShape_getTexture(m_circleShape);
             if (t is null)
@@ -159,8 +154,7 @@ class CircleShape : Shape
          * See_Also:
          *      texture
          */
-        @nogc @safe
-        override void textureRect(IntRect rect)
+        @nogc @safe override void textureRect(IntRect rect)
         {
             sfCircleShape_setTextureRect(m_circleShape, rect);
         }
@@ -171,8 +165,7 @@ class CircleShape : Shape
          * Returns:
          *      Texture rectangle of the shape
          */
-        @nogc @safe
-        override IntRect textureRect() const
+        @nogc @safe override IntRect textureRect() const
         {
             return sfCircleShape_getTextureRect(m_circleShape);
         }
@@ -195,8 +188,7 @@ class CircleShape : Shape
          * See_Also:
          *      outlineColor
          */
-        @nogc @safe
-        override void fillColor(Color color)
+        @nogc @safe override void fillColor(Color color)
         {
             sfCircleShape_setFillColor(m_circleShape, color);
         }
@@ -207,8 +199,7 @@ class CircleShape : Shape
          * Returns:
          *      Fill color of the shape
          */
-        @nogc @safe
-        override Color fillColor() const
+        @nogc @safe override Color fillColor() const
         {
             return sfCircleShape_getFillColor(m_circleShape);
         }
@@ -227,8 +218,7 @@ class CircleShape : Shape
          * See_Also:
          *      fillColor
          */
-        @nogc @safe
-        override void outlineColor(Color color)
+        @nogc @safe override void outlineColor(Color color)
         {
             sfCircleShape_setOutlineColor(m_circleShape, color);
         }
@@ -242,8 +232,7 @@ class CircleShape : Shape
          * See_Also:
          *      fillColor, outlineThickness
          */
-        @nogc @safe
-        override Color outlineColor() const
+        @nogc @safe override Color outlineColor() const
         {
             return sfCircleShape_getOutlineColor(m_circleShape);
         }
@@ -261,8 +250,7 @@ class CircleShape : Shape
          * Params:
          *      thickness = New outline thickness
          */
-        @nogc @safe
-        override void outlineThickness(float thickness)
+        @nogc @safe override void outlineThickness(float thickness)
         {
             sfCircleShape_setOutlineThickness(m_circleShape, thickness);
         }
@@ -273,8 +261,7 @@ class CircleShape : Shape
          * Returns:
          *      Outline thickness of the shape
          */
-        @nogc @safe
-        override float outlineThickness() const
+        @nogc @safe override float outlineThickness() const
         {
             return sfCircleShape_getOutlineThickness(m_circleShape);
         }
@@ -295,8 +282,7 @@ class CircleShape : Shape
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc @safe
-        override void origin(float x, float y)
+        @nogc @safe override void origin(float x, float y)
         {
             origin(Vector2f(x, y));
         }
@@ -313,8 +299,7 @@ class CircleShape : Shape
          * Params:
          *      _origin = New origin
          */
-        @nogc @safe
-        override void origin(Vector2f _origin)
+        @nogc @safe override void origin(Vector2f _origin)
         {
             sfCircleShape_setOrigin(m_circleShape, _origin);
         }
@@ -325,8 +310,7 @@ class CircleShape : Shape
          * Returns:
          *      Current origin
          */
-        @nogc @safe
-        override Vector2f origin() const
+        @nogc @safe override Vector2f origin() const
         {
             return sfCircleShape_getOrigin(m_circleShape);
         }
@@ -340,8 +324,7 @@ class CircleShape : Shape
          * Params:
          *      count = New number of points of the circle
          */
-        @nogc @safe
-        void pointCount(size_t count)
+        @nogc @safe void pointCount(size_t count)
         {
             sfCircleShape_setPointCount(m_circleShape, count);
         }
@@ -355,8 +338,7 @@ class CircleShape : Shape
          * See_Also:
          *      getPoint
          */
-        @nogc @safe
-        override size_t pointCount() const
+        @nogc @safe override size_t pointCount() const
         {
             return sfCircleShape_getPointCount(m_circleShape);
         }
@@ -377,8 +359,7 @@ class CircleShape : Shape
          *
          * See_Also: move
          */
-        @nogc @safe
-        override void position(float x, float y)
+        @nogc @safe override void position(float x, float y)
         {
             position(Vector2f(x, y));
         }
@@ -396,8 +377,7 @@ class CircleShape : Shape
          * See_Also:
          *      move
          */
-        @nogc @safe
-        override void position(Vector2f _position)
+        @nogc @safe override void position(Vector2f _position)
         {
             sfCircleShape_setPosition(m_circleShape, _position);
         }
@@ -408,8 +388,7 @@ class CircleShape : Shape
          * Returns:
          *      Current position
          */
-        @nogc @safe
-        override Vector2f position() const
+        @nogc @safe override Vector2f position() const
         {
             return sfCircleShape_getPosition(m_circleShape);
         }
@@ -423,8 +402,7 @@ class CircleShape : Shape
          * Params:
          *      _radius = New radius of the circle
          */
-        @nogc @safe
-        void radius(float _radius)
+        @nogc @safe void radius(float _radius)
         {
             sfCircleShape_setRadius(m_circleShape, _radius);
         }
@@ -435,8 +413,7 @@ class CircleShape : Shape
          * Returns:
          *      Radius of the circle
          */
-        @nogc @safe
-        float radius()
+        @nogc @safe float radius()
         {
             return sfCircleShape_getRadius(m_circleShape);
         }
@@ -455,8 +432,7 @@ class CircleShape : Shape
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc @safe
-    override void rotate(float angle)
+    @nogc @safe override void rotate(float angle)
     {
         sfCircleShape_rotate(m_circleShape, angle);
     }
@@ -476,8 +452,7 @@ class CircleShape : Shape
          * See_Also:
          *      rotate
          */
-        @nogc @safe
-        override void rotation(float angle)
+        @nogc @safe override void rotation(float angle)
         {
             sfCircleShape_setRotation(m_circleShape, angle);
         }
@@ -490,8 +465,7 @@ class CircleShape : Shape
          * Returns:
          *      Current rotation, in degrees
          */
-        @nogc @safe
-        override float rotation() const
+        @nogc @safe override float rotation() const
         {
             return sfCircleShape_getRotation(m_circleShape);
         }
@@ -510,8 +484,7 @@ class CircleShape : Shape
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc @safe
-        override void scale(float factorX, float factorY)
+        @nogc @safe override void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
         }
@@ -526,8 +499,7 @@ class CircleShape : Shape
          * Params:
          *      factors = New scale factors
          */
-        @nogc @safe
-        override void scale(Vector2f factors)
+        @nogc @safe override void scale(Vector2f factors)
         {
             sfCircleShape_setScale(m_circleShape, factors);
         }
@@ -538,8 +510,7 @@ class CircleShape : Shape
          * Returns:
          *      Current scale factors
          */
-        @nogc @safe
-        override Vector2f scale() const
+        @nogc @safe override Vector2f scale() const
         {
             return sfCircleShape_getScale(m_circleShape);
         }
@@ -561,8 +532,7 @@ class CircleShape : Shape
      * Returns:
      *      Global bounding rectangle of the entity
      */
-    @property @nogc @safe
-    override FloatRect globalBounds() const
+    @property @nogc @safe override FloatRect globalBounds() const
     {
         return sfCircleShape_getGlobalBounds(m_circleShape);
     }
@@ -578,8 +548,7 @@ class CircleShape : Shape
      * Returns:
      *      Local bounding rectangle of the entity.
      */
-    @property @nogc @safe
-    override FloatRect localBounds() const
+    @property @nogc @safe override FloatRect localBounds() const
     {
         return sfCircleShape_getLocalBounds(m_circleShape);
     }
@@ -600,8 +569,7 @@ class CircleShape : Shape
      * See_Also:
      *      pointCount
      */
-    @nogc @safe
-    override Vector2f getPoint(size_t index = 0) const
+    @nogc @safe override Vector2f getPoint(size_t index = 0) const
     {
         return sfCircleShape_getPoint(m_circleShape, index);
     }
@@ -624,8 +592,7 @@ class CircleShape : Shape
      * Returns:
      *      Inverse of the combined transformations applied to the object
      */
-    @nogc @safe
-    override Transform inverseTransform() const
+    @nogc @safe override Transform inverseTransform() const
     {
         return Transform(sfCircleShape_getInverseTransform(m_circleShape));
     }
@@ -639,8 +606,7 @@ class CircleShape : Shape
      * See_Also:
      *      inverseTransform
      */
-    @nogc @safe
-    override Transform transform()
+    @nogc @safe override Transform transform()
     {
         return Transform(sfCircleShape_getTransform(m_circleShape));
     }
@@ -662,8 +628,7 @@ class CircleShape : Shape
      * See_Also:
      *      position
      */
-    @nogc @safe
-    override void move(float offsetX, float offsetY)
+    @nogc @safe override void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
     }
@@ -680,34 +645,30 @@ class CircleShape : Shape
      * Params:
      *      offset = Offset
      */
-    @nogc @safe
-    override void move(Vector2f offset)
+    @nogc @safe override void move(Vector2f offset)
     {
         sfCircleShape_move(m_circleShape, offset);
     }
 
     /// Duplicates this CircleShape.
-    @property
-    override CircleShape dup() const
+    @property override CircleShape dup() const
     {
         return new CircleShape(m_circleShape);
     }
 
     // Returns the C pointer.
-    @property @nogc @safe
-    package sfCircleShape* ptr()
+    @property @nogc @safe package sfCircleShape* ptr()
     {
         return m_circleShape;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfCircleShape;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfCircleShape* sfCircleShape_create();
     sfCircleShape* sfCircleShape_copy(const sfCircleShape* shape);
@@ -746,7 +707,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running CircleShape unittest...");
 
     CircleShape circle = new CircleShape();
@@ -763,25 +725,25 @@ unittest
     circle.position = pos;
     assert(circle.position == pos);
     circle.move(pos);
-    assert(circle.position == pos*2);
+    assert(circle.position == pos * 2);
     circle.move(5, 2);
     assert(circle.position == Vector2f(45, 62));
 
-    float angle = 90;
+    const float angle = 90;
     circle.rotation = angle;
     assert(circle.rotation == angle);
     circle.rotate(angle);
-    assert(circle.rotation == 2*angle);
+    assert(circle.rotation == 2 * angle);
 
-    Color g = Color.Green;
+    const Color g = Color.Green;
     circle.fillColor = g;
     assert(circle.fillColor == g);
 
-    Color r = Color.Red;
+    const Color r = Color.Red;
     circle.outlineColor = r;
     assert(circle.outlineColor == r);
 
-    Vector2f or = Vector2f(3, 4);
+    const Vector2f or = Vector2f(3, 4);
     assert(circle.origin == Vector2f(0, 0)); // Default value
     circle.origin = or;
     assert(circle.origin == or);
@@ -791,8 +753,8 @@ unittest
     // = pos - diameter + origin = (28, 46)
     assert(circle.globalBounds == FloatRect(28, 46, 20, 20));
 
-    Transform t = circle.transform();
-    Transform it = circle.inverseTransform();
+    const Transform t = circle.transform();
+    const Transform it = circle.inverseTransform();
     //TODO:
     // assert(t == Transform());
     assert(t.inverse == it);
@@ -807,7 +769,7 @@ unittest
     circle.scale(10, 20);
     assert(circle.scale == Vector2f(10, 20));
 
-    float ct = 20;
+    const float ct = 20;
     circle.outlineThickness = ct;
     assert(circle.outlineThickness == ct);
 
@@ -820,7 +782,7 @@ unittest
     // tex2 is const but tex not
     assert(tex2 != tex);
 
-    IntRect ir = IntRect(2, 3, 5, 8);
+    const IntRect ir = IntRect(2, 3, 5, 8);
     circle.textureRect = ir;
     assert(circle.textureRect == ir);
 }

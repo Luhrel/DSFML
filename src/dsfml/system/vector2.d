@@ -68,8 +68,7 @@ import std.traits;
 /**
  * Utility template struct for manipulating 2-dimensional vectors.
  */
-struct Vector2(T)
-    if(isNumeric!(T) || is(T == bool))
+struct Vector2(T) if (isNumeric!(T) || is(T == bool))
 {
     /// X coordinate of the vector.
     T x;
@@ -84,8 +83,7 @@ struct Vector2(T)
      *      x = X coordinate
      *      y = Y coordinate
      */
-    @nogc @safe
-    this(T x,T y)
+    @nogc @safe this(T x, T y)
     {
         this.x = x;
         this.y = y;
@@ -97,25 +95,21 @@ struct Vector2(T)
      * Params:
      *      otherVector = Vector to convert
      */
-    @nogc @safe
-    this(E)(Vector2!(E) otherVector)
+    @nogc @safe this(E)(Vector2!(E) otherVector)
     {
         x = cast(T) otherVector.x;
         y = cast(T) otherVector.y;
     }
 
     /// Invert the members of the vector.
-    @nogc @safe
-    Vector2!(T) opUnary(string s)() const
-        if (s == "-")
+    @nogc @safe Vector2!(T) opUnary(string s)() const if (s == "-")
     {
         return Vector2!(T)(-x, -y);
     }
 
     /// Overload of the `+`, `-`, `*` and `/` operators.
-    @nogc @safe
-    Vector2!(T) opBinary(string op, E)(Vector2!(E) otherVector) const
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe Vector2!(T) opBinary(string op, E)(Vector2!(E) otherVector) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("T axeX = x" ~ op ~ "otherVector.x;");
         mixin("T axeY = y" ~ op ~ "otherVector.y;");
@@ -123,9 +117,8 @@ struct Vector2(T)
     }
 
     /// Overload of the `+` , `-`, `*` and `/` operators.
-    @nogc @safe
-    Vector2!(T) opBinary(string op, E)(E num) const
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe Vector2!(T) opBinary(string op, E)(E num) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("T axeX = x" ~ op ~ "num;");
         mixin("T axeY = y" ~ op ~ "num;");
@@ -133,9 +126,8 @@ struct Vector2(T)
     }
 
     /// Overload of the `+` , `-`, `*` and `/` operators.
-    @nogc @safe
-    Vector2!(T) opBinaryRight(string op, E)(E num) const
-    if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe Vector2!(T) opBinaryRight(string op, E)(E num) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("T axeX = num" ~ op ~ "x;");
         mixin("T axeY = num" ~ op ~ "y;");
@@ -143,9 +135,8 @@ struct Vector2(T)
     }
 
     /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
-    @nogc @safe
-    ref Vector2!(T) opOpAssign(string op, E)(Vector2!(E) otherVector)
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe ref Vector2!(T) opOpAssign(string op, E)(Vector2!(E) otherVector)
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("x " ~ op ~ "= otherVector.x;");
         mixin("y " ~ op ~ "= otherVector.y;");
@@ -153,9 +144,8 @@ struct Vector2(T)
     }
 
     /// Overload of the `+=`, `-=`, `*=` and `/=` operators.
-    @nogc @safe
-    ref Vector2!(T) opOpAssign(string op,E)(E num)
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe ref Vector2!(T) opOpAssign(string op, E)(E num)
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("x " ~ op ~ "= num;");
         mixin("y " ~ op ~ "= num;");
@@ -163,8 +153,7 @@ struct Vector2(T)
     }
 
     /// Assign the value of another vector whose type can be converted to T.
-    @nogc @safe
-    ref Vector2!(T) opAssign(E)(Vector2!(E) otherVector)
+    @nogc @safe ref Vector2!(T) opAssign(E)(Vector2!(E) otherVector)
     {
         x = cast(T) otherVector.x;
         y = cast(T) otherVector.y;
@@ -172,18 +161,17 @@ struct Vector2(T)
     }
 
     /// Compare two vectors for equality.
-    @nogc @safe
-    bool opEquals(E)(const Vector2!(E) otherVector) const
-        if(isNumeric!(E) || is(E == bool))
+    @nogc @safe bool opEquals(E)(const Vector2!(E) otherVector) const
+            if (isNumeric!(E) || is(E == bool))
     {
         return x == otherVector.x && y == otherVector.y;
     }
 
     /// Output the string representation of the Vector2.
-    @safe
-    string toString() const
+    @safe string toString() const
     {
-        import std.conv;
+        import std.conv : text;
+
         return "X: " ~ text(x) ~ " Y: " ~ text(y);
     }
 }
@@ -199,7 +187,8 @@ alias Vector2u = Vector2!(uint);
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Vector2 unittest...");
 
     auto floatVector2 = Vector2f(100, 100);
@@ -225,7 +214,6 @@ unittest
 
     floatVector2 /= Vector2f(50, 100);
     assert(floatVector2 == Vector2f(4, 0));
-
 
     floatVector2 += 100;
     assert(floatVector2 == Vector2f(104, 100));

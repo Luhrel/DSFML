@@ -128,8 +128,8 @@
  */
 module dsfml.graphics.transformable;
 
-import dsfml.system.vector2;
 import dsfml.graphics.transform;
+import dsfml.system.vector2;
 
 /**
  * Decomposed transform defined by a position, a rotation, and a scale.
@@ -139,26 +139,22 @@ class Transformable
     private sfTransformable* m_transformable;
 
     /// Default constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_transformable = sfTransformable_create();
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfTransformable* transformablePointer)
+    @nogc @safe package this(const sfTransformable* transformablePointer)
     {
         m_transformable = sfTransformable_copy(transformablePointer);
     }
 
     /// Virtual destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfTransformable_destroy(m_transformable);
     }
-
 
     @property
     {
@@ -174,8 +170,7 @@ class Transformable
          * Params:
          *      _origin = New origin
          */
-        @nogc @safe
-        void origin(Vector2f _origin)
+        @nogc @safe void origin(Vector2f _origin)
         {
             sfTransformable_setOrigin(m_transformable, _origin);
         }
@@ -193,8 +188,7 @@ class Transformable
          *      x = X coordinate of the new origin
          *      y = Y coordinate of the new origin
          */
-        @nogc @safe
-        void origin(float x, float y)
+        @nogc @safe void origin(float x, float y)
         {
             origin(Vector2f(x, y));
         }
@@ -205,8 +199,7 @@ class Transformable
          * Returns:
          *      Current origin
          */
-        @nogc @safe
-        Vector2f origin() const
+        @nogc @safe Vector2f origin() const
         {
             return sfTransformable_getOrigin(m_transformable);
         }
@@ -227,8 +220,7 @@ class Transformable
          * See_Also:
          *      move
          */
-        @nogc @safe
-        void position(Vector2f _position)
+        @nogc @safe void position(Vector2f _position)
         {
             sfTransformable_setPosition(m_transformable, _position);
         }
@@ -247,8 +239,7 @@ class Transformable
          * See_Also:
          *      move
          */
-        @nogc @safe
-        void position(float x, float y)
+        @nogc @safe void position(float x, float y)
         {
             position(Vector2f(x, y));
         }
@@ -259,8 +250,7 @@ class Transformable
          * Returns:
          *      Current position
          */
-        @nogc @safe
-        Vector2f position() const
+        @nogc @safe Vector2f position() const
         {
             return sfTransformable_getPosition(m_transformable);
         }
@@ -279,8 +269,7 @@ class Transformable
      * Params:
      *      angle = Angle of rotation, in degrees
      */
-    @nogc @safe
-    void rotate(float angle)
+    @nogc @safe void rotate(float angle)
     {
         sfTransformable_rotate(m_transformable, angle);
     }
@@ -300,8 +289,7 @@ class Transformable
          * See_Also:
          *      rotate
          */
-        @nogc @safe
-        void rotation(float angle)
+        @nogc @safe void rotation(float angle)
         {
             sfTransformable_setRotation(m_transformable, angle);
         }
@@ -317,8 +305,7 @@ class Transformable
          * See_Also:
          *      rotate
          */
-        @nogc @safe
-        float rotation() const
+        @nogc @safe float rotation() const
         {
             return sfTransformable_getRotation(m_transformable);
         }
@@ -336,8 +323,7 @@ class Transformable
          * Params:
          *      factors = New scale factors
          */
-        @nogc @safe
-        void scale(Vector2f factors)
+        @nogc @safe void scale(Vector2f factors)
         {
             sfTransformable_setScale(m_transformable, factors);
         }
@@ -353,8 +339,7 @@ class Transformable
          *      factorX = New horizontal scale factor
          *      factorY = New vertical scale factor
          */
-        @nogc @safe
-        void scale(float factorX, float factorY)
+        @nogc @safe void scale(float factorX, float factorY)
         {
             scale(Vector2f(factorX, factorY));
         }
@@ -365,8 +350,7 @@ class Transformable
          * Returns:
          *      Current scale factors
          */
-        @nogc @safe
-        Vector2f scale() const
+        @nogc @safe Vector2f scale() const
         {
             return sfTransformable_getScale(m_transformable);
         }
@@ -381,8 +365,7 @@ class Transformable
      * See_Also:
      *      inverseTransform
      */
-    @nogc @safe
-    const(Transform) transform()
+    @nogc @safe const(Transform) transform()
     {
         return Transform(sfTransformable_getTransform(m_transformable));
     }
@@ -396,8 +379,7 @@ class Transformable
      * See_Also:
      *      transform
      */
-    @nogc @safe
-    const(Transform) inverseTransform()
+    @nogc @safe const(Transform) inverseTransform()
     {
         return Transform(sfTransformable_getInverseTransform(m_transformable));
     }
@@ -418,8 +400,7 @@ class Transformable
      * See_Also:
      *      position
      */
-    @nogc @safe
-    void move(Vector2f offset)
+    @nogc @safe void move(Vector2f offset)
     {
         sfTransformable_move(m_transformable, offset);
     }
@@ -442,22 +423,19 @@ class Transformable
      * See_Also:
      *      position
      */
-    @nogc @safe
-    void move(float offsetX, float offsetY)
+    @nogc @safe void move(float offsetX, float offsetY)
     {
         move(Vector2f(offsetX, offsetY));
     }
 
     /// Duplicates this Transformable.
-    @property
-    Transformable dup()
+    @property Transformable dup()
     {
         return new Transformable(m_transformable);
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     struct sfTransformable;
 
@@ -481,32 +459,32 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running Transformable unittest...");
 
     auto t = new Transformable();
 
-    auto pos = Vector2f(5, 6);
+    const auto pos = Vector2f(5, 6);
     t.position = pos;
     assert(t.position == pos);
     t.move(5, 3);
     assert(t.position == Vector2f(10, 9));
 
-    int angle = 90;
+    const int angle = 90;
     t.rotation = angle;
     assert(t.rotation == angle);
     t.rotate(angle);
-    assert(t.rotation == angle*2);
+    assert(t.rotation == angle * 2);
 
-    auto scl = Vector2f(3, 4);
+    const auto scl = Vector2f(3, 4);
     t.scale = scl;
     assert(t.scale == scl);
     // TODO: https://issues.dlang.org/show_bug.cgi?id=8006
     //t.scale *= Vector2f(2, 3);
     //assert(t.scale == Vector2f(6, 12));
 
-    auto orgn = Vector2f(1, 3);
+    const auto orgn = Vector2f(1, 3);
     t.origin = orgn;
     assert(t.origin == orgn);
 

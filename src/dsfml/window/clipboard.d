@@ -59,7 +59,6 @@
  */
 module dsfml.window.clipboard;
 
-//import std.conv;
 import std.string;
 
 /**
@@ -77,8 +76,7 @@ struct Clipboard
      * Returns:
      *      Clipboard contents as a string
      */
-    @property
-    static const(dstring) str()
+    @property static const(dstring) str()
     {
         const(uint)* utf32 = sfClipboard_getUnicodeString();
         // Converts uint* to uint[] and then to dchar[]
@@ -100,15 +98,13 @@ struct Clipboard
      * Params:
      *      text = String containing the data to be sent to the clipboard
      */
-    @property @nogc
-    static void str(dstring text)
+    @property @nogc static void str(dstring text)
     {
         sfClipboard_setUnicodeString(representation(text).ptr);
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     //const(char)* sfClipboard_getString();
     const(uint)* sfClipboard_getUnicodeString();
@@ -118,10 +114,11 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Clipboard unit test...");
 
-    dstring myPaste = "Hello 😊 ! 🀩";
+    const dstring myPaste = "Hello 😊 ! 🀩";
     Clipboard.str = myPaste;
     assert(Clipboard.str == myPaste);
 }

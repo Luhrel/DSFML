@@ -156,8 +156,7 @@ struct Mat4
 /**
  * 4D vector type, used to set uniforms in GLSL.
  */
-struct Vector4(T)
-    if(isNumeric!(T) || is(T == bool))
+struct Vector4(T) if (isNumeric!(T) || is(T == bool))
 {
     /// 1st component (X) of the 4D vector
     T x;
@@ -177,8 +176,7 @@ struct Vector4(T)
      *      Z = Component of the 4D vector
      *       W = Component of the 4D vector
      */
-    @nogc @safe
-    this(T X, T Y, T Z, T W)
+    @nogc @safe this(T X, T Y, T Z, T W)
     {
         x = X;
         y = Y;
@@ -192,13 +190,12 @@ struct Vector4(T)
      * Params:
      *      other = 4D vector of different type
      */
-    @nogc @safe
-    this(U)(Vector!(U) other)
+    @nogc @safe this(U)(Vector!(U) other)
     {
-        x = cast(T)other.x;
-        y = cast(T)other.y;
-        z = cast(T)other.z;
-        w = cast(T)other.w;
+        x = cast(T) other.x;
+        y = cast(T) other.y;
+        z = cast(T) other.z;
+        w = cast(T) other.w;
     }
 
     /**
@@ -210,17 +207,16 @@ struct Vector4(T)
      * Params:
      *      source = The Color instance to create the vector from
      */
-    @nogc @safe
-    this(Color source)
+    @nogc @safe this(Color source)
     {
-        static if(is(T == float))
+        static if (is(T == float))
         {
             x = source.r / 255f;
             y = source.g / 255f;
             z = source.b / 255f;
             w = source.a / 255f;
         }
-        else static if(is(T == int))
+        else static if (is(T == int))
         {
             x = cast(T) source.r;
             y = cast(T) source.g;
@@ -232,16 +228,17 @@ struct Vector4(T)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running GLSL unittest...");
 
-    Vec4 v = Color.Red;
+    const Vec4 v = Color.Red;
     assert(v.x == 1);
     assert(v.y == 0);
     assert(v.z == 0);
     assert(v.w == 1);
 
-    Ivec4 iv = Color.Red;
+    const Ivec4 iv = Color.Red;
     assert(iv.x == 255);
     assert(iv.y == 0);
     assert(iv.z == 0);

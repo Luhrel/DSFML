@@ -50,8 +50,8 @@
  */
 module dsfml.system.clock;
 
+import core.time : MonoTime, Duration;
 import dsfml.system.time;
-import core.time: MonoTime, Duration;
 
 /**
  * Utility class that measures the elapsed time.
@@ -62,8 +62,7 @@ class Clock
     private alias currTime = MonoTime.currTime;
 
     /// Default constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_startTime = currTime;
     }
@@ -77,8 +76,7 @@ class Clock
      * Returns:
      *      Time elapsed.
      */
-    @nogc @safe
-    Time getElapsedTime() const
+    @nogc @safe Time getElapsedTime() const
     {
         return microseconds((currTime - m_startTime).total!"usecs");
     }
@@ -92,10 +90,9 @@ class Clock
      * Returns:
      *      Time elapsed.
      */
-    @safe
-    Time restart()
+    @safe Time restart()
     {
-        MonoTime now = currTime;
+        const MonoTime now = currTime;
         auto elapsed = now - m_startTime;
         m_startTime = now;
 
@@ -106,9 +103,9 @@ class Clock
 
 unittest
 {
-    import std.stdio;
-    import dsfml.system.sleep;
-    import std.math;
+    import dsfml.system.sleep : sleep;
+    import std.math : round;
+    import std.stdio : writefln, writeln;
 
     writeln("Running Clock unittest...");
 
@@ -116,12 +113,10 @@ unittest
 
     writeln("\tCounting Time for 3 seconds.(rounded to nearest second)");
 
-    bool turn0, turn1, turn2;
-
-    for(int i = 0; clock.getElapsedTime().asSeconds() < 3; i++)
+    for (int i = 0; clock.getElapsedTime().asSeconds() < 3; i++)
     {
-        real et = clock.getElapsedTime().asSeconds();
-        real rnum = round(et);
+        const real et = clock.getElapsedTime().asSeconds();
+        const real rnum = round(et);
         writefln("\t%f\t~> %ss elapsed.", et, rnum);
         assert(rnum == i);
         sleep(seconds(1));

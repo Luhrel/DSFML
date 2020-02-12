@@ -25,7 +25,7 @@
  * DSFML is based on SFML (Copyright Laurent Gomila)
  */
 
- /**
+/**
  * `Time` encapsulates a time value in a flexible way. It allows to define a
  * time value either as a number of seconds, milliseconds or microseconds. It
  * also works the other way round: you can read a time value as either a number
@@ -68,10 +68,8 @@
  */
 module dsfml.system.time;
 
-import core.time: Duration;
-import core.time: usecs;
-
-import std.traits: isNumeric;
+import core.time : Duration, usecs;
+import std.traits : isNumeric;
 
 /**
  * Represents a time value.
@@ -81,8 +79,7 @@ struct Time
     private long m_microseconds;
 
     //Internal constructor
-    @nogc @safe
-    package this(long microseconds)
+    @nogc @safe package this(long microseconds)
     {
         m_microseconds = microseconds;
     }
@@ -93,8 +90,7 @@ struct Time
      * Returns:
      *      Time in seconds.
      */
-    @nogc @safe
-    float asSeconds() const
+    @nogc @safe float asSeconds() const
     {
         return m_microseconds / 1_000_000f;
     }
@@ -105,8 +101,7 @@ struct Time
      * Returns:
      *      Time in milliseconds.
      */
-    @nogc @safe
-    int asMilliseconds() const
+    @nogc @safe int asMilliseconds() const
     {
         return cast(int)(m_microseconds / 1_000);
     }
@@ -117,8 +112,7 @@ struct Time
      * Returns:
      *      Time in microseconds.
      */
-    @nogc @safe
-    long asMicroseconds() const
+    @nogc @safe long asMicroseconds() const
     {
         return m_microseconds;
     }
@@ -129,32 +123,28 @@ struct Time
      * Returns:
      *      Time as `Duration`
      */
-    @nogc @safe
-    Duration asDuration() const
+    @nogc @safe Duration asDuration() const
     {
         return usecs(m_microseconds);
     }
-
 
     /**
      * Predefined "zero" time value.
      */
     static immutable(Time) Zero;
 
-    @nogc @safe
-    bool opEquals(const Time rhs) const
+    @nogc @safe bool opEquals(const Time rhs) const
     {
         return m_microseconds == rhs.m_microseconds;
     }
 
-    @nogc @safe
-    int opCmp(const ref Time rhs) const
+    @nogc @safe int opCmp(const ref Time rhs) const
     {
-        if(opEquals(rhs))
+        if (opEquals(rhs))
         {
             return 0;
         }
-        else if(m_microseconds < rhs.m_microseconds)
+        else if (m_microseconds < rhs.m_microseconds)
         {
             return -1;
         }
@@ -167,26 +157,21 @@ struct Time
     /**
      * Overload of unary - operator to negate a time value.
      */
-    @nogc @safe
-    Time opUnary(string s)() const
-        if (s == "-")
+    @nogc @safe Time opUnary(string s)() const if (s == "-")
     {
         return microseconds(-m_microseconds);
     }
 
-
     /**
      * Overload of binary + and - operators toadd or subtract two time values.
      */
-    @nogc @safe
-    Time opBinary(string op)(Time rhs) const
-        if (op == "+" || op == "-")
+    @nogc @safe Time opBinary(string op)(Time rhs) const if (op == "+" || op == "-")
     {
         static if (op == "+")
         {
             return microseconds(m_microseconds + rhs.m_microseconds);
         }
-        static if(op == "-")
+        static if (op == "-")
         {
             return microseconds(m_microseconds - rhs.m_microseconds);
         }
@@ -195,35 +180,31 @@ struct Time
     /**
      * Overload of += and -= assignment operators.
      */
-    @nogc @safe
-    ref Time opOpAssign(string op)(Time rhs)
-        if(op == "+" || op == "-")
+    @nogc @safe ref Time opOpAssign(string op)(Time rhs) if (op == "+" || op == "-")
     {
-        static if(op == "+")
+        static if (op == "+")
         {
             m_microseconds += rhs.m_microseconds;
             return this;
         }
-        static if(op == "-")
+        static if (op == "-")
         {
             m_microseconds -= rhs.m_microseconds;
             return this;
         }
     }
 
-
     /**
      * Overload of binary * and / operators to scale a time value.
      */
-    @nogc @safe
-    Time opBinary (string op, E)(E num) const
-        if(isNumeric!(E) && (op == "*" || op == "/"))
+    @nogc @safe Time opBinary(string op, E)(E num) const
+            if (isNumeric!(E) && (op == "*" || op == "/"))
     {
         static if (op == "*")
         {
             return microseconds(m_microseconds * num);
         }
-        static if(op == "/")
+        static if (op == "/")
         {
             return microseconds(m_microseconds / num);
         }
@@ -232,16 +213,15 @@ struct Time
     /**
      * Overload of *= and /= assignment operators.
      */
-    @nogc @safe
-    ref Time opOpAssign(string op,E)(E num)
-        if(isNumeric!(E) && (op == "*" || op == "/"))
+    @nogc @safe ref Time opOpAssign(string op, E)(E num)
+            if (isNumeric!(E) && (op == "*" || op == "/"))
     {
-        static if(op == "*")
+        static if (op == "*")
         {
             m_microseconds *= num;
             return this;
         }
-        static if(op == "/")
+        static if (op == "/")
         {
             m_microseconds /= num;
             return this;
@@ -258,8 +238,7 @@ struct Time
  * Returns:
  *      Time value constructed from the amount of microseconds.
  */
-@nogc @safe
-Time seconds(float amount)
+@nogc @safe Time seconds(float amount)
 {
     return Time(cast(long)(amount * 1_000_000));
 }
@@ -272,8 +251,7 @@ Time seconds(float amount)
  * Returns:
  *      Time value constructed from the amount of microseconds.
  */
-@nogc @safe
-Time milliseconds(int amount)
+@nogc @safe Time milliseconds(int amount)
 {
     return Time(amount * 1000);
 }
@@ -287,8 +265,7 @@ Time milliseconds(int amount)
  * Returns:
  *      Time value constructed from the amount of microseconds.
  */
-@nogc @safe
-Time microseconds(long amount)
+@nogc @safe Time microseconds(long amount)
 {
     return Time(amount);
 }
@@ -302,15 +279,14 @@ Time microseconds(long amount)
  * Returns:
  *      Time value constructed from the time duration.
  */
-@nogc @safe
-Time duration(Duration dur)
+@nogc @safe Time duration(Duration dur)
 {
     return Time(dur.total!"usecs"());
 }
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running Time unittest...");
 
@@ -318,11 +294,11 @@ unittest
 
     assert(time.asSeconds() == 1);
 
-    assert((time*2).asSeconds() == 2);
-    assert((time/2).asSeconds() == .5f);
+    assert((time * 2).asSeconds() == 2);
+    assert((time / 2).asSeconds() == .5f);
 
-    assert((time+seconds(1)).asSeconds() == 2);
-    assert((time-seconds(1)).asSeconds() == 0);
+    assert((time + seconds(1)).asSeconds() == 2);
+    assert((time - seconds(1)).asSeconds() == 0);
 
     time += seconds(1);
     assert(time.asSeconds() == 2);
@@ -330,9 +306,9 @@ unittest
     time -= seconds(1);
     assert(time.asSeconds() == 1);
 
-    time/=2;
+    time /= 2;
     assert(time.asSeconds() == .5f);
 
-    time*=2;
+    time *= 2;
     assert(time.asSeconds() == 1);
 }

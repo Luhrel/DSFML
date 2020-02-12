@@ -93,9 +93,9 @@ import dsfml.graphics.convexshape;
 import dsfml.graphics.drawable;
 import dsfml.graphics.primitivetype;
 import dsfml.graphics.rect;
+import dsfml.graphics.rectangleshape;
 import dsfml.graphics.renderstates;
 import dsfml.graphics.rendertarget;
-import dsfml.graphics.rectangleshape;
 import dsfml.graphics.shader;
 import dsfml.graphics.shape;
 import dsfml.graphics.sprite;
@@ -106,9 +106,8 @@ import dsfml.graphics.vertexarray;
 import dsfml.graphics.vertexbuffer;
 import dsfml.graphics.view;
 
-import dsfml.window.contextsettings;
-
 import dsfml.system.vector2;
+import dsfml.window.contextsettings;
 
 /**
  * Target for off-screen 2D rendering into a texture.
@@ -126,15 +125,13 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      create
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         // Nothing to do.
     }
 
     /// Desructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfRenderTexture_destroy(m_renderTexture);
     }
@@ -159,9 +156,8 @@ class RenderTexture : RenderTarget
      * Returns:
      *      true if creation has been successful.
      */
-    deprecated("Deprecated: Use create(uint, uint, ContextSettings) instead.")
-    @nogc @safe
-    bool create(uint width, uint height, bool depthBuffer = false)
+    deprecated("Deprecated: Use create(uint, uint, ContextSettings) instead.") @nogc @safe bool create(
+            uint width, uint height, bool depthBuffer = false)
     {
         m_renderTexture = sfRenderTexture_create(width, height, depthBuffer);
         return m_renderTexture != null;
@@ -186,8 +182,7 @@ class RenderTexture : RenderTarget
      * Returns:
      *      true if creation has been successful
      */
-    @disable @nogc @safe
-    bool create(uint width, uint height, ref ContextSettings settings)
+    @disable @nogc @safe bool create(uint width, uint height, ref ContextSettings settings)
     {
         // TODO: not yet released
         //m_renderTexture = sfRenderTexture_createWithSettings(width, height, &settings);
@@ -205,8 +200,7 @@ class RenderTexture : RenderTarget
          * Params:
          *      _repeated = true to enable repeating, false to disable it
          */
-        @nogc @safe
-        void repeated(bool _repeated)
+        @nogc @safe void repeated(bool _repeated)
         {
             sfRenderTexture_setRepeated(m_renderTexture, _repeated);
         }
@@ -217,8 +211,7 @@ class RenderTexture : RenderTarget
          * Returns:
          *      true if texture is repeated
          */
-        @nogc @safe
-        bool repeated()
+        @nogc @safe bool repeated()
         {
             return sfRenderTexture_isRepeated(m_renderTexture);
         }
@@ -235,8 +228,7 @@ class RenderTexture : RenderTarget
          * Params:
          *      _smooth = true to enable smoothing, false to disable it
          */
-        @nogc @safe
-        void smooth(bool _smooth)
+        @nogc @safe void smooth(bool _smooth)
         {
             sfRenderTexture_setSmooth(m_renderTexture, _smooth);
         }
@@ -246,8 +238,7 @@ class RenderTexture : RenderTarget
          *
          * Returns: true if texture smoothing is enabled
          */
-        @nogc @safe
-        bool smooth() const
+        @nogc @safe bool smooth() const
         {
             return sfRenderTexture_isSmooth(m_renderTexture);
         }
@@ -273,8 +264,7 @@ class RenderTexture : RenderTarget
          * See_Also:
          *      defaultView
          */
-        @nogc @safe
-        override void view(View _view)
+        @nogc @safe override void view(View _view)
         {
             sfRenderTexture_setView(m_renderTexture, _view.ptr);
         }
@@ -288,8 +278,7 @@ class RenderTexture : RenderTarget
          * See_Also:
          *      defaultView
          */
-        @safe
-        override View view() const
+        @safe override View view() const
         {
             return new View(sfRenderTexture_getView(m_renderTexture));
         }
@@ -311,8 +300,7 @@ class RenderTexture : RenderTarget
          * Returns:
          *      Viewport rectangle, expressed in pixels
          */
-        @nogc @safe
-        IntRect viewport(View view) const
+        @nogc @safe IntRect viewport(View view) const
         {
             return sfRenderTexture_getViewport(m_renderTexture, view.ptr);
         }
@@ -330,8 +318,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      view
      */
-    @property @safe
-    View defaultView() const
+    @property @safe View defaultView() const
     {
         return new View(sfRenderTexture_getDefaultView(m_renderTexture));
     }
@@ -344,8 +331,7 @@ class RenderTexture : RenderTarget
      * Returns:
      *      Size in pixels.
      */
-    @property @nogc @safe
-    override Vector2u size() const
+    @property @nogc @safe override Vector2u size() const
     {
         return sfRenderTexture_getSize(m_renderTexture);
     }
@@ -364,8 +350,7 @@ class RenderTexture : RenderTarget
      * Returns:
      *      Const reference to the texture.
      */
-    @safe
-    const(Texture) texture() const
+    @safe const(Texture) texture() const
     {
         return new Texture(sfRenderTexture_getTexture(m_renderTexture));
     }
@@ -387,8 +372,7 @@ class RenderTexture : RenderTarget
      * Returns:
      *      true if operation was successful, false otherwise
      */
-    @property @nogc @safe
-    bool active(bool active = true)
+    @property @nogc @safe bool active(bool active = true)
     {
         return sfRenderTexture_setActive(m_renderTexture, active);
     }
@@ -402,8 +386,7 @@ class RenderTexture : RenderTarget
      * Params:
      *      color = Fill color to use to clear the render target
      */
-    @nogc @safe
-    void clear(Color color = Color.Black)
+    @nogc @safe void clear(Color color = Color.Black)
     {
         sfRenderTexture_clear(m_renderTexture, color);
     }
@@ -415,8 +398,7 @@ class RenderTexture : RenderTarget
      * Like for windows, calling this function is mandatory at the end of
      * rendering. Not calling it may leave the texture in an undefined state.
      */
-    @nogc @safe
-    void display()
+    @nogc @safe void display()
     {
         sfRenderTexture_display(m_renderTexture);
     }
@@ -441,12 +423,11 @@ class RenderTexture : RenderTarget
      * 		type     = Type of primitives to draw
      * 		states   = Render states to use for drawing
      */
-    void draw(const(Vertex)[] vertices, PrimitiveType type,
-        RenderStates states = RenderStates.init)
+    void draw(const(Vertex)[] vertices, PrimitiveType type, RenderStates states = RenderStates.init)
     {
         sfRenderStates sfStates = convertRenderStates(states);
         sfRenderTexture_drawPrimitives(m_renderTexture, vertices.ptr,
-            vertices.length, type, &sfStates);
+                vertices.length, type, &sfStates);
     }
 
     /**
@@ -460,11 +441,10 @@ class RenderTexture : RenderTarget
      */
     // TODO: implements firstVertex and vertexCount
     void draw(VertexBuffer vertexBuffer, size_t firstVertex, size_t vertexCount,
-        RenderStates states = RenderStates.init)
+            RenderStates states = RenderStates.init)
     {
         sfRenderStates sfStates = convertRenderStates(states);
-        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr,
-            &sfStates);
+        sfRenderTexture_drawVertexBuffer(m_renderTexture, vertexBuffer.ptr, &sfStates);
     }
 
     /**
@@ -493,8 +473,7 @@ class RenderTexture : RenderTarget
      * Returns:
      *      true if mipmap generation was successful, false if unsuccessful
      */
-    @nogc @safe
-    bool generateMipmap()
+    @nogc @safe bool generateMipmap()
     {
         return sfRenderTexture_generateMipmap(m_renderTexture);
     }
@@ -506,8 +485,7 @@ class RenderTexture : RenderTarget
      *      The maximum anti-aliasing level supported by the system
      */
     // TODO
-    @disable @nogc @safe
-    static uint getMaximumAntialiasingLevel()
+    @disable @nogc @safe static uint getMaximumAntialiasingLevel()
     {
         // TODO
         //return sfRenderTexture_getMaximumAntialiasingLevel();
@@ -532,8 +510,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
-    @safe
-    Vector2i mapCoordsToPixel(Vector2f point) const
+    @safe Vector2i mapCoordsToPixel(Vector2f point) const
     {
         return mapCoordsToPixel(point, view());
     }
@@ -564,8 +541,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      mapPixelToCoords
      */
-    @nogc @safe
-    Vector2i mapCoordsToPixel(Vector2f point, View view) const
+    @nogc @safe Vector2i mapCoordsToPixel(Vector2f point, View view) const
     {
         return sfRenderTexture_mapCoordsToPixel(m_renderTexture, point, view.ptr);
     }
@@ -589,8 +565,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
-    @safe
-    Vector2f mapPixelToCoords(Vector2i point) const
+    @safe Vector2f mapPixelToCoords(Vector2i point) const
     {
         return mapPixelToCoords(point, view());
     }
@@ -624,8 +599,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      mapCoordsToPixel
      */
-    @nogc @safe
-    Vector2f mapPixelToCoords(Vector2i point, View view) const
+    @nogc @safe Vector2f mapPixelToCoords(Vector2i point, View view) const
     {
         return sfRenderTexture_mapPixelToCoords(m_renderTexture, point, view.ptr);
     }
@@ -639,8 +613,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      pushGLStates
      */
-    @nogc @safe
-    void popGLStates()
+    @nogc @safe void popGLStates()
     {
         sfRenderTexture_popGLStates(m_renderTexture);
     }
@@ -674,8 +647,7 @@ class RenderTexture : RenderTarget
      * See_Also:
      *      popGLStates
      */
-    @nogc @safe
-    void pushGLStates()
+    @nogc @safe void pushGLStates()
     {
         sfRenderTexture_pushGLStates(m_renderTexture);
     }
@@ -698,20 +670,18 @@ class RenderTexture : RenderTarget
      * // OpenGL code here...
      * ---
      */
-    @nogc @safe
-    void resetGLStates()
+    @nogc @safe void resetGLStates()
     {
         sfRenderTexture_resetGLStates(m_renderTexture);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfRenderTexture;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfRenderTexture* sfRenderTexture_create(uint width, uint height, bool depthBuffer);
     // TODO not yet released
@@ -725,21 +695,30 @@ private extern(C)
     const(sfView)* sfRenderTexture_getView(const sfRenderTexture* renderTexture);
     const(sfView)* sfRenderTexture_getDefaultView(const sfRenderTexture* renderTexture);
     IntRect sfRenderTexture_getViewport(const sfRenderTexture* renderTexture, const sfView* view);
-    Vector2f sfRenderTexture_mapPixelToCoords(const sfRenderTexture* renderTexture, Vector2i point, const sfView* view);
-    Vector2i sfRenderTexture_mapCoordsToPixel(const sfRenderTexture* renderTexture, Vector2f point, const sfView* view);
+    Vector2f sfRenderTexture_mapPixelToCoords(const sfRenderTexture* renderTexture,
+            Vector2i point, const sfView* view);
+    Vector2i sfRenderTexture_mapCoordsToPixel(const sfRenderTexture* renderTexture,
+            Vector2f point, const sfView* view);
 
-    void sfRenderTexture_drawSprite(sfRenderTexture* renderTexture, const sfSprite* object, const sfRenderStates* states);
-    void sfRenderTexture_drawText(sfRenderTexture* renderTexture, const sfText* object, const sfRenderStates* states);
-    void sfRenderTexture_drawShape(sfRenderTexture* renderTexture, const sfShape* object, const sfRenderStates* states);
-    void sfRenderTexture_drawCircleShape(sfRenderTexture* renderTexture, const sfCircleShape* object, const sfRenderStates* states);
-    void sfRenderTexture_drawConvexShape(sfRenderTexture* renderTexture, const sfConvexShape* object, const sfRenderStates* states);
-    void sfRenderTexture_drawRectangleShape(sfRenderTexture* renderTexture, const sfRectangleShape* object, const sfRenderStates* states);
-    void sfRenderTexture_drawVertexArray(sfRenderTexture* renderTexture, const sfVertexArray* object, const sfRenderStates* states);
-    void sfRenderTexture_drawVertexBuffer(sfRenderTexture* renderTexture, const sfVertexBuffer* object, const sfRenderStates* states);
+    void sfRenderTexture_drawSprite(sfRenderTexture* renderTexture,
+            const sfSprite* object, const sfRenderStates* states);
+    void sfRenderTexture_drawText(sfRenderTexture* renderTexture,
+            const sfText* object, const sfRenderStates* states);
+    void sfRenderTexture_drawShape(sfRenderTexture* renderTexture,
+            const sfShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawCircleShape(sfRenderTexture* renderTexture,
+            const sfCircleShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawConvexShape(sfRenderTexture* renderTexture,
+            const sfConvexShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawRectangleShape(sfRenderTexture* renderTexture,
+            const sfRectangleShape* object, const sfRenderStates* states);
+    void sfRenderTexture_drawVertexArray(sfRenderTexture* renderTexture,
+            const sfVertexArray* object, const sfRenderStates* states);
+    void sfRenderTexture_drawVertexBuffer(sfRenderTexture* renderTexture,
+            const sfVertexBuffer* object, const sfRenderStates* states);
 
-    void sfRenderTexture_drawPrimitives(sfRenderTexture* renderTexture,
-                                                       const Vertex* vertices, size_t vertexCount,
-                                                       PrimitiveType type, const sfRenderStates* states);
+    void sfRenderTexture_drawPrimitives(sfRenderTexture* renderTexture, const Vertex* vertices,
+            size_t vertexCount, PrimitiveType type, const sfRenderStates* states);
     void sfRenderTexture_pushGLStates(sfRenderTexture* renderTexture);
     void sfRenderTexture_popGLStates(sfRenderTexture* renderTexture);
     void sfRenderTexture_resetGLStates(sfRenderTexture* renderTexture);

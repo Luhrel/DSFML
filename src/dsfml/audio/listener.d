@@ -63,7 +63,7 @@ final abstract class Listener
 {
     @property
     {
-       /**
+        /**
          * The orientation of the listener in the scene.
          *
          * The direction (also called "at vector") is the vector pointing forward
@@ -79,8 +79,7 @@ final abstract class Listener
          * See_Also:
          *      upVector, position
          */
-        @nogc @safe
-        static void direction(Vector3f _direction)
+        @nogc @safe static void direction(Vector3f _direction)
         {
             sfListener_setDirection(_direction);
         }
@@ -91,8 +90,7 @@ final abstract class Listener
          * Returns:
          *      Listener's forward vector (not normalized)
          */
-        @nogc @safe
-        static Vector3f direction()
+        @nogc @safe static Vector3f direction()
         {
             return sfListener_getDirection();
         }
@@ -115,8 +113,7 @@ final abstract class Listener
          * See_Also:
          *      direction, position
          */
-        @nogc @safe
-        static void upVector(Vector3f _upVector)
+        @nogc @safe static void upVector(Vector3f _upVector)
         {
             sfListener_setUpVector(_upVector);
         }
@@ -127,8 +124,7 @@ final abstract class Listener
          * Returns:
          *      Listener's upward vector (not normalized)
          */
-        @nogc @safe
-        static Vector3f upVector()
+        @nogc @safe static Vector3f upVector()
         {
             return sfListener_getUpVector();
         }
@@ -147,8 +143,7 @@ final abstract class Listener
          * Params:
          *      volume = New global volume, in the range [0, 100]
          */
-        @nogc @safe
-        static void globalVolume(float volume)
+        @nogc @safe static void globalVolume(float volume)
         {
             sfListener_setGlobalVolume(volume);
         }
@@ -159,8 +154,7 @@ final abstract class Listener
          * Returns:
          *      Current global volume, in the range [0, 100]
          */
-        @nogc @safe
-        static float globalVolume()
+        @nogc @safe static float globalVolume()
         {
             return sfListener_getGlobalVolume();
         }
@@ -179,8 +173,7 @@ final abstract class Listener
          * See_Also:
          *      direction
          */
-        @nogc @safe
-        static void position(Vector3f _position)
+        @nogc @safe static void position(Vector3f _position)
         {
             sfListener_setPosition(_position);
         }
@@ -191,8 +184,7 @@ final abstract class Listener
          * Returns:
          *      Listener's position
          */
-        @nogc @safe
-        static Vector3f position()
+        @nogc @safe static Vector3f position()
         {
             return sfListener_getPosition();
         }
@@ -200,8 +192,7 @@ final abstract class Listener
 }
 
 // CSFML's functions.
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     void sfListener_setGlobalVolume(float volume);
     float sfListener_getGlobalVolume();
@@ -215,13 +206,14 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running Listener unittest...");
 
-    float volume = 50;
-    Vector3f pos = Vector3f(10, 20, 30);
-    Vector3f dir = Vector3f(10, 10, 10);
-    Vector3f upvec = Vector3f(20, 20, 20);
+    const float volume = 50;
+    const Vector3f pos = Vector3f(10, 20, 30);
+    const Vector3f dir = Vector3f(10, 10, 10);
+    const Vector3f upvec = Vector3f(20, 20, 20);
 
     Listener.globalVolume = volume;
     assert(Listener.globalVolume == volume);

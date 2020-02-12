@@ -58,8 +58,8 @@
  */
 module dsfml.audio.soundbufferrecorder;
 
-import dsfml.audio.soundrecorder;
 import dsfml.audio.soundbuffer;
+import dsfml.audio.soundrecorder;
 
 /**
  * Specialized SoundRecorder which stores the captured audio data into a sound
@@ -90,8 +90,7 @@ class SoundBufferRecorder : SoundRecorder
      * Returns:
      *      Read-only access to the sound buffer.
      */
-    @property @nogc @safe
-    const(SoundBuffer) buffer()
+    @property @nogc @safe const(SoundBuffer) buffer()
     {
         return m_soundBuffer;
     }
@@ -131,7 +130,7 @@ class SoundBufferRecorder : SoundRecorder
          */
         override void onStop()
         {
-            if(m_samples.length > 0)
+            if (m_samples.length > 0)
             {
                 m_soundBuffer.loadFromSamples(m_samples, channelCount, sampleRate);
             }
@@ -141,13 +140,13 @@ class SoundBufferRecorder : SoundRecorder
 
 unittest
 {
-    import std.stdio;
-    import dsfml.system.sleep;
+    import dsfml.system.sleep : sleep;
+    import std.stdio : writefln, writeln;
 
     writeln("Running SoundBufferRecorder unittest...");
     version (DSFML_Unittest_with_interaction)
     {
-        if(!SoundBufferRecorder.isAvailable())
+        if (!SoundBufferRecorder.isAvailable())
         {
             writeln("\tNo capture device available. Aborting audio capture unittest.");
             return;
@@ -161,7 +160,7 @@ unittest
 
         const string[] devices = recorder.getAvailableDevices();
 
-        foreach(string d; devices)
+        foreach (string d; devices)
         {
             writefln("\tStarting audio capture test for device '%s'", d);
 
@@ -172,14 +171,14 @@ unittest
                 break;
             }
             // Testing default value once started
-            assert(recorder.sampleRate == 44100);
+            assert(recorder.sampleRate == 44_100);
 
             writeln("\tPlease speak for 2s.");
             sleep(seconds(2));
             recorder.stop();
 
             writefln("\tSaving to file 'record_%s.wav'...", d);
-            recorder.buffer.saveToFile("record_"~d~".wav");
+            recorder.buffer.saveToFile("record_" ~ d ~ ".wav");
             writeln("\tFile saved !");
         }
 

@@ -111,8 +111,7 @@ final abstract class Sensor
      * Returns:
      *      true if the sensor is available, false otherwise.
      */
-    @nogc @safe
-    static bool isAvailable(Type sensor)
+    @nogc @safe static bool isAvailable(Type sensor)
     {
         return sfSensor_isAvailable(sensor);
     }
@@ -130,8 +129,7 @@ final abstract class Sensor
      *      sensor  = Sensor to enable
      *      enabled = true to enable, false to disable
      */
-    @nogc @safe
-    static void setEnabled(Type sensor, bool enabled)
+    @nogc @safe static void setEnabled(Type sensor, bool enabled)
     {
         sfSensor_setEnabled(sensor, enabled);
     }
@@ -145,15 +143,13 @@ final abstract class Sensor
      * Returns:
      *      The current sensor value.
      */
-    @nogc @safe
-    static Vector3f getValue(Type sensor)
+    @nogc @safe static Vector3f getValue(Type sensor)
     {
         return sfSensor_getValue(sensor);
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     bool sfSensor_isAvailable(Sensor.Type sensor);
     void sfSensor_setEnabled(Sensor.Type sensor, byte enabled);
@@ -164,14 +160,15 @@ unittest
 {
     version (Android)
     {
-        import std.stdio;
-        import std.conv;
+        import std.conv : to;
+        import std.stdio : writeln;
+
         writeln("Running Sensor unittest...");
 
         for (int i = 0; i < Sensor.Type.Count; i++)
         {
             Sensor.Type st = cast(Sensor.Type) i;
-            bool av = Sensor.isAvailable(st);
+            const bool av = Sensor.isAvailable(st);
             writefln("Sensor %s is %savailable.", st.to!string, av ? "" : "un");
             if (av)
             {

@@ -25,7 +25,7 @@
  * DSFML is based on SFML (Copyright Laurent Gomila)
  */
 
- /**
+/**
  * `VertexBuffer` is a simple wrapper around a dynamic buffer of vertices and a
  * primitives type.
  *
@@ -82,10 +82,10 @@
 module dsfml.graphics.vertexbuffer;
 
 import dsfml.graphics.drawable;
-import dsfml.graphics.vertex;
 import dsfml.graphics.primitivetype;
-import dsfml.graphics.rendertarget;
 import dsfml.graphics.renderstates;
+import dsfml.graphics.rendertarget;
+import dsfml.graphics.vertex;
 
 /**
  * Vertex buffer storage for one or more 2D primitives.
@@ -122,8 +122,7 @@ class VertexBuffer : Drawable
      * Params:
      *     usage = Usage specifier
      */
-    @nogc @safe
-    this(Usage usage)
+    @nogc @safe this(Usage usage)
     {
         this(PrimitiveType.Points, usage);
     }
@@ -137,8 +136,7 @@ class VertexBuffer : Drawable
      *      type  = Type of primitive
      *      usage = Usage specifier
      */
-    @nogc @safe
-    this(PrimitiveType type = PrimitiveType.Points, Usage usage = Usage.Stream)
+    @nogc @safe this(PrimitiveType type = PrimitiveType.Points, Usage usage = Usage.Stream)
     {
         m_vertexBuffer = sfVertexBuffer_create(0, type, usage);
     }
@@ -149,15 +147,13 @@ class VertexBuffer : Drawable
      * Params:
      *      vertexBufferPointer = C pointer to sfVertexBuffer to assign
      */
-    @nogc @safe
-    package this(const sfVertexBuffer* vertexBufferPointer)
+    @nogc @safe package this(const sfVertexBuffer* vertexBufferPointer)
     {
         m_vertexBuffer = sfVertexBuffer_copy(vertexBufferPointer);
     }
 
     /// Desructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfVertexBuffer_destroy(m_vertexBuffer);
     }
@@ -182,8 +178,7 @@ class VertexBuffer : Drawable
      * Params:
      *      vertexBuffer = Pointer to the vertex buffer to bind, can be null to use no vertex buffer
      */
-    @nogc @safe
-    static void bind(ref VertexBuffer vertexBuffer)
+    @nogc @safe static void bind(ref VertexBuffer vertexBuffer)
     {
         sfVertexBuffer_bind(vertexBuffer.ptr);
     }
@@ -205,8 +200,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      true if creation was successful
      */
-    @nogc @safe
-    bool create(uint vertexCount)
+    @nogc @safe bool create(uint vertexCount)
     {
         m_vertexBuffer = sfVertexBuffer_create(vertexCount, primitiveType, usage);
         return m_vertexBuffer != null;
@@ -222,8 +216,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      OpenGL handle of the vertex buffer or 0 if not yet created
      */
-    @property @nogc @safe
-    uint nativeHandle()
+    @property @nogc @safe uint nativeHandle()
     {
         return sfVertexBuffer_getNativeHandle(m_vertexBuffer);
     }
@@ -234,8 +227,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      Primitive type
      */
-    @property @nogc @safe
-    PrimitiveType primitiveType() const
+    @property @nogc @safe PrimitiveType primitiveType() const
     {
         return sfVertexBuffer_getPrimitiveType(m_vertexBuffer);
     }
@@ -251,8 +243,7 @@ class VertexBuffer : Drawable
      * Params:
      *      type = Type of primitive
      */
-    @property @nogc @safe
-    void primitiveType(PrimitiveType type)
+    @property @nogc @safe void primitiveType(PrimitiveType type)
     {
         sfVertexBuffer_setPrimitiveType(m_vertexBuffer, type);
     }
@@ -263,8 +254,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      Usage specifier
      */
-    @property @nogc @safe
-    Usage usage() const
+    @property @nogc @safe Usage usage() const
     {
         return sfVertexBuffer_getUsage(m_vertexBuffer);
     }
@@ -283,8 +273,7 @@ class VertexBuffer : Drawable
      * Params:
      *      _usage = Usage specifier
      */
-    @property @nogc @safe
-    void usage(Usage _usage)
+    @property @nogc @safe void usage(Usage _usage)
     {
         sfVertexBuffer_setUsage(m_vertexBuffer, _usage);
     }
@@ -295,8 +284,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      Number of vertices in the vertex buffer
      */
-    @property @nogc @safe
-    size_t vertexCount() const
+    @property @nogc @safe size_t vertexCount() const
     {
         return sfVertexBuffer_getVertexCount(m_vertexBuffer);
     }
@@ -311,8 +299,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      true if vertex buffers are supported, false otherwise
      */
-    @nogc @safe
-    static bool isAvailable()
+    @nogc @safe static bool isAvailable()
     {
         return sfVertexBuffer_isAvailable();
     }
@@ -323,8 +310,7 @@ class VertexBuffer : Drawable
      * Params:
      *      right = Instance to swap with
      */
-    @nogc @safe
-    void swap(VertexBuffer right)
+    @nogc @safe void swap(VertexBuffer right)
     {
         sfVertexBuffer_swap(m_vertexBuffer, right.ptr);
     }
@@ -346,8 +332,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      true if the update was successful
      */
-    @nogc
-    bool update(Vertex[] vertices)
+    @nogc bool update(Vertex[] vertices)
     {
         return update(vertices, cast(uint) vertices.length, 0);
     }
@@ -381,8 +366,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      true if the update was successful
      */
-    @nogc
-    bool update(Vertex[] vertices, uint vertexCount, uint offset)
+    @nogc bool update(Vertex[] vertices, uint vertexCount, uint offset)
     {
         return sfVertexBuffer_update(m_vertexBuffer, vertices.ptr, vertexCount, offset);
     }
@@ -396,8 +380,7 @@ class VertexBuffer : Drawable
      * Returns:
      *      true if the copy was successful
      */
-    @nogc
-    bool update(VertexBuffer vertexBuffer)
+    @nogc bool update(VertexBuffer vertexBuffer)
     {
         return sfVertexBuffer_updateFromVertexBuffer(m_vertexBuffer, vertexBuffer.ptr);
     }
@@ -415,34 +398,34 @@ class VertexBuffer : Drawable
     }
 
     // Returns the C pointer
-    @property @nogc @safe
-    package sfVertexBuffer* ptr()
+    @property @nogc @safe package sfVertexBuffer* ptr()
     {
         return m_vertexBuffer;
     }
 
     /// Duplicates this VertexBuffer.
-    @property @safe
-    VertexBuffer dup()
+    @property @safe VertexBuffer dup()
     {
         return new VertexBuffer(m_vertexBuffer);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfVertexBuffer;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
-    sfVertexBuffer* sfVertexBuffer_create(uint vertexCount, PrimitiveType type, VertexBuffer.Usage usage);
+    sfVertexBuffer* sfVertexBuffer_create(uint vertexCount, PrimitiveType type,
+            VertexBuffer.Usage usage);
     sfVertexBuffer* sfVertexBuffer_copy(const sfVertexBuffer* vertexBuffer);
     void sfVertexBuffer_destroy(sfVertexBuffer* vertexBuffer);
     uint sfVertexBuffer_getVertexCount(const sfVertexBuffer* vertexBuffer);
-    bool sfVertexBuffer_update(sfVertexBuffer* vertexBuffer, const(Vertex)* vertices, uint vertexCount, uint offset);
-    bool sfVertexBuffer_updateFromVertexBuffer(sfVertexBuffer* vertexBuffer, const sfVertexBuffer* other);
+    bool sfVertexBuffer_update(sfVertexBuffer* vertexBuffer,
+            const(Vertex)* vertices, uint vertexCount, uint offset);
+    bool sfVertexBuffer_updateFromVertexBuffer(sfVertexBuffer* vertexBuffer,
+            const sfVertexBuffer* other);
     void sfVertexBuffer_swap(sfVertexBuffer* left, sfVertexBuffer* right);
     uint sfVertexBuffer_getNativeHandle(sfVertexBuffer* vertexBuffer);
     void sfVertexBuffer_setPrimitiveType(sfVertexBuffer* vertexBuffer, PrimitiveType type);
@@ -455,10 +438,11 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
-    import dsfml.graphics.vertexarray;
-    import dsfml.graphics.color;
-    import dsfml.system.vector2;
+    import std.stdio : writeln;
+    import dsfml.graphics.color : Color;
+    import dsfml.graphics.vertexarray : VertexArray;
+    import dsfml.system.vector2 : Vector2f;
+
     writeln("Running VertexBuffer unittest...");
 
     assert(VertexBuffer.isAvailable());

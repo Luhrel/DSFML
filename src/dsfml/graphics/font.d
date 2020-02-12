@@ -93,8 +93,8 @@
  */
 module dsfml.graphics.font;
 
-import dsfml.graphics.texture;
 import dsfml.graphics.glyph;
+import dsfml.graphics.texture;
 import dsfml.system.inputstream;
 
 import std.conv;
@@ -119,14 +119,12 @@ class Font
      *
      * Defines an empty font.
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         // Nothing to do.
     }
 
-    @nogc @safe
-    package this(const sfFont* fontPointer)
+    @nogc @safe package this(const sfFont* fontPointer)
     {
         m_font = sfFont_copy(fontPointer);
     }
@@ -136,8 +134,7 @@ class Font
      *
      * Cleans up all the internal resources used by the font
      */
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfFont_destroy(m_font);
     }
@@ -164,8 +161,7 @@ class Font
      * See_Also:
      *      loadFromMemory, loadFromStream
      */
-    @safe
-    bool loadFromFile(const(string) filename)
+    @safe bool loadFromFile(const(string) filename)
     {
         m_font = sfFont_createFromFile(filename.toStringz);
         return m_font != null;
@@ -190,8 +186,7 @@ class Font
      * See_Also:
      *      loadFromFile, loadFromStream
      */
-    @nogc
-    bool loadFromMemory(const(void)[] data)
+    @nogc bool loadFromMemory(const(void)[] data)
     {
         m_font = sfFont_createFromMemory(data.ptr, data.sizeof);
         return m_font != null;
@@ -215,8 +210,7 @@ class Font
      * See_Also:
      *      loadFromFile, loadFromMemory
      */
-    @nogc @safe
-    bool loadFromStream(InputStream stream)
+    @nogc @safe bool loadFromStream(InputStream stream)
     {
         m_font = sfFont_createFromStream(stream.ptr);
         return m_font != null;
@@ -228,8 +222,7 @@ class Font
      * Returns:
      *      A structure that holds the font information
      */
-    @property
-    const(Info) info() const
+    @property const(Info) info() const
     {
         if (m_font is null)
             return Info.init;
@@ -254,12 +247,13 @@ class Font
      * Returns:
      *      The glyph corresponding to codePoint and characterSize.
      */
-    @nogc @safe
-    Glyph glyph(dchar codePoint, uint characterSize, bool bold, float outlineThickness = 0) const
+    @nogc @safe Glyph glyph(dchar codePoint, uint characterSize, bool bold,
+            float outlineThickness = 0) const
     {
         if (m_font is null)
             return Glyph.init;
-        return sfFont_getGlyph(m_font, cast(uint) codePoint, characterSize, bold, outlineThickness);
+        return sfFont_getGlyph(m_font, cast(uint) codePoint, characterSize,
+                bold, outlineThickness);
     }
 
     /**
@@ -279,8 +273,7 @@ class Font
      * Returns:
      *      Kerning value for first and second, in pixels.
      */
-    @nogc @safe
-    float kerning(dchar first, dchar second, uint characterSize) const
+    @nogc @safe float kerning(dchar first, dchar second, uint characterSize) const
     {
         if (m_font is null)
             return 0;
@@ -299,8 +292,7 @@ class Font
      * Returns:
      *      Line spacing, in pixels.
      */
-    @nogc @safe
-    float lineSpacing(uint characterSize) const
+    @nogc @safe float lineSpacing(uint characterSize) const
     {
         if (m_font is null)
             return 0;
@@ -322,8 +314,7 @@ class Font
      * See_Also:
      *      getUnderlineThickness
      */
-    @nogc @safe
-    float getUnderlinePosition(uint characterSize) const
+    @nogc @safe float getUnderlinePosition(uint characterSize) const
     {
         if (m_font is null)
             return 0;
@@ -344,8 +335,7 @@ class Font
      * See_Also:
      *      getUnderlinePosition
      */
-    @nogc @safe
-    float getUnderlineThickness(uint characterSize) const
+    @nogc @safe float getUnderlineThickness(uint characterSize) const
     {
         if (m_font is null)
             return 0;
@@ -365,8 +355,7 @@ class Font
      * Returns:
      *      Texture containing the glyphs of the requested size.
      */
-    @safe
-    const(Texture) texture(uint characterSize)
+    @safe const(Texture) texture(uint characterSize)
     {
         if (m_font is null)
             return null;
@@ -379,21 +368,19 @@ class Font
      * Returns:
      *      The duplicated font.
      */
-    @property @safe
-    Font dup() const
+    @property @safe Font dup() const
     {
         return new Font(m_font);
     }
 
     // Returns the C pointer
-    @property @nogc @safe
-    package sfFont* ptr()
+    @property @nogc @safe package sfFont* ptr()
     {
         return m_font;
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfFont;
     struct sfFontInfo
@@ -402,15 +389,15 @@ package extern(C)
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfFont* sfFont_createFromFile(const char* filename);
     sfFont* sfFont_createFromMemory(const void* data, size_t sizeInBytes);
     sfFont* sfFont_createFromStream(sfInputStream* stream);
     sfFont* sfFont_copy(const sfFont* font);
     void sfFont_destroy(sfFont* font);
-    Glyph sfFont_getGlyph(const sfFont* font, uint codePoint, uint characterSize, bool bold, float outlineThickness);
+    Glyph sfFont_getGlyph(const sfFont* font, uint codePoint, uint characterSize,
+            bool bold, float outlineThickness);
     float sfFont_getKerning(const sfFont* font, uint first, uint second, uint characterSize);
     float sfFont_getLineSpacing(const sfFont* font, uint characterSize);
     float sfFont_getUnderlinePosition(const sfFont* font, uint characterSize);
@@ -421,17 +408,18 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
-    import dsfml.graphics.rect;
+    import std.stdio : writeln;
+    import dsfml.graphics.rect : FloatRect, IntRect;
 
     writeln("Running Font unittest...");
 
     auto font = new Font();
     assert(font.loadFromFile("unittest/res/Warenhaus-Standard.ttf"));
 
-    uint charSize = 12;
+    const uint charSize = 12;
 
-    assert(font.glyph('G', charSize, true, 2) == Glyph(7, FloatRect(0, -7, 10, 11), IntRect(1, 4, 11, 12)));
+    assert(font.glyph('G', charSize, true, 2) == Glyph(7, FloatRect(0, -7, 10,
+            11), IntRect(1, 4, 11, 12)));
     assert(font.kerning('A', 'V', charSize) == 0);
     assert(font.lineSpacing(charSize) == 13);
     assert(font.getUnderlinePosition(charSize) == 1.734375);
@@ -442,7 +430,5 @@ unittest
     // ... or whatever function
     fakeFont.lineSpacing(charSize); // Shouldn't crash
 
-
     //draw text or something
-
 }

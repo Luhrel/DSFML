@@ -90,8 +90,7 @@ struct Color
      *      blue  = Blue component (in the range [0, 255])
      *      alpha = Alpha (opacity) component (in the range [0, 255])
      */
-    @nogc @safe
-    this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255)
+    @nogc @safe this(ubyte red, ubyte green, ubyte blue, ubyte alpha = 255)
     {
         r = red;
         g = green;
@@ -105,8 +104,7 @@ struct Color
      * Params:
      *      color = Number containing the RGBA components (in that order)
      */
-    @nogc @safe
-    this(uint color)
+    @nogc @safe this(uint color)
     {
         r = (color & 0xff000000) >> 24;
         g = (color & 0x00ff0000) >> 16;
@@ -121,7 +119,7 @@ struct Color
     /// Red predefined color.
     static immutable Red = Color(255, 0, 0, 255);
     /// Green predefined color.
-    static immutable Green = Color(0, 255, 0,255);
+    static immutable Green = Color(0, 255, 0, 255);
     /// Blue predefined color.
     static immutable Blue = Color(0, 0, 255, 255);
     /// Yellow predefined color.
@@ -139,17 +137,16 @@ struct Color
      * Returns:
      *      Color represented as a 32-bit unsigned integer
      */
-    @nogc @safe
-    uint toInteger() const
+    @nogc @safe uint toInteger() const
     {
         return (r << 24) | (g << 16) | (b << 8) | a;
     }
 
     /// Get the string representation of the Color.
-    @safe
-    string toString() const
+    @safe string toString() const
     {
-        import std.conv;
+        import std.conv : text;
+
         return "R: " ~ text(r) ~ " G: " ~ text(g) ~ " B: " ~ text(b) ~ " A: " ~ text(a);
     }
 
@@ -171,9 +168,8 @@ struct Color
      *      The addition, subtraction, or multiplication between this Color and
      *      the other.
      */
-    @safe
-    Color opBinary(string op)(Color otherColor) const
-        if(op == "+" || op == "-" || op == "*" || op == "/")
+    @safe Color opBinary(string op)(Color otherColor) const
+            if (op == "+" || op == "-" || op == "*" || op == "/")
     {
         mixin("ubyte red = assure(r" ~ op ~ "otherColor.r);");
         mixin("ubyte green = assure(g" ~ op ~ "otherColor.g);");
@@ -196,9 +192,8 @@ struct Color
      * Returns:
      *      The multiplication or division of this Color by the scalar.
      */
-    @safe
-    Color opBinary(string op, E)(E num) const
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @safe Color opBinary(string op, E)(E num) const
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("ubyte red = assure(r" ~ op ~ "num);");
         mixin("ubyte green = assure(g" ~ op ~ "num);");
@@ -225,9 +220,8 @@ struct Color
      *      A reference to this color after performing the addition, subtraction,
      *      or multiplication.
      */
-    @nogc @safe
-    ref Color opOpAssign(string op)(Color otherColor)
-        if(op == "+" || op == "-" || op == "*" || op == "/")
+    @nogc @safe ref Color opOpAssign(string op)(Color otherColor)
+            if (op == "+" || op == "-" || op == "*" || op == "/")
     {
         mixin("r = assure(r" ~ op ~ "otherColor.r);");
         mixin("g = assure(g" ~ op ~ "otherColor.g);");
@@ -251,9 +245,8 @@ struct Color
      *      A reference to this color after performing the multiplication or
      *      division.
      */
-    @nogc @safe
-    ref Color opOpAssign(string op, E)(E num)
-        if(isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
+    @nogc @safe ref Color opOpAssign(string op, E)(E num)
+            if (isNumeric!(E) && (op == "+" || op == "-" || op == "*" || op == "/"))
     {
         mixin("r = assure(r" ~ op ~ "num);");
         mixin("g = assure(g" ~ op ~ "num);");
@@ -273,13 +266,9 @@ struct Color
      * Returns:
      *      true if colors are equal, false if they are different.
      */
-    @nogc @safe
-    bool opEquals(Color otherColor) const
+    @nogc @safe bool opEquals(Color otherColor) const
     {
-        return r == otherColor.r &&
-               g == otherColor.g &&
-               b == otherColor.b &&
-               a == otherColor.a;
+        return r == otherColor.r && g == otherColor.g && b == otherColor.b && a == otherColor.a;
     }
 
     /**
@@ -297,27 +286,25 @@ struct Color
      * Returns:
      *      The number as a ubyte [0 .. 255]
      */
-    @nogc @safe
-    private ubyte assure(int i) const
+    @nogc @safe private ubyte assure(int i) const
     {
         return cast(ubyte) min(max(i, 0), 255);
     }
 
-    @nogc @safe
-    private ubyte assure(double d) const
+    @nogc @safe private ubyte assure(double d) const
     {
         return assure(cast(int) d);
     }
 }
 
-private extern(C)
+private extern (C)
 {
     struct sfColor;
 }
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
 
     writeln("Running Color unittest...");
 
@@ -364,7 +351,7 @@ unittest
     color *= 2;
     assert(color == Color(0, 255, 0, 230));
 
-    color = color *.5;
+    color = color * .5;
     assert(color == Color(0, 127, 0, 115));
 
     color *= Color(130, 50, 67, 250);
@@ -391,8 +378,8 @@ unittest
     assert(color == Color(60, 15, 45, 26));
 
     // 256^3*r + 256^2*g + 256^1*b + 256^0*a
-    int i = 16777216*60 + 65536*15 + 256*45 + 26;
+    int i = 16_777_216 * 60 + 65_536 * 15 + 256 * 45 + 26;
     assert(color.toInteger == i);
-    i -= 16777216 + 65536 + 256 + 26;
+    i -= 16_777_216 + 65_536 + 256 + 26;
     assert(Color(i) == Color(59, 14, 44, 0));
 }

@@ -91,12 +91,12 @@
  */
 module dsfml.network.ftp;
 
-import dsfml.system.time;
-import dsfml.network.ipaddress;
 import dsfml.network.http;
+import dsfml.network.ipaddress;
+import dsfml.system.time;
 
-import std.string;
 import std.conv;
+import std.string;
 
 /**
  * An FTP client.
@@ -120,19 +120,16 @@ class Ftp
     private sfFtp* m_ftp;
 
     /// Default Constructor.
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_ftp = sfFtp_create();
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfFtp_destroy(m_ftp);
     }
-
 
     /**
      * Get the current working directory.
@@ -146,8 +143,7 @@ class Ftp
      * See_Also:
      *      directoryListing, changeDirectory, parentDirectory
      */
-    @property @safe
-    DirectoryResponse workingDirectory()
+    @property @safe DirectoryResponse workingDirectory()
     {
         return new DirectoryResponse(sfFtp_getWorkingDirectory(m_ftp));
     }
@@ -168,11 +164,9 @@ class Ftp
      * See_Also:
      *      workingDirectory, changeDirectory, parentDirectory
      */
-    @safe
-    ListingResponse directoryListing(const string directory = "")
+    @safe ListingResponse directoryListing(const string directory = "")
     {
-        return new ListingResponse(sfFtp_getDirectoryListing(m_ftp,
-            directory.toStringz));
+        return new ListingResponse(sfFtp_getDirectoryListing(m_ftp, directory.toStringz));
     }
 
     /**
@@ -189,8 +183,7 @@ class Ftp
      * See_Also:
      *      workingDirectory, directoryListing, parentDirectory
      */
-    @safe
-    Response changeDirectory(const string directory)
+    @safe Response changeDirectory(const string directory)
     {
         return new Response(sfFtp_changeDirectory(m_ftp, directory.toStringz));
     }
@@ -219,8 +212,7 @@ class Ftp
      * See_Also:
      *      disconnect
      */
-    @safe
-    Response connect(IpAddress address, ushort port = 21, Time timeout = Time.Zero)
+    @safe Response connect(IpAddress address, ushort port = 21, Time timeout = Time.Zero)
     {
         return new Response(sfFtp_connect(m_ftp, address.toc, port, timeout));
     }
@@ -249,11 +241,9 @@ class Ftp
      * See_Also:
      *      disconnect
      */
-    @safe
-    Response connect(const string address, ushort port = 21, Time timeout = Time.Zero)
+    @safe Response connect(const string address, ushort port = 21, Time timeout = Time.Zero)
     {
-        return new Response(sfFtp_connect(m_ftp, IpAddress(address).toc, port,
-            timeout));
+        return new Response(sfFtp_connect(m_ftp, IpAddress(address).toc, port, timeout));
     }
 
     /**
@@ -272,8 +262,7 @@ class Ftp
      * See_Also:
      *      createDirectory
      */
-    @safe
-    Response deleteDirectory(const string name)
+    @safe Response deleteDirectory(const string name)
     {
         return new Response(sfFtp_deleteDirectory(m_ftp, name.toStringz));
     }
@@ -293,8 +282,7 @@ class Ftp
      * See_Also:
      *      renameFile
      */
-    @safe
-    Response deleteFile(const string name)
+    @safe Response deleteFile(const string name)
     {
         return new Response(sfFtp_deleteFile(m_ftp, name.toStringz));
     }
@@ -308,8 +296,7 @@ class Ftp
      * See_Also:
      *      connect
      */
-    @safe
-    Response disconnect()
+    @safe Response disconnect()
     {
         return new Response(sfFtp_disconnect(m_ftp));
     }
@@ -332,12 +319,10 @@ class Ftp
      * See_Also:
      *      upload
      */
-    @safe
-    Response download(const string remoteFile, const string localPath,
-        TransferMode mode = TransferMode.Binary)
+    @safe Response download(const string remoteFile, const string localPath,
+            TransferMode mode = TransferMode.Binary)
     {
-        return new Response(sfFtp_download(m_ftp, remoteFile.toStringz,
-            localPath.toStringz, mode));
+        return new Response(sfFtp_download(m_ftp, remoteFile.toStringz, localPath.toStringz, mode));
     }
 
     /**
@@ -349,8 +334,7 @@ class Ftp
      * Returns:
      *      Server response to the request.
      */
-    @safe
-    Response keepAlive()
+    @safe Response keepAlive()
     {
         return new Response(sfFtp_keepAlive(m_ftp));
     }
@@ -364,8 +348,7 @@ class Ftp
      * Returns:
      *      Server response to the request.
      */
-    @safe
-    Response login()
+    @safe Response login()
     {
         return new Response(sfFtp_loginAnonymous(m_ftp));
     }
@@ -383,8 +366,7 @@ class Ftp
      * Returns:
      *      Server response to the request.
      */
-    @safe
-    Response login(const string name, const string password)
+    @safe Response login(const string name, const string password)
     {
         return new Response(sfFtp_login(m_ftp, name.toStringz, password.toStringz));
     }
@@ -398,8 +380,7 @@ class Ftp
      * See_Also:
      *      workingDirectory, directoryListing, changeDirectory
      */
-    @safe
-    Response parentDirectory()
+    @safe Response parentDirectory()
     {
         return new Response(sfFtp_parentDirectory(m_ftp));
     }
@@ -418,8 +399,7 @@ class Ftp
      * See_Also:
      *      deleteDirectory
      */
-    @safe
-    Response createDirectory(const string name)
+    @safe Response createDirectory(const string name)
     {
         return new Response(sfFtp_createDirectory(m_ftp, name.toStringz));
     }
@@ -439,11 +419,9 @@ class Ftp
      * See_Also:
      *      deleteFile
      */
-    @safe
-    Response renameFile(const string file, const string name)
+    @safe Response renameFile(const string file, const string name)
     {
-        return new Response(sfFtp_renameFile(m_ftp, file.toStringz,
-            name.toStringz));
+        return new Response(sfFtp_renameFile(m_ftp, file.toStringz, name.toStringz));
     }
 
     /**
@@ -469,12 +447,11 @@ class Ftp
      * See_Also:
      *      download
      */
-    @safe
-    Response upload(const string localFile, const string remotePath,
-        TransferMode mode = TransferMode.Binary, bool append = false)
+    @safe Response upload(const string localFile, const string remotePath,
+            TransferMode mode = TransferMode.Binary, bool append = false)
     {
         return new Response(sfFtp_upload(m_ftp, localFile.toStringz,
-            remotePath.toStringz, mode, append));
+                remotePath.toStringz, mode, append));
     }
 
     /**
@@ -493,11 +470,9 @@ class Ftp
      * Returns:
      *      Server response to the request.
      */
-    @safe
-    Response sendCommand(const string command, const string parameter)
+    @safe Response sendCommand(const string command, const string parameter)
     {
-        return new Response(sfFtp_sendCommand(m_ftp, command.toStringz,
-            parameter.toStringz));
+        return new Response(sfFtp_sendCommand(m_ftp, command.toStringz, parameter.toStringz));
     }
 
     /// Specialization of FTP response returning a directory.
@@ -506,16 +481,14 @@ class Ftp
         private sfFtpDirectoryResponse* m_directoryResponse;
 
         // Internally used constructor.
-        @nogc @safe
-        package this(sfFtpDirectoryResponse* directoryResponsePointer)
+        @nogc @safe package this(sfFtpDirectoryResponse* directoryResponsePointer)
         {
             m_directoryResponse = directoryResponsePointer;
             super(null);
         }
 
         /// Destructor.
-        @safe
-        ~this()
+        @safe ~this()
         {
             sfFtpDirectoryResponse_destroy(m_directoryResponse);
         }
@@ -529,8 +502,7 @@ class Ftp
          * Returns:
          *      true if the status is a success, false if it is a failure
          */
-        @nogc @safe
-        override bool isOk() const
+        @nogc @safe override bool isOk() const
         {
             return sfFtpDirectoryResponse_isOk(m_directoryResponse);
         }
@@ -541,8 +513,7 @@ class Ftp
          * Returns:
          *      Status code
          */
-        @nogc @safe
-        override Status status() const
+        @nogc @safe override Status status() const
         {
             return Status(sfFtpDirectoryResponse_getStatus(m_directoryResponse));
         }
@@ -555,8 +526,7 @@ class Ftp
          */
         override string message() const
         {
-            return sfFtpDirectoryResponse_getMessage(m_directoryResponse)
-                .fromStringz.to!string;
+            return sfFtpDirectoryResponse_getMessage(m_directoryResponse).fromStringz.to!string;
         }
 
         /**
@@ -567,8 +537,7 @@ class Ftp
          */
         string directory() const
         {
-            return sfFtpDirectoryResponse_getDirectory(m_directoryResponse)
-                .fromStringz.to!string;
+            return sfFtpDirectoryResponse_getDirectory(m_directoryResponse).fromStringz.to!string;
         }
     }
 
@@ -578,16 +547,14 @@ class Ftp
         private sfFtpListingResponse* m_listingResponse;
 
         // Internally used constructor.
-        @nogc @safe
-        package this(sfFtpListingResponse* listingResponsePointer)
+        @nogc @safe package this(sfFtpListingResponse* listingResponsePointer)
         {
             m_listingResponse = listingResponsePointer;
             super(null);
         }
 
         /// Destructor.
-        @safe
-        ~this()
+        @safe ~this()
         {
             sfFtpListingResponse_destroy(m_listingResponse);
         }
@@ -601,8 +568,7 @@ class Ftp
          * Returns:
          *      true if the status is a success, false if it is a failure
          */
-        @nogc @safe
-        override bool isOk() const
+        @nogc @safe override bool isOk() const
         {
             return sfFtpListingResponse_isOk(m_listingResponse);
         }
@@ -613,8 +579,7 @@ class Ftp
          * Returns:
          *      Status code
          */
-        @nogc @safe
-        override Status status() const
+        @nogc @safe override Status status() const
         {
             return sfFtpListingResponse_getStatus(m_listingResponse);
         }
@@ -627,8 +592,7 @@ class Ftp
          */
         override string message() const
         {
-            return sfFtpListingResponse_getMessage(m_listingResponse)
-                .fromStringz.to!string;
+            return sfFtpListingResponse_getMessage(m_listingResponse).fromStringz.to!string;
         }
 
         /**
@@ -712,15 +676,13 @@ class Ftp
         private sfFtpResponse* m_response;
 
         // Internally used constructor.
-        @nogc @safe
-        package this(sfFtpResponse* responsePointer)
+        @nogc @safe package this(sfFtpResponse* responsePointer)
         {
             m_response = responsePointer;
         }
 
         /// Destructor.
-        @safe
-        ~this()
+        @safe ~this()
         {
             sfFtpResponse_destroy(m_response);
         }
@@ -742,8 +704,7 @@ class Ftp
          * Returns:
          *      Status code.
          */
-        @nogc @safe
-        Status status() const
+        @nogc @safe Status status() const
         {
             return Status(sfFtpResponse_getStatus(m_response));
         }
@@ -757,39 +718,39 @@ class Ftp
          * Returns:
          *      true if the status is a success, false if it is a failure.
          */
-        @nogc @safe
-        bool isOk() const
+        @nogc @safe bool isOk() const
         {
             return sfFtpResponse_isOk(m_response);
         }
     }
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     struct sfFtp;
-
     struct sfFtpResponse;
-
     struct sfFtpDirectoryResponse;
-
     struct sfFtpListingResponse;
 
     // sfFtpListingResponse
     void sfFtpListingResponse_destroy(sfFtpListingResponse* ftpListingResponse);
     bool sfFtpListingResponse_isOk(const sfFtpListingResponse* ftpListingResponse);
-    Ftp.Response.Status sfFtpListingResponse_getStatus(const sfFtpListingResponse* ftpListingResponse);
+    Ftp.Response.Status sfFtpListingResponse_getStatus(
+            const sfFtpListingResponse* ftpListingResponse);
     const(char)* sfFtpListingResponse_getMessage(const sfFtpListingResponse* ftpListingResponse);
     size_t sfFtpListingResponse_getCount(const sfFtpListingResponse* ftpListingResponse);
-    const(char)* sfFtpListingResponse_getName(const sfFtpListingResponse* ftpListingResponse, size_t index);
+    const(char)* sfFtpListingResponse_getName(
+            const sfFtpListingResponse* ftpListingResponse, size_t index);
 
     //sfFtpDirectoryResponse
     void sfFtpDirectoryResponse_destroy(sfFtpDirectoryResponse* ftpDirectoryResponse);
     bool sfFtpDirectoryResponse_isOk(const sfFtpDirectoryResponse* ftpDirectoryResponse);
-    Ftp.Response.Status sfFtpDirectoryResponse_getStatus(const sfFtpDirectoryResponse* ftpDirectoryResponse);
-    const(char)* sfFtpDirectoryResponse_getMessage(const sfFtpDirectoryResponse* ftpDirectoryResponse);
-    const(char)* sfFtpDirectoryResponse_getDirectory(const sfFtpDirectoryResponse* ftpDirectoryResponse);
+    Ftp.Response.Status sfFtpDirectoryResponse_getStatus(
+            const sfFtpDirectoryResponse* ftpDirectoryResponse);
+    const(char)* sfFtpDirectoryResponse_getMessage(
+            const sfFtpDirectoryResponse* ftpDirectoryResponse);
+    const(char)* sfFtpDirectoryResponse_getDirectory(
+            const sfFtpDirectoryResponse* ftpDirectoryResponse);
 
     //sfFtpResponse
     void sfFtpResponse_destroy(sfFtpResponse* ftpResponse);
@@ -813,16 +774,19 @@ private extern(C)
     sfFtpResponse* sfFtp_deleteDirectory(sfFtp* ftp, const char* name);
     sfFtpResponse* sfFtp_renameFile(sfFtp* ftp, const char* file, const char* newName);
     sfFtpResponse* sfFtp_deleteFile(sfFtp* ftp, const char* name);
-    sfFtpResponse* sfFtp_download(sfFtp* ftp, const char* remoteFile, const char* localPath, Ftp.TransferMode mode);
-    sfFtpResponse* sfFtp_upload(sfFtp* ftp, const char* localFile, const char* remotePath, Ftp.TransferMode mode, bool append);
+    sfFtpResponse* sfFtp_download(sfFtp* ftp, const char* remoteFile,
+            const char* localPath, Ftp.TransferMode mode);
+    sfFtpResponse* sfFtp_upload(sfFtp* ftp, const char* localFile,
+            const char* remotePath, Ftp.TransferMode mode, bool append);
     sfFtpResponse* sfFtp_sendCommand(sfFtp* ftp, const char* command, const char* parameter);
 
 }
 
 unittest
 {
-    import std.stdio;
-    import dsfml.system.time;
+    import std.stdio : writefln, writeln;
+    import dsfml.system.time : seconds;
+
     writeln("Running Ftp unittest...");
 
     auto ftp = new Ftp();
@@ -852,7 +816,7 @@ unittest
     const string[] list = listing.listing();
     assert(list.length != 0);
 
-    foreach(string dir; list)
+    foreach (string dir; list)
     {
         writefln("\t\t%s", dir);
     }

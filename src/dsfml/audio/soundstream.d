@@ -95,9 +95,9 @@
  */
 module dsfml.audio.soundstream;
 
-import dsfml.system.vector3;
-import dsfml.system.time;
 import dsfml.audio.soundsource;
+import dsfml.system.time;
+import dsfml.system.vector3;
 
 /**
  * Abstract base class for streamed audio sources.
@@ -118,15 +118,14 @@ class SoundStream : SoundSource
      *
      * This constructor is only meant to be called by derived classes.
      */
-    @nogc
-    this()
+    @nogc this()
     {
-        m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback, 0, 0, cast(void*) this);
+        m_soundStream = sfSoundStream_create(&onGetDataCallback,
+                &onSeekCallback, 0, 0, cast(void*) this);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfSoundStream_destroy(m_soundStream);
     }
@@ -144,11 +143,10 @@ class SoundStream : SoundSource
      *      channelCount = Number of channels of the stream
      *      sampleRate   = Sample rate, in samples per second
      */
-    @nogc
-    protected void initialize(uint channelCount, uint sampleRate)
+    @nogc protected void initialize(uint channelCount, uint sampleRate)
     {
-        m_soundStream = sfSoundStream_create(&onGetDataCallback, &onSeekCallback,
-            channelCount, sampleRate, cast(void*) this);
+        m_soundStream = sfSoundStream_create(&onGetDataCallback,
+                &onSeekCallback, channelCount, sampleRate, cast(void*) this);
     }
 
     @property
@@ -164,8 +162,7 @@ class SoundStream : SoundSource
          * Params:
          *      _pitch = New pitch to apply to the sound
          */
-        @nogc @safe
-        void pitch(float _pitch)
+        @nogc @safe void pitch(float _pitch)
         {
             sfSoundStream_setPitch(m_soundStream, _pitch);
         }
@@ -176,8 +173,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Pitch of the sound
          */
-        @nogc @safe
-        float pitch() const
+        @nogc @safe float pitch() const
         {
             return sfSoundStream_getPitch(m_soundStream);
         }
@@ -194,8 +190,7 @@ class SoundStream : SoundSource
          * Params:
          *      _volume = Volume of the sound
          */
-        @nogc @safe
-        void volume(float _volume)
+        @nogc @safe void volume(float _volume)
         {
             sfSoundStream_setVolume(m_soundStream, _volume);
         }
@@ -206,8 +201,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Volume of the sound, in the range [0, 100]
          */
-        @nogc @safe
-        float volume() const
+        @nogc @safe float volume() const
         {
             return sfSoundStream_getVolume(m_soundStream);
         }
@@ -224,8 +218,7 @@ class SoundStream : SoundSource
          * Params:
          *      _position = Position of the sound in the scene
          */
-        @nogc @safe
-        void position(Vector3f _position)
+        @nogc @safe void position(Vector3f _position)
         {
             sfSoundStream_setPosition(m_soundStream, _position);
         }
@@ -236,8 +229,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Position of the sound
          */
-        @nogc @safe
-        Vector3f position() const
+        @nogc @safe Vector3f position() const
         {
             return sfSoundStream_getPosition(m_soundStream);
         }
@@ -255,8 +247,7 @@ class SoundStream : SoundSource
          * Params:
          *      _loop = true to play in loop, false to play once
          */
-        @nogc @safe
-        void loop(bool _loop)
+        @nogc @safe void loop(bool _loop)
         {
             sfSoundStream_setLoop(m_soundStream, _loop);
         }
@@ -267,8 +258,7 @@ class SoundStream : SoundSource
          * Returns:
          *      true if the stream is looping, false otherwise
          */
-        @nogc @safe
-        bool loop() const
+        @nogc @safe bool loop() const
         {
             return sfSoundStream_getLoop(m_soundStream);
         }
@@ -286,8 +276,7 @@ class SoundStream : SoundSource
          * Params:
          *      offset = New playing position, from the beginning of the stream
          */
-        @nogc @safe
-        void playingOffset(Time offset)
+        @nogc @safe void playingOffset(Time offset)
         {
             sfSoundStream_setPlayingOffset(m_soundStream, offset);
 
@@ -299,8 +288,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Current playing position, from the beginning of the stream
          */
-        @nogc @safe
-        Time playingOffset() const
+        @nogc @safe Time playingOffset() const
         {
             return sfSoundStream_getPlayingOffset(m_soundStream);
         }
@@ -320,8 +308,7 @@ class SoundStream : SoundSource
          * Params:
          *      relative = true to set the position relative, false to set it absolute
          */
-        @nogc @safe
-        void relativeToListener(bool relative)
+        @nogc @safe void relativeToListener(bool relative)
         {
             sfSoundStream_setRelativeToListener(m_soundStream, relative);
         }
@@ -332,8 +319,7 @@ class SoundStream : SoundSource
          * Returns:
          *      true if the position is relative, false if it's absolute
          */
-        @nogc @safe
-        bool relativeToListener() const
+        @nogc @safe bool relativeToListener() const
         {
             return sfSoundStream_isRelativeToListener(m_soundStream);
         }
@@ -356,8 +342,7 @@ class SoundStream : SoundSource
          * See_Also:
          *      attenuation
          */
-        @nogc @safe
-        void minDistance(float distance)
+        @nogc @safe void minDistance(float distance)
         {
             sfSoundStream_setMinDistance(m_soundStream, distance);
         }
@@ -368,8 +353,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Minimum distance of the sound
          */
-        @nogc @safe
-        float minDistance() const
+        @nogc @safe float minDistance() const
         {
             return sfSoundStream_getMinDistance(m_soundStream);
         }
@@ -395,8 +379,7 @@ class SoundStream : SoundSource
          * See_Also:
          *      minDistance
          */
-        @nogc @safe
-        void attenuation(float _attenuation)
+        @nogc @safe void attenuation(float _attenuation)
         {
             sfSoundStream_setAttenuation(m_soundStream, _attenuation);
         }
@@ -410,13 +393,11 @@ class SoundStream : SoundSource
          * See_Also:
          *      minDistance
          */
-        @nogc @safe
-        float attenuation() const
+        @nogc @safe float attenuation() const
         {
             return sfSoundStream_getAttenuation(m_soundStream);
         }
     }
-
 
     @property
     {
@@ -428,8 +409,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Number of channels
          */
-        @nogc @safe
-        uint channelCount() const
+        @nogc @safe uint channelCount() const
         {
             return sfSoundStream_getChannelCount(m_soundStream);
         }
@@ -446,8 +426,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Sample rate, in number of samples per second
          */
-        @nogc @safe
-        uint sampleRate() const
+        @nogc @safe uint sampleRate() const
         {
             return sfSoundStream_getSampleRate(m_soundStream);
         }
@@ -461,8 +440,7 @@ class SoundStream : SoundSource
          * Returns:
          *      Current status
          */
-        @nogc @safe
-        Status status() const
+        @nogc @safe Status status() const
         {
             return cast(Status) sfSoundStream_getStatus(m_soundStream);
         }
@@ -479,8 +457,7 @@ class SoundStream : SoundSource
      * See_Also:
      *      pause, stop
      */
-    @nogc @safe
-    void play()
+    @nogc @safe void play()
     {
         sfSoundStream_play(m_soundStream);
     }
@@ -494,8 +471,7 @@ class SoundStream : SoundSource
      * See_Also:
      *      play, stop
      */
-    @nogc @safe
-    void pause()
+    @nogc @safe void pause()
     {
         sfSoundStream_pause(m_soundStream);
     }
@@ -510,8 +486,7 @@ class SoundStream : SoundSource
      * See_Also:
      *      play, pause
      */
-    @nogc @safe
-    void stop()
+    @nogc @safe void stop()
     {
         sfSoundStream_stop(m_soundStream);
     }
@@ -568,7 +543,7 @@ class SoundStream : SoundSource
      * CSFML's "sfBool" is a byte of 0 or 1.
      * Passing a bool to CSFML will simply fail.
      */
-    private extern(C) static byte onGetDataCallback(Chunk* data, void* userData)
+    private extern (C) static byte onGetDataCallback(Chunk* data, void* userData)
     {
         SoundStream ss = cast(SoundStream) userData;
         return ss.onGetData(*data) ? 1 : 0;
@@ -577,7 +552,7 @@ class SoundStream : SoundSource
     /**
      * This function is called by CSFML.
      */
-    private extern(C) static void onSeekCallback(Time time, void* userData)
+    private extern (C) static void onSeekCallback(Time time, void* userData)
     {
         SoundStream ss = cast(SoundStream) userData;
         ss.onSeek(time);
@@ -585,7 +560,7 @@ class SoundStream : SoundSource
 }
 
 // CSFML's functions.
-private extern(C)
+private extern (C)
 {
     // C Callbacks
     /// Type of the callback used to get a sound stream data
@@ -595,11 +570,10 @@ private extern(C)
 
     struct sfSoundStream;
 
-    @nogc @safe:
+@nogc @safe:
 
     sfSoundStream* sfSoundStream_create(sfSoundStreamGetDataCallback getData,
-        sfSoundStreamSeekCallback  seek, uint  channelCount, uint  sampleRate,
-        void* userData);
+            sfSoundStreamSeekCallback seek, uint channelCount, uint sampleRate, void* userData);
     void sfSoundStream_destroy(sfSoundStream* soundStream);
     void sfSoundStream_play(sfSoundStream* soundStream);
     void sfSoundStream_pause(sfSoundStream* soundStream);

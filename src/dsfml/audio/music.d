@@ -73,11 +73,11 @@
  */
 module dsfml.audio.music;
 
-import dsfml.system.vector3;
-import dsfml.system.inputstream;
-import dsfml.system.time;
 import dsfml.audio.soundsource;
 import dsfml.audio.soundstream;
+import dsfml.system.inputstream;
+import dsfml.system.time;
+import dsfml.system.vector3;
 
 import std.string;
 
@@ -98,8 +98,7 @@ class Music : SoundStream
     private sfMusic* m_music;
 
     /// Destructor
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         //stop();
         sfMusic_destroy(m_music);
@@ -125,8 +124,7 @@ class Music : SoundStream
      * See_Also:
      *      openFromMemory, openFromStream
      */
-    @safe
-    bool openFromFile(string filename)
+    @safe bool openFromFile(string filename)
     {
         m_music = sfMusic_createFromFile(filename.toStringz);
         return m_music != null;
@@ -153,8 +151,7 @@ class Music : SoundStream
      * See_Also:
      *      openFromFile, openFromStream
      */
-    @nogc
-    bool openFromMemory(const(void)[] data)
+    @nogc bool openFromMemory(const(void)[] data)
     {
         m_music = sfMusic_createFromMemory(data.ptr, data.sizeof);
         return m_music != null;
@@ -177,8 +174,7 @@ class Music : SoundStream
      * Returns:
      *      true if loading succeeded, false if it failed
      */
-    @nogc @safe
-    bool openFromStream(InputStream stream)
+    @nogc @safe bool openFromStream(InputStream stream)
     {
         m_music = sfMusic_createFromStream(stream.ptr);
         return m_music != null;
@@ -197,8 +193,7 @@ class Music : SoundStream
          * Params:
          *      _pitch = New pitch to apply to the sound
          */
-        @nogc @safe
-        override void pitch(float _pitch)
+        @nogc @safe override void pitch(float _pitch)
         {
             sfMusic_setPitch(m_music, _pitch);
         }
@@ -209,8 +204,7 @@ class Music : SoundStream
          * Returns:
          *      Pitch of the sound
          */
-        @nogc @safe
-        override float pitch() const
+        @nogc @safe override float pitch() const
         {
             return sfMusic_getPitch(m_music);
         }
@@ -227,8 +221,7 @@ class Music : SoundStream
          * Params:
          *      _volume = Volume of the sound
          */
-        @nogc @safe
-        override void volume(float _volume)
+        @nogc @safe override void volume(float _volume)
         {
             sfMusic_setVolume(m_music, _volume);
         }
@@ -239,8 +232,7 @@ class Music : SoundStream
          * Returns:
          *      Volume of the sound, in the range [0, 100]
          */
-        @nogc @safe
-        override float volume() const
+        @nogc @safe override float volume() const
         {
             return sfMusic_getVolume(m_music);
         }
@@ -257,8 +249,7 @@ class Music : SoundStream
          * Params:
          *      _position = Position of the sound in the scene
          */
-        @nogc @safe
-        override void position(Vector3f _position)
+        @nogc @safe override void position(Vector3f _position)
         {
             sfMusic_setPosition(m_music, _position);
         }
@@ -269,8 +260,7 @@ class Music : SoundStream
          * Returns:
          *      Position of the sound
          */
-        @nogc @safe
-        override Vector3f position() const
+        @nogc @safe override Vector3f position() const
         {
             return sfMusic_getPosition(m_music);
         }
@@ -288,8 +278,7 @@ class Music : SoundStream
          * Params:
          *      _loop = true to play in loop, false to play once
          */
-        @nogc @safe
-        override void loop(bool _loop)
+        @nogc @safe override void loop(bool _loop)
         {
             sfMusic_setLoop(m_music, _loop);
         }
@@ -300,8 +289,7 @@ class Music : SoundStream
          * Returns:
          *      true if the stream is looping, false otherwise
          */
-        @nogc @safe
-        override bool loop() const
+        @nogc @safe override bool loop() const
         {
             return sfMusic_getLoop(m_music);
         }
@@ -319,8 +307,7 @@ class Music : SoundStream
          * Params:
          *      offset = New playing position, from the beginning of the stream
          */
-        @nogc @safe
-        override void playingOffset(Time offset)
+        @nogc @safe override void playingOffset(Time offset)
         {
             sfMusic_setPlayingOffset(m_music, offset);
 
@@ -332,8 +319,7 @@ class Music : SoundStream
          * Returns:
          *      Current playing position, from the beginning of the stream
          */
-        @nogc @safe
-        override Time playingOffset() const
+        @nogc @safe override Time playingOffset() const
         {
             return sfMusic_getPlayingOffset(m_music);
         }
@@ -353,8 +339,7 @@ class Music : SoundStream
          * Params:
          *      relative = true to set the position relative, false to set it absolute
          */
-        @nogc @safe
-        override void relativeToListener(bool relative)
+        @nogc @safe override void relativeToListener(bool relative)
         {
             sfMusic_setRelativeToListener(m_music, relative);
         }
@@ -365,8 +350,7 @@ class Music : SoundStream
          * Returns:
          *      true if the position is relative, false if it's absolute
          */
-        @nogc @safe
-        override bool relativeToListener() const
+        @nogc @safe override bool relativeToListener() const
         {
             return sfMusic_isRelativeToListener(m_music);
         }
@@ -389,8 +373,7 @@ class Music : SoundStream
          * See_Also:
          *      attenuation
          */
-        @nogc @safe
-        override void minDistance(float distance)
+        @nogc @safe override void minDistance(float distance)
         {
             sfMusic_setMinDistance(m_music, distance);
         }
@@ -401,8 +384,7 @@ class Music : SoundStream
          * Returns:
          *      Minimum distance of the sound
          */
-        @nogc @safe
-        override float minDistance() const
+        @nogc @safe override float minDistance() const
         {
             return sfMusic_getMinDistance(m_music);
         }
@@ -428,8 +410,7 @@ class Music : SoundStream
          * See_Also:
          *      minDistance
          */
-        @nogc @safe
-        override void attenuation(float _attenuation)
+        @nogc @safe override void attenuation(float _attenuation)
         {
             sfMusic_setAttenuation(m_music, _attenuation);
         }
@@ -440,13 +421,11 @@ class Music : SoundStream
          * Returns:
          *      Attenuation factor of the sound
          */
-        @nogc @safe
-        override float attenuation() const
+        @nogc @safe override float attenuation() const
         {
             return sfMusic_getAttenuation(m_music);
         }
     }
-
 
     @property
     {
@@ -458,8 +437,7 @@ class Music : SoundStream
          * Returns:
          *      Number of channels
          */
-        @nogc @safe
-        override uint channelCount() const
+        @nogc @safe override uint channelCount() const
         {
             return sfMusic_getChannelCount(m_music);
         }
@@ -476,8 +454,7 @@ class Music : SoundStream
          * Returns:
          *      Sample rate, in number of samples per second
          */
-        @nogc @safe
-        override uint sampleRate() const
+        @nogc @safe override uint sampleRate() const
         {
             return sfMusic_getSampleRate(m_music);
         }
@@ -490,8 +467,7 @@ class Music : SoundStream
          *
          * Returns: Current status
          */
-        @nogc @safe
-        override Status status() const
+        @nogc @safe override Status status() const
         {
             return cast(Status) sfMusic_getStatus(m_music);
         }
@@ -505,8 +481,7 @@ class Music : SoundStream
          * Returns:
          *      Music duration
          */
-        @nogc @safe
-        Time duration()
+        @nogc @safe Time duration()
         {
             return cast(Time) sfMusic_getDuration(m_music);
         }
@@ -536,8 +511,7 @@ class Music : SoundStream
          *      timePoints = The definition of the loop.
          *          Can be any time points within the sound's length
          */
-        @nogc @safe
-        void loopPoints(TimeSpan timePoints)
+        @nogc @safe void loopPoints(TimeSpan timePoints)
         {
             sfMusic_setLoopPoints(m_music, timePoints);
         }
@@ -558,8 +532,7 @@ class Music : SoundStream
          * Returns:
          *       Loop Time position class.
          */
-        @nogc @safe
-        TimeSpan loopPoints()
+        @nogc @safe TimeSpan loopPoints()
         {
             return cast(TimeSpan) sfMusic_getLoopPoints(m_music);
         }
@@ -576,8 +549,7 @@ class Music : SoundStream
      * See_Also:
      *      pause, stop
      */
-    @nogc @safe
-    override void play()
+    @nogc @safe override void play()
     {
         sfMusic_play(m_music);
     }
@@ -591,8 +563,7 @@ class Music : SoundStream
      * See_Also:
      *      play, stop
      */
-    @nogc @safe
-    override void pause()
+    @nogc @safe override void pause()
     {
         sfMusic_pause(m_music);
     }
@@ -607,8 +578,7 @@ class Music : SoundStream
      * See_Also:
      *      play, pause
      */
-    @nogc @safe
-    override void stop()
+    @nogc @safe override void stop()
     {
         sfMusic_stop(m_music);
     }
@@ -625,8 +595,7 @@ class Music : SoundStream
 }
 
 // CSFML's functions.
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     struct sfMusic;
 
@@ -663,10 +632,10 @@ private extern(C)
 
 unittest
 {
-    import dsfml.system.sleep;
-    import std.stdio;
-    import std.conv;
-    import std.math;
+    import dsfml.system.sleep : sleep;
+    import std.conv : to;
+    import std.math : round;
+    import std.stdio : writefln, writeln;
 
     writeln("Running Music unittest...");
     version (DSFML_Unittest_with_interaction)
@@ -687,7 +656,7 @@ unittest
         music.play();
 
         // Testing the volume
-        int vol = 30;
+        const int vol = 30;
         writefln("\tvolume=%s", vol);
         music.volume = vol;
         assert(round(music.volume) == vol);
@@ -697,7 +666,7 @@ unittest
         music.volume = 100; // Resetting default value
 
         // Testing the pitch
-        int p = 2;
+        const int p = 2;
         writefln("\tpitch=%s", p);
         music.pitch = p;
 
@@ -745,7 +714,7 @@ unittest
         music.relativeToListener = false; // Resetting default value
 
         // Testing minDistance
-        int md = 5;
+        const int md = 5;
         // Testing default value
         assert(music.minDistance == 1);
         music.minDistance = md;
@@ -755,7 +724,7 @@ unittest
         music.minDistance = 1; // Resetting default value
 
         // Testing attenuation
-        int a = 100;
+        const int a = 100;
         writefln("\tattenuation=%s", a);
         music.attenuation = a;
         assert(music.attenuation == a);
@@ -763,10 +732,10 @@ unittest
 
         // Testing channelCount (stereo -> 2)
         assert(music.channelCount == 2);
-        assert(music.sampleRate == 44100);
+        assert(music.sampleRate == 44_100);
 
         // Duration of TestMusic.ogg
-        assert(music.duration == microseconds(14407982));
+        assert(music.duration == microseconds(14_407_982));
 
         TimeSpan ts = TimeSpan(seconds(11), seconds(3));
         music.loopPoints = ts;

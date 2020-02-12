@@ -101,22 +101,19 @@ class SoundBuffer
     private sfSoundBuffer* m_soundBuffer = null;
 
     /// Default constructor.
-    @safe
-    this()
+    @safe this()
     {
         // Nothing to do.
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfSoundBuffer* soundBufferPointer)
+    @nogc @safe package this(const sfSoundBuffer* soundBufferPointer)
     {
         m_soundBuffer = sfSoundBuffer_copy(soundBufferPointer);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfSoundBuffer_destroy(m_soundBuffer);
     }
@@ -134,13 +131,12 @@ class SoundBuffer
      * See_Also:
      *      sampleCount
      */
-    @property
-    const(short[]) samples() const
+    @property const(short[]) samples() const
     {
         if (m_soundBuffer !is null)
         {
             ulong sampleCount = sfSoundBuffer_getSampleCount(m_soundBuffer);
-            if(sampleCount > 0)
+            if (sampleCount > 0)
             {
                 version (X86)
                     return sfSoundBuffer_getSamples(m_soundBuffer)[0 .. cast(uint) sampleCount];
@@ -163,8 +159,7 @@ class SoundBuffer
      * See_Also:
      *      channelCount, duration
      */
-    @property @nogc @safe
-    uint sampleRate() const
+    @property @nogc @safe uint sampleRate() const
     {
         if (m_soundBuffer is null)
             return 0;
@@ -182,8 +177,7 @@ class SoundBuffer
      * See_Also:
      *      samples
      */
-    @property @nogc @safe
-    ulong sampleCount() const
+    @property @nogc @safe ulong sampleCount() const
     {
         if (m_soundBuffer is null)
             return 0;
@@ -202,8 +196,7 @@ class SoundBuffer
      * See_Also:
      *      sampleRate, duration
      */
-    @property @nogc @safe
-    uint channelCount() const
+    @property @nogc @safe uint channelCount() const
     {
         if (m_soundBuffer is null)
             return 0;
@@ -219,8 +212,7 @@ class SoundBuffer
      * See_Also:
      *      sampleRate, channelCount
      */
-    @property @nogc @safe
-    Time duration() const
+    @property @nogc @safe Time duration() const
     {
         if (m_soundBuffer is null)
             return Time();
@@ -241,8 +233,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromMemory, loadFromStream, loadFromSamples, saveToFile
      */
-    @safe
-    bool loadFromFile(string filename)
+    @safe bool loadFromFile(string filename)
     {
         m_soundBuffer = sfSoundBuffer_createFromFile(filename.toStringz);
         return m_soundBuffer != null;
@@ -262,14 +253,13 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromStream, loadFromSamples
      */
-    @nogc
-    bool loadFromMemory(const(void)[] data)
+    @nogc bool loadFromMemory(const(void)[] data)
     {
         m_soundBuffer = sfSoundBuffer_createFromMemory(data.ptr, data.sizeof);
         return m_soundBuffer != null;
     }
 
-    /*
+    /**
      * Load the sound buffer from a custom stream.
      *
      * See the documentation of InputSoundFile for the list of supported formats.
@@ -283,8 +273,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, loadFromSamples
      */
-    @nogc @safe
-    bool loadFromStream(InputStream stream)
+    @nogc @safe bool loadFromStream(InputStream stream)
     {
         m_soundBuffer = sfSoundBuffer_createFromStream(stream.ptr);
         return m_soundBuffer != null;
@@ -306,10 +295,10 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, saveToFile
      */
-    @nogc
-    bool loadFromSamples(const(short[]) samples, uint channelCount, uint sampleRate)
+    @nogc bool loadFromSamples(const(short[]) samples, uint channelCount, uint sampleRate)
     {
-        m_soundBuffer = sfSoundBuffer_createFromSamples(samples.ptr, samples.length, channelCount, sampleRate);
+        m_soundBuffer = sfSoundBuffer_createFromSamples(samples.ptr,
+                samples.length, channelCount, sampleRate);
         return m_soundBuffer != null;
     }
 
@@ -327,8 +316,7 @@ class SoundBuffer
      * See_Also:
      *      loadFromFile, loadFromMemory, loadFromSamples
      */
-    @safe
-    bool saveToFile(string filename) const
+    @safe bool saveToFile(string filename) const
     {
         if (m_soundBuffer != null)
             return sfSoundBuffer_saveToFile(m_soundBuffer, filename.toStringz);
@@ -336,34 +324,32 @@ class SoundBuffer
     }
 
     // Returns de C pointer.
-    @property @nogc @safe
-    package sfSoundBuffer* ptr()
+    @property @nogc @safe package sfSoundBuffer* ptr()
     {
         return m_soundBuffer;
     }
 
     /// Duplicates this SoundBuffer.
-    @property @safe
-    SoundBuffer dup()
+    @property @safe SoundBuffer dup()
     {
         return new SoundBuffer(m_soundBuffer);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfSoundBuffer;
 }
 
 // CSFML's functions.
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     void sfSoundBuffer_destroy(sfSoundBuffer* soundBuffer);
     sfSoundBuffer* sfSoundBuffer_createFromFile(const char* filename);
     sfSoundBuffer* sfSoundBuffer_createFromMemory(const void* data, size_t sizeInBytes);
     sfSoundBuffer* sfSoundBuffer_createFromStream(sfInputStream* stream);
-    sfSoundBuffer* sfSoundBuffer_createFromSamples(const short* samples, long sampleCount, uint channelCount, uint sampleRate);
+    sfSoundBuffer* sfSoundBuffer_createFromSamples(const short* samples,
+            long sampleCount, uint channelCount, uint sampleRate);
     sfSoundBuffer* sfSoundBuffer_copy(const sfSoundBuffer* soundBuffer);
     bool sfSoundBuffer_saveToFile(const sfSoundBuffer* soundBuffer, const char* filename);
     const(short)* sfSoundBuffer_getSamples(const sfSoundBuffer* soundBuffer);
@@ -375,9 +361,9 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
-    import std.path;
-    import std.file;
+    import std.file : exists;
+    import std.path : baseName, extension, stripExtension;
+    import std.stdio : writefln, writeln;
 
     writeln("Running Soundbuffer unittest...");
 
@@ -390,13 +376,14 @@ unittest
     assert(soundbuffer.loadFromFile(filename));
 
     // Checking if the music has the correct informations
-    assert(soundbuffer.duration.asMicroseconds() == 221325120);
+    assert(soundbuffer.duration.asMicroseconds() == 221_325_120);
     // 44100 Hz
-    assert(soundbuffer.sampleRate == 44100);
+    assert(soundbuffer.sampleRate == 44_100);
     // 2 channels (stereo)
     assert(soundbuffer.channelCount == 2);
 
-    string filename_copy = baseName(stripExtension(filename)) ~ " (Copy from DSFML)" ~ extension(filename);
+    string filename_copy = baseName(stripExtension(filename))
+        ~ " (Copy from DSFML)" ~ extension(filename);
 
     // Displaying sampleCount because I didn't found how to get it (externally/not with SFML)
     writefln("\tsampleCount: %s", soundbuffer.sampleCount);

@@ -128,13 +128,13 @@ module dsfml.network.packet;
 
 import core.stdc.stddef;
 
-import std.conv;
-import std.traits;
-import std.range;
-import std.string;
-
 import dsfml.config;
 import dsfml.system.err;
+
+import std.conv;
+import std.range;
+import std.string;
+import std.traits;
 
 /**
  * Utility class to build blocks of data to transfer over the network.
@@ -148,22 +148,19 @@ class Packet
      *
      * Creates an empty packet.
      */
-    @nogc @safe
-    this()
+    @nogc @safe this()
     {
         m_packet = sfPacket_create();
     }
 
     // Copy constructor.
-    @nogc @safe
-    package this(const sfPacket* packetPointer)
+    @nogc @safe package this(const sfPacket* packetPointer)
     {
         m_packet = sfPacket_copy(packetPointer);
     }
 
     /// Destructor.
-    @nogc @safe
-    ~this()
+    @nogc @safe ~this()
     {
         sfPacket_destroy(m_packet);
     }
@@ -189,8 +186,7 @@ class Packet
      * See_Also:
      *      clear
      */
-    @nogc
-    void append(const(void)[] data)
+    @nogc void append(const(void)[] data)
     {
         sfPacket_append(m_packet, data.ptr, data.length);
     }
@@ -203,8 +199,7 @@ class Packet
      * See_Also:
      *      append
      */
-    @nogc @safe
-    void clear()
+    @nogc @safe void clear()
     {
         sfPacket_clear(m_packet);
     }
@@ -221,8 +216,7 @@ class Packet
      * See_Also:
      *      opCast
      */
-    @nogc @safe
-    bool endOfPacket() const
+    @nogc @safe bool endOfPacket() const
     {
         return sfPacket_endOfPacket(m_packet);
     }
@@ -236,10 +230,9 @@ class Packet
      *      true if last data extraction from packet was successful.
      */
     bool read(T)(out T value)
-        if (is(T == bool) || is(T == byte) || is(T == ubyte) ||
-            is(T == short) || is(T == ushort) || is(T == int) ||
-            is(T == uint) || is(T == float) || is(T == double) ||
-            is(T == string) || is(T == wstring) || is(T == dstring))
+            if (is(T == bool) || is(T == byte) || is(T == ubyte) || is(T == short) ||
+                is(T == ushort) || is(T == int) || is(T == uint) || is(T == float) ||
+                is(T == double) || is(T == string) || is(T == wstring) || is(T == dstring))
     {
         // Calls this.opCast(bool)().
         bool success = cast(bool) this;
@@ -327,10 +320,9 @@ class Packet
 
     /// Writes a scalar data type or string to the packet.
     void write(T)(T value)
-        if (is(T == bool) || is(T == byte) || is(T == ubyte) ||
-            is(T == short) || is(T == ushort) || is(T == int) ||
-            is(T == uint) || is(T == float) || is(T == double) ||
-            is(T == string) || is(T == wstring) || is(T == dstring))
+            if (is(T == bool) || is(T == byte) || is(T == ubyte) || is(T == short) ||
+                is(T == ushort) || is(T == int) || is(T == uint) || is(T == float) ||
+                is(T == double) || is(T == string) || is(T == wstring) || is(T == dstring))
     {
         static if (is(T == bool))
         {
@@ -443,8 +435,7 @@ class Packet
      *
      * This function simply calls `read()`.
      */
-    Packet opBinary(string op, T)(out T value)
-        if (op == ">>")
+    Packet opBinary(string op, T)(out T value) if (op == ">>")
     {
         read(value);
         return this;
@@ -455,8 +446,7 @@ class Packet
      *
      * This function simply calls `write()`.
      */
-    Packet opBinary(string op, T)(T value)
-        if (op == "<<")
+    Packet opBinary(string op, T)(T value) if (op == "<<")
     {
         write(value);
         return this;
@@ -519,46 +509,41 @@ class Packet
      * See_Also:
      *      endOfPacket
      */
-    @nogc @safe
-    bool opCast(T : bool)()
+    @nogc @safe bool opCast(T : bool)()
     {
         // sfPacket_canRead calls the BoolType operator of SFML's sf::Packet
         return sfPacket_canRead(m_packet);
     }
 
-    @property @nogc @safe
-    package sfPacket* ptr()
+    @property @nogc @safe package sfPacket* ptr()
     {
         return m_packet;
     }
 
     /// Duplicates this Packet.
-    @property @safe
-    Packet dup()
+    @property @safe Packet dup()
     {
         return new Packet(m_packet);
     }
 }
 
 // Shows a warning if the string exceed the max size for packets.
-@safe
-private void checkPacketStringSize(T)(T str)
-    if (is(T == string) || is(T == dstring) || is(T == wstring))
+@safe private void checkPacketStringSize(T)(T str)
+        if (is(T == string) || is(T == dstring) || is(T == wstring))
 {
     if (str.length > PACKET_STR_MAX_SIZE)
     {
         err.writefln("Warning: the string passed to the packet exceed the size limit of %s characters.",
-            PACKET_STR_MAX_SIZE);
+                PACKET_STR_MAX_SIZE);
     }
 }
 
-package extern(C)
+package extern (C)
 {
     struct sfPacket;
 }
 
-@nogc @safe
-private extern(C)
+@nogc @safe private extern (C)
 {
     sfPacket* sfPacket_create();
     sfPacket* sfPacket_copy(const sfPacket* packet);
@@ -597,11 +582,8 @@ private extern(C)
 
 unittest
 {
-    import std.stdio;
-    import dsfml.network.socket;
-    import dsfml.network.tcpsocket;
-    import dsfml.network.tcplistener;
-    import dsfml.network.ipaddress;
+    import std.stdio : writeln;
+
     writeln("Running Packet unittest...");
 
     auto sendPacket = new Packet();
@@ -610,17 +592,16 @@ unittest
     bool b = true;
     byte bt = -123;
     ubyte ubt = 137;
-    short s = -31954;
-    ushort us = 62043;
-    int i = -19928121;
-    uint ui = 2147483647;
+    short s = -31_954;
+    ushort us = 62_043;
+    int i = -19_928_121;
+    uint ui = 2_147_483_647;
     float f = 341.1238641246;
     double d = 2542.1245315135;
     string str = "Hello, I'm a client !\nIf this string exceed 512 characters, it may not work :(";
 
     sendPacket << b << bt << ubt << s << us << i << ui << f << d << str;
     receivePacket.onReceiveJunction(sendPacket.onSend());
-
 
     bool b1;
     byte bt1;
@@ -644,7 +625,6 @@ unittest
     assert(ui == ui1);
     assert(f == f1);
     assert(d == d1);
-
 
     sendPacket.clear();
     receivePacket.clear();
@@ -671,7 +651,6 @@ unittest
 
         assert(wstr == wstr1);
     }
-
 
     class EmptyPacket : Packet
     {

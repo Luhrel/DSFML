@@ -131,17 +131,16 @@ struct BlendMode
 
     /// Blend source and dest according to dest alpha.
     enum Alpha = BlendMode(Factor.SrcAlpha, Factor.OneMinusSrcAlpha,
-               Equation.Add, Factor.One, Factor.OneMinusSrcAlpha, Equation.Add);
+                Equation.Add, Factor.One, Factor.OneMinusSrcAlpha, Equation.Add);
     /// Add source to dest.
-    enum Add = BlendMode(Factor.SrcAlpha, Factor.One, Equation.Add,
-                         Factor.One, Factor.One, Equation.Add);
+    enum Add = BlendMode(Factor.SrcAlpha, Factor.One, Equation.Add, Factor.One,
+                Factor.One, Equation.Add);
     /// Multiply source and dest.
     enum Multiply = BlendMode(Factor.DstColor, Factor.Zero, Equation.Add,
-                              Factor.DstColor, Factor.Zero, Equation.Add);
+                Factor.DstColor, Factor.Zero, Equation.Add);
     /// Overwrite dest with source.
     enum None = BlendMode(Factor.One, Factor.Zero, Equation.Add, Factor.One,
-                          Factor.Zero, Equation.Add);
-
+                Factor.Zero, Equation.Add);
 
     /// Source blending factor for the color channels.
     Factor colorSrcFactor = Factor.SrcAlpha;
@@ -170,9 +169,8 @@ struct BlendMode
      *      blendEquation     = Specifies how to combine the source and
      *                          destination colors and alpha
      */
-    @nogc @safe
-    this(Factor sourceFactor, Factor destinationFactor,
-         Equation blendEquation = Equation.Add)
+    @nogc @safe this(Factor sourceFactor, Factor destinationFactor,
+            Equation blendEquation = Equation.Add)
     {
         colorSrcFactor = sourceFactor;
         colorDstFactor = destinationFactor;
@@ -199,10 +197,8 @@ struct BlendMode
      *      alphaBlendEquation     = Specifies how to combine the source and
      *                               destination alphas
      */
-    @nogc @safe
-    this(Factor colorSourceFactor, Factor colorDestinationFactor,
-              Equation colorBlendEquation, Factor alphaSourceFactor,
-              Factor alphaDestinationFactor, Equation alphaBlendEquation)
+    @nogc @safe this(Factor colorSourceFactor, Factor colorDestinationFactor, Equation colorBlendEquation,
+            Factor alphaSourceFactor, Factor alphaDestinationFactor, Equation alphaBlendEquation)
     {
         colorSrcFactor = colorSourceFactor;
         colorDstFactor = colorDestinationFactor;
@@ -213,29 +209,26 @@ struct BlendMode
         alphaEquation = alphaBlendEquation;
     }
 
-    @nogc @safe
-    bool opEquals(BlendMode rhs) const
+    @nogc @safe bool opEquals(BlendMode rhs) const
     {
-        return colorSrcFactor == rhs.colorSrcFactor &&
-               colorDstFactor == rhs.colorDstFactor &&
-               colorEquation == rhs.colorEquation   &&
-               alphaSrcFactor == rhs.alphaSrcFactor &&
-               alphaDstFactor == rhs.alphaDstFactor &&
-               alphaEquation == rhs.alphaEquation;
+        return colorSrcFactor == rhs.colorSrcFactor
+            && colorDstFactor == rhs.colorDstFactor && colorEquation == rhs.colorEquation
+            && alphaSrcFactor == rhs.alphaSrcFactor
+            && alphaDstFactor == rhs.alphaDstFactor && alphaEquation == rhs.alphaEquation;
     }
 }
 
 unittest
 {
-    import std.stdio;
+    import std.stdio : writeln;
+
     writeln("Running BlendMode unittest...");
 
     alias Factor = BlendMode.Factor;
     alias Equation = BlendMode.Equation;
 
-    BlendMode bm1 = BlendMode(Factor.SrcAlpha, Factor.OneMinusSrcAlpha,
-                                     Equation.Add, Factor.One, Factor.OneMinusSrcAlpha,
-                                     Equation.Add);
-    BlendMode bm2 = BlendMode.Alpha;
+    const BlendMode bm1 = BlendMode(Factor.SrcAlpha, Factor.OneMinusSrcAlpha,
+            Equation.Add, Factor.One, Factor.OneMinusSrcAlpha, Equation.Add);
+    const BlendMode bm2 = BlendMode.Alpha;
     assert(bm1 == bm2);
 }
