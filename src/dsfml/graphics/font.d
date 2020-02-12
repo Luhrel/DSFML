@@ -382,8 +382,8 @@ class Font
 
 package extern (C)
 {
-    struct sfFont;
-    struct sfFontInfo
+    struct sfFont; // @suppress(dscanner.style.phobos_naming_convention)
+    struct sfFontInfo // @suppress(dscanner.style.phobos_naming_convention)
     {
         const(char)* family;
     }

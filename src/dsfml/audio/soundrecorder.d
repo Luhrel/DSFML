@@ -439,7 +439,7 @@ private extern (C)
     alias sfSoundRecorderProcessCallback = byte function(const short*, size_t, void*);
     alias sfSoundRecorderStopCallback = void function(void*);
 
-    struct sfSoundRecorder;
+    struct sfSoundRecorder; // @suppress(dscanner.style.phobos_naming_convention)
 
 @nogc @safe:
 

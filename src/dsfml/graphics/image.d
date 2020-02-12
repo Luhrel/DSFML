@@ -418,7 +418,7 @@ class Image
 
 package extern (C)
 {
-    struct sfImage;
+    struct sfImage; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

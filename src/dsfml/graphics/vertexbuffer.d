@@ -412,7 +412,7 @@ class VertexBuffer : Drawable
 
 package extern (C)
 {
-    struct sfVertexBuffer;
+    struct sfVertexBuffer; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

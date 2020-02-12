@@ -649,7 +649,7 @@ class Shape : Transformable, Drawable
 
 package extern (C)
 {
-    struct sfShape;
+    struct sfShape; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 private extern (C)

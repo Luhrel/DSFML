@@ -681,7 +681,7 @@ class Shader
 
 package extern (C)
 {
-    struct sfShader;
+    struct sfShader; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

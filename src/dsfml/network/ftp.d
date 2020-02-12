@@ -727,10 +727,10 @@ class Ftp
 
 @nogc @safe private extern (C)
 {
-    struct sfFtp;
-    struct sfFtpResponse;
-    struct sfFtpDirectoryResponse;
-    struct sfFtpListingResponse;
+    struct sfFtp; // @suppress(dscanner.style.phobos_naming_convention)
+    struct sfFtpResponse; // @suppress(dscanner.style.phobos_naming_convention)
+    struct sfFtpDirectoryResponse; // @suppress(dscanner.style.phobos_naming_convention)
+    struct sfFtpListingResponse; // @suppress(dscanner.style.phobos_naming_convention)
 
     // sfFtpListingResponse
     void sfFtpListingResponse_destroy(sfFtpListingResponse* ftpListingResponse);

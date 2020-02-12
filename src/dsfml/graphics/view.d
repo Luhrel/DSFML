@@ -432,7 +432,7 @@ class View
 
 package extern (C)
 {
-    struct sfView;
+    struct sfView; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

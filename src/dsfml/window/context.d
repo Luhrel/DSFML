@@ -161,7 +161,7 @@ class Context
 
 @nogc @safe private extern (C)
 {
-    struct sfContext;
+    struct sfContext; // @suppress(dscanner.style.phobos_naming_convention)
 
     sfContext* sfContext_create();
     void sfContext_destroy(sfContext* context);

@@ -1158,7 +1158,7 @@ class RenderWindow : Window, RenderTarget
 
 package(dsfml) extern (C)
 {
-    struct sfRenderWindow;
+    struct sfRenderWindow; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

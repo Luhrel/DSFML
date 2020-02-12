@@ -181,7 +181,7 @@ abstract class InputStream
 
 package(dsfml) extern (C)
 {
-    struct sfInputStream
+    struct sfInputStream // @suppress(dscanner.style.phobos_naming_convention)
     {
         sfInputStreamReadFunc read;
         sfInputStreamSeekFunc seek;

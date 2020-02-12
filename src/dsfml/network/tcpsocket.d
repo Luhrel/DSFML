@@ -364,7 +364,7 @@ class TcpSocket : Socket
 
 package extern (C)
 {
-    struct sfTcpSocket;
+    struct sfTcpSocket; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

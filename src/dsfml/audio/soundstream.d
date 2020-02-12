@@ -568,7 +568,7 @@ private extern (C)
     /// Type of the callback used to seek in a sound stream
     alias sfSoundStreamSeekCallback = void function(Time, void*);
 
-    struct sfSoundStream;
+    struct sfSoundStream; // @suppress(dscanner.style.phobos_naming_convention)
 
 @nogc @safe:
 

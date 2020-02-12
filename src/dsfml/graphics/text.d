@@ -783,7 +783,7 @@ class Text : Transformable, Drawable
 
 package extern (C)
 {
-    struct sfText;
+    struct sfText; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

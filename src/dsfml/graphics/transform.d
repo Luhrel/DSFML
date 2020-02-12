@@ -537,7 +537,7 @@ struct Transform
 
 package extern (C)
 {
-    struct sfTransform
+    struct sfTransform // @suppress(dscanner.style.phobos_naming_convention)
     {
         float[9] matrix;
     }

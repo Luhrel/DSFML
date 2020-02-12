@@ -700,7 +700,7 @@ class ConvexShape : Shape
 
 package extern (C)
 {
-    struct sfConvexShape;
+    struct sfConvexShape; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

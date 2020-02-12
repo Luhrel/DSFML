@@ -186,7 +186,7 @@ class TcpListener : Socket
 
 package extern (C)
 {
-    struct sfTcpListener;
+    struct sfTcpListener; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

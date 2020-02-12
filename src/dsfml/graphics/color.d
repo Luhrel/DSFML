@@ -299,7 +299,7 @@ struct Color
 
 private extern (C)
 {
-    struct sfColor;
+    struct sfColor; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 unittest

@@ -678,7 +678,7 @@ class RenderTexture : RenderTarget
 
 package extern (C)
 {
-    struct sfRenderTexture;
+    struct sfRenderTexture; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

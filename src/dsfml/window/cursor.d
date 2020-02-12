@@ -190,7 +190,7 @@ class Cursor
 
 package(dsfml) extern (C)
 {
-    struct sfCursor;
+    struct sfCursor; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

@@ -422,9 +422,9 @@ class Http
 
 @nogc @safe private extern (C)
 {
-    struct sfHttp;
-    struct sfHttpRequest;
-    struct sfHttpResponse;
+    struct sfHttp; // @suppress(dscanner.style.phobos_naming_convention)
+    struct sfHttpRequest; // @suppress(dscanner.style.phobos_naming_convention)
+    struct sfHttpResponse; // @suppress(dscanner.style.phobos_naming_convention)
 
     sfHttpRequest* sfHttpRequest_create();
     void sfHttpRequest_destroy(sfHttpRequest* httpRequest);

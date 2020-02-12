@@ -597,7 +597,7 @@ class Music : SoundStream
 // CSFML's functions.
 @nogc @safe private extern (C)
 {
-    struct sfMusic;
+    struct sfMusic; // @suppress(dscanner.style.phobos_naming_convention)
 
     sfMusic* sfMusic_createFromFile(const char* filename);
     sfMusic* sfMusic_createFromMemory(const void* data, size_t sizeInBytes);

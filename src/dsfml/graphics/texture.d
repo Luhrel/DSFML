@@ -688,7 +688,7 @@ class Texture
 
 package extern (C)
 {
-    struct sfTexture;
+    struct sfTexture; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

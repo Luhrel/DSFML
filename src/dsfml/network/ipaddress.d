@@ -303,7 +303,7 @@ private alias ntohl = htonl;
 
 package extern (C)
 {
-    struct sfIpAddress
+    struct sfIpAddress // @suppress(dscanner.style.phobos_naming_convention)
     {
         char[16] address;
     }

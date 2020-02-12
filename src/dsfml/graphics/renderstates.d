@@ -99,7 +99,7 @@ struct RenderStates
 
 package extern (C)
 {
-    struct sfRenderStates
+    struct sfRenderStates // @suppress(dscanner.style.phobos_naming_convention)
     {
         BlendMode blendMode; // Blending mode
         sfTransform transform; // Transform

@@ -540,7 +540,7 @@ class Packet
 
 package extern (C)
 {
-    struct sfPacket;
+    struct sfPacket; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

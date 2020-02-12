@@ -333,7 +333,7 @@ class UdpSocket : Socket
 
 package extern (C)
 {
-    struct sfUdpSocket;
+    struct sfUdpSocket; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

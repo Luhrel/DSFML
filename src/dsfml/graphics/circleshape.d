@@ -665,7 +665,7 @@ class CircleShape : Shape
 
 package extern (C)
 {
-    struct sfCircleShape;
+    struct sfCircleShape; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

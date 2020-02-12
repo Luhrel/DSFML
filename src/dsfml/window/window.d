@@ -675,7 +675,7 @@ class Window
 
 package(dsfml) extern (C)
 {
-    struct sfWindow;
+    struct sfWindow; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

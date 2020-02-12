@@ -338,7 +338,7 @@ class SoundBuffer
 
 package extern (C)
 {
-    struct sfSoundBuffer;
+    struct sfSoundBuffer; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 // CSFML's functions.
@@ -382,8 +382,8 @@ unittest
     // 2 channels (stereo)
     assert(soundbuffer.channelCount == 2);
 
-    string filename_copy = baseName(stripExtension(filename))
-        ~ " (Copy from DSFML)" ~ extension(filename);
+    string filename_copy = baseName(stripExtension(filename)) ~
+        " (Copy from DSFML)" ~ extension(filename);
 
     // Displaying sampleCount because I didn't found how to get it (externally/not with SFML)
     writefln("\tsampleCount: %s", soundbuffer.sampleCount);

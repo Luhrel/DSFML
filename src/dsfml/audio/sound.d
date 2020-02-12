@@ -451,7 +451,7 @@ class Sound : SoundSource
 // CSFML's functions.
 @nogc @safe private extern (C)
 {
-    struct sfSound;
+    struct sfSound; // @suppress(dscanner.style.phobos_naming_convention)
 
     sfSound* sfSound_create();
     sfSound* sfSound_copy(const sfSound* sound);

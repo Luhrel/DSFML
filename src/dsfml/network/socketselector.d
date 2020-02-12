@@ -326,7 +326,7 @@ class SocketSelector
 
 @nogc @safe private extern (C)
 {
-    struct sfSocketSelector;
+    struct sfSocketSelector; // @suppress(dscanner.style.phobos_naming_convention)
 
     sfSocketSelector* sfSocketSelector_create();
     sfSocketSelector* sfSocketSelector_copy(const sfSocketSelector* selector);

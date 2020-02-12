@@ -437,7 +437,7 @@ class Transformable
 
 @nogc @safe private extern (C)
 {
-    struct sfTransformable;
+    struct sfTransformable; // @suppress(dscanner.style.phobos_naming_convention)
 
     sfTransformable* sfTransformable_create();
     sfTransformable* sfTransformable_copy(const sfTransformable* transformable);

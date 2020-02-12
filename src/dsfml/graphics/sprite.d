@@ -583,7 +583,7 @@ class Sprite : Transformable, Drawable
 
 package extern (C)
 {
-    struct sfSprite;
+    struct sfSprite; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)

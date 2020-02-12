@@ -638,7 +638,7 @@ class RectangleShape : Shape
 
 package extern (C)
 {
-    struct sfRectangleShape;
+    struct sfRectangleShape; // @suppress(dscanner.style.phobos_naming_convention)
 }
 
 @nogc @safe private extern (C)
