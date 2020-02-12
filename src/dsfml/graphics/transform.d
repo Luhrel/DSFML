@@ -467,10 +467,11 @@ struct Transform
      * Returns:
      *      New combined transform.
      */
-    @nogc @safe Transform opBinary(string op)(Transform rhs) if (op == "*" || op == "/")
+    @safe Transform opBinary(string op)(Transform rhs) const
+            if (op == "*" || op == "/")
     {
         static if (op == "*")
-            return this.combine(rhs);
+            return dup().combine(rhs);
         else static if (op == "/")
             return this * rhs.inverse();
     }
@@ -535,6 +536,12 @@ struct Transform
     @nogc @safe sfTransform toc()
     {
         return m_transform;
+    }
+
+    /// Duplicates this Transform
+    @safe Transform dup() const
+    {
+        return Transform(m_transform.matrix);
     }
 }
 

@@ -399,7 +399,7 @@ unittest
 
         Packet packet = new Packet();
         IpAddress address;
-        const ushort client_port;
+        ushort client_port;
         status = socket.receive(packet, address, client_port);
         assert(status == Socket.Status.Done);
         assert(address == IpAddress.LocalHost);

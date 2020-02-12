@@ -202,10 +202,12 @@ package extern (C)
 
 unittest
 {
-    import std.stdio : writeln;
+
     import dsfml.network.packet : Packet;
-    import dsfml.system.thread : Thread;
     import dsfml.system.sleep : sleep;
+    import dsfml.system.thread : Thread;
+    import dsfml.system.time : seconds;
+    import std.stdio : writeln;
 
     writeln("Running TcpListener unittest...");
 
