@@ -71,7 +71,7 @@ interface SoundSource
          * Params:
          *      _pitch = New pitch to apply to the sound
          */
-        abstract void pitch(float _pitch);
+        void pitch(float _pitch);
 
         /**
          * Get the pitch of the sound.
@@ -79,7 +79,7 @@ interface SoundSource
          * Returns:
          *      Pitch of the sound
          */
-        abstract float pitch();
+        float pitch();
     }
 
     @property
@@ -93,7 +93,7 @@ interface SoundSource
          * Params:
          *      _volume = Volume of the sound
          */
-        abstract void volume(float _volume);
+        void volume(float _volume);
 
         /**
          * Get the volume of the sound.
@@ -101,7 +101,7 @@ interface SoundSource
          * Returns:
          *      Volume of the sound, in the range [0, 100]
          */
-        abstract float volume();
+        float volume();
     }
 
     @property
@@ -115,14 +115,14 @@ interface SoundSource
          * Params:
          *      _position = Position of the sound in the scene
          */
-        abstract void position(Vector3f _position);
+        void position(Vector3f _position);
 
         /**
          * Get the 3D position of the sound in the audio scene.
          *
          * Returns: Position of the sound
          */
-        abstract Vector3f position();
+        Vector3f position();
     }
 
     @property
@@ -139,7 +139,7 @@ interface SoundSource
          * Params:
          *      relative = True to set the position relative, false to set it absolute
          */
-        abstract void relativeToListener(bool relative);
+        void relativeToListener(bool relative);
 
         /**
          * Tell whether the sound's position is relative to the listener or is absolute.
@@ -147,7 +147,7 @@ interface SoundSource
          * Returns:
          *      true if the position is relative, false if it's absolute.
          */
-        abstract bool relativeToListener();
+        bool relativeToListener();
     }
 
     @property
@@ -167,7 +167,7 @@ interface SoundSource
          * See_Also:
          *      attenuation
          */
-        abstract void minDistance(float distance);
+        void minDistance(float distance);
 
         /**
          * Get the minimum distance of the sound.
@@ -175,7 +175,7 @@ interface SoundSource
          * Returns:
          *      Minimum distance of the sound
          */
-        abstract float minDistance();
+        float minDistance();
     }
 
     @property
@@ -198,7 +198,7 @@ interface SoundSource
          * See_Also:
          *      minDistance
          */
-        abstract void attenuation(float _attenuation);
+        void attenuation(float _attenuation);
 
         /**
          * Get the attenuation factor of the sound.
@@ -209,7 +209,7 @@ interface SoundSource
          * See_Also:
          *      minDistance
          */
-        abstract float attenuation();
+        float attenuation();
     }
 
     @property
@@ -220,7 +220,7 @@ interface SoundSource
          * Returns:
          *      Current status of the sound
          */
-        abstract Status status();
+        Status status();
     }
 
     /**
@@ -232,7 +232,7 @@ interface SoundSource
      * See_Also:
      *      pause, stop
      */
-    abstract void play();
+    void play();
 
     /**
      * Pause the sound source.
@@ -243,7 +243,7 @@ interface SoundSource
      * See_Also:
      *      play, stop
      */
-    abstract void pause();
+    void pause();
 
     /**
      * Stop playing the sound source.
@@ -255,5 +255,5 @@ interface SoundSource
      * See_Also:
      *      play, pause
      */
-    abstract void stop();
+    void stop();
 }
