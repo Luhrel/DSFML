@@ -511,13 +511,16 @@ struct Transform
         return transformPoint(vector);
     }
 
+    // dfmt off
     /// The identity transform (does nothing).
     @nogc @safe static const(Transform) identity()
     {
-        return Transform([1, 0, 0, 0, 1, 0, 0, 0, 1]);
+        return Transform([1, 0, 0,
+                          0, 1, 0,
+                          0, 0, 1]);
     }
-    // dfmt off
-    @safe string toString()
+
+    @safe string toString() const
     {
         import std.conv : text;
 

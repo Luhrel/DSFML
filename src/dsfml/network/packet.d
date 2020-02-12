@@ -509,7 +509,7 @@ class Packet
      * See_Also:
      *      endOfPacket
      */
-    @nogc @safe bool opCast(T : bool)()
+    @nogc @safe bool opCast(T : bool)() const
     {
         // sfPacket_canRead calls the BoolType operator of SFML's sf::Packet
         return sfPacket_canRead(m_packet);

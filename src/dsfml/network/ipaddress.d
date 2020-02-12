@@ -248,13 +248,13 @@ struct IpAddress
         return IpAddress(sfIpAddress_getPublicAddress(timeout).address.to!string);
     }
 
-    // Overloads the == operator.
-    @nogc @safe bool opEquals(IpAddress otherIpAddress)
+    // Overloads the `==` operator.
+    @nogc @safe bool opEquals(IpAddress otherIpAddress) const
     {
         return m_valid == otherIpAddress.m_valid && m_address == otherIpAddress.m_address;
     }
 
-    // Overloads the < > <= >= operators.
+    // Overloads the `<`, `>`, `<=` and `>=` operators.
     @nogc @safe int opCmp(ref const IpAddress otherIpAddress) const
     {
         if (m_valid < otherIpAddress.m_valid)
@@ -266,7 +266,7 @@ struct IpAddress
         return 1;
     }
 
-    /*
+    /**
      * Allow to declare (e.g.): IpAddress address = "192.168.0.124";
      */
     @safe IpAddress opAssign(string address)
