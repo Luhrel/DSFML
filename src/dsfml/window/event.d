@@ -60,157 +60,251 @@
  */
 module dsfml.window.event;
 
+import dsfml.window.joystick;
 import dsfml.window.keyboard;
 import dsfml.window.mouse;
 import dsfml.window.sensor;
-import dsfml.window.joystick;
 
 /**
  * Defines a system event and its parameters.
  */
 struct Event
 {
+    /// Definition of all the event types
     enum EventType
     {
-        Closed,                 /// The window requested to be closed (no data)
-        Resized,                /// The window was resized (data in event.size)
-        LostFocus,              /// The window lost the focus (no data)
-        GainedFocus,            /// The window gained the focus (no data)
-        TextEntered,            /// A character was entered (data in event.text)
-        KeyPressed,             /// A key was pressed (data in event.key)
-        KeyReleased,            /// A key was released (data in event.key)
-        deprecated("MouseWheelMoved is deprecated, please use MouseWheelScrolled instead.")
-        MouseWheelMoved,        /// The mouse wheel was scrolled (data in event.mouseWheel) (deprecated)
-        MouseWheelScrolled,     /// The mouse wheel was scrolled (data in event.mouseWheelScroll)
-        MouseButtonPressed,     /// A mouse button was pressed (data in event.mouseButton)
-        MouseButtonReleased,    /// A mouse button was released (data in event.mouseButton)
-        MouseMoved,             /// The mouse cursor moved (data in event.mouseMove)
-        MouseEntered,           /// The mouse cursor entered the area of the window (no data)
-        MouseLeft,              /// The mouse cursor left the area of the window (no data)
-        JoystickButtonPressed,  /// A joystick button was pressed (data in event.joystickButton)
-        JoystickButtonReleased, /// A joystick button was released (data in event.joystickButton)
-        JoystickMoved,          /// The joystick moved along an axis (data in event.joystickMove)
-        JoystickConnected,      /// A joystick was connected (data in event.joystickConnect)
-        JoystickDisconnected,   /// A joystick was disconnected (data in event.joystickConnect)
-        TouchBegan,             /// A touch event began (data in event.touch)
-        TouchMoved,             /// A touch moved (data in event.touch)
-        TouchEnded,             /// A touch event ended (data in event.touch)
-        SensorChanged,          /// A sensor value changed (data in event.sensor)
+        /// The window requested to be closed (no data)
+        Closed,
+        /// The window was resized (data in event.size)
+        Resized,
+        /// The window lost the focus (no data)
+        LostFocus,
+        /// The window gained the focus (no data)
+        GainedFocus,
+        /// A character was entered (data in event.text)
+        TextEntered,
+        /// A key was pressed (data in event.key)
+        KeyPressed,
+        /// A key was released (data in event.key)
+        KeyReleased,
+        /// The mouse wheel was scrolled (data in event.mouseWheel) (deprecated)
+        deprecated("Use MouseWheelScrolled instead.") MouseWheelMoved,
+        /// The mouse wheel was scrolled (data in event.mouseWheelScroll)
+        MouseWheelScrolled,
+        /// A mouse button was pressed (data in event.mouseButton)
+        MouseButtonPressed,
+        /// A mouse button was released (data in event.mouseButton)
+        MouseButtonReleased,
+        /// The mouse cursor moved (data in event.mouseMove)
+        MouseMoved,
+        /// The mouse cursor entered the area of the window (no data)
+        MouseEntered,
+        /// The mouse cursor left the area of the window (no data)
+        MouseLeft,
+        /// A joystick button was pressed (data in event.joystickButton)
+        JoystickButtonPressed,
+        /// A joystick button was released (data in event.joystickButton)
+        JoystickButtonReleased,
+        /// The joystick moved along an axis (data in event.joystickMove)
+        JoystickMoved,
+        /// A joystick was connected (data in event.joystickConnect)
+        JoystickConnected,
+        /// A joystick was disconnected (data in event.joystickConnect)
+        JoystickDisconnected,
+        /// A touch event began (data in event.touch)
+        TouchBegan,
+        /// A touch moved (data in event.touch)
+        TouchMoved,
+        /// A touch event ended (data in event.touch)
+        TouchEnded,
+        /// A sensor value changed (data in event.sensor)
+        SensorChanged,
 
-        Count,                  /// Keep last -- the total number of event types
+        /// Keep last -- the total number of event types
+        Count,
     }
 
+    /// Keyboard event parameters
     struct KeyEvent
     {
+        /// Type of the event
         EventType type;
+        /// Code of the key that has been pressed
         Keyboard.Key code;
+        /// Is the Alt key pressed?
         bool alt;
+        /// Is the Control key pressed?
         bool control;
+        /// Is the Shift key pressed?
         bool shift;
+        /// Is the System key pressed?
         bool system;
     }
 
+    /// Text event parameters
     struct TextEvent
     {
+        /// Type of the event
         EventType type;
+        /// UTF-32 Unicode value of the character
         uint unicode;
     }
 
+    /// Mouse move event parameters
     struct MouseMoveEvent
     {
+        /// Type of the event
         EventType type;
+        /// X position of the mouse pointer, relative to the left of the owner window
         int x;
+        /// Y position of the mouse pointer, relative to the top of the owner window
         int y;
     }
 
+    /// Mouse buttons events parameters
     struct MouseButtonEvent
     {
+        /// Type of the event
         EventType type;
+        /// Code of the button that has been pressed
         Mouse.Button button;
+        /// X position of the mouse pointer, relative to the left of the owner window
         int x;
+        /// Y position of the mouse pointer, relative to the top of the owner window
         int y;
     }
 
-    deprecated("MouseWheelEvent is deprecated, please use MouseWheelScrollEvent instead.")
-    struct MouseWheelEvent
+    /// Mouse wheel events parameters
+    deprecated("Use MouseWheelScrollEvent instead.") struct MouseWheelEvent
     {
+        /// Type of the event
         EventType type;
+        /// Number of ticks the wheel has moved (positive is up, negative is down)
         int delta;
+        /// X position of the mouse pointer, relative to the left of the owner window
         int x;
+        /// Y position of the mouse pointer, relative to the top of the owner window
         int y;
     }
 
+    /// Mouse wheel events parameters
     struct MouseWheelScrollEvent
     {
+        /// Type of the event
         EventType type;
+        /// Which wheel (for mice with multiple ones)
         Mouse.Wheel wheel;
+        /// Wheel offset (positive is up/left, negative is down/right). High-precision mice may use non-integral offsets.
         float delta;
+        /// X position of the mouse pointer, relative to the left of the owner window
         int x;
+        /// Y position of the mouse pointer, relative to the top of the owner window
         int y;
     }
 
+    /// Joystick axis move event parameters
     struct JoystickMoveEvent
     {
+        /// Type of the event
         EventType type;
+        /// Index of the joystick (in range `[0 .. Joystick.Count - 1]`)
         uint joystickId;
+        /// Axis on which the joystick moved
         Joystick.Axis axis;
+        /// New position on the axis (in range `[-100 .. 100]`)
         float position;
     }
 
+    /// Joystick buttons events parameters
     struct JoystickButtonEvent
     {
+        /// Type of the event
         EventType type;
+        /// Index of the joystick (in range `[0 .. Joystick.Count - 1]`)
         uint joystickId;
+        /// Index of the button that has been pressed (in range `[0 .. Joystick.ButtonCount - 1]`)
         uint button;
     }
 
+    /// Joystick connection/disconnection event parameters
     struct JoystickConnectEvent
     {
+        /// Type of the event
         EventType type;
+        /// Index of the joystick (in range `[0 .. Joystick.Count - 1]`)
         uint joystickId;
     }
 
+    /// Size events parameters
     struct SizeEvent
     {
+        /// Type of the event
         EventType type;
+        /// New width, in pixels
         uint width;
+        /// New height, in pixels
         uint height;
     }
 
+    /// Touch events parameters
     struct TouchEvent
     {
+        /// Type of the event
         EventType type;
+        /// Index of the finger in case of multi-touch events
         uint finger;
+        /// X position of the touch, relative to the left of the owner window
         int x;
+        /// Y position of the touch, relative to the top of the owner window
         int y;
     }
 
+    /// Sensor event parameters
     struct SensorEvent
     {
+        /// Type of the event
         EventType type;
+        /// Type of the sensor
         Sensor.Type sensorType;
+        /// Current value of the sensor on X axis
         float x;
+        /// Current value of the sensor on Y axis
         float y;
+        /// Current value of the sensor on Z axis
         float z;
     }
 
     // Allow to do (e.g.) Event.Closed instead of Event.EventType.Closed, etc.
     alias EventType this;
 
+    /// sfEvent defines a system event and its parameters
     union
     {
-        EventType type;                         /// Type of the event
-        SizeEvent size;                         /// Size event parameters
-        KeyEvent key;                           /// Key event parameters
-        TextEvent text;                         /// Text event parameters
-        MouseMoveEvent mouseMove;               /// Mouse move event parameters
-        MouseButtonEvent mouseButton;           /// Mouse button event parameters
-        MouseWheelEvent mouseWheel;             /// Mouse wheel event parameters (deprecated)
-        MouseWheelScrollEvent mouseWheelScroll; /// Mouse wheel event parameters
-        JoystickMoveEvent joystickMove;         /// Joystick move event parameters
-        JoystickButtonEvent joystickButton;     /// Joystick button event parameters
-        JoystickConnectEvent joystickConnect;   /// Joystick (dis)connect event parameters
-        TouchEvent touch;                       /// Touch events parameters
-        SensorEvent sensor;                     /// Sensor event parameters
+        /// Type of the event
+        EventType type;
+        /// Size event parameters
+        SizeEvent size;
+        /// Key event parameters
+        KeyEvent key;
+        /// Text event parameters
+        TextEvent text;
+        /// Mouse move event parameters
+        MouseMoveEvent mouseMove;
+        /// Mouse button event parameters
+        MouseButtonEvent mouseButton;
+        /// Mouse wheel event parameters (deprecated)
+        MouseWheelEvent mouseWheel;
+        /// Mouse wheel event parameters
+        MouseWheelScrollEvent mouseWheelScroll;
+        /// Joystick move event parameters
+        JoystickMoveEvent joystickMove;
+        /// Joystick button event parameters
+        JoystickButtonEvent joystickButton;
+        /// Joystick (dis)connect event parameters
+        JoystickConnectEvent joystickConnect;
+        /// Touch events parameters
+        TouchEvent touch;
+        /// Sensor event parameters
+        SensorEvent sensor;
     }
 }
