@@ -96,6 +96,7 @@ struct ContextSettings
     /// Whether the context framebuffer is sRGB capable.
     bool sRgbCapable = false;
 
+    /// Enumeration of the context attribute flags
     enum Attribute
     {
         Default = 0,

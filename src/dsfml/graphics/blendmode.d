@@ -209,12 +209,15 @@ struct BlendMode
         alphaEquation = alphaBlendEquation;
     }
 
+    /**
+     * Overloads the `==` operator.
+     */
     @nogc @safe bool opEquals(BlendMode rhs) const
     {
-        return colorSrcFactor == rhs.colorSrcFactor
-            && colorDstFactor == rhs.colorDstFactor && colorEquation == rhs.colorEquation
-            && alphaSrcFactor == rhs.alphaSrcFactor
-            && alphaDstFactor == rhs.alphaDstFactor && alphaEquation == rhs.alphaEquation;
+        return colorSrcFactor == rhs.colorSrcFactor &&
+            colorDstFactor == rhs.colorDstFactor && colorEquation == rhs.colorEquation &&
+            alphaSrcFactor == rhs.alphaSrcFactor &&
+            alphaDstFactor == rhs.alphaDstFactor && alphaEquation == rhs.alphaEquation;
     }
 }
 

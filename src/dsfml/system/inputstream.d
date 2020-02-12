@@ -84,6 +84,7 @@ abstract class InputStream
 {
     private sfInputStream* m_inputstream;
 
+    /// Default constructor.
     this()
     {
         m_inputstream.read = &readCallback;

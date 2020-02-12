@@ -81,6 +81,7 @@ module dsfml.window.joystick;
  */
 final abstract class Joystick
 {
+    /// Structure holding a joystick's identification
     struct Identification
     {
         /// Name of the joystick.

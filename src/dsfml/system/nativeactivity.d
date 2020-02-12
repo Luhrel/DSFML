@@ -28,6 +28,7 @@ module dsfml.system.nativeactivity;
 
 version (Android)
 {
+    /// Abstract struct representing an Android native activity.
     struct ANativeActivity;
 
     @nogc @safe extern (C++,sf)

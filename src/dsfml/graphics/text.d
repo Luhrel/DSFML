@@ -248,7 +248,7 @@ class Text : Transformable, Drawable
      * See_Also:
      *      fillColor
      */
-    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.") @property @nogc @safe void color(
+    deprecated("Use fillColor() or outlineColor() instead.") @property @nogc @safe void color(
             Color _color)
     {
         sfText_setColor(m_text, _color);
@@ -263,7 +263,7 @@ class Text : Transformable, Drawable
      * See_Also:
      *      fillColor
      */
-    deprecated("There is now fill and outline colors instead of a single global color. Use fillColor() or outlineColor() instead.") @property @nogc @safe Color color()
+    deprecated("Use fillColor() or outlineColor() instead.") @property @nogc @safe Color color()
     {
         return sfText_getColor(m_text);
     }

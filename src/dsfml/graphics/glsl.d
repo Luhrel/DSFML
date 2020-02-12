@@ -122,6 +122,7 @@ alias Bvec4 = Vector4!(bool);
  */
 struct Mat3
 {
+    /// Matrix data
     float[3 * 3] array;
 }
 
@@ -150,6 +151,7 @@ struct Mat3
  */
 struct Mat4
 {
+    /// Matrix data
     float[4 * 4] array;
 }
 

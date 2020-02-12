@@ -533,7 +533,7 @@ struct Transform
     // dfmt on
 
     // Returns the C struct.
-    @nogc @safe sfTransform toc()
+    @nogc @safe package sfTransform toc()
     {
         return m_transform;
     }
