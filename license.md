@@ -1,5 +1,4 @@
-
-DSFML - The Simple and Fast Multimedia Library for D
+# DSFML - The Simple and Fast Multimedia Library for D
 
 Copyright (c) 2013 - 2020 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
 
@@ -15,3 +14,8 @@ If you use this software in a product, an acknowledgment in the product document
 2. Altered source versions must be plainly marked as such, and must not be misrepresented as being the original software.
 
 3. This notice may not be removed or altered from any source distribution
+
+## External libraries used by DSFML
+
+* _SFML_ (zlib/png license / Copyright Laurent Gomila)
+* _CSFML_ (zlib/png license / Copyright Laurent Gomila)
