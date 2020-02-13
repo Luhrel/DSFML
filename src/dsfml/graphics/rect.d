@@ -1,7 +1,7 @@
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
- * Copyright (c) 2013 - 2018 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
+ * Copyright (c) 2013 - 2020 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
@@ -240,8 +240,8 @@ struct Rect(T) if (isNumeric!(T))
     /// Compare two rectangles for equality.
     @nogc @safe bool opEquals(E)(const Rect!(E) otherRect) const if (isNumeric!(E))
     {
-        return left == otherRect.left && top == otherRect.top
-            && width == otherRect.width && height == otherRect.height;
+        return left == otherRect.left && top == otherRect.top &&
+            width == otherRect.width && height == otherRect.height;
     }
 
     /// Output the string representation of the Rect.

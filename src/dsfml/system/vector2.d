@@ -1,7 +1,7 @@
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
- * Copyright (c) 2013 - 2018 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
+ * Copyright (c) 2020 - 2018 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the

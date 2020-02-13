@@ -1,7 +1,7 @@
 /*
  * DSFML - The Simple and Fast Multimedia Library for D
  *
- * Copyright (c) 2013 - 2017 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
+ * Copyright (c) 2013 - 2020 Jeremy DeHaan (dehaan.jeremiah@gmail.com)
  *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from the
@@ -33,18 +33,18 @@ import std.getopt;
 
 static if (__VERSION__ < 2068L)
 {
-	static assert(0, "Please upgrade your compiler to v2.068 or later");
+    static assert(0, "Please upgrade your compiler to v2.068 or later");
 }
 
-version(DigitalMars)
+version (DigitalMars)
 {
     string compiler = "dmd ";
 }
-else version(GNU)
+else version (GNU)
 {
     string compiler = "gdc ";
 }
-else version(LDC)
+else version (LDC)
 {
     string compiler = "ldc2 ";
 }
@@ -86,18 +86,17 @@ string objExt;
 string singleFileSwitches;
 string archSwitch;
 
-
 //Possibly use this to completely automate the process for dmd/ldc users on windows
 //environment.get("VCINSTALLDIR");
 //will need to find an alternative for gdc users on windows in regards to mingw
 
-version(Windows)
+version (Windows)
 {
 }
-else version(linux)
+else version (linux)
 {
 }
-else version(OSX)
+else version (OSX)
 {
 }
 //FreeBSD Support coming soon!
@@ -106,14 +105,12 @@ else
     static assert(false, "DSFML is only supported on OSX, Windows, and Linux.");
 }
 
-
 string[5] modules = ["system", "audio", "network", "window", "graphics"];
 string selectedModule;
 
 //lists of d files and c++ object files
 string[][string] fileList;
 string[string] objectList;
-
 
 /**
  * Checks for any inconsistencies with the passed switchs.
@@ -123,17 +120,16 @@ string[string] objectList;
 bool checkSwitchErrors()
 {
     //can't force both
-    if(force32Build && force64Build)
+    if (force32Build && force64Build)
     {
         writeln("Can't use -m32 and -m64 together");
         return false;
     }
 
     //if other Switchs are used with -all
-    if(buildingAll)
+    if (buildingAll)
     {
-        if(buildingLibs || buildingDoc ||
-           buildingInterfaceFiles || buildingUnittests)
+        if (buildingLibs || buildingDoc || buildingInterfaceFiles || buildingUnittests)
         {
             writeln("Can't use -all with any other build switches ",
                     "(-lib, -doc, -import, -unittest)");
@@ -151,12 +147,12 @@ void initialize()
     archSwitch = "";
     postfix = "";
 
-    if(force32Build)
+    if (force32Build)
     {
         archSwitch = " -m32";
     }
 
-    if(force64Build)
+    if (force64Build)
     {
         archSwitch = " -m64";
     }
@@ -169,12 +165,12 @@ void initialize()
         objExt = ".obj";
 
         //Default to 64 bit on windows because why wouldn't we?
-        if(!force64Build || !force32Build)
+        if (!force64Build || !force32Build)
         {
             archSwitch = " -m64";
         }
 
-        if(force32Build)
+        if (force32Build)
         {
             archSwitch = " -m32mscoff";
         }
@@ -185,7 +181,7 @@ void initialize()
     }
     else
     {
-        version(linux)
+        version (linux)
             write("Building for Linux ");
         else
             write("Building for OSX ");
@@ -198,29 +194,28 @@ void initialize()
         makefileType = `"Unix Makefiles"`;
     }
 
-    version(DigitalMars)
+    version (DigitalMars)
     {
         writeln("with dmd");
         initializeDMD();
     }
-    else version(GNU)
+    else version (GNU)
     {
         writeln("with gdc");
         initializeGDC();
     }
-    else version(LDC)
+    else version (LDC)
     {
         writeln("with ldc");
         initializeLDC();
     }
 
     // add links to the SFML files for building the unit tests
-    unittestSwitches ~= lib("sfml-graphics")~lib("sfml-window")~
-                        lib("sfml-audio")~lib("sfml-network")~
-                        lib("sfml-system");
+    unittestSwitches ~= lib("sfml-graphics") ~ lib("sfml-window") ~ lib(
+            "sfml-audio") ~ lib("sfml-network") ~ lib("sfml-system");
 
     //need to link to c++ standard library on these systems
-    version(Posix)
+    version (Posix)
     {
         unittestSwitches ~= lib("stdc++");
     }
@@ -228,76 +223,65 @@ void initialize()
     //Does OSX need to include rpath for unittests?
 
     //populate file lists
-    fileList["system"] = ["clock", "config", "err", "inputstream", "lock",
-                          "mutex", "package", "sleep", "string", "thread",
-                          "time", "vector2", "vector3"];
+    fileList["system"] = [
+        "clock", "config", "err", "inputstream", "lock", "mutex", "package",
+        "sleep", "string", "thread", "time", "vector2", "vector3"
+    ];
 
-    fileList["audio"] = ["listener", "music", "package", "sound",
-                         "soundbuffer", "soundbufferrecorder",
-                         "inputsoundfile", "outputsoundfile",
-                         "soundrecorder", "soundsource", "soundstream"];
+    fileList["audio"] = [
+        "listener", "music", "package", "sound", "soundbuffer",
+        "soundbufferrecorder", "inputsoundfile", "outputsoundfile",
+        "soundrecorder", "soundsource", "soundstream"
+    ];
 
-    fileList["network"] = ["ftp", "http", "ipaddress", "package",
-                           "packet", "socket", "socketselector",
-                           "tcplistener", "tcpsocket", "udpsocket"];
+    fileList["network"] = [
+        "ftp", "http", "ipaddress", "package", "packet", "socket",
+        "socketselector", "tcplistener", "tcpsocket", "udpsocket"
+    ];
 
-    fileList["window"] = ["context", "contextsettings", "event", "joystick",
-                          "keyboard", "mouse", "sensor", "touch", "package",
-                          "videomode", "window", "windowhandle"];
+    fileList["window"] = [
+        "context", "contextsettings", "event", "joystick", "keyboard", "mouse",
+        "sensor", "touch", "package", "videomode", "window", "windowhandle"
+    ];
 
-    fileList["graphics"] = ["blendmode", "circleshape", "color", "convexshape",
-                            "drawable", "font", "glsl", "glyph", "image",
-                            "package", "primitivetype", "rect",
-                            "rectangleshape", "renderstates", "rendertarget",
-                            "rendertexture", "renderwindow", "shader", "shape",
-                            "sprite", "text", "texture", "transform",
-                            "transformable", "vertex", "vertexarray", "view"];
+    fileList["graphics"] = [
+        "blendmode", "circleshape", "color", "convexshape", "drawable", "font",
+        "glsl", "glyph", "image", "package", "primitivetype", "rect",
+        "rectangleshape", "renderstates", "rendertarget", "rendertexture",
+        "renderwindow", "shader", "shape", "sprite", "text", "texture",
+        "transform", "transformable", "vertex", "vertexarray", "view"
+    ];
 
     //populate C++ object list
     string dir = "src/DSFMLC/System/CMakeFiles/dsfmlc-system.dir/";
-    objectList["system"] = dir~"Err.cpp"~objExt~" "~
-                           dir~"ErrStream.cpp"~objExt~" "~
-                           dir~"String.cpp"~objExt~" ";
+    objectList["system"] = dir ~ "Err.cpp" ~ objExt ~ " " ~ dir ~ "ErrStream.cpp" ~
+        objExt ~ " " ~ dir ~ "String.cpp" ~ objExt ~ " ";
 
     dir = "src/DSFMLC/Audio/CMakeFiles/dsfmlc-audio.dir/";
-    objectList["audio"] = dir~"InputSoundFile.cpp"~objExt~" "~
-                          dir~"Listener.cpp"~objExt~" "~
-                          dir~"OutputSoundFile.cpp"~objExt~" "~
-                          dir~"Sound.cpp"~objExt~" "~
-                          dir~"SoundBuffer.cpp"~objExt~" "~
-                          dir~"SoundRecorder.cpp"~objExt~" "~
-                          dir~"SoundStream.cpp"~objExt~" ";
+    objectList["audio"] = dir ~ "InputSoundFile.cpp" ~ objExt ~ " " ~ dir ~ "Listener.cpp" ~ objExt ~ " " ~
+        dir ~ "OutputSoundFile.cpp" ~ objExt ~ " " ~ dir ~ "Sound.cpp" ~ objExt ~ " " ~ dir ~
+        "SoundBuffer.cpp" ~ objExt ~ " " ~ dir ~ "SoundRecorder.cpp" ~ objExt ~ " " ~
+        dir ~ "SoundStream.cpp" ~ objExt ~ " ";
 
     dir = "src/DSFMLC/Network/CMakeFiles/dsfmlc-network.dir/";
-    objectList["network"] = dir~"Ftp.cpp"~objExt~" "~
-                            dir~"Http.cpp"~objExt~" "~
-                            dir~"IpAddress.cpp"~objExt~" "~
-                            dir~"Packet.cpp"~objExt~" "~
-                            dir~"SocketSelector.cpp"~objExt~" "~
-                            dir~"TcpListener.cpp"~objExt~" "~
-                            dir~"TcpSocket.cpp"~objExt~" "~
-                            dir~"UdpSocket.cpp"~objExt~" ";
+    objectList["network"] = dir ~ "Ftp.cpp" ~ objExt ~ " " ~ dir ~ "Http.cpp" ~ objExt ~
+        " " ~ dir ~ "IpAddress.cpp" ~ objExt ~ " " ~ dir ~ "Packet.cpp" ~ objExt ~ " " ~ dir ~
+        "SocketSelector.cpp" ~ objExt ~ " " ~ dir ~ "TcpListener.cpp" ~ objExt ~ " " ~
+        dir ~ "TcpSocket.cpp" ~ objExt ~ " " ~ dir ~ "UdpSocket.cpp" ~ objExt ~ " ";
 
     dir = "src/DSFMLC/Window/CMakeFiles/dsfmlc-window.dir/";
-    objectList["window"] = dir~"Context.cpp"~objExt~" "~
-                           dir~"Joystick.cpp"~objExt~" "~
-                           dir~"Keyboard.cpp"~objExt~" "~
-                           dir~"Mouse.cpp"~objExt~" "~
-                           dir~"Sensor.cpp"~objExt~" "~
-                           dir~"Touch.cpp"~objExt~" "~
-                           dir~"VideoMode.cpp"~objExt~" "~
-                           dir~"Window.cpp"~objExt~" ";
+    objectList["window"] = dir ~ "Context.cpp" ~ objExt ~ " " ~ dir ~ "Joystick.cpp" ~ objExt ~
+        " " ~ dir ~ "Keyboard.cpp" ~ objExt ~ " " ~ dir ~ "Mouse.cpp" ~ objExt ~ " " ~
+        dir ~ "Sensor.cpp" ~ objExt ~ " " ~ dir ~ "Touch.cpp" ~ objExt ~ " " ~ dir ~
+        "VideoMode.cpp" ~ objExt ~ " " ~ dir ~ "Window.cpp" ~ objExt ~ " ";
 
     dir = "src/DSFMLC/Graphics/CMakeFiles/dsfmlc-graphics.dir/";
-    objectList["graphics"] = dir~"Font.cpp"~objExt~" "~
-                             dir~"Image.cpp"~objExt~" "~
-                             dir~"RenderTexture.cpp"~objExt~" "~
-                             dir~"RenderWindow.cpp"~objExt~" "~
-                             dir~"Shader.cpp"~objExt~" "~
-                             dir~"Texture.cpp"~objExt~" "~
-                             dir~"Transform.cpp"~objExt~" ";
+    objectList["graphics"] = dir ~ "Font.cpp" ~ objExt ~ " " ~ dir ~ "Image.cpp" ~ objExt ~ " " ~ dir ~
+        "RenderTexture.cpp" ~ objExt ~ " " ~ dir ~ "RenderWindow.cpp" ~ objExt ~ " " ~ dir ~
+        "Shader.cpp" ~ objExt ~ " " ~ dir ~ "Texture.cpp" ~ objExt ~ " " ~ dir ~
+        "Transform.cpp" ~ objExt ~ " ";
 
-    if(debugLibs)
+    if (debugLibs)
     {
         singleFileSwitches = " -g " ~ singleFileSwitches;
         postfix = "-d";
@@ -310,15 +294,13 @@ void initialize()
 void initializeDMD()
 {
     singleFileSwitches = archSwitch ~ " -c -O -release -inline -Isrc -of";
-    libSwitches = archSwitch ~ " -lib -oflib/"~prefix~"dsfml-";
+    libSwitches = archSwitch ~ " -lib -oflib/" ~ prefix ~ "dsfml-";
     docSwitches = " -c -o- -op -D -Dd../../doc -I../../src";
     interfaceSwitches = " -c -o- -op -H -Hd../import -I../src";
 
-    unittestSwitches =
-    archSwitch ~ " -main -unittest -version=DSFML_Unittest_System " ~
-    "-version=DSFML_Unittest_Window -version=DSFML_Unittest_Graphics " ~
-    "-version=DSFML_Unittest_Audio -version=DSFML_Unittest_Network " ~
-    "-ofunittest/unittest";
+    unittestSwitches = archSwitch ~ " -main -unittest -version=DSFML_Unittest_System " ~
+        "-version=DSFML_Unittest_Window -version=DSFML_Unittest_Graphics " ~
+        "-version=DSFML_Unittest_Audio -version=DSFML_Unittest_Network " ~ "-ofunittest/unittest";
 
     version (Windows)
     {
@@ -341,13 +323,11 @@ void initializeGDC()
     docSwitches = " -c -fdoc -I../../src";
     interfaceSwitches = " -c -fintfc -I../src -o obj.o";
 
-    unittestSwitches =
-    archSwitch ~ " -funittest -fversion=DSFML_Unittest_System " ~
-    "-fversion=DSFML_Unittest_Window -fversion=DSFML_Unittest_Graphics " ~
-    "-fversion=DSFML_Unittest_Audio -fversion=DSFML_Unittest_Network " ~
-    "-ounittest/unittest";
+    unittestSwitches = archSwitch ~ " -funittest -fversion=DSFML_Unittest_System " ~
+        "-fversion=DSFML_Unittest_Window -fversion=DSFML_Unittest_Graphics " ~
+        "-fversion=DSFML_Unittest_Audio -fversion=DSFML_Unittest_Network " ~ "-ounittest/unittest";
 
-    version(linux)
+    version (linux)
     {
         linkerInclude = "-l";
         unittestSwitches ~= " -LSFML/lib ";
@@ -360,19 +340,18 @@ void initializeLDC()
     string linkToSFMLLibs = "";
 
     singleFileSwitches = archSwitch ~ " -c -O -release -oq -I=src -of=";
-    libSwitches = archSwitch ~ " -lib -of=lib/"~prefix~"dsfml-";
+    libSwitches = archSwitch ~ " -lib -of=lib/" ~ prefix ~ "dsfml-";
     docSwitches = " -c -o- -op -D -Dd=../../doc -I=../../src";
     interfaceSwitches = " -c -o- -op -H -Hd=../import -I=../src";
 
-    unittestSwitches =
-    archSwitch ~ " -main -unittest -d-version=DSFML_Unittest_System " ~
-    "-d-version=DSFML_Unittest_Window -d-version=DSFML_Unittest_Graphics " ~
-    "-d-version=DSFML_Unittest_Audio -d-version=DSFML_Unittest_Network " ~
-    "-of=unittest/unittest";
+    unittestSwitches = archSwitch ~ " -main -unittest -d-version=DSFML_Unittest_System " ~
+        "-d-version=DSFML_Unittest_Window -d-version=DSFML_Unittest_Graphics " ~
+        "-d-version=DSFML_Unittest_Audio -d-version=DSFML_Unittest_Network " ~
+        "-of=unittest/unittest";
 
-    version(Windows)
+    version (Windows)
     {
-         unittestSwitches ~= ".exe -L=/LIBPATH:lib -L=/LIBPATH:SFML\\lib ";
+        unittestSwitches ~= ".exe -L=/LIBPATH:lib -L=/LIBPATH:SFML\\lib ";
     }
     else
     {
@@ -391,10 +370,10 @@ bool buildDSFMLC()
     chdir("src/DSFMLC/");
 
     // generate the cmake files on the first run
-    if(!exists("CMakeCache.txt"))
+    if (!exists("CMakeCache.txt"))
     {
-        auto pid = spawnShell("cmake -G"~makefileType~" .");
-        if(wait(pid) != 0)
+        auto pid = spawnShell("cmake -G" ~ makefileType ~ " .");
+        if (wait(pid) != 0)
         {
             return false;
         }
@@ -402,7 +381,7 @@ bool buildDSFMLC()
 
     //always try to rebuild c++ files. They will be skipped if nothing to do.
     auto pid = spawnProcess([makefileProgram]);
-    if(wait(pid) != 0)
+    if (wait(pid) != 0)
     {
         return false;
     }
@@ -421,78 +400,78 @@ bool buildDSFMLC()
  */
 bool buildLibs()
 {
-    import std.ascii: toUpper;
+    import std.ascii : toUpper;
 
-    if(!exists("lib/"))
+    if (!exists("lib/"))
     {
         mkdir("lib/");
     }
 
-    if(!buildDSFMLC())
+    if (!buildDSFMLC())
         return false;
 
-    foreach(theModule;modules)
+    foreach (theModule; modules)
     {
         //+1 to include the library file in the count
         size_t numberOfFiles = fileList[theModule].length + 1;
         string files = "";
 
-        string objLocation = "obj/"~(debugLibs?"debug":"release")~
-            "/dsfml/" ~theModule~"/";
+        string objLocation = "obj/" ~ (debugLibs ? "debug" : "release") ~ "/dsfml/" ~ theModule ~
+            "/";
 
-        if(!exists(objLocation))
+        if (!exists(objLocation))
         {
             mkdirRecurse(objLocation);
         }
 
         foreach (fileNumber, name; fileList[theModule])
         {
-            string objectFile = objLocation~name~objExt;
+            string objectFile = objLocation ~ name ~ objExt;
 
-            string dFile = "src/dsfml/" ~theModule~"/"~name~".d";
-            string buildCommand = compiler~dFile~singleFileSwitches~objectFile;
+            string dFile = "src/dsfml/" ~ theModule ~ "/" ~ name ~ ".d";
+            string buildCommand = compiler ~ dFile ~ singleFileSwitches ~ objectFile;
 
-            if(needToBuild(objectFile, dFile))
+            if (needToBuild(objectFile, dFile))
             {
                 progressOutput(fileNumber, numberOfFiles, dFile);
 
                 auto status = executeShell(buildCommand);
 
-                if(status.status !=0)
+                if (status.status != 0)
                 {
                     writeln(status.output);
                     return false;
                 }
             }
 
-            files~= objectFile ~ " ";
+            files ~= objectFile ~ " ";
         }
 
         files ~= objectList[theModule];
 
         string buildCommand = compiler ~ files;
 
-        version(GNU)
+        version (GNU)
         {
             //We're using ar here, so we'll completely reset the build command
-            buildCommand = libSwitches~theModule~postfix~extension~" "~files;
+            buildCommand = libSwitches ~ theModule ~ postfix ~ extension ~ " " ~ files;
         }
         else
         {
-            buildCommand ~= libSwitches~theModule~postfix~extension;
+            buildCommand ~= libSwitches ~ theModule ~ postfix ~ extension;
         }
 
         //always rebuilds the lib in case the cpp files were re-built
         auto status = executeShell(buildCommand);
 
-        if(status.status !=0)
+        if (status.status != 0)
         {
             writeln("Something happened!");
             writeln(status.output);
             return false;
         }
 
-        writeln("[100%] Built "~prefix~"dsfml-" ~ theModule~extension);
+        writeln("[100%] Built " ~ prefix ~ "dsfml-" ~ theModule ~ extension);
     }
 
     return true;
@@ -505,21 +484,21 @@ bool buildLibs()
  */
 bool buildUnittests()
 {
-    import std.ascii: toUpper;
+    import std.ascii : toUpper;
 
-    if(!findSFML())
+    if (!findSFML())
         return false;
 
-    if(!buildDSFMLC())
+    if (!buildDSFMLC())
         return false;
 
     string files = "";
 
-    foreach(theModule;modules)
+    foreach (theModule; modules)
     {
-        foreach(string name; fileList[theModule])
+        foreach (string name; fileList[theModule])
         {
-            files~= "src/dsfml/" ~theModule~"/"~name~".d ";
+            files ~= "src/dsfml/" ~ theModule ~ "/" ~ name ~ ".d ";
         }
 
         files ~= objectList[theModule];
@@ -527,29 +506,29 @@ bool buildUnittests()
 
     string buildCommand = compiler;
 
-    version(GNU)
+    version (GNU)
     {
         std.file.write("main.d", "void main(){}");
 
         buildCommand ~= "main.d ";
     }
 
-    buildCommand ~= files~unittestSwitches;
+    buildCommand ~= files ~ unittestSwitches;
 
     write("Building unittest/unitest");
-    version(Windows)
+    version (Windows)
         writeln(".exe");
     else
         writeln();
 
     auto status = executeShell(buildCommand);
 
-    version(GNU)
+    version (GNU)
     {
         std.file.remove("main.d");
     }
 
-    if(status.status !=0)
+    if (status.status != 0)
     {
         writeln(status.output);
         return false;
@@ -565,7 +544,7 @@ bool buildUnittests()
  */
 bool buildDocumentation()
 {
-    if(!exists("doc/"))
+    if (!exists("doc/"))
     {
         mkdir("doc/");
     }
@@ -574,11 +553,11 @@ bool buildDocumentation()
 
     string docExtension;
     string ddoc;
-    if(buildingWebsiteDocs)
+    if (buildingWebsiteDocs)
     {
         docExtension = ".php";
 
-        version(GNU)
+        version (GNU)
             ddoc = "../../doc/website_documentation.ddoc";
         else
             ddoc = " ../../doc/website_documentation.ddoc";
@@ -586,60 +565,59 @@ bool buildDocumentation()
     else
     {
         docExtension = ".html";
-        version(GNU)
+        version (GNU)
             ddoc = "../../doc/default_ddoc_theme.ddoc";
         else
             ddoc = " ../../doc/local_documentation.ddoc";
     }
 
-    foreach(theModule;modules)
+    foreach (theModule; modules)
     {
-        if(selectedModule != "" && theModule != selectedModule)
+        if (selectedModule != "" && theModule != selectedModule)
         {
             continue;
         }
 
         // skipping package.d
-        size_t numberOfFiles = fileList[theModule].length -1 ;
+        size_t numberOfFiles = fileList[theModule].length - 1;
         foreach (fileNumber, name; fileList[theModule])
         {
             if (name == "package")
                 continue;
 
-            string docFile = "../../doc/"~theModule~"/"~name~docExtension;
-            string outputFile = name~docExtension;
-            string dFile = theModule~"/"~name~".d";
+            string docFile = "../../doc/" ~ theModule ~ "/" ~ name ~ docExtension;
+            string outputFile = name ~ docExtension;
+            string dFile = theModule ~ "/" ~ name ~ ".d";
 
             string buildCommand;
 
-            version(GNU)
+            version (GNU)
             {
-                buildCommand = compiler~dFile~" -fdoc-inc="~ddoc~
-                " -fdoc-dir=../../doc/dsfml/"~theModule~
-                docSwitches~" -o obj.o";
+                buildCommand = compiler ~ dFile ~ " -fdoc-inc=" ~ ddoc ~
+                    " -fdoc-dir=../../doc/dsfml/" ~ theModule ~ docSwitches ~ " -o obj.o";
             }
             else
-                buildCommand = compiler~dFile~ddoc~docSwitches;
+                buildCommand = compiler ~ dFile ~ ddoc ~ docSwitches;
 
-            if(needToBuild(docFile, dFile))
+            if (needToBuild(docFile, dFile))
             {
                 progressOutput(fileNumber, numberOfFiles, outputFile);
 
                 auto status = executeShell(buildCommand);
-                if(status.status !=0)
+                if (status.status != 0)
                 {
                     writeln(status.output);
                     return false;
                 }
 
-                if(docExtension!=".html")
-                    rename("../../doc/"~theModule~"/"~name~".html",
-                           "../../doc/"~theModule~"/"~name~docExtension);
+                if (docExtension != ".html")
+                    rename("../../doc/" ~ theModule ~ "/" ~ name ~ ".html",
+                            "../../doc/" ~ theModule ~ "/" ~ name ~ docExtension);
             }
         }
     }
 
-    version(GNU)
+    version (GNU)
         core.stdc.stdio.remove("obj.o");
 
     chdir("../..");
@@ -654,37 +632,37 @@ bool buildDocumentation()
  */
 bool buildInterfaceFiles()
 {
-    if(!exists("import/"))
+    if (!exists("import/"))
     {
         mkdir("import/");
     }
 
     chdir("src/");
 
-    foreach(theModule;modules)
+    foreach (theModule; modules)
     {
         size_t numberOfFiles = fileList[theModule].length;
 
         foreach (fileNumber, name; fileList[theModule])
         {
-            string dFile = "dsfml/"~theModule~"/"~name~".d";
-            string outputFile = "../import/dsfml/"~theModule~"/"~name~".di";
-            if(name == "package")
+            string dFile = "dsfml/" ~ theModule ~ "/" ~ name ~ ".d";
+            string outputFile = "../import/dsfml/" ~ theModule ~ "/" ~ name ~ ".di";
+            if (name == "package")
                 outputFile.length = outputFile.length - 1;
 
-            version(GNU)
+            version (GNU)
             {
-                interfaceSwitches ~= " -fintfc-dir=../import/dsfml/"~theModule;
+                interfaceSwitches ~= " -fintfc-dir=../import/dsfml/" ~ theModule;
             }
 
-            string buildCommand = compiler~dFile~interfaceSwitches;
+            string buildCommand = compiler ~ dFile ~ interfaceSwitches;
 
-            if(needToBuild(outputFile, dFile))
+            if (needToBuild(outputFile, dFile))
             {
                 progressOutput(fileNumber, numberOfFiles, outputFile[3 .. $]);
 
                 auto status = executeShell(buildCommand);
-                if(status.status !=0)
+                if (status.status != 0)
                 {
                     writeln(status.output);
                     return false;
@@ -692,14 +670,14 @@ bool buildInterfaceFiles()
             }
         }
 
-        if(exists("../import/dsfml/"~theModule~"/package.di"))
+        if (exists("../import/dsfml/" ~ theModule ~ "/package.di"))
         {
-            rename("../import/dsfml/"~theModule~"/package.di",
-                   "../import/dsfml/"~theModule~"/package.d");
+            rename("../import/dsfml/" ~ theModule ~ "/package.di",
+                    "../import/dsfml/" ~ theModule ~ "/package.d");
         }
     }
 
-    version(GNU)
+    version (GNU)
         core.stdc.stdio.remove("obj.o");
 
     chdir("../..");
@@ -715,7 +693,7 @@ bool buildInterfaceFiles()
  */
 void progressOutput(size_t currentFile, size_t totalFiles, string fileName)
 {
-    size_t percentage = ((currentFile+1)*100)/totalFiles;
+    size_t percentage = ((currentFile + 1) * 100) / totalFiles;
 
     writefln("[%3u%%] Building %s", percentage, fileName);
 }
@@ -728,10 +706,9 @@ void progressOutput(size_t currentFile, size_t totalFiles, string fileName)
  */
 bool needToBuild(string objLocation, string srcLocation)
 {
-    import std.file: exists, timeStamp = timeLastModified;
+    import std.file : exists, timeStamp = timeLastModified;
 
-    return exists(objLocation)?timeStamp(objLocation) < timeStamp(srcLocation):
-                               true;
+    return exists(objLocation) ? timeStamp(objLocation) < timeStamp(srcLocation) : true;
 }
 
 /**
@@ -741,13 +718,13 @@ bool needToBuild(string objLocation, string srcLocation)
  */
 bool findSFML()
 {
-    version(Windows)
+    version (Windows)
     {
         //technically, we also need .lib files because Windows is stupid, but
         //the build script will only look for the .dll's.
         string dynamicExtension = "-2.dll";
     }
-    else version(linux)
+    else version (linux)
     {
         string dynamicExtension = ".so";
     }
@@ -757,14 +734,12 @@ bool findSFML()
     }
 
     //check to make sure ALL SFML libs were built
-    foreach(theModule; modules)
+    foreach (theModule; modules)
     {
-        if(!exists("SFML/lib/"~prefix~"sfml-"~theModule~dynamicExtension))
+        if (!exists("SFML/lib/" ~ prefix ~ "sfml-" ~ theModule ~ dynamicExtension))
         {
-            writeln("SFML/lib/"~prefix~"sfml-"~theModule~dynamicExtension,
-                    " not found.");
-            writeln("Building unit tests requires SFML libs in ",
-                    "dsfml/SFML/lib/ directory.");
+            writeln("SFML/lib/" ~ prefix ~ "sfml-" ~ theModule ~ dynamicExtension, " not found.");
+            writeln("Building unit tests requires SFML libs in ", "dsfml/SFML/lib/ directory.");
             return false;
         }
     }
@@ -781,10 +756,10 @@ bool findSFML()
  */
 string lib(string library)
 {
-    version(Windows)
-        return linkerInclude~library~extension~" ";
+    version (Windows)
+        return linkerInclude ~ library ~ extension ~ " ";
     else
-        return linkerInclude~library~" ";
+        return linkerInclude ~ library ~ " ";
 }
 
 int main(string[] args)
@@ -792,39 +767,38 @@ int main(string[] args)
     GetoptResult optInfo;
     try
     {
-        optInfo = getopt(args,
-        "lib", "Build static libraries.", &buildingLibs,
-        "m32", "Force 32 bit building.", &force32Build,
-        "m64", "Force 64 bit building.", &force64Build,
-        "unittest", "Build DSFML unit test executable.", &buildingUnittests,
-        "doc", "Build DSFML documentation.", &buildingDoc,
-        "webdoc", "Build the DSFML website documentation.", &buildingWebsiteDocs,
-        "import", "Generate D interface files.", &buildingInterfaceFiles,
-        "debug", "Build debug libraries (ignored when not building libraries).", &debugLibs
-        );
+        optInfo = getopt(args, "lib", "Build static libraries.", &buildingLibs,
+                "m32", "Force 32 bit building.", &force32Build, "m64",
+                "Force 64 bit building.", &force64Build, "unittest",
+                "Build DSFML unit test executable.", &buildingUnittests, "doc",
+                "Build DSFML documentation.", &buildingDoc, "webdoc",
+                "Build the DSFML website documentation.", &buildingWebsiteDocs, "import",
+                "Generate D interface files.",
+                &buildingInterfaceFiles, "debug",
+                "Build debug libraries (ignored when not building libraries).", &debugLibs);
     }
-    catch(GetOptException e)
+    catch (GetOptException e)
     {
         writeln(e.msg);
         return -1;
     }
 
-    if(optInfo.helpWanted)
+    if (optInfo.helpWanted)
     {
-        defaultGetoptPrinter("Switch Information\n"
-        ~"Default (no switches passed) will be to build static libraries with the compiler that built this.",
-        optInfo.options);
+        defaultGetoptPrinter("Switch Information\n" ~
+                "Default (no switches passed) will be to build static libraries with the compiler that built this.",
+                optInfo.options);
         return 0;
     }
 
     //default to building libs
-    if(!buildingLibs && !buildingDoc && !buildingInterfaceFiles &&
-       !buildingWebsiteDocs && !buildingUnittests && !buildingAll)
+    if (!buildingLibs && !buildingDoc && !buildingInterfaceFiles &&
+            !buildingWebsiteDocs && !buildingUnittests && !buildingAll)
     {
         buildingLibs = true;
     }
 
-    if(!checkSwitchErrors())
+    if (!checkSwitchErrors())
     {
         return -1;
     }
@@ -832,24 +806,24 @@ int main(string[] args)
     writeln();
     initialize();
 
-    if(buildingLibs)
+    if (buildingLibs)
     {
-        if(!buildLibs())
+        if (!buildLibs())
             return -1;
     }
-    if(buildingUnittests)
+    if (buildingUnittests)
     {
-        if(!buildUnittests())
+        if (!buildUnittests())
             return -1;
     }
-    if(buildingDoc || buildingWebsiteDocs)
+    if (buildingDoc || buildingWebsiteDocs)
     {
-        if(!buildDocumentation())
+        if (!buildDocumentation())
             return -1;
     }
-    if(buildingInterfaceFiles)
+    if (buildingInterfaceFiles)
     {
-        if(!buildInterfaceFiles())
+        if (!buildInterfaceFiles())
             return -1;
     }
 
