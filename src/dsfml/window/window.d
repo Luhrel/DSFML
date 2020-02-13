@@ -144,7 +144,7 @@ class Window
     this(VideoMode mode, const(dstring) title, Style style = Style.DefaultStyle,
             ContextSettings settings = ContextSettings.init)
     {
-        create(mode, title, style, settings);
+        create(mode, title, style, settings); // @suppress(dscanner.vcall_ctor)
     }
 
     /**
@@ -162,7 +162,7 @@ class Window
      */
     this(WindowHandle handle, ContextSettings settings = ContextSettings.init)
     {
-        create(handle, settings);
+        create(handle, settings); // @suppress(dscanner.vcall_ctor)
     }
 
     /**

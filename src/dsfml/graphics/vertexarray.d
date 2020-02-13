@@ -85,7 +85,7 @@ class VertexArray : Drawable
     {
         this();
         primitiveType = type;
-        resize(vertexCount);
+        resize(vertexCount); // @suppress(dscanner.vcall_ctor)
     }
 
     // Copy constructor.

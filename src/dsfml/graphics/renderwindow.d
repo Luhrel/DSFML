@@ -193,7 +193,7 @@ class RenderWindow : Window, RenderTarget
             ContextSettings settings = ContextSettings.init)
     {
         this();
-        create(mode, title, style, settings);
+        create(mode, title, style, settings); // @suppress(dscanner.vcall_ctor)
     }
 
     /**
@@ -215,7 +215,7 @@ class RenderWindow : Window, RenderTarget
     this(WindowHandle handle, ContextSettings settings = ContextSettings.init)
     {
         this();
-        create(handle, settings);
+        create(handle, settings); // @suppress(dscanner.vcall_ctor)
     }
 
     /**

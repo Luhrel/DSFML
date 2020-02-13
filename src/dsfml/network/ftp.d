@@ -604,7 +604,7 @@ class Ftp
         string[] listing() const
         {
             string[] filenames;
-            size_t count = sfFtpListingResponse_getCount(m_listingResponse);
+            const size_t count = sfFtpListingResponse_getCount(m_listingResponse);
 
             for (uint i = 0; i < count; i++)
             {
