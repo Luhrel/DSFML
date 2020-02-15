@@ -223,6 +223,12 @@ class TcpSocket : Socket
         return sfTcpSocket_connect(m_tcpSocket, host.toc, port, timeout);
     }
 
+    /// ditto
+    @nogc @safe Status connect(string host, ushort port, Time timeout = Time.Zero)
+    {
+        return connect(m_tcpSocket, IpAddress(host), port, timeout);
+    }
+
     /**
      * Disconnect the socket from its remote peer.
      *
