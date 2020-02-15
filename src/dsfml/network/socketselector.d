@@ -145,25 +145,7 @@ class SocketSelector
     }
 
     /**
-     * Add a new TcpListener to the selector.
-     *
-     * This function keeps a weak reference to the socket, so you have to make
-     * sure that the socket is not destroyed while it is stored in the selector.
-     * This function does nothing if the socket is not valid.
-     *
-     * Params:
-     *      listener = Reference to the listener to add
-     *
-     * See_Also:
-     *      remove, clear
-     */
-    @nogc @safe void add(TcpListener listener)
-    {
-        sfSocketSelector_addTcpListener(m_socketSelector, listener.ptr);
-    }
-
-    /**
-     * Add a new TcpSocket to the selector.
+     * Add a new socket to the selector.
      *
      * This function keeps a weak reference to the socket, so you have to make
      * sure that the socket is not destroyed while it is stored in the selector.
@@ -175,24 +157,18 @@ class SocketSelector
      * See_Also:
      *      remove, clear
      */
+    @nogc @safe void add(TcpListener socket)
+    {
+        sfSocketSelector_addTcpListener(m_socketSelector, socket.ptr);
+    }
+
+    /// ditto
     @nogc @safe void add(TcpSocket socket)
     {
         sfSocketSelector_addTcpSocket(m_socketSelector, socket.ptr);
     }
 
-    /**
-     * Add a new UdpSocket to the selector.
-     *
-     * This function keeps a weak reference to the socket, so you have to make
-     * sure that the socket is not destroyed while it is stored in the selector.
-     * This function does nothing if the socket is not valid.
-     *
-     * Params:
-     *      socket = Reference to the socket to add
-     *
-     * See_Also:
-     *      remove, clear
-     */
+    /// ditto
     @nogc @safe void add(UdpSocket socket)
     {
         sfSocketSelector_addUdpSocket(m_socketSelector, socket.ptr);
@@ -261,35 +237,13 @@ class SocketSelector
         sfSocketSelector_removeTcpListener(m_socketSelector, socket.ptr);
     }
 
-    /**
-     * Remove a socket from the selector.
-     *
-     * This function doesn't destroy the socket, it simply removes the reference
-     * that the selector has to it.
-     *
-     * Params:
-     *      socket = Reference to the socket to remove
-     *
-     * See_Also:
-     *      add, clear
-     */
+    /// ditto
     @nogc @safe void remove(TcpSocket socket)
     {
         sfSocketSelector_removeTcpSocket(m_socketSelector, socket.ptr);
     }
 
-    /**
-     * Remove a socket from the selector.
-     *
-     * This function doesn't destroy the socket, it simply removes the reference
-     * that the selector has to it.
-     *
-     * Params:
-     *      socket = Reference to the socket to remove
-     *
-     * See_Also:
-     *      add, clear
-     */
+    /// ditto
     @nogc @safe void remove(UdpSocket socket)
     {
         sfSocketSelector_removeUdpSocket(m_socketSelector, socket.ptr);
