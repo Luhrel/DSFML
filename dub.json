@@ -28,7 +28,7 @@
             "targetType": "library",
             "targetPath": "lib",
             "sourcePaths": ["src/dsfml/audio"],
-            "libs": ["csfml-audio", "sfml-audio"],
+            "libs": ["csfml-audio", "sfml-audio", "stdc++"],
             "dependencies": {
                 "dsfml:system": "~>2.5"
             }

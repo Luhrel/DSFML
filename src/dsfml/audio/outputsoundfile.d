@@ -58,6 +58,7 @@ module dsfml.audio.outputsoundfile;
 
 import std.string;
 import core.stdc.config;
+import core.stdcpp.string;
 
 /**
  * Provide write access to sound files.
@@ -84,15 +85,13 @@ extern(C++, sf) class OutputSoundFile
      * Returns:
      *      true if the file was successfully opened.
      */
-    @disable
     extern(D) bool openFromFile(const string filename, uint sampleRate, uint channelCount)
     {
-        return false;
+        return openFromFile(basic_string!char(filename), sampleRate, channelCount);
     }
 
-    // TODO: compatibility between dlang's string and std::string
     // SFML C++ implementation
-    //bool openFromFile(const std::string filename, uint sampleRate, uint channelCount);
+    bool openFromFile(const basic_string!char filename, uint sampleRate, uint channelCount);
 
     /**
      * Write audio samples to the file.
