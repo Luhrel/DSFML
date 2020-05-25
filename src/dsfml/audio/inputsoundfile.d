@@ -67,7 +67,7 @@ module dsfml.audio.inputsoundfile;
 
 import core.stdc.string;
 import core.stdc.config;
-import std.file;
+import core.stdcpp.string;
 import dsfml.system.inputstream;
 import dsfml.system.time;
 
@@ -78,10 +78,10 @@ extern(C++, sf) class InputSoundFile
 {
 
     /// Default constructor.
-    this();
+    final this();
 
     /// Destructor.
-    ~this();
+    final ~this();
 
     /**
      * Open a sound file from the disk for reading.
@@ -97,9 +97,12 @@ extern(C++, sf) class InputSoundFile
      */
     extern(D) bool openFromFile(const string filename)
     {
-        void[] data = std.file.read(filename);
-        return openFromMemory(data.ptr, data.sizeof);
+        basic_string!char cpp_filename = basic_string!char(filename);
+        return openFromFile(cpp_filename);
     }
+
+    // SFML C++ implementation
+    final bool openFromFile(const ref basic_string!char filename);
 
     /**
      * Open a sound file in memory for reading.
@@ -119,7 +122,7 @@ extern(C++, sf) class InputSoundFile
     }
 
     // SFML C++ implementation
-    bool openFromMemory(const(void*) data, size_t sizeInBytes);
+    final bool openFromMemory(const(void*) data, size_t sizeInBytes);
 
     /**
      * Open a sound file from a custom stream for reading.
@@ -149,7 +152,7 @@ extern(C++, sf) class InputSoundFile
      * Returns:
      *      Number of samples.
      */
-    ulong getSampleCount() const;
+    final ulong getSampleCount() const;
 
     /**
      * Get the number of channels used by the sound
@@ -157,7 +160,7 @@ extern(C++, sf) class InputSoundFile
      * Returns:
      *      Number of channels (1 = mono, 2 = stereo).
      */
-    uint getChannelCount() const;
+    final uint getChannelCount() const;
 
     /**
      * Get the sample rate of the sound
@@ -165,7 +168,7 @@ extern(C++, sf) class InputSoundFile
      * Returns:
      *      Sample rate, in samples per second.
      */
-    uint getSampleRate() const;
+    final uint getSampleRate() const;
 
     /**
      * Get the total duration of the sound file.
@@ -175,7 +178,7 @@ extern(C++, sf) class InputSoundFile
      * Returns:
      *      Duration of the sound file
      */
-    Time getDuration() const;
+    final Time getDuration() const;
 
     /**
      * Get the read offset of the file in time.
@@ -183,7 +186,7 @@ extern(C++, sf) class InputSoundFile
      * Returns:
      *      Time position
      */
-    Time getTimeOffset() const;
+    final Time getTimeOffset() const;
 
     /**
      * Get the read offset of the file in samples.
@@ -191,7 +194,7 @@ extern(C++, sf) class InputSoundFile
      * Returns:
      *      Sample position
      */
-    long getSampleOffset() const;
+    final long getSampleOffset() const;
 
     /**
      * Read audio samples from the open file.
@@ -208,7 +211,7 @@ extern(C++, sf) class InputSoundFile
     }
 
     // SFML C++ implementation
-    long read(short* samples, cpp_ulonglong maxCount);
+    final long read(short* samples, cpp_ulonglong maxCount);
 
     /**
      * Change the current read position to the given sample offset.
@@ -230,7 +233,7 @@ extern(C++, sf) class InputSoundFile
     }
 
     // SFML C++ implementation
-    void seek(cpp_ulonglong sampleOffset);
+    final void seek(cpp_ulonglong sampleOffset);
 
     /**
      * Change the current read position to the given time offset.
@@ -256,5 +259,10 @@ unittest
     writeln("Running InputSoundFile unittest...");
 
     InputSoundFile isf = new InputSoundFile();
-    isf.openFromFile("unittest/res/TestMusic.ogg"); // Segfault here
+    //isf.openFromFile("unittest/res/TestMusic.ogg"); // Segfault here
+
+    // TODO: seek, read, ...
+
+
+    // isf is destroyed by the GC, but the GC doesn't seem to register that and causes a segfault
 }

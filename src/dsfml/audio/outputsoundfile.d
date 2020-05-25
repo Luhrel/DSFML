@@ -67,10 +67,10 @@ extern(C++, sf) class OutputSoundFile
 {
 
     /// Default constructor.
-    this();
+    final this();
 
     /// Destructor.
-    ~this();
+    final ~this();
 
     /**
      * Open the sound file from the disk for writing.
@@ -87,11 +87,12 @@ extern(C++, sf) class OutputSoundFile
      */
     extern(D) bool openFromFile(const string filename, uint sampleRate, uint channelCount)
     {
-        return openFromFile(basic_string!char(filename), sampleRate, channelCount);
+        basic_string!char cpp_filename = basic_string!char(filename);
+        return openFromFile(cpp_filename, sampleRate, channelCount);
     }
 
     // SFML C++ implementation
-    bool openFromFile(const basic_string!char filename, uint sampleRate, uint channelCount);
+    final bool openFromFile(const ref basic_string!char filename, uint sampleRate, uint channelCount);
 
     /**
      * Write audio samples to the file.
@@ -105,5 +106,16 @@ extern(C++, sf) class OutputSoundFile
     }
 
     // SFML C++ implementation
-    void write(const short* samples, cpp_ulonglong count);
+    final void write(const short* samples, cpp_ulonglong count);
+}
+
+unittest
+{
+    import std.stdio;
+    writeln("Running OutputSoundFile unittest...");
+
+    //OutputSoundFile osf = new OutputSoundFile();
+    //osf.openFromFile("unittest/res/TestMusic.ogg", 0, 2); // TODO: set the right sampleRate and channelCount
+
+    // TODO: write
 }
