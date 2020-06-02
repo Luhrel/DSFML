@@ -224,9 +224,9 @@ class TcpSocket : Socket
     }
 
     /// ditto
-    @nogc @safe Status connect(string host, ushort port, Time timeout = Time.Zero)
+    @safe Status connect(string host, ushort port, Time timeout = Time.Zero)
     {
-        return connect(m_tcpSocket, IpAddress(host), port, timeout);
+        return connect(IpAddress(host), port, timeout);
     }
 
     /**
