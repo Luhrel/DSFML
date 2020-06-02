@@ -53,7 +53,7 @@ struct Transform3
      * Returns: dot product.
      */
     @safe
-    ref Transform3 combine(Transform3 other)
+    ref Transform3 combine(Transform3 other) return
     {
         float[4 * 4] result;
 
@@ -93,7 +93,7 @@ struct Transform3
 
     // Copy from https://github.com/Dav1dde/gl3n/blob/master/gl3n/linalg.d
     // and https://github.com/g-truc/glm/blob/1498e094b95d1d89164c6442c632d775a2a1bab5/glm/ext/matrix_transform.inl
-    ref Transform3 rotate(float angle, Vector3f axis)
+    ref Transform3 rotate(float angle, Vector3f axis) return
     {
         // TODO: normalize vector
 
@@ -127,7 +127,7 @@ struct Transform3
         return this;
     }
 
-    ref Transform3 rotateX(float angle)
+    ref Transform3 rotateX(float angle) return
     {
         float rad = angle * 3.141592654f / 180.0f;
         float cosr = cos(rad);
@@ -144,7 +144,7 @@ struct Transform3
         return this;
     }
 
-    ref Transform3 rotateY(float angle)
+    ref Transform3 rotateY(float angle) return
     {
         float rad = angle * 3.141592654f / 180.0f;
         float cosr = cos(rad);
@@ -161,7 +161,7 @@ struct Transform3
         return this;
     }
 
-    ref Transform3 rotateZ(float angle)
+    ref Transform3 rotateZ(float angle) return
     {
         float rad = angle * 3.141592654f / 180.0f;
         float cosr = cos(rad);
@@ -178,7 +178,7 @@ struct Transform3
         return this;
     }
 
-    ref Transform3 translate(Vector3f vector)
+    ref Transform3 translate(Vector3f vector) return
     {
         Transform3 transform = Transform3.identity;
 
@@ -191,7 +191,7 @@ struct Transform3
         return this;
     }
 
-    ref Transform3 scale(Vector3f vector)
+    ref Transform3 scale(Vector3f vector) return
     {
         Transform3 transform = Transform3.identity;
 
