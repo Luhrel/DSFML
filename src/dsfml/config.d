@@ -30,10 +30,10 @@ module dsfml.config;
 
 import dsfml.system.err;
 
-//Check to confirm compiler is at least v2.067
-static if (__VERSION__ < 2067L)
+//Check to confirm compiler is at least v2.092
+static if (__VERSION__ < 2092L)
 {
-    static assert(0, "Please upgrade your compiler to v2.067 or later");
+    static assert(0, "Please upgrade your compiler to v2.092 or later");
 }
 
 /// DSFML version enum
