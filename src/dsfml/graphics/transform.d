@@ -160,7 +160,7 @@ struct Transform
      * Returns:
      *      Reference to this.
      */
-    @nogc @safe ref Transform combine(Transform other)
+    @nogc @safe ref Transform combine(Transform other) return
     {
         sfTransform_combine(&m_transform, &other.m_transform);
         return this;
@@ -232,7 +232,7 @@ struct Transform
      * See_Also:
      *      rotate, scale
      */
-    @nogc @safe ref Transform translate(Vector2f offset)
+    @nogc @safe ref Transform translate(Vector2f offset) return
     {
         return translate(offset.x, offset.y);
     }
@@ -256,7 +256,7 @@ struct Transform
      * See_Also:
      *      rotate, scale
      */
-    @nogc @safe ref Transform translate(float x, float y)
+    @nogc @safe ref Transform translate(float x, float y) return
     {
         sfTransform_translate(&m_transform, x, y);
         return this;
@@ -279,7 +279,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
-    @nogc @safe ref Transform rotate(float angle)
+    @nogc @safe ref Transform rotate(float angle) return
     {
         sfTransform_rotate(&m_transform, angle);
         return this;
@@ -310,7 +310,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
-    @nogc @safe ref Transform rotate(float angle, float centerX, float centerY)
+    @nogc @safe ref Transform rotate(float angle, float centerX, float centerY) return
     {
         sfTransform_rotateWithCenter(&m_transform, angle, centerX, centerY);
         return this;
@@ -340,7 +340,7 @@ struct Transform
      * See_Also:
      *      translate, scale
      */
-    @nogc @safe ref Transform rotate(float angle, Vector2f center)
+    @nogc @safe ref Transform rotate(float angle, Vector2f center) return
     {
         return rotate(angle, center.x, center.y);
     }
@@ -364,7 +364,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
-    @nogc @safe ref Transform scale(float scaleX, float scaleY)
+    @nogc @safe ref Transform scale(float scaleX, float scaleY) return
     {
         sfTransform_scale(&m_transform, scaleX, scaleY);
         return this;
@@ -388,7 +388,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
-    @nogc @safe ref Transform scale(Vector2f factors)
+    @nogc @safe ref Transform scale(Vector2f factors) return
     {
         return scale(factors.x, factors.y);
     }
@@ -419,7 +419,7 @@ struct Transform
      * See_Also:
      *      translate, rotate
      */
-    @nogc @safe ref Transform scale(float scaleX, float scaleY, float centerX, float centerY)
+    @nogc @safe ref Transform scale(float scaleX, float scaleY, float centerX, float centerY) return
     {
         sfTransform_scaleWithCenter(&m_transform, scaleX, scaleY, centerX, centerY);
         return this;
@@ -442,7 +442,7 @@ struct Transform
      * Returns:
      *      Reference to this
      */
-    @nogc @safe ref Transform scale(Vector2f factors, Vector2f center)
+    @nogc @safe ref Transform scale(Vector2f factors, Vector2f center) return
     {
         return scale(factors.x, factors.y, center.x, center.y);
     }
@@ -487,7 +487,7 @@ struct Transform
      * Returns:
      *      The combined transform.
      */
-    @nogc @safe ref Transform opOpAssign(string op)(Transform rhs)
+    @nogc @safe ref Transform opOpAssign(string op)(Transform rhs) return
             if (op == "*" || op == "/")
     {
         static if (op == "*")
