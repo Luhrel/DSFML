@@ -4,6 +4,9 @@ import dsfml.graphics.color;
 import dsfml.system.vector2;
 import dsfml.system.vector3;
 
+/*
+ * Define a 3D point with color and texture coordinates.
+ */
 struct Vertex3
 {
     /// 3D position of the vertex

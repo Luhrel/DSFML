@@ -5,6 +5,9 @@ import dsfml.extra.graphics.transform3;
 
 import std.math;
 
+/*
+ * Decomposed 3D transform defined by a position, a rotation, and a scale.
+ */
 class Transformable3
 {
     private Vector3f m_position;
@@ -16,7 +19,7 @@ class Transformable3
     private Transform3 m_inverseTransform;
 
     /*
-     * TODO: is it vital to store these variables ?
+     * TODO ; performance test: is it vital to store these variables ?
      * In a 3D world, values changes a lot.
      */
     bool m_transformNeedUpdate = true;

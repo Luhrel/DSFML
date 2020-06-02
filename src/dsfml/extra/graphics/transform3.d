@@ -4,6 +4,9 @@ import dsfml.system.vector3;
 
 import std.math;
 
+/*
+ * Represents a 4x4 matrix.
+ */
 struct Transform3
 {
     /*
