@@ -19,7 +19,7 @@ struct Transform3
      * a30, a31 and a32 are always 0.
      * a33 is always 1.
      */
-    private float[4 * 4] m_matrix;
+    float[4 * 4] matrix;
 
     /// The identity transform (does nothing).
     static const Transform3 identity = Transform3([1.0f, 0.0f, 0.0f, 0.0f,
@@ -31,7 +31,7 @@ struct Transform3
     @nogc @safe
     this(float[4 * 4] matrix)
     {
-        m_matrix = matrix;
+        this.matrix = matrix;
     }
 
     /// ditto
@@ -45,12 +45,6 @@ struct Transform3
               a10, a11, a12, a13,
               a20, a21, a22, a23,
               a30, a31, a32, a33]);
-    }
-
-    @nogc @safe
-    float[4 * 4] matrix() const
-    {
-        return m_matrix;
     }
 
     /**
@@ -83,7 +77,7 @@ struct Transform3
                  */
                 for (ubyte line = u; line < u + 4; line++)
                 {
-                    dot_result += m_matrix[line] * other.m_matrix[column];
+                    dot_result += matrix[line] * other.matrix[column];
                     // The column index is always 4 more
                     // line[0, 1, 2, 3] -> column[0, 4, 8, 12]
                     column += 4;
@@ -93,7 +87,7 @@ struct Transform3
                 index++;
             }
         }
-        m_matrix = result;
+        matrix = result;
         return this;
     }
 
@@ -107,7 +101,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] m = Transform3.identity.m_matrix;
+        float[4 * 4] m = Transform3.identity.matrix;
 
         float x = axis.x;
         float y = axis.y;
@@ -139,7 +133,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] rotx = Transform3.identity.m_matrix;
+        float[4 * 4] rotx = Transform3.identity.matrix;
 
         rotx[5] = cosr;
         rotx[6] = sinr;
@@ -156,7 +150,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] roty = Transform3.identity.m_matrix;
+        float[4 * 4] roty = Transform3.identity.matrix;
 
         roty[0] = cosr;
         roty[2] = -sinr;
@@ -173,7 +167,7 @@ struct Transform3
         float cosr = cos(rad);
         float sinr = sin(rad);
 
-        float[4 * 4] rotz = Transform3.identity.m_matrix;
+        float[4 * 4] rotz = Transform3.identity.matrix;
 
         rotz[0] = cosr;
         rotz[1] = -sinr;
@@ -188,9 +182,9 @@ struct Transform3
     {
         Transform3 transform = Transform3.identity;
 
-        transform.m_matrix[3] = vector.x;
-        transform.m_matrix[7] = vector.y;
-        transform.m_matrix[11] = vector.z;
+        transform.matrix[3] = vector.x;
+        transform.matrix[7] = vector.y;
+        transform.matrix[11] = vector.z;
 
         combine(transform);
 
@@ -201,9 +195,9 @@ struct Transform3
     {
         Transform3 transform = Transform3.identity;
 
-        transform.m_matrix[0] = vector.x;
-        transform.m_matrix[5] = vector.y;
-        transform.m_matrix[10] = vector.z;
+        transform.matrix[0] = vector.x;
+        transform.matrix[5] = vector.y;
+        transform.matrix[10] = vector.z;
 
         combine(transform);
 
@@ -213,7 +207,7 @@ struct Transform3
     Transform3 inverse()
     {
         // https://en.wikipedia.org/wiki/Minor_(linear_algebra)#Inverse_of_a_matrix
-        float[4 * 4] m = m_matrix;
+        float[4 * 4] m = matrix;
         float[4 * 4] inv;
 
         // Column 0 (aX0)
@@ -316,9 +310,9 @@ struct Transform3
         if (op == "*" || op == "/")
     {
         static if (op == "*")
-            return Transform3(m_matrix).combine(other);
+            return Transform3(matrix).combine(other);
         else static if (op == "/")
-            return Transform3(m_matrix).combine(other.inverse());
+            return Transform3(matrix).combine(other.inverse());
     }
 
     /**
