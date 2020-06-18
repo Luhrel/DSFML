@@ -330,6 +330,15 @@ struct Transform3
         else static if (op == "/")
             return combine(other.inverse());
     }
+
+    /**
+     * Overwrite the `==` operator.
+     */
+    @nogc @safe
+    bool opEquals(float[16] matrix)
+    {
+        return this.matrix == matrix;
+    }
 }
 
 unittest
